@@ -11,14 +11,14 @@ class RegisterView(generic.CreateView):
     """A view which shows the form to register a user."""
 
     model = get_user_model()
-    form_class = RegisterForm  # needed by github workflow
-    form = RegisterForm  # needed for local tests
+    # form_class needed for github workflow and from needed for local tests
+    form_class = form = RegisterForm
     template_name = 'registration/register.html'
 
     def post(self, request):
         """Create a new user, if the email address is not used yet."""
         if request.method == 'POST':
-            form = RegisterForm(request.POST)
+            form = self.form(request.POST)
 
             if not form.is_valid():
 
@@ -28,10 +28,20 @@ class RegisterView(generic.CreateView):
                 return HttpResponseBadRequest('Invalid Form:\n\n {}'
                                               .format("\n\n".join(error_list)))
 
-            email = form.cleaned_data['email'].lower()
+            data = form.cleaned_data
 
             user_model = self.model
-            new_user = user_model(email=email)
-            new_user.save()
+            user = user_model(email=data['email'].lower(),
+                              first_name=data['first_name'].lower(),
+                              last_name=data['last_name'].lower(),
+                              gender=data['gender'],
+                              phone_number=data['mobile_number'],
+                              mobile_number=data['phone_number'],
+                              birthday=data['birthday'],
+                              street=data['street'].lower(),
+                              house_number=data['house_number'],
+                              zipcode=data['zipcode'],
+                              city=data['city'])
+            user.save()
 
-            return HttpResponse(f'Successfully created user {new_user}')
+            return HttpResponse(f'Successfully created user {user.email}')

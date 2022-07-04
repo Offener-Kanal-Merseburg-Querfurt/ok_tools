@@ -53,6 +53,9 @@ DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
 
 INSTALLED_APPS = [
     'registration',
+
+    'phonenumber_field',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -170,6 +173,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # authenticatable users
 AUTH_USER_MODEL = 'registration.OKUser'
 AUTHENTICATION_BACKENDS = ['registration.backends.EmailBackend']
+
+# TODO config?
+# Phon Number Validation
+PHONENUMBER_DEFAULT_REGION = 'DE'
+
+# Date format
+DATE_INPUT_FORMAT = '%d/%m/%Y'
+
+# Default city and zipcode for Address
+CITY = 'Merseburg'
+ZIPCODE = '06217'
 
 LOGGING = {
     'version': 1,
