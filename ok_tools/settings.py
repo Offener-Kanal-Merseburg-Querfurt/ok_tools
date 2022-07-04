@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import configparser
+import logging
+import os
+
+
+# Logger for settings.py
+logger = logging.getLogger(__name__)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,18 +26,33 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
+# parse configurations, set by component
+config = configparser.RawConfigParser()
+if 'OKTOOLS_CONFIG_FILE' in os.environ:
+    config.read_file(open(
+        os.environ.get('OKTOOLS_CONFIG_FILE'), encoding='utf-8'
+    ))
+else:
+    logger.warning("No config file found for ok-tools."
+                   " Switching to fallbacks.")
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=p+#cue4)o!qgdqjgjkiy3b7+tuvc-3u(2(h0)zu@7b+-$!4k*'
+SECRET_KEY = config.get('django', 'secret_key', fallback=None)
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.getboolean('django', 'debug', fallback=False)
 
-ALLOWED_HOSTS = []
+hosts = config.get('django', 'allowed_hosts', fallback=None)
+ALLOWED_HOSTS = hosts.split() if hosts else ['localhost']
 
+# Loglevel
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
 
 # Application definition
 
 INSTALLED_APPS = [
+    'registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -99,25 +121,71 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# CSRF settings
+# CSRF_TRUSTED_ORIGINS = ['https://okmq.gocept.fcio.net', 'https://localhost']
+
+# SESSION_COOKIE_SECURE = True
+
+# CSRF_COOKIE_SECURE = True
+
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# CORS_ORIGIN_WHITELIST = ['https://okmq.gocept.fcio.net/']
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = config.get('django', 'language', fallback='de-de')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = config.get('django', 'timezone', fallback='Europe/Berlin')
 
 USE_I18N = True
 
 USE_TZ = True
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
+STATICFILES_DIR = [
+    os.path.join(BASE_DIR, 'static'),
+]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATIC_ROOT = config.get('django', 'static', fallback='static/')
 STATIC_URL = 'static/'
+
+# ManifestStaticFilesStorage is recommended in production, to prevent outdatedhttp://localhost:8000/
+# JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
+# See https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#manifeststaticfilesstorage
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# authenticatable users
+AUTH_USER_MODEL = 'registration.OKUser'
+AUTHENTICATION_BACKENDS = ['registration.backends.EmailBackend']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': DJANGO_LOG_LEVEL,
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'ok_tools-debug.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': DJANGO_LOG_LEVEL,
+        },
+    },
+}

@@ -5,5 +5,12 @@ lib/
 lib64
 pyvenv.cfg
 
-**/__pycache__/
-**/db.sqlite3
+__pycache__/
+db.sqlite3
+*.egg-info
+ok_tools-debug.log
+static/
+
+# ides and editors
+.idea/
+.vscode/
