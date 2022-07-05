@@ -57,11 +57,21 @@ class OKUser(AbstractUser):
     REQUIRED_FIELDS = []
     objects = UserManager()
 
+
+class Profile(models.Model):
+    """
+    Model for a profil.
+
+    A profil stores further informations about a user. To every profil
+    belongs a user.
+    """
+
+    # TODO auch so, dass kein OKUser existiert
+    okuser = models.OneToOneField(OKUser, on_delete=models.CASCADE)
+
     first_name = models.CharField(blank=False, null=True, max_length=150)
     last_name = models.CharField(blank=False, null=True, max_length=150)
 
-    # additional fields
-    # gender
     class Gender(models.TextChoices):
         """The gender of the user."""
 
@@ -76,6 +86,9 @@ class OKUser(AbstractUser):
         default=Gender.NOT_GIVEN,
     )
 
+    # TODO uses phonenumber-field
+    # https://pypi.org/project/django-phonenumber-field/
+
     # phone (optional)
     phone_number = PhoneNumberField(blank=True, null=True)
     # mobile (optional)
@@ -87,8 +100,7 @@ class OKUser(AbstractUser):
     # (https://pypi.org/project/django-birthday/)
     birthday = models.DateField(default=date.fromisoformat('1990-09-01'))
 
-    # address (street, zipcode, location) mandatory for clients, but not for
-    # employees
+    # address (street, zipcode, location) mandatory
     street = models.CharField(null=True, max_length=95)
     house_number = models.IntegerField(null=True)
     zipcode = models.IntegerField(null=True, default=settings.ZIPCODE)
