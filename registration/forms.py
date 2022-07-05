@@ -17,15 +17,14 @@ class RegisterForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
-    """Form to register a user."""
+    """Form to register a profile."""
 
     email = forms.EmailField()
 
     class Meta:
-        """At the moment, the user only needs to provide an email address."""
+        """General data about the user, stored in the profile."""
 
         model = Profile
-        # TODO further personal Data needed
         fields = ('first_name', 'last_name', 'gender', 'phone_number',
                   'mobile_number', 'birthday', 'street', 'house_number',
                   'zipcode', 'city')

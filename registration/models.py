@@ -105,3 +105,10 @@ class Profile(models.Model):
     house_number = models.IntegerField(null=True)
     zipcode = models.IntegerField(null=True, default=settings.ZIPCODE)
     city = models.CharField(null=True, default=settings.CITY, max_length=35)
+
+    # was the profile validated by an employee
+    verified = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        """Represent OKUser by e-mail address."""
+        return self.okuser.email
