@@ -59,7 +59,7 @@ class OKUser(AbstractUser):
 
     def __str__(self) -> str:
         """Represent OKUser by e-mail address."""
-        return self.okuser.email
+        return self.email
 
 
 class Profile(models.Model):
@@ -106,4 +106,12 @@ class Profile(models.Model):
     city = models.CharField(null=True, default=settings.CITY, max_length=35)
 
     # was the profile validated by an employee
-    verified = models.BooleanField(default=False)
+    verified = models.BooleanField(
+        default=False,
+        help_text=_('The profile data was verified by showing the ID to an'
+                    ' employee.')
+    )
+
+    def __str__(self):
+        """Represent Profile by first and last name."""
+        return f'{self.first_name} {self.last_name}'
