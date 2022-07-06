@@ -25,8 +25,7 @@ SUCCESS_STRING = f'created user {USER["email"]}'
 
 def test_registration__1(browser):
     """It is possible to register with an unused email address."""
-    browser.open(REGISTER_URL)
-    browser.register_user(USER)
+    register_user(browser, USER)
     assert SUCCESS_STRING in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -36,9 +35,8 @@ def test_registration__2(browser):
     user = deepcopy(USER)
     User(email=user['email']).save()
 
-    browser.open(REGISTER_URL)
     with pytest.raises(HTTPError, match=r'.* 400.*'):
-        browser.register_user(user)
+        register_user(browser, user)
     assert f'address {user["email"]} already exists' in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -49,9 +47,8 @@ def test_registration__3(browser):
     user = deepcopy(USER)
     user['email'] = "example.com"
 
-    browser.open(REGISTER_URL)
     with pytest.raises(HTTPError, match=r'.* 400.*'):
-        browser.register_user(user)
+        register_user(browser, user)
     assert 'Enter a valid email address' in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -61,8 +58,7 @@ def test_registration__4(browser):
     user = deepcopy(USER)
     user['phone_number'] = '+49346112345'
     user['mobile_number'] = '015712345678'
-    browser.open(REGISTER_URL)
-    browser.register_user(user)
+    register_user(browser, user)
     assert SUCCESS_STRING in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -71,9 +67,8 @@ def test_registration__5(browser):
     """It is not possible to register with an invalid phone number."""
     user = deepcopy(USER)
     user['phone_number'] = '12345678'
-    browser.open(REGISTER_URL)
     with pytest.raises(HTTPError, match=r'.* 400.*'):
-        browser.register_user(user)
+        register_user(browser, user)
     assert 'Enter a valid phone number' in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -82,8 +77,32 @@ def test_registration_6(browser):
     """It is not possible to register without mandatory fields."""
     user = deepcopy(USER)
     user['first_name'] = None
-    browser.open(REGISTER_URL)
     with pytest.raises(HTTPError, match=r'.* 400.*'):
-        browser.register_user(user)
+        register_user(browser, user)
     assert 'This field is required' in browser.contents
     assert browser.url == REGISTER_URL
+
+
+def register_user(browser, user: dict):
+    """
+    Register a user defined by the given dictionary.
+
+    The entries of the user dictionary correspond to the fields defined
+    in models.py for user and profile.
+    """
+    browser.open(REGISTER_URL)
+    assert '/register/' in browser.url, \
+        f'Not on register page, URL is {browser.url}'
+
+    browser.getControl('Email').value = user['email']
+    browser.getControl('First name').value = user['first_name']
+    browser.getControl('Last name').value = user['last_name']
+    browser.getControl('Gender').value = user['gender']
+    browser.getControl('Phone number').value = user['phone_number']
+    browser.getControl('Mobile number').value = user['mobile_number']
+    browser.getControl('Birthday').value = user['birthday']
+    browser.getControl('Street').value = user['street']
+    browser.getControl('House number').value = user['house_number']
+    browser.getControl('Zipcode').value = user['zipcode']
+    browser.getControl('City').value = user['city']
+    browser.getControl('submit').click()

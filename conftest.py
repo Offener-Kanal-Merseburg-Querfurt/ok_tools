@@ -28,26 +28,3 @@ class Browser(zope.testbrowser.browser.Browser):
         self.getControl('Email address').value = email
         self.getControl('Password').value = password
         self.getControl('Log in').click()
-
-    def register_user(self, user: dict):
-        """
-        Register a user defined by the given dictionary.
-
-        The entries of the user dictionary correspond to the fields defined
-        in models.py for user and profile.
-        """
-        assert '/register/' in self.url, \
-            f'Not on register page, URL is {self.url}'
-
-        self.getControl('Email').value = user['email']
-        self.getControl('First name').value = user['first_name']
-        self.getControl('Last name').value = user['last_name']
-        self.getControl('Gender').value = user['gender']
-        self.getControl('Phone number').value = user['phone_number']
-        self.getControl('Mobile number').value = user['mobile_number']
-        self.getControl('Birthday').value = user['birthday']
-        self.getControl('Street').value = user['street']
-        self.getControl('House number').value = user['house_number']
-        self.getControl('Zipcode').value = user['zipcode']
-        self.getControl('City').value = user['city']
-        self.getControl('submit').click()
