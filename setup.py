@@ -7,6 +7,7 @@ setup(
     install_requires=[
         'Django>=4.0.5',
         'django-revproxy>=0.10.0',
+        'django-phonenumber-field[phonenumberslite]',
     ],
     extras_require={
         'test': [
