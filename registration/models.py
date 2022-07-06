@@ -57,6 +57,10 @@ class OKUser(AbstractUser):
     REQUIRED_FIELDS = []
     objects = UserManager()
 
+    def __str__(self) -> str:
+        """Represent OKUser by e-mail address."""
+        return self.okuser.email
+
 
 class Profile(models.Model):
     """
@@ -86,29 +90,20 @@ class Profile(models.Model):
         default=Gender.NOT_GIVEN,
     )
 
-    # TODO uses phonenumber-field
-    # https://pypi.org/project/django-phonenumber-field/
-
     # phone (optional)
     phone_number = PhoneNumberField(blank=True, null=True)
     # mobile (optional)
     mobile_number = PhoneNumberField(blank=True, null=True)
 
     # birthday
-    # TODO: alternativ BirthdayField ganz nett, weil get_upcoming_birthday(),
-    # aber vielleicht reicht auch DateField
-    # (https://pypi.org/project/django-birthday/)
     birthday = models.DateField(default=date.fromisoformat('1990-09-01'))
 
     # address (street, zipcode, location) mandatory
     street = models.CharField(null=True, max_length=95)
-    house_number = models.IntegerField(null=True)
-    zipcode = models.IntegerField(null=True, default=settings.ZIPCODE)
+    house_number = models.CharField(null=True, max_length=20)
+    zipcode = models.CharField(
+        null=True, default=settings.ZIPCODE, max_length=5)
     city = models.CharField(null=True, default=settings.CITY, max_length=35)
 
     # was the profile validated by an employee
     verified = models.BooleanField(default=False)
-
-    def __str__(self) -> str:
-        """Represent OKUser by e-mail address."""
-        return self.okuser.email

@@ -35,23 +35,24 @@ class RegisterView(generic.CreateView):
 
             # Does the user already exist
             if user_model.objects.filter(email=email):
-                return HttpResponseBadRequest(f'The e-mail address {email}'
-                                              ' already exists.')
+                return HttpResponseBadRequest(
+                    f'The e-mail address {email} already exists.')
 
             user = user_model(email=email)
             user.save()
-            profile = \
-                self.model(okuser=user,
-                           first_name=data['first_name'].lower(),
-                           last_name=data['last_name'].lower(),
-                           gender=data['gender'],
-                           phone_number=data['mobile_number'],
-                           mobile_number=data['phone_number'],
-                           birthday=data['birthday'],
-                           street=data['street'].lower(),
-                           house_number=data['house_number'],
-                           zipcode=data['zipcode'],
-                           city=data['city'])
+            profile = self.model(
+                okuser=user,
+                first_name=data['first_name'].lower(),
+                last_name=data['last_name'].lower(),
+                gender=data['gender'],
+                phone_number=data['mobile_number'],
+                mobile_number=data['phone_number'],
+                birthday=data['birthday'],
+                street=data['street'].lower(),
+                house_number=data['house_number'],
+                zipcode=data['zipcode'],
+                city=data['city'],
+            )
 
             profile.save()
             # return redirect('register_profile', okuser.id)
