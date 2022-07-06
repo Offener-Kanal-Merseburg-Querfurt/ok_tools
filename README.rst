@@ -24,7 +24,7 @@ Run the Tests using pytest::
 Run Server Localy
 =================
 
-To run the server localy you first need to specify a config file. This
+To run the server locally you first need to specify a config file. This
 configuration is ment for testing only and should not be used in any way for
 prouction due to security reasons.
 ::

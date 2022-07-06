@@ -62,8 +62,8 @@ class Profile(models.Model):
     """
     Model for a profil.
 
-    A profil stores further informations about a user. To every profil
-    belongs a user.
+    A profil stores further informations about a user. Every profil
+    belongs to a user.
     """
 
     # TODO auch so, dass kein OKUser existiert

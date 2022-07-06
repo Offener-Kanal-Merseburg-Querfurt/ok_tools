@@ -175,7 +175,7 @@ AUTH_USER_MODEL = 'registration.OKUser'
 AUTHENTICATION_BACKENDS = ['registration.backends.EmailBackend']
 
 # TODO config?
-# Phon Number Validation
+# Phone Number Validation
 PHONENUMBER_DEFAULT_REGION = 'DE'
 
 # Date format
