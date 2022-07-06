@@ -185,6 +185,19 @@ DATE_INPUT_FORMAT = '%d/%m/%Y'
 CITY = 'Merseburg'
 ZIPCODE = '06217'
 
+# email
+# send the mails to stdout
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = ''
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+
+# name of the OK
+OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

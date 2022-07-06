@@ -1,6 +1,6 @@
-# from django.contrib.auth import login_required
 from .forms import ProfileForm
 from .models import Profile
+from .email import send_auth_email
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -40,6 +40,7 @@ class RegisterView(generic.CreateView):
 
             user = user_model(email=email)
             user.save()
+            send_auth_email(email)
             profile = self.model(
                 okuser=user,
                 first_name=data['first_name'].lower(),
