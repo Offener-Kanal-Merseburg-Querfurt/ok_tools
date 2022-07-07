@@ -1,0 +1,9 @@
+[run]
+branch = True
+
+[report]
+precision=1
+#TODO später 100
+fail_under=89
+show_missing=True
+skip_covered=True
