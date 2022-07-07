@@ -31,7 +31,9 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path('profile/password_reset/',
-         PasswordResetView.as_view(), name='password_reset'),
+         PasswordResetView.as_view(),
+         name='password_reset'
+         ),
     path('profile/', include('django.contrib.auth.urls')),
     path('register/', RegisterView.as_view(), name='register'),
 ]
