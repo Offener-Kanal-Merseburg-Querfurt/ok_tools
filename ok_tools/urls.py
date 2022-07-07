@@ -17,12 +17,21 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
+from registration.views import PasswordResetConfirmView
+from registration.views import PasswordResetView
 from registration.views import RegisterView
 
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
+    path(
+        "profile/reset/<uidb64>/<token>/",
+        PasswordResetConfirmView.as_view(),
+        name="password_reset_confirm",
+    ),
+    path('profile/password_reset/',
+         PasswordResetView.as_view(), name='password_reset'),
     path('profile/', include('django.contrib.auth.urls')),
     path('register/', RegisterView.as_view(), name='register'),
 ]

@@ -2,9 +2,11 @@ from .email import send_auth_email
 from .forms import ProfileForm
 from .models import Profile
 from django.contrib.auth import get_user_model
+from django.contrib.auth import views as auth_views
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.views import generic
+import django.contrib.auth.forms
 import functools
 import logging
 
@@ -57,3 +59,29 @@ class RegisterView(generic.CreateView):
 
             profile.save()
             return HttpResponse(f'Successfully created user {user.email}')
+
+
+class PasswordResetView(auth_views.PasswordResetView):
+    """
+    Overwrite the get_form_class function.
+
+    Because otherwise get_form_class returns None. The reason for that
+    behavior is not known.
+    """
+
+    def get_form_class(self):
+        """Return PasswordResetForm explicitly."""
+        return django.contrib.auth.forms.PasswordResetForm
+
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    """
+    Overwrite the get_form_class function.
+
+    Because otherwise get_form_class returns None. The reason for that
+    behavior is not known.
+    """
+
+    def get_form_class(self):
+        """Return SetPasswordForm explicitly."""
+        return django.contrib.auth.forms.SetPasswordForm
