@@ -79,7 +79,7 @@ ROOT_URLCONF = 'ok_tools.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'registration/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -197,6 +197,9 @@ EMAIL_HOST_PASSWORD = ''
 # name of the OK
 OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
 
+# Which site should be seen after log in and log out
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 LOGGING = {
     'version': 1,

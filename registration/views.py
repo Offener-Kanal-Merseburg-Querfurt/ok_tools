@@ -33,7 +33,7 @@ class RegisterView(generic.CreateView):
             user_model = get_user_model()
             email = data['email'].lower()
 
-            # Does the user already exist
+            # Does the user already exist?
             if user_model.objects.filter(email=email):
                 return HttpResponseBadRequest(
                     f'The e-mail address {email} already exists.')
@@ -56,5 +56,4 @@ class RegisterView(generic.CreateView):
             )
 
             profile.save()
-            # return redirect('register_profile', okuser.id)
             return HttpResponse(f'Successfully created user {user.email}')
