@@ -14,3 +14,7 @@ static/
 # ides and editors
 .idea/
 .vscode/
+
+# local scripts
+manage
+pip

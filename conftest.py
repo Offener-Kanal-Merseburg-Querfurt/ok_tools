@@ -28,10 +28,3 @@ class Browser(zope.testbrowser.browser.Browser):
         self.getControl('Email address').value = email
         self.getControl('Password').value = password
         self.getControl('Log in').click()
-
-    def register_user(self, email):
-        """Register a user with the given email address."""
-        assert '/register/' in self.url, \
-            f'Not on register page, URL is {self.url}'
-        self.getControl('Email address').value = email
-        self.getControl('submit').click()
