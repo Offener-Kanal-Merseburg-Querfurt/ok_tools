@@ -1,4 +1,4 @@
-from .email import authenticate
+from .email import send_auth_mail
 from .forms import ProfileForm
 from .models import Profile
 from django.contrib.auth import get_user_model
@@ -42,7 +42,7 @@ class RegisterView(generic.CreateView):
 
             user = user_model(email=email)
             user.save()
-            authenticate(email)
+            send_auth_mail(email)
             profile = self.model(
                 okuser=user,
                 first_name=data['first_name'].lower(),

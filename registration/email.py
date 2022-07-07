@@ -2,39 +2,17 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
-from django.core.mail import send_mail
 from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.utils.translation import gettext_lazy as _
 import logging
 
 
 UserModel = get_user_model()
 
 
-def send_auth_email(email):
-    """Send an email with a link to set the password."""
-    SUBJECT = _('Welcome to the Offener Kanal!')
-    MESSAGE: str = (
-        _('Thank you for your registration. ') +
-        _('Please finish your registration by clicking on the following'
-          ' link and choose a password.\n\n') +
-        'THE LINK\n\n' +
-        _('Best regards\n') +
-        settings.OK_NAME
-    )
-
-    send_mail(
-        subject=SUBJECT,
-        message=MESSAGE,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[email]
-    )
-
-
-def _send_token_mail(
+def _send_auth_mail(
     subject_template_name,
     email_template_name,
     context,
@@ -61,7 +39,7 @@ def _send_token_mail(
     email_message.send()
 
 
-def authenticate(
+def send_auth_mail(
     email,
     subject_template_name="registration/password_reset_subject.txt",
     email_template_name="registration/password_reset_email.html",
@@ -93,7 +71,7 @@ def authenticate(
         "protocol": "https" if use_https else "http",
         **(extra_email_context or {}),
     }
-    _send_token_mail(
+    _send_auth_mail(
         subject_template_name,
         email_template_name,
         context,
