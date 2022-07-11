@@ -3,7 +3,6 @@ branch = True
 
 [report]
 precision=1
-#TODO später 100
-fail_under=89
+fail_under=100
 show_missing=True
 skip_covered=True

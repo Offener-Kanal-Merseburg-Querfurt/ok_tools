@@ -16,10 +16,6 @@ class EmailBackend(ModelBackend):
             # TODO logging messages should be delivered to front end
             logging.error(f'User with E-Mail {username} does not exist.')
             raise
-        except user_model.MutlipleObjectsReturned:
-            logging.error(
-                f'There are more then one user with the E-Mail {username}.')
-            raise
 
         if user.check_password(password) and self.user_can_authenticate(user):
             return user

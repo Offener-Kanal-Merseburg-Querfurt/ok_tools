@@ -18,7 +18,6 @@ def _send_auth_mail(
     context,
     from_email,
     to_email,
-    html_email_template_name=None,
 ):
     """
     Send a django.core.mail.EmailMultiAlternatives to `to_email`.
@@ -32,9 +31,11 @@ def _send_auth_mail(
 
     email_message = EmailMultiAlternatives(
         subject, body, from_email, [to_email])
-    if html_email_template_name is not None:
-        html_email = loader.render_to_string(html_email_template_name, context)
-        email_message.attach_alternative(html_email, "text/html")
+    # not relevant yet because no template is used
+
+    # if html_email_template_name is not None:
+    #   html_email = loader.render_to_string(html_email_template_name, context)
+    #     email_message.attach_alternative(html_email, "text/html")
 
     email_message.send()
 
@@ -45,8 +46,7 @@ def send_auth_mail(
     email_template_name="registration/password_reset_email.html",
     use_https=False,
     token_generator=default_token_generator,
-    from_email=None,
-    html_email_template_name=None,
+    from_email=settings.EMAIL_HOST_USER,
     extra_email_context=None,
 ):
     """Generate link for setting password and send it to the user."""
@@ -55,10 +55,6 @@ def send_auth_mail(
     except UserModel.DoesNotExist:
         # TODO logging messages should be delivered to front end
         logging.error(f'User with E-Mail {email} does not exist.')
-        raise
-    except UserModel.MutlipleObjectsReturned:
-        logging.error(
-            f'There are more then one user with the E-Mail {email}.')
         raise
 
     context = {
@@ -77,5 +73,4 @@ def send_auth_mail(
         context,
         from_email,
         email,
-        html_email_template_name=html_email_template_name,
     )
