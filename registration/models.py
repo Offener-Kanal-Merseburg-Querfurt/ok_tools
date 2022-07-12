@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from phonenumber_field.modelfields import PhoneNumberField
 
 
 class UserManager(BaseUserManager):
@@ -91,10 +90,11 @@ class Profile(models.Model):
         default=Gender.NOT_GIVEN,
     )
 
+    # phone number as char field due to missing support from zope.testbrowser
     # phone (optional)
-    phone_number = PhoneNumberField(blank=True, null=True)
+    phone_number = models.CharField(blank=True, null=True, max_length=30)
     # mobile (optional)
-    mobile_number = PhoneNumberField(blank=True, null=True)
+    mobile_number = models.CharField(blank=True, null=True, max_length=30)
 
     # birthday
     birthday = models.DateField(default=date.fromisoformat('1990-09-01'))

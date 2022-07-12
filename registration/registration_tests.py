@@ -14,14 +14,14 @@ PW_SET_URL = r'http://localhost:8000/profile/reset/.*/'
 PWD = 'testpassword'
 
 
-def test_registration__1(browser, user):
+def test_registration__01(browser, user):
     """It is possible to register with an unused email address."""
     register_user(browser, user)
     assert success_string(user['email']) in browser.contents
     assert browser.url == REGISTER_URL
 
 
-def test_registration__2(browser, user):
+def test_registration__02(browser, user):
     """It is not possible to register with an used email address."""
     User(email=user['email']).save()
 
@@ -32,7 +32,7 @@ def test_registration__2(browser, user):
 
 
 # TODO how to check that the register form is still there
-def test_registration__3(browser, user):
+def test_registration__03(browser, user):
     """It is not possible to register with an invalid email address."""
     user['email'] = "example.com"
 
@@ -42,7 +42,7 @@ def test_registration__3(browser, user):
     assert browser.url == REGISTER_URL
 
 
-def test_registration__4(browser, user):
+def test_registration__04(browser, user):
     """It is possible to register with a valid phone number."""
     user['phone_number'] = '+49346112345'
     user['mobile_number'] = '015712345678'
@@ -51,16 +51,14 @@ def test_registration__4(browser, user):
     assert browser.url == REGISTER_URL
 
 
-def test_registration__5(browser, user):
-    """It is not possible to register with an invalid phone number."""
-    user['phone_number'] = '12345678'
-    with pytest.raises(HTTPError, match=r'.* 400.*'):
-        register_user(browser, user)
-    assert 'Enter a valid phone number' in browser.contents
-    assert browser.url == REGISTER_URL
+def test_registration__05(db, user):
+    # db is needed for data base access in send_auth_mail
+    """It is not possible to send an authentication mail to an unknown user."""
+    with pytest.raises(User.DoesNotExist):
+        send_auth_mail(user['email'])
 
 
-def test_registration__6(browser, user):
+def test_registration__06(browser, user):
     """It is not possible to register without mandatory fields."""
     user['first_name'] = None
     with pytest.raises(HTTPError, match=r'.* 400.*'):
@@ -69,20 +67,20 @@ def test_registration__6(browser, user):
     assert browser.url == REGISTER_URL
 
 
-def test_registration__7(browser, mail_outbox, user):
+def test_registration__07(browser, mail_outbox, user):
     """After the registration an email gets send."""
     register_user(browser, user)
     assert 1 == len(mail_outbox)
     assert get_link_url_from_email(mail_outbox, PW_SET_URL)
 
 
-def test_registration__8():
+def test_registration__08():
     """It is not possible to register without an email on model base."""
     with pytest.raises(ValueError, match=r'.*email must be set.*'):
         User.objects.create_user(email=None)
 
 
-def test_registration__9(user):
+def test_registration__09(user):
     """A superuser needs to be a staff."""
     with pytest.raises(ValueError, match=r'.*must have is_staff=True.*'):
         User.objects.create_superuser(
@@ -159,13 +157,6 @@ def test_registration__15(browser, user, mail_outbox):
     assert get_link_url_from_email(mail_outbox, PW_SET_URL)
 
 
-def test_registration__16(db, user):
-    # db is needed for data base access in send_auth_mail
-    """It is not possible to send an authentication mail to an unknown user."""
-    with pytest.raises(User.DoesNotExist):
-        send_auth_mail(user['email'])
-
-
 def test_registration__17(browser, user):
     """Log in with wrong password."""
     testuser = User.objects.create_user(email=user['email'], password=PWD)
@@ -201,7 +192,7 @@ def register_user(browser, user: dict):
     browser.getControl('House number').value = user['house_number']
     browser.getControl('Zipcode').value = user['zipcode']
     browser.getControl('City').value = user['city']
-    browser.getControl('submit').click()
+    browser.getControl('Register').click()
 
 
 def log_in(browser, email, password):
