@@ -7,7 +7,8 @@ setup(
     install_requires=[
         'Django>=4.0.5',
         'django-revproxy>=0.10.0',
-        'django-phonenumber-field[phonenumberslite]',
+        'django-crispy-forms',
+        'django-bootstrap-datepicker-plus',
     ],
     extras_require={
         'test': [

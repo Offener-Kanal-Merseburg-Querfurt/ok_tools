@@ -150,7 +150,7 @@ def test_registration__15(browser, user, mail_outbox):
     log_in(browser, user['email'], password=PWD)
     assert f'Hi {user["email"]}!' in browser.contents
 
-    browser.getLink('Reset Password').click()
+    browser.getLink('Change Password').click()
     browser.getControl('Email').value = user['email']
     browser.getControl('Send').click()
     assert 1 == len(mail_outbox)

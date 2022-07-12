@@ -54,7 +54,8 @@ DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
 INSTALLED_APPS = [
     'registration',
 
-    'phonenumber_field',
+    'crispy_forms',
+    'bootstrap_datepicker_plus',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -87,6 +88,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'registration.context_processors.ok_name'
             ],
         },
     },
@@ -179,7 +181,7 @@ AUTHENTICATION_BACKENDS = ['registration.backends.EmailBackend']
 PHONENUMBER_DEFAULT_REGION = 'DE'
 
 # Date format
-DATE_INPUT_FORMAT = '%d/%m/%Y'
+DATE_INPUT_FORMATS = '%d.%m.%Y'
 
 # Default city and zipcode for Address
 CITY = 'Merseburg'
@@ -200,6 +202,9 @@ OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
 # Which site should be seen after log in and log out
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# bootstrap
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGGING = {
     'version': 1,
