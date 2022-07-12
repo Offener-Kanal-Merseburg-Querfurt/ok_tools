@@ -71,7 +71,8 @@ class Profile(models.Model):
     """
 
     # TODO auch so, dass kein OKUser existiert
-    okuser = models.OneToOneField(OKUser, on_delete=models.CASCADE)
+    okuser = models.OneToOneField(
+        OKUser, on_delete=models.CASCADE, null=True, blank=True)
 
     first_name = models.CharField(blank=False, null=True, max_length=150)
     last_name = models.CharField(blank=False, null=True, max_length=150)

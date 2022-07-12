@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.forms.widgets import DateInput
 
 
-class RegisterForm(forms.ModelForm):
+class RegisterForm(forms.ModelForm, ):
     """Form to register a user."""
 
     class Meta:
