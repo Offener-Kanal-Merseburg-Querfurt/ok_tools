@@ -94,6 +94,10 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATE_CONTEXT_PROCESSORS = [
+    'registration.context_processors.ok_name',
+]
+
 WSGI_APPLICATION = 'ok_tools.wsgi.application'
 
 
@@ -209,6 +213,12 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'timestamp': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'file': {
             'level': DJANGO_LOG_LEVEL,
@@ -219,8 +229,8 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': DJANGO_LOG_LEVEL,
+            'level': DJANGO_LOG_LEVEL,
+            'propagate': True,
         },
     },
 }

@@ -10,7 +10,8 @@ User = get_user_model()
 
 REGISTER_URL = 'http://localhost/register/'
 LOGIN_URL = 'http://localhost:8000/profile/login/'
-PW_SET_URL = r'http://localhost:8000/profile/reset/.*/'
+AUTH_URL = r'http://localhost(:8000)?/profile/reset/.*/'
+PWD_RESET_URL = 'http://localhost/profile/password_reset/'
 PWD = 'testpassword'
 
 
@@ -71,7 +72,7 @@ def test_registration__07(browser, mail_outbox, user):
     """After the registration an email gets send."""
     register_user(browser, user)
     assert 1 == len(mail_outbox)
-    assert get_link_url_from_email(mail_outbox, PW_SET_URL)
+    assert get_link_url_from_email(mail_outbox, AUTH_URL)
 
 
 def test_registration__08():
@@ -131,7 +132,7 @@ def test_registration__14(browser, mail_outbox, user):
     """A user can set a password after registration."""
     register_user(browser, user)
     assert 1 == len(mail_outbox)
-    pw_url = get_link_url_from_email(mail_outbox, PW_SET_URL)
+    pw_url = get_link_url_from_email(mail_outbox, AUTH_URL)
 
     browser.open(pw_url)
     browser.getControl('New password:').value = PWD
@@ -154,7 +155,7 @@ def test_registration__15(browser, user, mail_outbox):
     browser.getControl('Email').value = user['email']
     browser.getControl('Send').click()
     assert 1 == len(mail_outbox)
-    assert get_link_url_from_email(mail_outbox, PW_SET_URL)
+    assert get_link_url_from_email(mail_outbox, AUTH_URL)
 
 
 def test_registration__17(browser, user):
@@ -165,6 +166,27 @@ def test_registration__17(browser, user):
     log_in(browser, user['email'], password='wrongpassword')
     assert '/profile/login' in browser.url
     assert 'enter a correct email address and password' in browser.contents
+
+
+def test_registration__18(db, user):
+    """It is not possible to send an email to someone without Profile."""
+    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser.save()
+
+    with pytest.raises(Profile.DoesNotExist):
+        send_auth_mail(user['email'])
+
+
+def test_registration__19(browser, user, mail_outbox):
+    """It is possible to set a new password using email."""
+    # register user and set password
+    test_registration__14(browser, mail_outbox, user)
+    request_pwd_reset(browser, user)
+
+    assert 2 == len(mail_outbox)
+    assert get_link_url_from_email(mail_outbox, AUTH_URL)
+    assert 'password change' in mail_outbox[-1].body
+    assert user['first_name'] in mail_outbox[-1].body
 
 
 """Helper functions"""
@@ -204,6 +226,16 @@ def log_in(browser, email, password):
     browser.getControl('Email').value = email
     browser.getControl('Password').value = password
     browser.getControl('Log In').click()
+
+
+def request_pwd_reset(browser, user):
+    """Request an email to reset the password."""
+    browser.open(PWD_RESET_URL)
+    assert PWD_RESET_URL in browser.url
+    assert 'Change Password' in browser.contents
+
+    browser.getControl('Email').value = user['email']
+    browser.getControl('Send').click()
 
 
 def get_link_url_from_email(mail_outbox, pattern: str) -> str:

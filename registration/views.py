@@ -1,6 +1,8 @@
 from .email import send_auth_mail
+from .forms import PasswordResetForm
 from .forms import ProfileForm
 from .models import Profile
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
 from django.http import HttpResponse
@@ -9,6 +11,9 @@ from django.views import generic
 import django.contrib.auth.forms
 import functools
 import logging
+
+
+logger = logging.getLogger('djangp')
 
 
 class RegisterView(generic.CreateView):
@@ -41,7 +46,7 @@ class RegisterView(generic.CreateView):
 
         user = user_model.objects.create_user(email=email)
         user.save()
-        send_auth_mail(email)
+
         profile = self.model(
             okuser=user,
             first_name=data['first_name'].lower(),
@@ -55,8 +60,9 @@ class RegisterView(generic.CreateView):
             zipcode=data['zipcode'],
             city=data['city'],
         )
-
         profile.save()
+
+        send_auth_mail(email)
         return HttpResponse(f'Successfully created user {user.email}')
 
 
@@ -68,9 +74,13 @@ class PasswordResetView(auth_views.PasswordResetView):
     behavior is not known.
     """
 
+    form_class = PasswordResetForm
+
+    extra_email_context = {'ok_name': settings.OK_NAME}
+
     def get_form_class(self):
         """Return PasswordResetForm explicitly."""
-        return django.contrib.auth.forms.PasswordResetForm
+        return self.form_class
 
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
@@ -78,7 +88,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     Overwrite the get_form_class function.
 
     Because otherwise get_form_class returns None. The reason for that
-    behavior is not known.
+    behaviost_name']r is not known.
     """
 
     def get_form_class(self):
