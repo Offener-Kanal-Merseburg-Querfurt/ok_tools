@@ -135,7 +135,7 @@ def test_registration__14(browser, mail_outbox, user):
     pw_url = get_link_url_from_email(mail_outbox, AUTH_URL)
 
     browser.open(pw_url)
-    browser.getControl('New password:').value = PWD
+    browser.getControl('New password', index=0).value = PWD
     browser.getControl('confirmation').value = PWD
     browser.getControl('Change').click()
 

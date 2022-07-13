@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content%}
-<h1>Register</h1>
+<h1>{% blocktranslate %}Register{% endblocktranslate %}</h1>
 
 {% crispy form %}
 {% endblock content%}

@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 import logging
 
 
@@ -29,9 +30,10 @@ class RegisterForm(forms.ModelForm, ):
 class ProfileForm(forms.ModelForm):
     """Form to register a profile."""
 
-    email = forms.EmailField()
+    email = forms.EmailField(label=_('Email address'))
 
     birthday = forms.DateField(
+        label=_('Birthday'),
         input_formats=[settings.DATE_INPUT_FORMATS],
         widget=DatePickerInput(format=settings.DATE_INPUT_FORMATS)
     )
@@ -51,7 +53,7 @@ class ProfileForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = 'register'
 
-        self.helper.form_class = 'form-horizontal'  # form-control
+        self.helper.form_class = 'form-horizontal'
 
         self.helper.layout = Layout(
             'email',
@@ -66,7 +68,7 @@ class ProfileForm(forms.ModelForm):
             'zipcode',
             'city',
             ButtonHolder(
-                Submit('submit', 'Register'),
+                Submit('submit', _('Register')),
             )
         )
 

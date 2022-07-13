@@ -73,8 +73,10 @@ class Profile(models.Model):
     okuser = models.OneToOneField(
         OKUser, on_delete=models.CASCADE, null=True, blank=True)
 
-    first_name = models.CharField(blank=False, null=True, max_length=150)
-    last_name = models.CharField(blank=False, null=True, max_length=150)
+    first_name = models.CharField(
+        _('first name'), blank=False, null=True, max_length=150)
+    last_name = models.CharField(
+        _('last name'), blank=False, null=True, max_length=150)
 
     class Gender(models.TextChoices):
         """The gender of the user."""
@@ -85,6 +87,7 @@ class Profile(models.Model):
         DIVERSE = 'd', _('Diverse')
 
     gender = models.CharField(
+        _('gender'),
         max_length=4,
         choices=Gender.choices,
         default=Gender.NOT_GIVEN,
@@ -92,19 +95,24 @@ class Profile(models.Model):
 
     # phone number as char field due to missing support from zope.testbrowser
     # phone (optional)
-    phone_number = models.CharField(blank=True, null=True, max_length=30)
+    phone_number = models.CharField(
+        _('phone number'), blank=True, null=True, max_length=30)
     # mobile (optional)
-    mobile_number = models.CharField(blank=True, null=True, max_length=30)
+    mobile_number = models.CharField(
+        _('mobile number'), blank=True, null=True, max_length=30)
 
     # birthday
-    birthday = models.DateField(default=date.fromisoformat('1990-09-01'))
+    birthday = models.DateField(
+        _('birthday'), default=date.fromisoformat('1990-09-01'))
 
     # address (street, zipcode, location) mandatory
-    street = models.CharField(null=True, max_length=95)
-    house_number = models.CharField(null=True, max_length=20)
+    street = models.CharField(_('street'), null=True, max_length=95)
+    house_number = models.CharField(
+        _('house number'), null=True, max_length=20)
     zipcode = models.CharField(
-        null=True, default=settings.ZIPCODE, max_length=5)
-    city = models.CharField(null=True, default=settings.CITY, max_length=35)
+        _('zipcode'), null=True, default=settings.ZIPCODE, max_length=5)
+    city = models.CharField(
+        _('city'), null=True, default=settings.CITY, max_length=35)
 
     # was the profile validated by an employee
     verified = models.BooleanField(

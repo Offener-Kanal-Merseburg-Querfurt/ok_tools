@@ -1,0 +1,288 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-14 10:01+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: registration/admin.py:19 registration/admin.py:27
+msgid "E-Mail address"
+msgstr "E-Mail-Adresse"
+
+#: registration/admin.py:22 registration/admin.py:30
+msgid "Password"
+msgstr "Passwort"
+
+#: registration/forms.py:33
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: registration/forms.py:36
+msgid "Birthday"
+msgstr "Geburtstag"
+
+#: registration/forms.py:71 registration/templates/home.html:15
+#: registration/templates/registration/register.html:7
+msgid "Register"
+msgstr "Registrieren"
+
+#: registration/models.py:17
+msgid "The given email must be set"
+msgstr ""
+
+#: registration/models.py:35
+msgid "Superuser must have is_staff=True."
+msgstr ""
+
+#: registration/models.py:37
+msgid "Superuser must have is_superuser=True."
+msgstr ""
+
+#: registration/models.py:54
+msgid "email address"
+msgstr "E-Mail-Adresse"
+
+#: registration/models.py:77
+msgid "first name"
+msgstr "Vorname"
+
+#: registration/models.py:79
+#, fuzzy
+#| msgid "last_name"
+msgid "last name"
+msgstr "Nachname"
+
+#: registration/models.py:84
+msgid "Not Given"
+msgstr "Nicht angegeben"
+
+#: registration/models.py:85
+msgid "Male"
+msgstr "Männlich"
+
+#: registration/models.py:86
+msgid "Female"
+msgstr "Weiblich"
+
+#: registration/models.py:87
+msgid "Diverse"
+msgstr "Divers"
+
+#: registration/models.py:90
+msgid "gender"
+msgstr "Geschlecht"
+
+#: registration/models.py:99
+msgid "phone number"
+msgstr "Telefonnummer"
+
+#: registration/models.py:102
+msgid "mobile number"
+msgstr "Handynummer"
+
+#: registration/models.py:106
+msgid "birthday"
+msgstr "Geburtstag"
+
+#: registration/models.py:109
+msgid "street"
+msgstr "Straße"
+
+#: registration/models.py:111
+msgid "house number"
+msgstr "Hausnummer"
+
+#: registration/models.py:113
+msgid "zipcode"
+msgstr "Postleitzahl"
+
+#: registration/models.py:115
+msgid "city"
+msgstr "Stadt"
+
+#: registration/models.py:120
+msgid "The profile data was verified by showing the ID to an employee."
+msgstr "Das Profil wurde unter Vorlage eines Personalausweises verifiziert."
+
+#: registration/templates/home.html:10
+msgid "Log Out"
+msgstr "Abmelden"
+
+#: registration/templates/home.html:11
+#: registration/templates/registration/password_reset_form.html:7
+msgid "Change Password"
+msgstr "Passwort ändern"
+
+#: registration/templates/home.html:13
+msgid "You are not logged in"
+msgstr "Sie sind nicht angemeldet."
+
+#: registration/templates/home.html:14
+#: registration/templates/registration/login.html:9
+#: registration/templates/registration/login.html:13
+#: registration/templates/registration/password_reset_done.html:12
+msgid "Log In"
+msgstr "Anmelden"
+
+#: registration/templates/registration/login.html:14
+msgid "Forgot Password"
+msgstr "Passwort vergessen"
+
+#: registration/templates/registration/password_reset_complete.html:5
+#: registration/templates/registration/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr "Passwort erfolgreich zurückgesetzt"
+
+#: registration/templates/registration/password_reset_complete.html:9
+msgid "Your new password has been set. You can log in now:"
+msgstr "Ihr neues Passwort wurde zurückgesetzt. Sie könen sich jetzt anmelden:"
+
+#: registration/templates/registration/password_reset_complete.html:9
+msgid "log in page"
+msgstr "Anmeldeseite"
+
+#: registration/templates/registration/password_reset_confirm.html:6
+msgid "Enter new password"
+msgstr "Neues Passwort"
+
+#: registration/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password!"
+msgstr "Wählen Sie ein neues Passwort!"
+
+#: registration/templates/registration/password_reset_confirm.html:16
+msgid "Change password"
+msgstr "Passwort ändern"
+
+#: registration/templates/registration/password_reset_confirm.html:21
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Der Link zum zurücksetzen des Passwortes ist ungütlig. Dies könnte daran "
+"liegen, dass dieser bereits genutzt wurde. Bitte fordern Sie einen neuen an."
+
+#: registration/templates/registration/password_reset_done.html:5
+msgid "Email Sent"
+msgstr "E-Mail gesendet "
+
+#: registration/templates/registration/password_reset_done.html:8
+msgid "Check your inbox."
+msgstr "Überprüfen Sie ihr E-Mail-Postfach."
+
+#: registration/templates/registration/password_reset_done.html:9
+msgid ""
+"If your given email is registered, we've emailed you instructions for "
+"setting your password. You should receive the email shortly!"
+msgstr ""
+"Wenn sie eine registrierte E-Mail-Adresse angegeben haben, haben wir Ihnen "
+"eine E-Mail mit weiteren Anweisungen geschickt. Diese sollte in Kürze "
+"eintreffen."
+
+#: registration/templates/registration/password_reset_done.html:11
+msgid "Home"
+msgstr "Home"
+
+#: registration/templates/registration/password_reset_email.html:3
+#, python-format
+msgid ""
+"\n"
+"Hallo%(first_name)s,\n"
+msgstr ""
+"\n"
+"Hallo%(first_name)s,\n"
+
+#: registration/templates/registration/password_reset_email.html:7
+#, python-format
+msgid ""
+"\n"
+"You're receiving this email because you requested a password change for your "
+"user account at %(ok_name)s.\n"
+"Please go to the following page and choose a new password:\n"
+msgstr ""
+"\n"
+"Sie erhatlen diese E-Mail, weil Sie Ihr Passowrt bei %(ok_name)s "
+"ändernwollen.\n"
+"Bitte nutzen Sie den folgenden Link um ein neues Passwort zu wählen:\n"
+
+#: registration/templates/registration/password_reset_email.html:15
+#, python-format
+msgid ""
+"\n"
+"Your username, in case you’ve forgotten: %(user.get_username)s\n"
+msgstr ""
+"\n"
+"Ihr Benutzernahme lautet: %(user.get_username)s\n"
+
+#: registration/templates/registration/password_reset_email.html:19
+#: registration/templates/registration/password_set_email_customized.html:16
+#, python-format
+msgid ""
+"\n"
+"Have a great day,\n"
+"\n"
+"The %(ok_name)s team\n"
+msgstr ""
+"\n"
+"Mit freundlichen Grüßen,\n"
+"\n"
+"Ihr %(ok_name)s-Team\n"
+
+#: registration/templates/registration/password_reset_form.html:8
+msgid ""
+"Enter your email address below, and we'll send you a link so you can set a "
+"new password."
+msgstr ""
+"Bitte geben Sie Ihre E-Mail-Adresse an. Wir werden Ihnen einen Link "
+"zusenden, mit dem Sie Ihr Passwort zurücksetzen können."
+
+#: registration/templates/registration/password_reset_form.html:13
+msgid "Send email"
+msgstr "Senden"
+
+#: registration/templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset for %(ok_name)s"
+msgstr "Ihr neues Passwort für %(ok_name)s"
+
+#: registration/templates/registration/password_set_email_customized.html:3
+#, python-format
+msgid ""
+"\n"
+"Hallo %(first_name)s,\n"
+msgstr ""
+"\n"
+"Hallo %(first_name)s,\n"
+
+#: registration/templates/registration/password_set_email_customized.html:7
+#, python-format
+msgid ""
+"\n"
+"You're receiving this email because you've registered yourself at "
+"%(ok_name)s.\n"
+"Please go to the following page and set your password:\n"
+msgstr ""
+"\n"
+"Sie erhalten diese E-Mail, weil Sie sich beim %(ok_name)s registriert "
+"haben.\n"
+"Bitte nutzen Sie den folgenden Link um ein Passwort zu wählen.\n"
+
+#: registration/templates/registration/password_set_subject_customized.txt:2
+#, python-format
+msgid "Welcome to the %(ok_name)s"
+msgstr "Wilkommen beim %(ok_name)s"
+
+#~ msgid "Change my password"
+#~ msgstr "Passwort andern"

@@ -66,6 +66,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -88,15 +89,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'registration.context_processors.ok_name'
+                'registration.context_processors.ok_name',
             ],
         },
     },
 ]
 
-TEMPLATE_CONTEXT_PROCESSORS = [
-    'registration.context_processors.ok_name',
-]
 
 WSGI_APPLICATION = 'ok_tools.wsgi.application'
 
@@ -152,6 +150,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = [
+    BASE_DIR / 'registration/locale'
+]
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -202,6 +204,7 @@ EMAIL_HOST_PASSWORD = ''
 
 # name of the OK
 OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
+OK_NAME_SHORT = 'OK Merseburg'
 
 # Which site should be seen after log in and log out
 LOGIN_REDIRECT_URL = 'home'

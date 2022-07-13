@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
 {% block title %}Home{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
   <p>Hi {{ user.email }}!</p>
-  <p><a class="btn btn-outline-primary" href="{% url 'logout' %}">Log Out</a><p>
-  <p><a class="btn btn-outline-primary" href="{% url 'password_reset' %}">Change Password</a></p>
+  <p><a class="btn btn-outline-primary" href="{% url 'logout' %}">{%translate 'Log Out'%}</a><p>
+  <p><a class="btn btn-outline-primary" href="{% url 'password_reset' %}">{%translate 'Change Password'%}</a></p>
 {% else %}
-  <p>You are not logged in</p>
-  <p><a class="btn btn-outline-primary" href="{% url 'login' %}">Log In</a></p>
-  <p><a class="btn btn-outline-primary" href="{% url 'register' %}">Register</a></p>
+  <p>{% translate 'You are not logged in' %}</p>
+  <p><a class="btn btn-outline-primary" href="{% url 'login' %}">{%translate 'Log In'%}</a></p>
+  <p><a class="btn btn-outline-primary" href="{% url 'register' %}">{%translate 'Register'%}</a></p>
 {% endif %}
 {% endblock %}
