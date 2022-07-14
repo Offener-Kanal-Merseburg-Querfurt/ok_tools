@@ -204,7 +204,6 @@ EMAIL_HOST_PASSWORD = ''
 
 # name of the OK
 OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
-OK_NAME_SHORT = 'OK Merseburg'
 
 # Which site should be seen after log in and log out
 LOGIN_REDIRECT_URL = 'home'

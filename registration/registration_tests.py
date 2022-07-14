@@ -1,6 +1,7 @@
 from .email import send_auth_mail
 from .models import Profile
 from django.contrib.auth import get_user_model
+from unittest.mock import patch
 from urllib.error import HTTPError
 import pytest
 import re
@@ -187,6 +188,22 @@ def test_registration__19(browser, user, mail_outbox):
     assert get_link_url_from_email(mail_outbox, AUTH_URL)
     assert 'password change' in mail_outbox[-1].body
     assert user['first_name'] in mail_outbox[-1].body
+
+
+def test_registration__20(db, browser, user):
+    """It is not possible to send a password reset to an unknown user."""
+    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser.save()
+
+    log_in(browser, user['email'], password=PWD)
+    assert f'Hi {user["email"]}!' in browser.contents
+
+    browser.getLink('Change Password').click()
+    browser.getControl('Email').value = user['email']
+    with patch('registration.models.OKUser.objects.get') as mock:
+        mock.side_effect = User.DoesNotExist()
+        with pytest.raises(HTTPError, match=r'.*500.*'):
+            browser.getControl('Send').click()
 
 
 """Helper functions"""
