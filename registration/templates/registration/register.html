@@ -1,7 +1,10 @@
-<h1>Register</h1>
+{% extends 'base.html' %}
 
-<form action="{% url 'register' %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="submit" id="submit"/>
-</form>
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content%}
+<h1>{% blocktranslate %}Register{% endblocktranslate %}</h1>
+
+{% crispy form %}
+{% endblock content%}

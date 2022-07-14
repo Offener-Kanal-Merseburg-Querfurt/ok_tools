@@ -47,7 +47,7 @@ def user() -> dict:
         "gender": "m",
         "phone_number": None,
         "mobile_number": None,
-        "birthday": "05/09/1989",
+        "birthday": "05.09.1989",
         "street": "secondary street",
         "house_number": "1",
         "zipcode": "12345",

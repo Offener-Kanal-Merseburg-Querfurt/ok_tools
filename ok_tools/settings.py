@@ -54,7 +54,8 @@ DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
 INSTALLED_APPS = [
     'registration',
 
-    'phonenumber_field',
+    'crispy_forms',
+    'bootstrap_datepicker_plus',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,6 +66,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -87,10 +89,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'registration.context_processors.ok_name',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'ok_tools.wsgi.application'
 
@@ -146,6 +150,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = [
+    BASE_DIR / 'registration/locale'
+]
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -179,7 +187,7 @@ AUTHENTICATION_BACKENDS = ['registration.backends.EmailBackend']
 PHONENUMBER_DEFAULT_REGION = 'DE'
 
 # Date format
-DATE_INPUT_FORMAT = '%d/%m/%Y'
+DATE_INPUT_FORMATS = '%d.%m.%Y'
 
 # Default city and zipcode for Address
 CITY = 'Merseburg'
@@ -201,9 +209,18 @@ OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
+# bootstrap
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'timestamp': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        }
+    },
     'handlers': {
         'file': {
             'level': DJANGO_LOG_LEVEL,
@@ -214,8 +231,8 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': DJANGO_LOG_LEVEL,
+            'level': DJANGO_LOG_LEVEL,
+            'propagate': True,
         },
     },
 }

@@ -1,3 +1,4 @@
+from .models import Profile
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -9,6 +10,7 @@ from django.utils.http import urlsafe_base64_encode
 import logging
 
 
+logger = logging.getLogger('django')
 UserModel = get_user_model()
 
 
@@ -42,8 +44,8 @@ def _send_auth_mail(
 
 def send_auth_mail(
     email,
-    subject_template_name="registration/password_reset_subject.txt",
-    email_template_name="registration/password_reset_email.html",
+    subject_template_name="registration/password_set_subject_customized.txt",
+    email_template_name="registration/password_set_email_customized.html",
     use_https=False,
     token_generator=default_token_generator,
     from_email=settings.EMAIL_HOST_USER,
@@ -52,15 +54,20 @@ def send_auth_mail(
     """Generate link for setting password and send it to the user."""
     try:
         user = UserModel.objects.get(Q(email__iexact=email))
+        profile = Profile.objects.get(okuser=user)
     except UserModel.DoesNotExist:
         # TODO logging messages should be delivered to front end
-        logging.error(f'User with E-Mail {email} does not exist.')
+        logger.error(f'User with E-Mail {email} does not exist.')
+        raise
+    except Profile.DoesNotExist:
+        logger.error(f'Profile for user {email} does not exist.')
         raise
 
     context = {
+        "first_name": profile.first_name,
         "email": email,
-        "domain": 'localhost:8000',  # TODO nicht hartcodieren
-        "site_name": settings.OK_NAME,
+        "domain": 'localhost',  # TODO nicht hartcodieren
+        "ok_name": settings.OK_NAME,
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "user": user,
         "token": token_generator.make_token(user),

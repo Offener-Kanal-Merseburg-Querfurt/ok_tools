@@ -30,3 +30,10 @@ prouction due to security reasons.
 ::
 
     OKTOOLS_CONFIG_FILE=test.cfg python manage.py runserver
+
+Language
+========
+
+Before using the multi language functionality it is necessary to compile the `.po` files::
+
+    python manage.py compilemessages

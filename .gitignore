@@ -18,3 +18,7 @@ static/
 # local scripts
 manage
 pip
+makemessages
+
+# binary from translation file (.po)
+*.mo
