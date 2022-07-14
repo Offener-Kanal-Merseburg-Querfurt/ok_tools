@@ -8,10 +8,10 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import _unicode_ci_compare
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 import logging
-import unicodedata
 
 
 logger = logging.getLogger('django')
@@ -135,16 +135,3 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
             for u in active_users
             if _unicode_ci_compare(email, getattr(u, email_field_name))
         )
-
-
-# Copied from https://github.com/django/django/blob/d4c5d2b52c897ccc07f04482d3f42f976a79223c/django/contrib/auth/forms.py#L21  # noqa: 501
-def _unicode_ci_compare(s1, s2):  # noqa: D400 D205
-    """
-    Perform case-insensitive comparison of two identifiers, using the
-    recommended algorithm from Unicode Technical Report 36, section
-    2.11.2(B)(2).
-    """
-    return (
-        unicodedata.normalize("NFKC", s1).casefold()
-        == unicodedata.normalize("NFKC", s2).casefold()
-    )

@@ -88,7 +88,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     Overwrite the get_form_class function.
 
     Because otherwise get_form_class returns None. The reason for that
-    behaviost_name']r is not known.
+    behavior is not known.
     """
 
     def get_form_class(self):
