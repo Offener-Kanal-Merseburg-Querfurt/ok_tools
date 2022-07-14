@@ -180,8 +180,7 @@ def test_registration__18(db, user):
 
 def test_registration__19(browser, user, mail_outbox):
     """It is possible to set a new password using email."""
-    # register user and set password
-    test_registration__14(browser, mail_outbox, user)
+    register_user(browser, user)
     request_pwd_reset(browser, user)
 
     assert 2 == len(mail_outbox)
@@ -195,15 +194,10 @@ def test_registration__20(db, browser, user):
     testuser = User.objects.create_user(email=user['email'], password=PWD)
     testuser.save()
 
-    log_in(browser, user['email'], password=PWD)
-    assert f'Hi {user["email"]}!' in browser.contents
-
-    browser.getLink('Change Password').click()
-    browser.getControl('Email').value = user['email']
     with patch('registration.models.OKUser.objects.get') as mock:
         mock.side_effect = User.DoesNotExist()
         with pytest.raises(HTTPError, match=r'.*500.*'):
-            browser.getControl('Send').click()
+            request_pwd_reset(browser, user)
 
 
 """Helper functions"""

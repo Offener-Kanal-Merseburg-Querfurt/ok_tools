@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 import logging
+import unicodedata
 
 
 logger = logging.getLogger('django')
@@ -111,3 +112,39 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
             from_email,
             to_email,
             html_email_template_name)
+
+    # overwrite so also user that do not have password yet can reset password
+    # copied from https://github.com/django/django/blob/d4c5d2b52c897ccc07f04482d3f42f976a79223c/django/contrib/auth/forms.py#L286  # noqa E501
+    def get_users(self, email):
+        """Given an email, return matching user(s) who should receive a reset.
+
+        This allows subclasses to more easily customize the default policies
+        that prevent inactive users and users with unusable passwords from
+        resetting their password.
+        """
+        UserModel = get_user_model()
+        email_field_name = UserModel.get_email_field_name()
+        active_users = UserModel._default_manager.filter(
+            **{
+                "%s__iexact" % email_field_name: email,
+                "is_active": True,
+            }
+        )
+        return (
+            u
+            for u in active_users
+            if _unicode_ci_compare(email, getattr(u, email_field_name))
+        )
+
+
+# Copied from https://github.com/django/django/blob/d4c5d2b52c897ccc07f04482d3f42f976a79223c/django/contrib/auth/forms.py#L21  # noqa: 501
+def _unicode_ci_compare(s1, s2):  # noqa: D400 D205
+    """
+    Perform case-insensitive comparison of two identifiers, using the
+    recommended algorithm from Unicode Technical Report 36, section
+    2.11.2(B)(2).
+    """
+    return (
+        unicodedata.normalize("NFKC", s1).casefold()
+        == unicodedata.normalize("NFKC", s2).casefold()
+    )
