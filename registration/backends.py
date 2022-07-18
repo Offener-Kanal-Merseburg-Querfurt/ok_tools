@@ -20,5 +20,9 @@ class EmailBackend(ModelBackend):
             logger.error(f'User with E-Mail {username} does not exist.')
             return
 
-        if user.check_password(password) and self.user_can_authenticate(user):
+        if (user.has_perm('registration.can_login') and
+                user.check_password(password) and
+                self.user_can_authenticate(user)):
             return user
+        elif not user.has_perm('registration.can_login'):
+            logger.error(f'User {user} has no permission to log in.')

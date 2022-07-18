@@ -132,6 +132,6 @@ class Profile(models.Model):
         permissions = [
             (
                 "can_login",
-                "only user with verified profile are allowed to log in"
+                "Can login"
             )
         ]

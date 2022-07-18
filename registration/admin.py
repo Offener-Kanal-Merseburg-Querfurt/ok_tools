@@ -21,7 +21,13 @@ class UserAdmin(BaseUserAdmin):
         }),
         (_('Password'), {
             'fields': ('password',)
-        })
+        }),
+        # (_('permissions'), {
+        #     'fields': ('user_permissions',)
+        # }),
+        (_('Staff'), {
+            'fields': ('is_staff',)
+        }),
     )
     add_fieldsets = (
         (_('E-Mail address'), {
@@ -29,11 +35,28 @@ class UserAdmin(BaseUserAdmin):
         }),
         (_('Password'), {
             'fields': ('password1', 'password2')
-        })
+        }),
+        (_('Staff'), {
+            'fields': ('is_staff',)
+        }),
     )
     list_display = ['email', 'last_login', 'is_superuser', 'is_staff']
     ordering = ['email']
     search_fields = ['email']
+
+    # https://stackoverflow.com/a/54579134
+    def save_model(self, request, obj, form, change):
+        """
+        Set update_fields.
+
+        Observed field is 'is_staff'.
+        """
+        update_fields = []
+        if change:
+            if form.initial['is_staff'] != form.cleaned_data['is_staff']:
+                update_fields.append('is_staff')
+
+        obj.save(update_fields=update_fields)
 
 
 admin.site.register(User, UserAdmin)
@@ -49,7 +72,11 @@ class ProfileAdmin(admin.ModelAdmin):
 
     # https://stackoverflow.com/a/54579134
     def save_model(self, request, obj, form, change):
-        """Set update_fields to know when verified field were updated."""
+        """
+        Set update_fields.
+
+        Observed field is 'verified'.
+        """
         update_fields = []
         if change:
             if form.initial['verified'] != form.cleaned_data['verified']:
