@@ -116,6 +116,7 @@ class Profile(models.Model):
 
     # was the profile validated by an employee
     verified = models.BooleanField(
+        _('verified'),
         default=False,
         help_text=_('The profile data was verified by showing the ID to an'
                     ' employee.')
@@ -124,3 +125,13 @@ class Profile(models.Model):
     def __str__(self):
         """Represent Profile by first and last name."""
         return f'{self.first_name} {self.last_name}'
+
+    class Meta:
+        """Define permission to log in."""
+
+        permissions = [
+            (
+                "can_login",
+                "only user with verified profile are allowed to log in"
+            )
+        ]

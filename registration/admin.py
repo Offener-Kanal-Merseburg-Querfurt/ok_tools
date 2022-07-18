@@ -47,5 +47,15 @@ class ProfileAdmin(admin.ModelAdmin):
     ordering = ['okuser']
     search_fields = ['okuser__email', 'first_name', 'last_name']
 
+    # https://stackoverflow.com/a/54579134
+    def save_model(self, request, obj, form, change):
+        """Set update_fields to know when verified field were updated."""
+        update_fields = []
+        if change:
+            if form.initial['verified'] != form.cleaned_data['verified']:
+                update_fields.append('verified')
+
+        obj.save(update_fields=update_fields)
+
 
 admin.site.register(Profile, ProfileAdmin)
