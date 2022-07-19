@@ -19,6 +19,7 @@ static/
 manage
 pip
 makemessages
+test
 
 # binary from translation file (.po)
 *.mo

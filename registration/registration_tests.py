@@ -116,12 +116,12 @@ def test_registration__11(user):
 
 def test_registration__12(browser, user):
     """It is not possible to log in with an unknown email address."""
-    with pytest.raises(HTTPError, match=r'.*500.*'):
-        log_in(browser, email=user['email'], password=PWD)
+    log_in(browser, email=user['email'], password=PWD)
+    assert 'enter a correct email address and password' in browser.contents
 
 
-def test_registration__13(browser, user):
-    """It is possible to log in with an known user."""
+def test_registration__13b(browser, user):
+    """It is possible to log in with a known user."""
     testuser = User.objects.create_user(email=user['email'], password=PWD)
     testuser.save()
 
@@ -145,7 +145,7 @@ def test_registration__14(browser, mail_outbox, user):
 
 
 def test_registration__15(browser, user, mail_outbox):
-    """It is possible to reset the password."""
+    """It is possible to change the password."""
     testuser = User.objects.create_user(email=user['email'], password=PWD)
     testuser.save()
 
@@ -198,6 +198,16 @@ def test_registration__20(db, browser, user):
         mock.side_effect = User.DoesNotExist()
         with pytest.raises(HTTPError, match=r'.*500.*'):
             request_pwd_reset(browser, user)
+
+
+def test_registration__21(db, user):
+    """Users with unverified profile don't have the permission 'verified'."""
+    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser.save()
+    testprofile = Profile.objects.create(okuser=testuser)
+    testprofile.save()
+
+    assert not testuser.has_perm('registration.verified')
 
 
 """Helper functions"""
