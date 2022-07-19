@@ -22,6 +22,7 @@ class UserAdmin(BaseUserAdmin):
         (_('Password'), {
             'fields': ('password',)
         }),
+        # https://github.com/gocept/ok_tools/issues/11
         # (_('permissions'), {
         #     'fields': ('user_permissions',)
         # }),
@@ -52,11 +53,13 @@ class UserAdmin(BaseUserAdmin):
         Observed field is 'is_staff'.
         """
         update_fields = []
-        if change:
+        if form and form.changed_data:
             if form.initial['is_staff'] != form.cleaned_data['is_staff']:
                 update_fields.append('is_staff')
 
         obj.save(update_fields=update_fields)
+
+        return super(UserAdmin, self).save_model(request, obj, form, change)
 
 
 admin.site.register(User, UserAdmin)
@@ -78,7 +81,7 @@ class ProfileAdmin(admin.ModelAdmin):
         Observed field is 'verified'.
         """
         update_fields = []
-        if change:
+        if form and form.changed_data:
             if form.initial['verified'] != form.cleaned_data['verified']:
                 update_fields.append('verified')
 

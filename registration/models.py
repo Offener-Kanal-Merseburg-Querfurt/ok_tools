@@ -69,7 +69,6 @@ class Profile(models.Model):
     belongs to a user.
     """
 
-    # TODO auch so, dass kein OKUser existiert
     okuser = models.OneToOneField(
         OKUser, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -131,7 +130,7 @@ class Profile(models.Model):
 
         permissions = [
             (
-                "can_login",
-                "Can login"
+                "verified",
+                "Can access functionalities for verified users"
             )
         ]
