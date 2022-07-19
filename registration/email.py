@@ -66,7 +66,7 @@ def send_auth_mail(
     context = {
         "first_name": profile.first_name,
         "email": email,
-        "domain": 'localhost',  # TODO nicht hartcodieren
+        "domain": 'localhost:8000',  # TODO nicht hartcodieren
         "ok_name": settings.OK_NAME,
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "user": user,

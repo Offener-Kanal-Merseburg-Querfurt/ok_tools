@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-14 10:01+0200\n"
+"POT-Creation-Date: 2022-07-18 12:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: registration/admin.py:19 registration/admin.py:27
+#: registration/admin.py:19 registration/admin.py:34
 msgid "E-Mail address"
 msgstr "E-Mail-Adresse"
 
-#: registration/admin.py:22 registration/admin.py:30
+#: registration/admin.py:22 registration/admin.py:37
 msgid "Password"
 msgstr "Passwort"
 
-#: registration/forms.py:33
+#: registration/admin.py:29 registration/admin.py:40
+msgid "Staff"
+msgstr ""
+
+#: registration/forms.py:34
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: registration/forms.py:36
+#: registration/forms.py:37
 msgid "Birthday"
 msgstr "Geburtstag"
 
-#: registration/forms.py:71 registration/templates/home.html:15
+#: registration/forms.py:72 registration/templates/home.html:15
 #: registration/templates/registration/register.html:7
 msgid "Register"
 msgstr "Registrieren"
@@ -55,63 +59,65 @@ msgstr ""
 msgid "email address"
 msgstr "E-Mail-Adresse"
 
-#: registration/models.py:77
+#: registration/models.py:76
 msgid "first name"
 msgstr "Vorname"
 
-#: registration/models.py:79
-#, fuzzy
-#| msgid "last_name"
+#: registration/models.py:78
 msgid "last name"
 msgstr "Nachname"
 
-#: registration/models.py:84
+#: registration/models.py:83
 msgid "Not Given"
 msgstr "Nicht angegeben"
 
-#: registration/models.py:85
+#: registration/models.py:84
 msgid "Male"
 msgstr "Männlich"
 
-#: registration/models.py:86
+#: registration/models.py:85
 msgid "Female"
 msgstr "Weiblich"
 
-#: registration/models.py:87
+#: registration/models.py:86
 msgid "Diverse"
 msgstr "Divers"
 
-#: registration/models.py:90
+#: registration/models.py:89
 msgid "gender"
 msgstr "Geschlecht"
 
-#: registration/models.py:99
+#: registration/models.py:98
 msgid "phone number"
 msgstr "Telefonnummer"
 
-#: registration/models.py:102
+#: registration/models.py:101
 msgid "mobile number"
 msgstr "Handynummer"
 
-#: registration/models.py:106
+#: registration/models.py:105
 msgid "birthday"
 msgstr "Geburtstag"
 
-#: registration/models.py:109
+#: registration/models.py:108
 msgid "street"
 msgstr "Straße"
 
-#: registration/models.py:111
+#: registration/models.py:110
 msgid "house number"
 msgstr "Hausnummer"
 
-#: registration/models.py:113
+#: registration/models.py:112
 msgid "zipcode"
 msgstr "Postleitzahl"
 
-#: registration/models.py:115
+#: registration/models.py:114
 msgid "city"
 msgstr "Stadt"
+
+#: registration/models.py:118
+msgid "verified"
+msgstr "verifiziert"
 
 #: registration/models.py:120
 msgid "The profile data was verified by showing the ID to an employee."
@@ -148,7 +154,7 @@ msgstr "Passwort erfolgreich zurückgesetzt"
 
 #: registration/templates/registration/password_reset_complete.html:9
 msgid "Your new password has been set. You can log in now:"
-msgstr "Ihr neues Passwort wurde zurückgesetzt. Sie könen sich jetzt anmelden:"
+msgstr "Ihr neues Passwort wurde gesetzt. Sie könen sich jetzt anmelden:"
 
 #: registration/templates/registration/password_reset_complete.html:9
 msgid "log in page"

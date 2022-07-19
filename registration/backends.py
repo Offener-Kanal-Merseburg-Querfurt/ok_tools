@@ -4,6 +4,9 @@ from django.db.models import Q
 import logging
 
 
+logger = logging.getLogger('django')
+
+
 class EmailBackend(ModelBackend):
     """Class to authenticate a user by his/her email address as username."""
 
@@ -14,8 +17,8 @@ class EmailBackend(ModelBackend):
             user = user_model.objects.get(Q(email__iexact=username))
         except user_model.DoesNotExist:
             # TODO logging messages should be delivered to front end
-            logging.error(f'User with E-Mail {username} does not exist.')
-            raise
+            logger.error(f'User with E-Mail {username} does not exist.')
+            return
 
         if user.check_password(password) and self.user_can_authenticate(user):
             return user
