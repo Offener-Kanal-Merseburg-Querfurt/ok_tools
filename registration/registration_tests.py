@@ -3,15 +3,19 @@ from .models import Profile
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
 from urllib.error import HTTPError
+import logging
 import pytest
 import re
 
 
+logger = logging.getLogger('django')
+
 User = get_user_model()
 
+USER_CREATED_URL = 'http://localhost/profile/created'
 REGISTER_URL = 'http://localhost/register/'
 LOGIN_URL = 'http://localhost:8000/profile/login/'
-AUTH_URL = r'http://localhost(:8000)?/profile/reset/.*/'
+AUTH_URL = r'http://localhost:8000/profile/reset/.*/'
 PWD_RESET_URL = 'http://localhost/profile/password_reset/'
 PWD = 'testpassword'
 
@@ -20,7 +24,7 @@ def test_registration__01(browser, user):
     """It is possible to register with an unused email address."""
     register_user(browser, user)
     assert success_string(user['email']) in browser.contents
-    assert browser.url == REGISTER_URL
+    assert browser.url == USER_CREATED_URL
 
 
 def test_registration__02(browser, user):
@@ -48,7 +52,7 @@ def test_registration__04(browser, user):
     user['mobile_number'] = '015712345678'
     register_user(browser, user)
     assert success_string(user['email']) in browser.contents
-    assert browser.url == REGISTER_URL
+    assert browser.url == USER_CREATED_URL
 
 
 def test_registration__05(db, user):
@@ -261,6 +265,7 @@ def get_link_url_from_email(mail_outbox, pattern: str) -> str:
     mail_body = mail_outbox[-1].body
     res = re.search(pattern, mail_body, re.M)
     if not res:  # pragma: no cover
+        logger.error(f'No auth link in email:\n {mail_body}')
         raise AssertionError
     return res.group(0)  # entire match
 

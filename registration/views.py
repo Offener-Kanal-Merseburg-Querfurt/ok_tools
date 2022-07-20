@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
-from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views import generic
 import django.contrib.auth.forms
@@ -64,7 +64,8 @@ class RegisterView(generic.CreateView):
         profile.save()
 
         send_auth_mail(email)
-        return HttpResponse(f'Successfully created user {user.email}')
+        messages.success(request, f'Successfully created user {user.email}')
+        return redirect('user_created')
 
 
 class PasswordResetView(auth_views.PasswordResetView):
