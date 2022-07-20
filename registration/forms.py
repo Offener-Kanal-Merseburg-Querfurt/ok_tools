@@ -1,3 +1,4 @@
+from .helper import toc_href
 from .models import Profile
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
@@ -31,6 +32,11 @@ class ProfileForm(forms.ModelForm):
     """Form to register a profile."""
 
     email = forms.EmailField(label=_('Email address'))
+    toc_agreement = forms.BooleanField(
+        # TODO circular import:
+        # toc-href -> urls -> RegisterView -> ProfileForm -> toc_href ...
+        label='Please accept the ' + toc_href()
+    )
 
     birthday = forms.DateField(
         label=_('Birthday'),
@@ -67,6 +73,7 @@ class ProfileForm(forms.ModelForm):
             'house_number',
             'zipcode',
             'city',
+            'toc_agreement',
             ButtonHolder(
                 Submit('submit', _('Register')),
             )
