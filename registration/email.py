@@ -56,7 +56,6 @@ def send_auth_mail(
         user = UserModel.objects.get(Q(email__iexact=email))
         profile = Profile.objects.get(okuser=user)
     except UserModel.DoesNotExist:
-        # TODO logging messages should be delivered to front end
         logger.error(f'User with E-Mail {email} does not exist.')
         raise
     except Profile.DoesNotExist:

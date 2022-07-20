@@ -24,7 +24,6 @@ class RegisterForm(forms.ModelForm, ):
         """At the moment, the user only needs to provide an email address."""
 
         model = get_user_model()
-        # TODO further personal Data needed
         fields = ('email',)
 
 
@@ -93,10 +92,7 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
             user = UserModel.objects.get(Q(email__iexact=to_email))
             profile = Profile.objects.get(okuser=user)
             first_name = profile.first_name
-        # TODO schwer zu testen, aber vielleicht für Nebenläufigkeitsprobleme
-        # rlevant
         except UserModel.DoesNotExist:
-            # TODO logging messages should be delivered to front end
             logger.error(f'User with E-Mail {to_email} does not exist.')
             raise
         except Profile.DoesNotExist:

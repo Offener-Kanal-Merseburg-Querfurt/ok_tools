@@ -27,8 +27,7 @@ def test_registration__02(browser, user):
     """It is not possible to register with an used email address."""
     User(email=user['email']).save()
 
-    with pytest.raises(HTTPError, match=r'.* 400.*'):
-        register_user(browser, user)
+    register_user(browser, user)
     assert f'address {user["email"]} already exists' in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -38,8 +37,7 @@ def test_registration__03(browser, user):
     """It is not possible to register with an invalid email address."""
     user['email'] = "example.com"
 
-    with pytest.raises(HTTPError, match=r'.* 400.*'):
-        register_user(browser, user)
+    register_user(browser, user)
     assert 'Enter a valid email address' in browser.contents
     assert browser.url == REGISTER_URL
 
@@ -63,8 +61,7 @@ def test_registration__05(db, user):
 def test_registration__06(browser, user):
     """It is not possible to register without mandatory fields."""
     user['first_name'] = None
-    with pytest.raises(HTTPError, match=r'.* 400.*'):
-        register_user(browser, user)
+    register_user(browser, user)
     assert 'This field is required' in browser.contents
     assert browser.url == REGISTER_URL
 

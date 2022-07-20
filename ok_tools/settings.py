@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from django.contrib.messages import constants as messages
 from pathlib import Path
 import configparser
 import logging
@@ -211,6 +212,15 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # bootstrap
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# bootstrap message tags
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-secondary',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
 
 LOGGING = {
     'version': 1,

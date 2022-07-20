@@ -6,5 +6,7 @@
 {% block content%}
 <h1>{% blocktranslate %}Register{% endblocktranslate %}</h1>
 
+{% include 'messages.html' %}
+
 {% crispy form %}
 {% endblock content%}
