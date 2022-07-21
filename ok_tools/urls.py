@@ -47,5 +47,5 @@ urlpatterns = [
         TemplateView.as_view(template_name='privacy_policy.html'),
         name='privacy_policy'
     ),
-    path('user/data/', login_required(user_data_view), name='user_data'),
+    path('profile/edit/', login_required(user_data_view), name='user_data'),
 ]

@@ -12,7 +12,7 @@ logger = logging.getLogger('django')
 
 User = get_user_model()
 
-USER_CREATED_URL = 'http://localhost/profile/created'
+USER_CREATED_URL = 'http://localhost/profile/created/'
 REGISTER_URL = 'http://localhost/register/'
 LOGIN_URL = 'http://localhost:8000/profile/login/'
 AUTH_URL = r'http://localhost:8000/profile/reset/.*/'
