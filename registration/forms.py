@@ -30,6 +30,27 @@ class UserDataForm(forms.ModelForm):
         model = Profile
         exclude = ('verified', 'okuser')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'email',
+            'first_name',
+            'last_name',
+            'gender',
+            'phone_number',
+            'mobile_number',
+            'birthday',
+            'street',
+            'house_number',
+            'zipcode',
+            'city',
+            ButtonHolder(
+                Submit('submit', _('Submit changes')),
+                Submit('print', _('Print application form')),
+            )
+        )
+
 
 class ProfileForm(forms.ModelForm):
     """Form to register a profile."""

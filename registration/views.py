@@ -3,6 +3,7 @@ from .forms import PasswordResetForm
 from .forms import ProfileForm
 from .forms import UserDataForm
 from .models import Profile
+from .print import generate_application_form
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -22,7 +23,12 @@ logger = logging.getLogger('django')
 
 
 def user_data_view(request):
-    """View with the users data."""
+    """
+    View with the users data.
+
+    The data is editable for the user as long as he/she is not verified yet.
+    Phone numbers are always editable.
+    """
     # initialize user and profile
     user = request.user
     try:
@@ -60,6 +66,9 @@ def user_data_view(request):
             'registration/user_data.html',
             {'form': form, 'user': user}
         )
+
+    if 'print' in request.POST:
+        return generate_application_form(user, profile)
 
 
 class RegisterView(generic.CreateView):
