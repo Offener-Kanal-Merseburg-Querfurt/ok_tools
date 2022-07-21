@@ -1,5 +1,6 @@
 from .models import MediaAuthority
 from .models import Profile
+from .print import generate_registration_form
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -72,6 +73,8 @@ admin.site.register(User, UserAdmin)
 class ProfileAdmin(admin.ModelAdmin):
     """How should the profile be shown on the admin site."""
 
+    change_form_template = 'admin/change_form_edit.html'
+
     list_display = [
         'okuser',
         'first_name',
@@ -80,6 +83,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'created_at',
     ]
     ordering = ['-created_at']
+
     search_fields = ['okuser__email', 'first_name', 'last_name']
     actions = ['verify', 'unverify']
 
@@ -116,6 +120,12 @@ class ProfileAdmin(admin.ModelAdmin):
             '%d profiles were successfully unverified.',
             updated,
         ) % updated, messages.SUCCESS)
+
+    def response_change(self, request, obj):
+        """Add 'Print application' button to profile view."""
+        if '_print_application' in request.POST:
+            return generate_registration_form(obj.okuser, obj)
+        return super().response_change(request, obj)
 
 
 admin.site.register(Profile, ProfileAdmin)
