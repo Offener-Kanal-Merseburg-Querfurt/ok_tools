@@ -19,14 +19,16 @@ import logging
 logger = logging.getLogger('django')
 
 
-class RegisterForm(forms.ModelForm, ):
-    """Form to register a user."""
+class UserDataForm(forms.ModelForm):
+    """Form to display user data which maybe can be changed by user."""
+
+    email = forms.EmailField(label=_('Email address'))
 
     class Meta:
-        """At the moment, the user only needs to provide an email address."""
+        """The fields verified and okuser are not shown to the user."""
 
-        model = get_user_model()
-        fields = ('email',)
+        model = Profile
+        exclude = ('verified', 'okuser')
 
 
 class ProfileForm(forms.ModelForm):
