@@ -16,7 +16,6 @@ class EmailBackend(ModelBackend):
         try:
             user = user_model.objects.get(Q(email__iexact=username))
         except user_model.DoesNotExist:
-            # TODO logging messages should be delivered to front end
             logger.error(f'User with E-Mail {username} does not exist.')
             return
 

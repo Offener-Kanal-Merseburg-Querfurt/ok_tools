@@ -3,10 +3,11 @@ from .forms import PasswordResetForm
 from .forms import ProfileForm
 from .models import Profile
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
-from django.http import HttpResponse
-from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.views import generic
 import django.contrib.auth.forms
 import functools
@@ -30,9 +31,8 @@ class RegisterView(generic.CreateView):
         if not form.is_valid():
             error_list = functools.reduce(sum, list(form.errors.values()))
             logging.error('Received invalid RegisterForm')
-            # TODO send as message
-            return HttpResponseBadRequest('Invalid Form:\n\n {}'
-                                          .format("\n\n".join(error_list)))
+            messages.error(request, "\n\n".join(error_list))
+            return render(request, self.template_name, {"form": form})
 
         data = form.cleaned_data
 
@@ -41,8 +41,9 @@ class RegisterView(generic.CreateView):
 
         # Does the user already exist?
         if user_model.objects.filter(email=email):
-            return HttpResponseBadRequest(
-                f'The e-mail address {email} already exists.')
+            messages.error(
+                request, f'The e-mail address {email} already exists.')
+            return render(request, self.template_name, {"form": form})
 
         user = user_model.objects.create_user(email=email)
         user.save()
@@ -63,7 +64,8 @@ class RegisterView(generic.CreateView):
         profile.save()
 
         send_auth_mail(email)
-        return HttpResponse(f'Successfully created user {user.email}')
+        messages.success(request, f'Successfully created user {user.email}')
+        return redirect('user_created')
 
 
 class PasswordResetView(auth_views.PasswordResetView):

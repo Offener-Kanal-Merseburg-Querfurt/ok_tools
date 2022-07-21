@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+<h1>{%blocktranslate%}Welcome!{%endblocktranslate%}</h1>
+
+{% include 'messages.html' %}
+
+<p>
+{%blocktranslate%}
+You succesfully registered at {{OK_NAME}}. Shortly you will receive an email with a link. Use this link to set your password. After that you should be able to log in.
+{%endblocktranslate%}
+</p>
+
+<p>
+    <a class="btn btn-outline-primary" href={% url 'home' %}>{%translate 'Back to the start page'%}</a>
+</p>
+
+{% endblock %}
