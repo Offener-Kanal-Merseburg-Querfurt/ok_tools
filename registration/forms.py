@@ -1,5 +1,6 @@
 from .models import Profile
 from bootstrap_datepicker_plus.widgets import DatePickerInput
+from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from crispy_forms.layout import ButtonHolder
@@ -45,9 +46,11 @@ class UserDataForm(forms.ModelForm):
             'house_number',
             'zipcode',
             'city',
-            ButtonHolder(
+            FormActions(
                 Submit('submit', _('Submit changes')),
-                Submit('print', _('Print application form')),
+                Submit('print', _('Fill out application form')),
+                Submit('manual-form', _('Apply manually'),
+                       css_class="btn btn-outline-secondary")
             )
         )
 

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
+from django.http import FileResponse
 from django.http import HttpResponseServerError
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -69,6 +70,11 @@ def user_data_view(request):
 
     if 'print' in request.POST:
         return generate_application_form(user, profile)
+    elif 'manual-form' in request.POST:
+        return FileResponse(
+            open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
+            filename=('application_form.pdf')
+        )
 
 
 class RegisterView(generic.CreateView):
