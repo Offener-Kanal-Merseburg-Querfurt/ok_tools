@@ -70,7 +70,8 @@ def user_data_view(request):
 
     if 'print' in request.POST:
         return generate_application_form(user, profile)
-    elif 'manual-form' in request.POST:
+    else:
+        assert 'manual-form' in request.POST
         return FileResponse(
             open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
             filename=('application_form.pdf')
