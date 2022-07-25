@@ -71,8 +71,14 @@ admin.site.register(User, UserAdmin)
 class ProfileAdmin(admin.ModelAdmin):
     """How should the profile be shown on the admin site."""
 
-    list_display = ['okuser', 'first_name', 'last_name', 'verified']
-    ordering = ['okuser']
+    list_display = [
+        'okuser',
+        'first_name',
+        'last_name',
+        'verified',
+        'created_at'
+    ]
+    ordering = ['-created_at']
     search_fields = ['okuser__email', 'first_name', 'last_name']
     actions = ['verify', 'unverify']
 
