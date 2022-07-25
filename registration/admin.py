@@ -1,9 +1,11 @@
 from .models import Profile
 from django.contrib import admin
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext as _p
 
 
 # register user
@@ -72,6 +74,7 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ['okuser', 'first_name', 'last_name', 'verified']
     ordering = ['okuser']
     search_fields = ['okuser__email', 'first_name', 'last_name']
+    actions = ['verify', 'unverify']
 
     # https://stackoverflow.com/a/54579134
     def save_model(self, request, obj, form, change):
@@ -86,6 +89,26 @@ class ProfileAdmin(admin.ModelAdmin):
                 update_fields.append('verified')
 
         obj.save(update_fields=update_fields)
+
+    @admin.action(description=_('Verify selected profiles'))
+    def verify(self, request, queryset):
+        """Verify all selected profiles."""
+        updated = queryset.update(verified=True)
+        self.message_user(request, _p(
+            '%d profile was successfully verified.',
+            '%d profiles were successfully verified.',
+            updated,
+        ) % updated, messages.SUCCESS)
+
+    @admin.action(description=_('Unverify selected profiles'))
+    def unverify(self, request, queryset):
+        """Unverify all selected profiles."""
+        updated = queryset.update(verified=False)
+        self.message_user(request, _p(
+            '%d profile was successfully unverified.',
+            '%d profiles were successfully unverified.',
+            updated,
+        ) % updated, messages.SUCCESS)
 
 
 admin.site.register(Profile, ProfileAdmin)
