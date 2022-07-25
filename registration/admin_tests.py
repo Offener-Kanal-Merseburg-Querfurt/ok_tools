@@ -154,6 +154,58 @@ def test_admin__12(db, user, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
+def test_admin__13(db, user, browser):
+    """Verify multiple users."""
+    first_email = user['email']
+    _create_user(db, user)
+    second_email = 'second_' + user['email']
+    user['email'] = second_email
+    _create_user(db, user)
+    _login(browser)
+
+    browser.getLink('Profile').click()
+
+    # select both profiles
+    browser.getControl(name='_selected_action').controls[0].selected = True
+    browser.getControl(name='_selected_action').controls[1].selected = True
+
+    browser.getControl('Action').value = 'verify'
+    browser.getControl('Go').click()
+
+    first_user = User.objects.get(email=first_email)
+    second_user = User.objects.get(email=second_email)
+
+    assert Profile.objects.get(okuser=first_user).verified
+    assert Profile.objects.get(okuser=second_user).verified
+    assert 'successfully verified' in browser.contents
+
+
+def test_admin__14(db, user, browser):
+    """Unverify multiple users."""
+    first_email = user['email']
+    _create_user(db, user, verified=True)
+    second_email = 'second_' + user['email']
+    user['email'] = second_email
+    _create_user(db, user, verified=True)
+    _login(browser)
+
+    browser.getLink('Profile').click()
+
+    # select both profiles
+    browser.getControl(name='_selected_action').controls[0].selected = True
+    browser.getControl(name='_selected_action').controls[1].selected = True
+
+    browser.getControl('Action').value = 'unverify'
+    browser.getControl('Go').click()
+
+    first_user = User.objects.get(email=first_email)
+    second_user = User.objects.get(email=second_email)
+
+    assert not Profile.objects.get(okuser=first_user).verified
+    assert not Profile.objects.get(okuser=second_user).verified
+    assert 'successfully unverified' in browser.contents
+
+
 def _create_user(db, user, verified=False, is_staff=False):
     """Create a user with corresponding profile."""
     testuser = User(email=user['email'], password=PWD, is_staff=is_staff)
