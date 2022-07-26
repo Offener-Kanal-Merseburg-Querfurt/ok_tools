@@ -236,6 +236,7 @@ def register_user(browser, user: dict):
     browser.getControl('House number').value = user['house_number']
     browser.getControl('Zipcode').value = user['zipcode']
     browser.getControl('City').value = user['city']
+    browser.getControl('accept').click()
     browser.getControl('Register').click()
 
 
