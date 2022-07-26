@@ -211,6 +211,13 @@ def test_registration__21(db, user):
     assert not testuser.has_perm('registration.verified')
 
 
+def test__registration__templates__privacy_policy__1(browser):
+    """The Privacy Policy is accessible."""
+    browser.open(REGISTER_URL)
+    browser.getLink('privacy policy').click()
+    assert 'Privacy Policy' in browser.contents
+
+
 """Helper functions"""
 
 
@@ -236,6 +243,7 @@ def register_user(browser, user: dict):
     browser.getControl('House number').value = user['house_number']
     browser.getControl('Zipcode').value = user['zipcode']
     browser.getControl('City').value = user['city']
+    browser.getControl('accept').click()
     browser.getControl('Register').click()
 
 

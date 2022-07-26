@@ -1,6 +1,7 @@
 from .models import Profile
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
 from crispy_forms.layout import ButtonHolder
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit
@@ -10,6 +11,7 @@ from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import _unicode_ci_compare
 from django.db.models import Q
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 import logging
 
@@ -31,6 +33,9 @@ class ProfileForm(forms.ModelForm):
     """Form to register a profile."""
 
     email = forms.EmailField(label=_('Email address'))
+    privacy_agreement = forms.BooleanField(
+        label=_('I accept')
+    )
 
     birthday = forms.DateField(
         label=_('Birthday'),
@@ -67,10 +72,21 @@ class ProfileForm(forms.ModelForm):
             'house_number',
             'zipcode',
             'city',
+            HTML(_privacy_policy()),
+            'privacy_agreement',
             ButtonHolder(
                 Submit('submit', _('Register')),
             )
         )
+
+
+def _privacy_policy() -> str:
+    return '''
+    {{% load i18n %}}
+    <p> {{% translate 'Please accept our ' %}}
+        <a href="{}" target="_blank">{{% translate 'privacy policy' %}}</a>
+    </p>
+    '''.format(reverse_lazy('privacy_policy'))
 
 
 class PasswordResetForm(auth_forms.PasswordResetForm):
