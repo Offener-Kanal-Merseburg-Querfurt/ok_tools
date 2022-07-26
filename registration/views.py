@@ -3,7 +3,7 @@ from .forms import PasswordResetForm
 from .forms import ProfileForm
 from .forms import UserDataForm
 from .models import Profile
-from .print import generate_application_form
+from .print import generate_registration_form
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -69,7 +69,7 @@ def user_data_view(request):
         )
 
     if 'print' in request.POST:
-        return generate_application_form(user, profile)
+        return generate_registration_form(user, profile)
     else:
         assert 'manual-form' in request.POST
         return FileResponse(

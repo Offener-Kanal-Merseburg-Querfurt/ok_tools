@@ -12,9 +12,9 @@ import io
 def _f_number(p): return str(p) if p else '     -     '
 
 
-def generate_application_form(user: User, profile: Profile) -> FileResponse:
+def generate_registration_form(user: User, profile: Profile) -> FileResponse:
     """
-    Generate an application form using with the given user data.
+    Generate an registration form as pdf using the given user data.
 
     As template the 'Nutzerkartei_Anmeldung_2017.pdf' from
     https://www.okmq.de/images/Formulare/Nutzerkartei_Anmeldung_2017.pdf
@@ -42,13 +42,12 @@ def generate_application_form(user: User, profile: Profile) -> FileResponse:
     pdf_edits.drawString(COL_1, ROW_2, f'{profile.zipcode} {profile.city}')
     # Straße
     pdf_edits.drawString(COL_2, ROW_2,
-                         f' {profile.street} {profile.house_number}'
+                         f' {profile.street} {profile.house_number}',
                          )
     # Geburtstag
     pdf_edits.drawString(COL_1, ROW_3,
                          profile.birthday.strftime(
-                             settings.DATE_INPUT_FORMATS
-                         )
+                             settings.DATE_INPUT_FORMATS),
                          )
     # Telefon privat
     pdf_edits.drawString(COL_1, ROW_4, _f_number(profile.phone_number))
@@ -63,16 +62,19 @@ def generate_application_form(user: User, profile: Profile) -> FileResponse:
     pdf_buffer.seek(0)
 
     edit_pdf = PdfFileReader(pdf_buffer)
-    application_template = PdfFileReader(
-        open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'))
 
-    apl_page = application_template.getPage(0)
-    apl_page.mergePage(edit_pdf.getPage(0))
+    with open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb') as fileobj:
+        registration_template = PdfFileReader(fileobj)
 
-    application = PdfFileWriter()
-    application.addPage(apl_page)
-    apl_stream = io.BytesIO()
-    application.write(apl_stream)
+        regstr_page = registration_template.getPage(0)
 
-    apl_stream.seek(0)
-    return FileResponse(apl_stream, filename=_('application_form.pdf'))
+        regstr_page.mergePage(edit_pdf.getPage(0))
+
+        registration = PdfFileWriter()
+        registration.addPage(regstr_page)
+        apl_stream = io.BytesIO()
+        registration.write(apl_stream)
+
+        apl_stream.seek(0)
+
+    return FileResponse(apl_stream, filename=_('registration_form.pdf'))
