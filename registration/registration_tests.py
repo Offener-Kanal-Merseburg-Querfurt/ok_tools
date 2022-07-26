@@ -211,6 +211,13 @@ def test_registration__21(db, user):
     assert not testuser.has_perm('registration.verified')
 
 
+def test__registration__templates__privacy_policy__1(browser):
+    """The Privacy Policy is accessible."""
+    browser.open(REGISTER_URL)
+    browser.getLink('privacy policy').click()
+    assert 'Privacy Policy' in browser.contents
+
+
 """Helper functions"""
 
 

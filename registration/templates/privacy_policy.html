@@ -3,9 +3,11 @@
 {% load i18n %}
 
 {% block content %}
-<h1> Privacy Policy </h2>
+<h1> {% translate 'Privacy Policy' %} </h2>
     <p>
+        {% blocktranslate %}
         This is the privacy policy.
+        {% endblocktranslate %}
     </p>
 
 {% endblock content %}
