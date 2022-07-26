@@ -77,7 +77,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'verified',
-        'created_at'
+        'created_at',
     ]
     ordering = ['-created_at']
     search_fields = ['okuser__email', 'first_name', 'last_name']
