@@ -61,6 +61,35 @@ class OKUser(AbstractUser):
         return self.email
 
 
+class MediaAuthority(models.Model):
+    """
+    Model for a MediaAuthority.
+
+    Every Profile belongs to a MediaAuthority. The default authority name of
+    the default authority is defined in settings.py by OK_NAME_SHORT.
+    """
+
+    name = models.CharField(
+        _('Media Authority'),
+        default=settings.OK_NAME_SHORT,
+        max_length=150,
+        unique=True)
+
+    def __str__(self) -> str:
+        """Represent a MediaAuthority by its name."""
+        return self.name
+
+
+def default_media_authority():
+    """Provide the default MediaAuthority."""
+    try:
+        default = MediaAuthority.objects.get(name=settings.OK_NAME_SHORT)
+    except MediaAuthority.DoesNotExist:
+        default = MediaAuthority.objects.create(name=settings.OK_NAME_SHORT)
+
+    return default
+
+
 class Profile(models.Model):
     """
     Model for a profil.
@@ -122,6 +151,11 @@ class Profile(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    media_autority = models.ForeignKey(
+        MediaAuthority,
+        on_delete=models.CASCADE,
+        default=default_media_authority)
 
     def __str__(self):
         """Represent Profile by first and last name."""
