@@ -91,6 +91,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'registration.context_processors.ok_name',
+                'registration.context_processors.ok_name_short',
             ],
         },
     },
@@ -205,6 +206,7 @@ EMAIL_HOST_PASSWORD = ''
 
 # name of the OK
 OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
+OK_NAME_SHORT = 'OK Merseburg'
 
 # Which site should be seen after log in and log out
 LOGIN_REDIRECT_URL = 'home'
