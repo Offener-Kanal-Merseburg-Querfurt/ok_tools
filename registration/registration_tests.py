@@ -1,5 +1,6 @@
 from .email import send_auth_mail
 from .models import Profile
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
 from urllib.error import HTTPError
@@ -262,6 +263,17 @@ def test__registration__templates__privacy_policy__1(browser):
     browser.open(REGISTER_URL)
     browser.getLink('privacy policy').click()
     assert 'Privacy Policy' in browser.contents
+
+
+def test__registration__templates__navbar__1(browser):
+    """It is possible to got to the register site and back using the navbar."""
+    browser.open(DOMAIN)
+    browser.getLink('register').click()
+    assert 'first_name' in browser.contents
+    assert 'privacy policy' in browser.contents
+
+    browser.getLink(settings.OK_NAME_SHORT).click()
+    assert 'You are not logged in' in browser.contents
 
 
 """Helper functions"""
