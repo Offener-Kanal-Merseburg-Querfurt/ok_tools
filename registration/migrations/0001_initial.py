@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True,
                  primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='OK Merseburg',
+                ('name', models.CharField(default=settings.OK_NAME_SHORT,
                  max_length=150, unique=True, verbose_name='Media Authority')),
             ],
         ),
