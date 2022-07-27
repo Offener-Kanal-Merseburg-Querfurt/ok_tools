@@ -175,8 +175,8 @@ def test_admin__13(db, user, browser):
     first_user = User.objects.get(email=first_email)
     second_user = User.objects.get(email=second_email)
 
-    assert Profile.objects.get(okuser=first_user).verified
-    assert Profile.objects.get(okuser=second_user).verified
+    assert first_user.profile.verified
+    assert second_user.profile.verified
     assert 'successfully verified' in browser.contents
 
 
@@ -201,8 +201,8 @@ def test_admin__14(db, user, browser):
     first_user = User.objects.get(email=first_email)
     second_user = User.objects.get(email=second_email)
 
-    assert not Profile.objects.get(okuser=first_user).verified
-    assert not Profile.objects.get(okuser=second_user).verified
+    assert not first_user.profile.verified
+    assert not second_user.profile.verified
     assert 'successfully unverified' in browser.contents
 
 

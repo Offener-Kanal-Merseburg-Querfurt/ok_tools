@@ -82,12 +82,8 @@ class MediaAuthority(models.Model):
 
 def default_media_authority():
     """Provide the default MediaAuthority."""
-    try:
-        default = MediaAuthority.objects.get(name=settings.OK_NAME_SHORT)
-    except MediaAuthority.DoesNotExist:
-        default = MediaAuthority.objects.create(name=settings.OK_NAME_SHORT)
-
-    return default
+    return MediaAuthority.objects.get_or_create(
+        name=settings.OK_NAME_SHORT)[0]
 
 
 class Profile(models.Model):
@@ -155,7 +151,9 @@ class Profile(models.Model):
     media_autority = models.ForeignKey(
         MediaAuthority,
         on_delete=models.CASCADE,
-        default=default_media_authority)
+        default=default_media_authority,
+        unique=True,
+    )
 
     def __str__(self):
         """Represent Profile by first and last name."""
