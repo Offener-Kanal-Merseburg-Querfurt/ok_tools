@@ -101,7 +101,7 @@ def test_registration__10(user):
             email=user['email'], password=None, is_superuser=False)
 
 
-def test_registration__11(user):
+def test_registration__11(user, db):
     """
     String representation.
 
