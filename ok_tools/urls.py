@@ -20,7 +20,8 @@ from django.views.generic.base import TemplateView
 from registration.views import PasswordResetConfirmView
 from registration.views import PasswordResetView
 from registration.views import RegisterView
-from registration.views import user_data_view
+from registration.views import edit_profile
+from registration.views import print_registration_view
 
 
 urlpatterns = [
@@ -46,5 +47,10 @@ urlpatterns = [
         TemplateView.as_view(template_name='privacy_policy.html'),
         name='privacy_policy'
     ),
-    path('profile/edit/', user_data_view, name='user_data'),
+    path(
+        'profile/application',
+        print_registration_view,
+        name='print_registration'
+    ),
+    path('profile/edit/', edit_profile, name='user_data'),
 ]

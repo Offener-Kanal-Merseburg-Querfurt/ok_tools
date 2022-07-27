@@ -3,6 +3,7 @@ from .models import Profile
 from conftest import pdfToText
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.urls import reverse_lazy
 from unittest.mock import patch
 from urllib.error import HTTPError
 import logging
@@ -15,12 +16,12 @@ logger = logging.getLogger('django')
 User = get_user_model()
 
 DOMAIN = 'http://localhost:8000'
-USER_CREATED_URL = f'{DOMAIN}/profile/created/'
-REGISTER_URL = f'{DOMAIN}/register/'
-LOGIN_URL = f'{DOMAIN}/profile/login/'
-APPLY_URL = f'{DOMAIN}/profile/edit/'
+USER_CREATED_URL = f'{DOMAIN}{reverse_lazy("user_created")}'
+REGISTER_URL = f'{DOMAIN}{reverse_lazy("register")}'
+LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
+APPLY_URL = f'{DOMAIN}{reverse_lazy("print_registration")}'
 AUTH_URL = r'http://localhost:8000/profile/reset/.*/'
-PWD_RESET_URL = f'{DOMAIN}/profile/password_reset/'
+PWD_RESET_URL = f'{DOMAIN}{reverse_lazy("password_reset")}'
 
 PWD = 'testpassword'
 
@@ -245,8 +246,10 @@ def test_registration__24(browser, user):
     testuser = User.objects.create_user(email=user['email'], password=PWD)
     testuser.save()
     _log_in(browser, user['email'], PWD)
-    with pytest.raises(HTTPError, match=r'.*500.*'):
-        browser.open(APPLY_URL)
+
+    browser.open(APPLY_URL)
+    assert browser.url == DOMAIN + reverse_lazy('home')
+    assert f'There is no profile for {user["email"]}' in browser.contents
 
 
 def test_registration__25(browser, user, mail_outbox):

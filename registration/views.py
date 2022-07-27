@@ -9,12 +9,12 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
-from django.http import FileResponse
-from django.http import HttpResponseServerError
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 import django.contrib.auth.forms
+import django.http as http
 import functools
 import logging
 
@@ -24,27 +24,16 @@ User = get_user_model()
 logger = logging.getLogger('django')
 
 
-@login_required
-def user_data_view(request):
-    """
-    View with the users data.
+def _validation_errors(request, template_name, form) -> http.HttpResponse:
+    error_list = functools.reduce(sum, list(form.errors.values()))
+    logging.error('Received invalid RegisterForm')
+    messages.error(request, "\n\n".join(error_list))
+    return render(request, template_name, {"form": form})
 
-    The data is editable for the user as long as he/she is not verified yet.
-    Phone numbers are always editable.
-    """
-    # initialize user and profile
-    user = request.user
-    # TODO get or 404
-    try:
-        profile = Profile.objects.get(okuser=user)
-    except Profile.DoesNotExist:
-        logger.error(f'User {user} does not exist.')
-        # TODO message
-        return HttpResponseServerError()
 
-    form = UserDataForm()
+def _initialize_user_form(user, profile) -> UserDataForm:
 
-    FORM_KEYS = form.fields.keys()
+    FORM_KEYS = UserDataForm().fields.keys()
     ALWAYS_WRITABLE = ['phone_number', 'mobile_number']
 
     # fill form with user data
@@ -56,7 +45,7 @@ def user_data_view(request):
             assert hasattr(user, field)
             initial_data[field] = getattr(user, field)
 
-    form = UserDataForm(initial=initial_data)
+    form = UserDataForm(initial_data, initial=initial_data)
 
     # if verified only ALWAY_WRITABLE fields are writeable
     if profile.verified:
@@ -64,10 +53,33 @@ def user_data_view(request):
             if field not in ALWAYS_WRITABLE:
                 form.fields[field].widget.attrs['readonly'] = True
 
+    return form
+
+
+@login_required
+def print_registration_view(request):
+    """
+    View with the users data.
+
+    The data is editable for the user as long as he/she is not verified yet.
+    Phone numbers are always editable.
+    """
+    # initialize user and profile
+    user = request.user
+    try:
+        profile = user.profile
+    except User.profile.RelatedObjectDoesNotExist:
+        message = f'There is no profile for {user}'
+        logger.error(message)
+        messages.error(request, message)
+        return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+    form = _initialize_user_form(user, profile)
+
     if request.method == 'GET':
         return render(
             request,
-            'registration/user_data.html',
+            'registration/print_registration.html',
             {'form': form, 'user': user}
         )
 
@@ -75,10 +87,56 @@ def user_data_view(request):
         return generate_registration_form(user, profile)
     else:
         assert 'manual-form' in request.POST
-        return FileResponse(
+        return http.FileResponse(
             open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
             filename=('application_form.pdf')
         )
+
+
+@login_required
+def edit_profile(request):
+    """View so the user can edit his/her profile."""
+    user = request.user
+    template_name = 'registration/print_registration.html'
+
+    try:
+        profile = user.profile
+    except User.profile.RelatedObjectDoesNotExist:
+        message = f'There is no profile for {user}'
+        logger.error(message)
+        messages.error(request, message)
+        return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+    form = _initialize_user_form(user, profile)
+
+    if request.method == 'GET':
+        return render(
+            request,
+            'registration/print_registration.html',
+            {'form': form, 'user': user}
+        )
+
+    if request.method == 'POST':
+        assert 'submit' in request.POST
+
+        form = UserDataForm(request.POST)
+        if not form.is_valid():
+            return _validation_errors(request, template_name, form)
+
+        cleaned_data = form.cleaned_data
+        for field in form.fields.keys():
+            if hasattr(profile, field):
+                setattr(profile, field, cleaned_data[field])
+            else:
+                assert hasattr(user, field)
+                # It can only be the email
+                setattr(user, field, cleaned_data[field].lower())
+
+        user.save()
+        profile.save()
+
+        messages.success(request, _('Your profile was successfully updated.'))
+        return render(request, template_name, {"form": form})
 
 
 class RegisterView(generic.CreateView):
@@ -93,10 +151,7 @@ class RegisterView(generic.CreateView):
         form = self.form(request.POST)
 
         if not form.is_valid():
-            error_list = functools.reduce(sum, list(form.errors.values()))
-            logging.error('Received invalid RegisterForm')
-            messages.error(request, "\n\n".join(error_list))
-            return render(request, self.template_name, {"form": form})
+            return _validation_errors(request, self.template_name, form)
 
         data = form.cleaned_data
 
@@ -114,13 +169,13 @@ class RegisterView(generic.CreateView):
 
         profile = self.model(
             okuser=user,
-            first_name=data['first_name'].lower(),
-            last_name=data['last_name'].lower(),
+            first_name=data['first_name'],
+            last_name=data['last_name'],
             gender=data['gender'],
             phone_number=data['mobile_number'],
             mobile_number=data['phone_number'],
             birthday=data['birthday'],
-            street=data['street'].lower(),
+            street=data['street'],
             house_number=data['house_number'],
             zipcode=data['zipcode'],
             city=data['city'],
