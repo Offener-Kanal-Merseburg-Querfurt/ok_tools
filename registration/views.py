@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.http import FileResponse
 from django.http import HttpResponseServerError
 from django.shortcuts import redirect
@@ -23,6 +24,7 @@ User = get_user_model()
 logger = logging.getLogger('django')
 
 
+@login_required
 def user_data_view(request):
     """
     View with the users data.
@@ -32,6 +34,7 @@ def user_data_view(request):
     """
     # initialize user and profile
     user = request.user
+    # TODO get or 404
     try:
         profile = Profile.objects.get(okuser=user)
     except Profile.DoesNotExist:

@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
@@ -47,5 +46,5 @@ urlpatterns = [
         TemplateView.as_view(template_name='privacy_policy.html'),
         name='privacy_policy'
     ),
-    path('profile/edit/', login_required(user_data_view), name='user_data'),
+    path('profile/edit/', user_data_view, name='user_data'),
 ]
