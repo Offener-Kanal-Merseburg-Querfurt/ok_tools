@@ -1,7 +1,7 @@
 from .models import OKUser as User
 from .models import Profile
-from PyPDF2 import PdfFileReader
-from PyPDF2 import PdfFileWriter
+from PyPDF2 import PdfReader
+from PyPDF2 import PdfWriter
 from django.conf import settings
 from django.http import FileResponse
 from django.utils.translation import gettext as _
@@ -61,17 +61,18 @@ def generate_registration_form(user: User, profile: Profile) -> FileResponse:
 
     pdf_buffer.seek(0)
 
-    edit_pdf = PdfFileReader(pdf_buffer)
+    edit_pdf = PdfReader(pdf_buffer)
 
+    # required until seek
     with open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb') as fileobj:
-        registration_template = PdfFileReader(fileobj)
+        registration_template = PdfReader(fileobj)
 
-        regstr_page = registration_template.getPage(0)
+        regstr_page = registration_template.pages[0]
 
-        regstr_page.mergePage(edit_pdf.getPage(0))
+        regstr_page.merge_page(edit_pdf.pages[0])
 
-        registration = PdfFileWriter()
-        registration.addPage(regstr_page)
+        registration = PdfWriter()
+        registration.add_page(regstr_page)
         apl_stream = io.BytesIO()
         registration.write(apl_stream)
 
