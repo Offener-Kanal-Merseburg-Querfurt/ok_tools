@@ -1,5 +1,6 @@
 from .models import Profile
 from bootstrap_datepicker_plus.widgets import DatePickerInput
+from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from crispy_forms.layout import ButtonHolder
@@ -19,14 +20,39 @@ import logging
 logger = logging.getLogger('django')
 
 
-class RegisterForm(forms.ModelForm, ):
-    """Form to register a user."""
+class UserDataForm(forms.ModelForm):
+    """Form to display user data which maybe can be changed by user."""
+
+    email = forms.EmailField(label=_('Email address'))
 
     class Meta:
-        """At the moment, the user only needs to provide an email address."""
+        """The fields verified and okuser are not shown to the user."""
 
-        model = get_user_model()
-        fields = ('email',)
+        model = Profile
+        exclude = ('verified', 'okuser')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'email',
+            'first_name',
+            'last_name',
+            'gender',
+            'phone_number',
+            'mobile_number',
+            'birthday',
+            'street',
+            'house_number',
+            'zipcode',
+            'city',
+            FormActions(
+                Submit('submit', _('Submit changes')),
+                Submit('print', _('Fill out application form')),
+                Submit('manual-form', _('Apply manually'),
+                       css_class="btn btn-outline-secondary")
+            )
+        )
 
 
 class ProfileForm(forms.ModelForm):

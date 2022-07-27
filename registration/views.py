@@ -1,11 +1,16 @@
 from .email import send_auth_mail
 from .forms import PasswordResetForm
 from .forms import ProfileForm
+from .forms import UserDataForm
 from .models import Profile
+from .print import generate_registration_form
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.http import FileResponse
+from django.http import HttpResponseServerError
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views import generic
@@ -14,7 +19,66 @@ import functools
 import logging
 
 
-logger = logging.getLogger('djangp')
+User = get_user_model()
+
+logger = logging.getLogger('django')
+
+
+@login_required
+def user_data_view(request):
+    """
+    View with the users data.
+
+    The data is editable for the user as long as he/she is not verified yet.
+    Phone numbers are always editable.
+    """
+    # initialize user and profile
+    user = request.user
+    # TODO get or 404
+    try:
+        profile = Profile.objects.get(okuser=user)
+    except Profile.DoesNotExist:
+        logger.error(f'User {user} does not exist.')
+        # TODO message
+        return HttpResponseServerError()
+
+    form = UserDataForm()
+
+    FORM_KEYS = form.fields.keys()
+    ALWAYS_WRITABLE = ['phone_number', 'mobile_number']
+
+    # fill form with user data
+    initial_data = {}
+    for field in FORM_KEYS:
+        if hasattr(profile, field):
+            initial_data[field] = getattr(profile, field)
+        else:
+            assert hasattr(user, field)
+            initial_data[field] = getattr(user, field)
+
+    form = UserDataForm(initial=initial_data)
+
+    # if verified only ALWAY_WRITABLE fields are writeable
+    if profile.verified:
+        for field in FORM_KEYS:
+            if field not in ALWAYS_WRITABLE:
+                form.fields[field].widget.attrs['readonly'] = True
+
+    if request.method == 'GET':
+        return render(
+            request,
+            'registration/user_data.html',
+            {'form': form, 'user': user}
+        )
+
+    if 'print' in request.POST:
+        return generate_registration_form(user, profile)
+    else:
+        assert 'manual-form' in request.POST
+        return FileResponse(
+            open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
+            filename=('application_form.pdf')
+        )
 
 
 class RegisterView(generic.CreateView):
@@ -36,7 +100,7 @@ class RegisterView(generic.CreateView):
 
         data = form.cleaned_data
 
-        user_model = get_user_model()
+        user_model = User
         email = data['email'].lower()
 
         # Does the user already exist?
