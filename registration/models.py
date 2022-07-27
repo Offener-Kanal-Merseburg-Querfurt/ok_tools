@@ -152,7 +152,6 @@ class Profile(models.Model):
         MediaAuthority,
         on_delete=models.CASCADE,
         default=default_media_authority,
-        unique=True,
     )
 
     def __str__(self):
