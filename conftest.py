@@ -1,9 +1,10 @@
-from datetime import date
+from datetime import datetime
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from registration.models import Profile
 import PyPDF2
 import io
-from registration.models import Profile
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
@@ -66,35 +67,22 @@ def user_dict() -> dict:
 
 
 @pytest.fixture(scope='function')
-def user() -> User:
+def user(user_dict) -> User:
     """Return a registered user with profile and password."""
-    user_data = {
-        "email": "user@example.com",
-        "first_name": "john",
-        "last_name": "doe",
-        "gender": "m",
-        "phone_number": None,
-        "mobile_number": None,
-        "birthday": "1989-09-05",
-        "street": "secondary street",
-        "house_number": "1",
-        "zipcode": "12345",
-        "city": "example-city"
-    }
-
-    user = User.objects.create_user(user_data['email'], password=PWD)
+    user = User.objects.create_user(user_dict['email'], password=PWD)
     Profile(
         okuser=user,
-        first_name=user_data['first_name'],
-        last_name=user_data['last_name'],
-        gender=user_data['gender'],
-        phone_number=user_data['mobile_number'],
-        mobile_number=user_data['phone_number'],
-        birthday=date.fromisoformat(user_data['birthday']),
-        street=user_data['street'],
-        house_number=user_data['house_number'],
-        zipcode=user_data['zipcode'],
-        city=user_data['city'],
+        first_name=user_dict['first_name'],
+        last_name=user_dict['last_name'],
+        gender=user_dict['gender'],
+        phone_number=user_dict['mobile_number'],
+        mobile_number=user_dict['phone_number'],
+        birthday=datetime.strptime(
+            user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
+        street=user_dict['street'],
+        house_number=user_dict['house_number'],
+        zipcode=user_dict['zipcode'],
+        city=user_dict['city'],
     ).save()
 
     return user

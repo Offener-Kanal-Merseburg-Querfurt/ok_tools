@@ -11,8 +11,10 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
+from typing import Tuple
 import django.contrib.auth.forms
 import django.http as http
 import functools
@@ -22,6 +24,16 @@ import logging
 User = get_user_model()
 
 logger = logging.getLogger('django')
+
+
+def _get_user_and_profile(request) -> Tuple[User, Profile] | Tuple[User, None]:
+    user = request.user
+    try:
+        profile = user.profile
+    except User.profile.RelatedObjectDoesNotExist:
+        profile = None
+
+    return (user, profile)
 
 
 def _validation_errors(request, template_name, form) -> http.HttpResponse:
@@ -38,116 +50,147 @@ def _no_profile_error(request) -> http.HttpResponseRedirect:
     return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
-def _initialize_user_form(user, profile, edit=True) -> UserDataForm:
+def _get_initial_data(user: User, profile: Profile) -> dict:
 
-    FORM_KEYS = UserDataForm().fields.keys()
-    ALWAYS_WRITABLE = ['phone_number', 'mobile_number']
+    if not profile:
+        return {}
 
     # fill form with user data
     initial_data = {}
-    for field in FORM_KEYS:
+    for field in UserDataForm().fields:
         if hasattr(profile, field):
             initial_data[field] = getattr(profile, field)
         else:
             assert hasattr(user, field)
             initial_data[field] = getattr(user, field)
 
-    form = UserDataForm(initial_data, initial=initial_data)
-
-    # if verified only ALWAY_WRITABLE fields are writeable
-    if profile.verified and edit:
-        for field in FORM_KEYS:
-            if field not in ALWAYS_WRITABLE:
-                form.fields[field].widget.attrs['readonly'] = True
-
-    return form
+    return initial_data
 
 
-@login_required
-def print_registration_view(request):
+class PrintRegistrationView(generic.View):
     """
     View with the users data.
 
     The data is editable for the user as long as he/she is not verified yet.
     Phone numbers are always editable.
     """
+
     template_name = 'registration/print_registration.html'
-    # initialize user and profile
-    user = request.user
-    try:
-        profile = user.profile
-    except User.profile.RelatedObjectDoesNotExist:
-        return _no_profile_error(request)
 
-    form = _initialize_user_form(user, profile, edit=False)
+    def setup(self, request, *args, **kwargs):
+        """Initialize attributes."""
+        self.user, self.profile = _get_user_and_profile(request)
 
-    if request.method == 'GET':
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request):
+        """
+        Handle get requests.
+
+        Create a form with the users data.
+        """
+        if not self.profile:
+            return _no_profile_error(request)
+
+        self.initial_data = _get_initial_data(self.user, self.profile)
+        form = UserDataForm(self.initial_data)
+
         return render(
             request,
-            template_name,
-            {'form': form, 'user': user}
+            self.template_name,
+            {'form': form, 'user': self.user}
         )
 
-    if 'print' in request.POST:
-        return generate_registration_form(user, profile)
-    else:
-        assert 'manual-form' in request.POST
-        return http.FileResponse(
-            open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
-            filename=('application_form.pdf')
-        )
+    def post(self, request):
+        """
+        Handle post requests.
+
+        Return the registration form as pdf. Either filled with the users data
+        or just as template.
+        """
+        if 'print' in request.POST:
+            assert self.profile
+            return generate_registration_form(self.user, self.profile)
+        else:
+            assert 'manual-form' in request.POST
+            return http.FileResponse(
+                open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
+                filename=('application_form.pdf')
+            )
 
 
-@login_required
-def edit_profile(request):
+@method_decorator(login_required, name='setup')
+class EditProfileView(generic.View):
     """View so the user can edit his/her profile."""
-    user = request.user
+
     template_name = 'registration/edit_profile.html'
 
-    try:
-        profile = user.profile
-    except User.profile.RelatedObjectDoesNotExist:
-        return _no_profile_error(request)
+    def setup(self, request, *args, **kwargs):
+        """Initialize attributes."""
+        self.user, self.profile = _get_user_and_profile(request)
+        self.initial_data = _get_initial_data(self.user, self.profile)
 
-    form = _initialize_user_form(user, profile)
+        return super().setup(request, *args, **kwargs)
 
-    if request.method == 'GET':
+    def get(self, request):
+        """
+        Handle get requests.
+
+        Create form with user data and writeable fields depending on the users
+        verification.
+        """
+        if not self.profile:
+            return _no_profile_error(request)
+
+        form = UserDataForm(self.initial_data)
+
+        ALWAYS_WRITABLE = ['phone_number', 'mobile_number']
+        # if verified only ALWAY_WRITABLE fields are writeable
+        if self.profile.verified:
+            for field in form.fields.keys():
+                if field not in ALWAYS_WRITABLE:
+                    form.fields[field].widget.attrs['readonly'] = True
+
         return render(
             request,
-            template_name,
-            {'form': form, 'user': user}
+            self.template_name,
+            {'form': form, 'user': self.user}
         )
-    else:
-        assert request.method == 'POST'
-        assert 'submit' in request.POST
 
-        form = UserDataForm(request.POST)
+    def post(self, request):
+        """Submit changes of the users data."""
+        assert 'submit' in request.POST
+        assert self.profile
+
+        form = UserDataForm(request.POST, initial=self.initial_data)
+
         if not form.is_valid():
-            return _validation_errors(request, template_name, form)
+            return _validation_errors(request, self.template_name, form)
 
         cleaned_data = form.cleaned_data
 
-        # Does the email already belongs to another user?
-        email = cleaned_data['email']
-        used = User.objects.filter(email=email)
-        if used and used[0].id != user.id:
-            messages.error(
-                request, f'The e-mail address {email} already exists.')
-            return render(request, template_name, {"form": form})
-
-        for field in form.fields.keys():
-            if hasattr(profile, field):
-                setattr(profile, field, cleaned_data[field])
+        for field in form.changed_data:
+            if hasattr(self.profile, field):
+                setattr(self.profile, field, cleaned_data[field])
             else:
-                assert hasattr(user, field)
                 # It can only be the email
-                setattr(user, field, cleaned_data[field].lower())
+                assert field == 'email'
 
-        user.save()
-        profile.save()
+                # Does the email already belongs to another user?
+                email = cleaned_data['email']
+                used = User.objects.filter(email=email)
+                if used and used[0].id != self.user.id:
+                    messages.error(
+                        request, f'The e-mail address {email} already exists.')
+                    return render(request, self.template_name, {"form": form})
+
+                self.user.email = email
+
+        self.user.save()
+        self.profile.save()
 
         messages.success(request, _('Your profile was successfully updated.'))
-        return render(request, template_name, {"form": form})
+        return render(request, self.template_name, {"form": form})
 
 
 class RegisterView(generic.CreateView):

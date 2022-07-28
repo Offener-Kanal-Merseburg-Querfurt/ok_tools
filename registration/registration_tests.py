@@ -1,7 +1,7 @@
 from .email import send_auth_mail
 from .models import Profile
-from conftest import pdfToText
 from conftest import PWD
+from conftest import pdfToText
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
@@ -223,7 +223,7 @@ def test_registration__22(browser, user_dict, mail_outbox):
     _log_in(browser, user_dict['email'], PWD)
     browser.open(APPLY_URL)
     browser.getControl('Print template').click()
-    
+
     assert browser.headers['Content-Type'] == 'application/pdf'
     assert user_dict['first_name'] not in pdfToText(browser.contents)
     assert user_dict['last_name'] not in pdfToText(browser.contents)
@@ -284,7 +284,7 @@ def test__registration__templates__navbar__1(browser):
     assert 'You are not logged in' in browser.contents
 
 
-def test__registration__views__edit_profile__1(db, browser, user_dict):
+def test__registration__views__EditProfileView__1(db, browser, user_dict):
     """It is not possible to change user data without a profile."""
     User.objects.create_user(user_dict['email'], password=PWD).save()
     _log_in(browser, user_dict['email'], PWD)
@@ -293,7 +293,7 @@ def test__registration__views__edit_profile__1(db, browser, user_dict):
     assert 'There is no profile' in browser.contents
 
 
-def test__registration__views__edit_profile__2(browser, user):
+def test__registration__views__EditProfileView__2(browser, user):
     """A not verified user with a profile can change his/her data."""
     _log_in(browser, user.email, PWD)
     browser.open(USER_EDIT_URL)
@@ -304,7 +304,7 @@ def test__registration__views__edit_profile__2(browser, user):
     assert User.objects.get(email=user.email).profile.first_name == new_name
 
 
-def test__registration__views__edit_profile__3(browser, user):
+def test__registration__views__EditProfileView__3(browser, user):
     """The edit form gets validated."""
     _log_in(browser, user.email, PWD)
     browser.open(USER_EDIT_URL)
@@ -314,7 +314,7 @@ def test__registration__views__edit_profile__3(browser, user):
     assert 'Enter a valid email address' in browser.contents
 
 
-def test__registration__views__edit_profile__4(browser, user):
+def test__registration__views__EditProfileView__4(browser, user):
     """The email address needs to be unique."""
     used_email = 'used@example.com'
     User.objects.create_user(used_email, password=PWD)
@@ -326,6 +326,31 @@ def test__registration__views__edit_profile__4(browser, user):
 
     assert browser.url == USER_EDIT_URL
     assert 'already exists.' in browser.contents
+
+
+def test__registration__views__EditProfileView__5(browser):
+    """The edit profile site is for logged in users only."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(USER_EDIT_URL)
+
+
+def test__registration__views__EditProfileView__6(browser, user):
+    """It is possible to edit the email address."""
+    _log_in(browser, user.email, PWD)
+    new_email = 'new_'+user.email
+
+    browser.open(USER_EDIT_URL)
+    browser.getControl(name='email').value = new_email
+    browser.getControl('Submit').click()
+
+    assert 'successfully updated' in browser.contents
+    assert User.objects.get(email=new_email)
+
+
+def test__registration__views__PrintRegistrationView__1(browser):
+    """It raises a 404 in case the user is not logged in."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(APPLY_URL)
 
 
 """Helper functions"""

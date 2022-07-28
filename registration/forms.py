@@ -26,7 +26,12 @@ class UserDataForm(forms.ModelForm):
     email = forms.EmailField(label=_('Email address'))
 
     class Meta:
-        """The fields verified and okuser are not shown to the user."""
+        """
+        Excluded fields.
+
+        The fields verified, okuser and media_authority are not shown to the
+        user.
+        """
 
         model = Profile
         exclude = ('verified', 'okuser', 'media_autority')
