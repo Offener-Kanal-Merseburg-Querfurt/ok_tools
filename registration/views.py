@@ -26,7 +26,7 @@ logger = logging.getLogger('django')
 
 def _validation_errors(request, template_name, form) -> http.HttpResponse:
     error_list = functools.reduce(sum, list(form.errors.values()))
-    logging.error('Received invalid RegisterForm')
+    logging.error('Received invalid form')
     messages.error(request, "\n\n".join(error_list))
     return render(request, template_name, {"form": form})
 
@@ -126,6 +126,15 @@ def edit_profile(request):
             return _validation_errors(request, template_name, form)
 
         cleaned_data = form.cleaned_data
+
+        # Does the email already belongs to another user?
+        email = cleaned_data['email']
+        used = User.objects.filter(email=email)
+        if used and used[0].id != user.id:
+            messages.error(
+                request, f'The e-mail address {email} already exists.')
+            return render(request, template_name, {"form": form})
+
         for field in form.fields.keys():
             if hasattr(profile, field):
                 setattr(profile, field, cleaned_data[field])

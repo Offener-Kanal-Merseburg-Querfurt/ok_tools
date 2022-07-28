@@ -83,7 +83,6 @@ def user() -> User:
     }
 
     user = User.objects.create_user(user_data['email'], password=PWD)
-    user.save()
     Profile(
         okuser=user,
         first_name=user_data['first_name'],

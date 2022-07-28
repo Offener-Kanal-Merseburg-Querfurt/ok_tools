@@ -304,7 +304,7 @@ def test__registration__views__edit_profile__2(browser, user):
     assert User.objects.get(email=user.email).profile.first_name == new_name
 
 
-def test_registration__views__edit_profile__3(browser, user):
+def test__registration__views__edit_profile__3(browser, user):
     """The edit form gets validated."""
     _log_in(browser, user.email, PWD)
     browser.open(USER_EDIT_URL)
@@ -312,6 +312,20 @@ def test_registration__views__edit_profile__3(browser, user):
     browser.getControl('Submit').click()
     assert browser.url == USER_EDIT_URL
     assert 'Enter a valid email address' in browser.contents
+
+
+def test__registration__views__edit_profile__4(browser, user):
+    """The email address needs to be unique."""
+    used_email = 'used@example.com'
+    User.objects.create_user(used_email, password=PWD)
+    _log_in(browser, user.email, PWD)
+
+    browser.open(USER_EDIT_URL)
+    browser.getControl(name='email').value = used_email
+    browser.getControl('Submit').click()
+
+    assert browser.url == USER_EDIT_URL
+    assert 'already exists.' in browser.contents
 
 
 """Helper functions"""

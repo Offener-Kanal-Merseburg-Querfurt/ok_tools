@@ -29,7 +29,7 @@ class UserDataForm(forms.ModelForm):
         """The fields verified and okuser are not shown to the user."""
 
         model = Profile
-        exclude = ('verified', 'okuser')
+        exclude = ('verified', 'okuser', 'media_autority')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
