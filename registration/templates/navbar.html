@@ -38,13 +38,30 @@
           <a class="dropdown-item" href="{% url 'user_data' %}">{%translate 'Edit user data'%}</a>
         </div>
       </li>
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          {%translate 'Licenses'%}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'licenses:licenses' %}">{%translate 'Overview'%}</a>
+          <a class="dropdown-item" href="{% url 'licenses:create'%}">{%translate 'Create license'%}</a>
+        </div>
+      </li>
       {% else %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'login' %}">{%translate 'Login'%}</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'register' %}"
-          >{%translate 'register'%}</a
+          >{%translate 'Register'%}</a
         >
       </li>
       {% endif %}

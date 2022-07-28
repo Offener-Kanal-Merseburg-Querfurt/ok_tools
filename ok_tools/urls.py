@@ -23,6 +23,7 @@ from registration import views
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
+    path('licenses/', include('licenses.urls')),
     path(
         "profile/reset/<uidb64>/<token>/",
         views.PasswordResetConfirmView.as_view(),
