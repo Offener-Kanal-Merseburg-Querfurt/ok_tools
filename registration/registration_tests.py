@@ -222,8 +222,8 @@ def test_registration__22(browser, user, mail_outbox):
     register_with_pwd(browser, user, mail_outbox)
     _log_in(browser, user['email'], PWD)
     browser.open(APPLY_URL)
-    browser.getControl('Apply').click()
-
+    browser.getControl('Print template').click()
+    
     assert browser.headers['Content-Type'] == 'application/pdf'
     assert user['first_name'] not in pdfToText(browser.contents)
     assert user['last_name'] not in pdfToText(browser.contents)
@@ -234,7 +234,7 @@ def test_registration__23(browser, user, mail_outbox):
     register_with_pwd(browser, user, mail_outbox)
     _log_in(browser, user['email'], PWD)
     browser.open(APPLY_URL)
-    browser.getControl('application form').click()
+    browser.getControl('Print registration').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
     assert user['first_name'] in pdfToText(browser.contents)
@@ -259,7 +259,7 @@ def test_registration__25(browser, user, mail_outbox):
     testprofile = Profile.objects.get(first_name=user['first_name'])
     testprofile.verified = True
     testprofile.save()
-    browser.open(APPLY_URL)
+    browser.open(DOMAIN + reverse_lazy('user_data'))
     with pytest.raises(AttributeError, match=r'.*readonly.*'):
         browser.getControl(name='first_name').value = 'new_name'
     browser.getControl(name='phone_number').value = '123456789012'

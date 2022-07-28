@@ -48,9 +48,14 @@ class UserDataForm(forms.ModelForm):
             'city',
             FormActions(
                 Submit('submit', _('Submit changes')),
-                Submit('print', _('Fill out application form')),
-                Submit('manual-form', _('Apply manually'),
-                       css_class="btn btn-outline-secondary")
+                HTML("""
+                     {% load i18n %}
+                     <a class="btn btn-outline-primary"
+                     href="{% url 'print_registration' %}">
+                        {%translate 'Print registration form'%}
+                     </a>
+                     """
+                     )
             )
         )
 

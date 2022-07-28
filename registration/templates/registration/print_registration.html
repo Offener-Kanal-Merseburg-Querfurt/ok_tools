@@ -6,6 +6,29 @@
 {% block content%}
 <h1>{%translate 'User data for '%} {{ user.profile }}</h1>
 
-{% crispy form %}
+
+<form method="post">
+{% csrf_token %}
+<table class="table">
+    <tbody>
+        {% for field in form %}
+        <tr>
+        <td>{{ field.label }}:</td>
+        <td>{% if field.value %}
+                {{ field.value }}
+            {% else %}
+                ----
+            {% endif %}
+        </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div>
+<input type="submit" name="print" value="{%translate 'Print registration form'%}" class="btn btn-primary" />
+<a class="btn btn-primary" href="{% url 'user_data' %}">{%translate 'Edit user data'%}</a>
+<input type="submit" name="manual-form" value="{%translate 'Print template only'%}" class="btn btn-outline-secondary" />
+</div>
+<form>
 
 {% endblock content%}
