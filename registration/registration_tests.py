@@ -1,5 +1,6 @@
 from .email import send_auth_mail
 from .models import Profile
+from conftest import pdfToText
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
@@ -221,8 +222,10 @@ def test_registration__22(browser, user, mail_outbox):
     _log_in(browser, user['email'], PWD)
     browser.open(APPLY_URL)
     browser.getControl('Apply').click()
-    # TODO don't checks content of pdf
+
     assert browser.headers['Content-Type'] == 'application/pdf'
+    assert user['first_name'] not in pdfToText(browser.contents)
+    assert user['last_name'] not in pdfToText(browser.contents)
 
 
 def test_registration__23(browser, user, mail_outbox):
@@ -231,8 +234,10 @@ def test_registration__23(browser, user, mail_outbox):
     _log_in(browser, user['email'], PWD)
     browser.open(APPLY_URL)
     browser.getControl('application form').click()
-    # TODO don't checks content of pdf
+
     assert browser.headers['Content-Type'] == 'application/pdf'
+    assert user['first_name'] in pdfToText(browser.contents)
+    assert user['last_name'] in pdfToText(browser.contents)
 
 
 def test_registration__24(browser, user):

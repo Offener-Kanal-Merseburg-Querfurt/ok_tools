@@ -1,4 +1,5 @@
 from .models import Profile
+from conftest import pdfToText
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 import pytest
@@ -204,6 +205,20 @@ def test_admin__14(db, user, browser):
     assert not first_user.profile.verified
     assert not second_user.profile.verified
     assert 'successfully unverified' in browser.contents
+
+
+def test__admin__14(db, user, browser):
+    """Print application form."""
+    _create_user(db, user)
+    _login(browser)
+
+    browser.getLink('Profile').click()
+    browser.getLink(user['email']).click()
+    browser.getControl('Print').click()
+
+    assert browser.headers['Content-Type'] == 'application/pdf'
+    assert user['first_name'] in pdfToText(browser.contents)
+    assert user['last_name'] in pdfToText(browser.contents)
 
 
 def _create_user(db, user, verified=False, is_staff=False):

@@ -1,4 +1,6 @@
 from django.core import mail
+import PyPDF2
+import io
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
@@ -53,3 +55,13 @@ def user() -> dict:
         "zipcode": "12345",
         "city": "example-city"
     }
+
+
+# Global helper functions.
+
+
+def pdfToText(pdf) -> str:
+    """Convert pdf bytes into text."""
+    reader = PyPDF2.PdfReader(io.BytesIO(pdf))
+
+    return "\n".join(page.extract_text() for page in reader.pages)
