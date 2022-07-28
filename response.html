@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>OK Merseburg</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      crossorigin="anonymous"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      crossorigin="anonymous"
+      integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      crossorigin="anonymous"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      crossorigin="anonymous"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    ></script>
+  </head>
+  <body>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/">OK Merseburg</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+
+      <li class="nav-item">
+        <a class="nav-link" href="/profile/logout/">Logout</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Profile
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/profile/application">Print Registration Form</a>
+          <a class="dropdown-item" href="/profile/password_reset/">Change password</a>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+    <div class="container">
+      <h1>Offener Kanal Merseburg-Querfurt e.V.</h1>
+      <div class="container">
+        <br />
+        <div class="col-8">
+
+
+<div class="container-fluid p-0">
+  <div class="alert alert-danger alert-dismissible" role="alert" >
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="True">&times;</span>
+    </button>
+    Enter a valid email address.
+  </div>
+</div>
+
+
+          <main>
+<h1>User data for  john doe</h1>
+
+
+
+<form  method="post" > <input type="hidden" name="csrfmiddlewaretoken" value="tpVHRBZSEyM6lcmfEdHWyq0KkKf6oroLng92w0476TQ1lKW8HUsX3K5ed7QwElp1"> <div id="div_id_email" class="form-group"> <label for="id_email" class=" requiredField">
+                Email address<span class="asteriskField">*</span> </label> <div> <input type="email" name="email" value="invalid_email" class="emailinput form-control is-invalid" required id="id_email"> <span id="error_1_id_email" class="invalid-feedback"><strong>Enter a valid email address.</strong></span> </div> </div> <div id="div_id_first_name" class="form-group"> <label for="id_first_name" class=" requiredField">
+                First name<span class="asteriskField">*</span> </label> <div> <input type="text" name="first_name" value="john" maxlength="150" class="textinput textInput form-control" required id="id_first_name"> </div> </div> <div id="div_id_last_name" class="form-group"> <label for="id_last_name" class=" requiredField">
+                Last name<span class="asteriskField">*</span> </label> <div> <input type="text" name="last_name" value="doe" maxlength="150" class="textinput textInput form-control" required id="id_last_name"> </div> </div> <div id="div_id_gender" class="form-group"> <label for="id_gender" class=" requiredField">
+                Gender<span class="asteriskField">*</span> </label> <div> <select name="gender" class="select custom-select" id="id_gender"> <option value="none">Not Given</option> <option value="m" selected>Male</option> <option value="f">Female</option> <option value="d">Diverse</option>
+
+</select> </div> </div> <div id="div_id_phone_number" class="form-group"> <label for="id_phone_number" class="">
+                Phone number
+            </label> <div> <input type="text" name="phone_number" maxlength="30" class="textinput textInput form-control" id="id_phone_number"> </div> </div> <div id="div_id_mobile_number" class="form-group"> <label for="id_mobile_number" class="">
+                Mobile number
+            </label> <div> <input type="text" name="mobile_number" maxlength="30" class="textinput textInput form-control" id="id_mobile_number"> </div> </div> <div id="div_id_birthday" class="form-group"> <label for="id_birthday" class=" requiredField">
+                Birthday<span class="asteriskField">*</span> </label> <div> <input type="text" name="birthday" value="1989-09-05" class="dateinput form-control" required id="id_birthday"> </div> </div> <div id="div_id_street" class="form-group"> <label for="id_street" class=" requiredField">
+                Street<span class="asteriskField">*</span> </label> <div> <input type="text" name="street" value="secondary street" maxlength="95" class="textinput textInput form-control" required id="id_street"> </div> </div> <div id="div_id_house_number" class="form-group"> <label for="id_house_number" class=" requiredField">
+                House number<span class="asteriskField">*</span> </label> <div> <input type="text" name="house_number" value="1" maxlength="20" class="textinput textInput form-control" required id="id_house_number"> </div> </div> <div id="div_id_zipcode" class="form-group"> <label for="id_zipcode" class=" requiredField">
+                Zipcode<span class="asteriskField">*</span> </label> <div> <input type="text" name="zipcode" value="12345" maxlength="5" class="textinput textInput form-control" required id="id_zipcode"> </div> </div> <div id="div_id_city" class="form-group"> <label for="id_city" class=" requiredField">
+                City<span class="asteriskField">*</span> </label> <div> <input type="text" name="city" value="example-city" maxlength="35" class="textinput textInput form-control" required id="id_city"> </div> </div> <div class="form-group"> <div class=""> <input type="submit"
+    name="submit"
+    value="Submit changes"
+
+        class="btn btn-primary"
+        id="submit-id-submit"
+
+
+    /> <a class="btn btn-outline-primary"
+                     href="/profile/application">
+                        Print registration form
+                     </a> </div>
+</div> </form>
+
+
+</main>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

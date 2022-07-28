@@ -117,8 +117,8 @@ def edit_profile(request):
             template_name,
             {'form': form, 'user': user}
         )
-
-    if request.method == 'POST':
+    else:
+        assert request.method == 'POST'
         assert 'submit' in request.POST
 
         form = UserDataForm(request.POST)
