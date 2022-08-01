@@ -51,6 +51,19 @@ class UserDataForm(forms.ModelForm):
             'house_number',
             'zipcode',
             'city',
+            HTML("""
+                {% load i18n %}
+
+                 {% if user.profile.verified %}
+                 <p>
+                    {% blocktranslate %}
+                       Your profile is already verified. To change further
+                       data please contact an employee.
+                    {% endblocktranslate %}
+                 </p>
+                 {% endif %}
+                 """
+                 ),
             FormActions(
                 Submit('submit', _('Submit changes')),
                 HTML("""

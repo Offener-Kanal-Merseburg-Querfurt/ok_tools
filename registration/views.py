@@ -182,15 +182,17 @@ class EditProfileView(generic.View):
                 if used and used[0].id != self.user.id:
                     messages.error(
                         request, f'The e-mail address {email} already exists.')
-                    return render(request, self.template_name, {"form": form})
+                    return self.get(request)
 
                 self.user.email = email
+
+            self.initial_data[field] = cleaned_data[field]
 
         self.user.save()
         self.profile.save()
 
         messages.success(request, _('Your profile was successfully updated.'))
-        return render(request, self.template_name, {"form": form})
+        return self.get(request)
 
 
 class RegisterView(generic.CreateView):
