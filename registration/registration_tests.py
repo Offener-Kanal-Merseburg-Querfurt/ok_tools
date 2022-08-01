@@ -260,10 +260,18 @@ def test_registration__25(browser, user_dict, mail_outbox):
     testprofile.verified = True
     testprofile.save()
     browser.open(DOMAIN + reverse_lazy('user_data'))
-    with pytest.raises(AttributeError, match=r'.*readonly.*'):
-        browser.getControl(name='first_name').value = 'new_name'
-    browser.getControl(name='phone_number').value = '123456789012'
-    # TODO submit changes
+
+    assert browser.getControl(name='first_name').disabled
+    assert browser.getControl(name='gender').disabled
+
+    new_phone_number = '123456789012'
+    browser.getControl(name='phone_number').value = new_phone_number
+    browser.getControl('Submit').click()
+
+    assert USER_EDIT_URL == browser.url
+    assert 'successfully updated' in browser.contents
+    assert User.objects.get(
+        email=user_dict['email']).profile.phone_number == new_phone_number
 
 
 def test__registration__templates__privacy_policy__1(browser):

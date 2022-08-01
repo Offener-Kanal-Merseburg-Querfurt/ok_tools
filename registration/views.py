@@ -154,9 +154,11 @@ class EditProfileView(generic.View):
         ALWAYS_WRITABLE = ['phone_number', 'mobile_number']
         # if verified only ALWAY_WRITABLE fields are writeable
         if self.profile.verified:
-            for field in form.fields.keys():
+            for field in form.fields:
                 if field not in ALWAYS_WRITABLE:
-                    form.fields[field].widget.attrs['readonly'] = True
+                    # a field can not be required and disabled
+                    form.fields[field].widget.attrs['disabled'] = True
+                    form.fields[field].required = False
 
         return render(
             request,
