@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
@@ -46,7 +45,7 @@ urlpatterns = [
     ),
     path(
         'profile/application/',
-        login_required(views.PrintRegistrationView.as_view()),
+        views.PrintRegistrationView.as_view(),
         name='print_registration'
     ),
     path(
@@ -61,7 +60,7 @@ urlpatterns = [
     ),
     path(
         'profile/edit/',
-        login_required(views.EditProfileView.as_view()),
+        views.EditProfileView.as_view(),
         name='user_data'
     ),
 ]
