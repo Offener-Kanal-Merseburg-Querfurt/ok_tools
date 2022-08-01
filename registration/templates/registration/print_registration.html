@@ -25,10 +25,15 @@
     </tbody>
 </table>
 <div>
-<input type="submit" name="print" value="{%translate 'Print registration form'%}" class="btn btn-primary" />
-<a class="btn btn-primary" href="{% url 'user_data' %}">{%translate 'Edit user data'%}</a>
-<input type="submit" name="manual-form" value="{%translate 'Print template only'%}" class="btn btn-outline-secondary" />
-</div>
+<a class="btn btn-primary" href="{% url 'registration_filled_file' %}" target="_blank">
+    {%translate 'Print registration form'%}
+</a>
+<a class="btn btn-primary" href="{% url 'user_data' %}">
+    {%translate 'Edit user data'%}
+</a>
+<a class="btn btn-outline-secondary" href="{% url 'registration_plain_file' %}" target="_blank">
+    {%translate 'Print template only'%}
+</a>
 <form>
 
 {% endblock content%}

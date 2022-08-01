@@ -71,8 +71,8 @@ class PrintRegistrationView(generic.View):
     """
     View with the users data.
 
-    The data is editable for the user as long as he/she is not verified yet.
-    Phone numbers are always editable.
+    The data is not editable and used to automatically fill out the
+    registration form.
     """
 
     template_name = 'registration/print_registration.html'
@@ -101,25 +101,32 @@ class PrintRegistrationView(generic.View):
             {'form': form, 'user': self.user}
         )
 
-    def post(self, request):
-        """
-        Handle post requests.
 
-        Return the registration form as pdf. Either filled with the users data
-        or just as template.
-        """
-        if 'print' in request.POST:
-            assert self.profile
-            return generate_registration_form(self.user, self.profile)
-        else:
-            assert 'manual-form' in request.POST
-            return http.FileResponse(
-                open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
-                filename=('application_form.pdf')
-            )
+@method_decorator(login_required, name='dispatch')
+class RegistrationFilledFormFile(generic.View):
+    """View to deliver a filled registration form."""
+
+    def get(self, request):
+        """Handle the get request and return the pdf file."""
+        user, profile = _get_user_and_profile(request)
+
+        if not profile:
+            return _no_profile_error(request)
+
+        return generate_registration_form(user, profile)
 
 
-@method_decorator(login_required, name='setup')
+class RegistrationPlainFormFile(generic.View):
+    """View to deliver a plain registration form."""
+
+    def get(self, request):
+        """Handle the get request and return the pdf file."""
+        return http.FileResponse(
+            open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
+            filename=('registration_form.pdf')
+        )
+
+
 class EditProfileView(generic.View):
     """View so the user can edit his/her profile."""
 

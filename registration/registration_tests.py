@@ -222,7 +222,7 @@ def test_registration__22(browser, user_dict, mail_outbox):
     register_with_pwd(browser, user_dict, mail_outbox)
     _log_in(browser, user_dict['email'], PWD)
     browser.open(APPLY_URL)
-    browser.getControl('Print template').click()
+    browser.getLink('Print template').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
     assert user_dict['first_name'] not in pdfToText(browser.contents)
@@ -234,7 +234,7 @@ def test_registration__23(browser, user_dict, mail_outbox):
     register_with_pwd(browser, user_dict, mail_outbox)
     _log_in(browser, user_dict['email'], PWD)
     browser.open(APPLY_URL)
-    browser.getControl('Print registration').click()
+    browser.getLink('Print registration').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
     assert user_dict['first_name'] in pdfToText(browser.contents)
@@ -353,7 +353,29 @@ def test__registration__views__PrintRegistrationView__1(browser):
         browser.open(APPLY_URL)
 
 
-"""Helper functions"""
+def test__registration__views__RegistrationFilledFormFile__1(
+        browser, user_dict):
+    """It redirects to the previous page if the user don't has a profile."""
+    User.objects.create_user(user_dict['email'], password=PWD)
+    _log_in(browser, user_dict['email'], password=PWD)
+    browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
+    assert DOMAIN + reverse_lazy('home') == browser.url
+    assert 'There is no profile' in browser.contents
+
+
+def test__registration__views_RegistrationFilledFormFile__2(browser):
+    """It raises a 404 in case the user is not logged in."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
+
+
+def test__registration__views_RegistrationPlainFormFile__1(browser):
+    """It is always possible to access the plain registration form."""
+    browser.open(DOMAIN + reverse_lazy('registration_plain_file'))
+    assert browser.headers['Content-Type'] == 'application/pdf'
+
+
+# Helper functions
 
 
 def register_with_pwd(browser, user_dict: dict, mail_outbox, password=PWD):
