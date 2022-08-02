@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-18 12:13+0200\n"
+"POT-Creation-Date: 2022-08-01 15:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,34 +17,58 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: registration/admin.py:19 registration/admin.py:34
+#: registration/admin.py:23 registration/admin.py:38
 msgid "E-Mail address"
 msgstr "E-Mail-Adresse"
 
-#: registration/admin.py:22 registration/admin.py:37
+#: registration/admin.py:26 registration/admin.py:41
 msgid "Password"
 msgstr "Passwort"
 
-#: registration/admin.py:29 registration/admin.py:40
+#: registration/admin.py:33 registration/admin.py:44
 msgid "Staff"
-msgstr ""
+msgstr "Mitarbeiter"
 
-#: registration/forms.py:34
+#: registration/admin.py:104
+msgid "Verify selected profiles"
+msgstr "Ausgewählte Profile verifizieren"
+
+#: registration/admin.py:114
+msgid "Unverify selected profiles"
+msgstr "Ausgewählte Profile deverifizieren"
+
+#: registration/forms.py:26 registration/forms.py:61
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: registration/forms.py:37
+#: registration/forms.py:50
+msgid "Submit changes"
+msgstr "Änderungen bestätigen"
+
+#: registration/forms.py:51
+msgid "Fill out application form"
+msgstr "Nutzer*innenantrag ausfüllen"
+
+#: registration/forms.py:52
+msgid "Apply manually"
+msgstr "Nutzer*innenantrag manuell ausfüllen"
+
+#: registration/forms.py:63
+msgid "I accept"
+msgstr "I stimme zu"
+
+#: registration/forms.py:67
 msgid "Birthday"
 msgstr "Geburtstag"
 
-#: registration/forms.py:72 registration/templates/home.html:15
+#: registration/forms.py:104 registration/templates/home.html:15
 #: registration/templates/registration/register.html:7
 msgid "Register"
 msgstr "Registrieren"
 
 #: registration/models.py:17
 msgid "The given email must be set"
-msgstr ""
+msgstr "Die E-Mail-Adresse muss angegeben werden"
 
 #: registration/models.py:35
 msgid "Superuser must have is_staff=True."
@@ -59,69 +82,81 @@ msgstr ""
 msgid "email address"
 msgstr "E-Mail-Adresse"
 
-#: registration/models.py:76
+#: registration/models.py:73
+msgid "Media Authority"
+msgstr "Bürgermedium"
+
+#: registration/models.py:101
 msgid "first name"
 msgstr "Vorname"
 
-#: registration/models.py:78
+#: registration/models.py:103
 msgid "last name"
 msgstr "Nachname"
 
-#: registration/models.py:83
+#: registration/models.py:108
 msgid "Not Given"
 msgstr "Nicht angegeben"
 
-#: registration/models.py:84
+#: registration/models.py:109
 msgid "Male"
 msgstr "Männlich"
 
-#: registration/models.py:85
+#: registration/models.py:110
 msgid "Female"
 msgstr "Weiblich"
 
-#: registration/models.py:86
+#: registration/models.py:111
 msgid "Diverse"
 msgstr "Divers"
 
-#: registration/models.py:89
+#: registration/models.py:114
 msgid "gender"
 msgstr "Geschlecht"
 
-#: registration/models.py:98
+#: registration/models.py:123
 msgid "phone number"
 msgstr "Telefonnummer"
 
-#: registration/models.py:101
+#: registration/models.py:126
 msgid "mobile number"
 msgstr "Handynummer"
 
-#: registration/models.py:105
+#: registration/models.py:130
 msgid "birthday"
 msgstr "Geburtstag"
 
-#: registration/models.py:108
+#: registration/models.py:133
 msgid "street"
 msgstr "Straße"
 
-#: registration/models.py:110
+#: registration/models.py:135
 msgid "house number"
 msgstr "Hausnummer"
 
-#: registration/models.py:112
+#: registration/models.py:137
 msgid "zipcode"
 msgstr "Postleitzahl"
 
-#: registration/models.py:114
+#: registration/models.py:139
 msgid "city"
 msgstr "Stadt"
 
-#: registration/models.py:118
+#: registration/models.py:143
 msgid "verified"
 msgstr "verifiziert"
 
-#: registration/models.py:120
+#: registration/models.py:145
 msgid "The profile data was verified by showing the ID to an employee."
 msgstr "Das Profil wurde unter Vorlage eines Personalausweises verifiziert."
+
+#: registration/print.py:81
+msgid "registration_form.pdf"
+msgstr "Nutzer_innenantrag.pdf"
+
+#: registration/templates/admin/change_form_edit.html:8
+msgid "Print application"
+msgstr "Nutzer*innenantrag drucken"
 
 #: registration/templates/home.html:10
 msgid "Log Out"
@@ -142,6 +177,47 @@ msgstr "Sie sind nicht angemeldet."
 #: registration/templates/registration/password_reset_done.html:12
 msgid "Log In"
 msgstr "Anmelden"
+
+#: registration/templates/navbar.html:21
+msgid "Logout"
+msgstr "Abmelden"
+
+#: registration/templates/navbar.html:33
+msgid "Profile"
+msgstr "Profil"
+
+#: registration/templates/navbar.html:36
+msgid "Edit profile"
+msgstr "Profil bearbeiten"
+
+#: registration/templates/navbar.html:37
+#: registration/templates/registration/password_reset_confirm.html:16
+msgid "Change password"
+msgstr "Passwort ändern"
+
+#: registration/templates/navbar.html:42
+msgid "Login"
+msgstr "Anmelden"
+
+#: registration/templates/navbar.html:46
+#, fuzzy
+#| msgid "Register"
+msgid "register"
+msgstr "Registrieren"
+
+#: registration/templates/privacy_policy.html:6
+msgid "Privacy Policy"
+msgstr "Datenschutzerklärung"
+
+#: registration/templates/privacy_policy.html:8
+msgid ""
+"\n"
+"        This is the privacy policy.\n"
+"        "
+msgstr ""
+"\n"
+"        Dies ist die Datenschutzerklärung.\n"
+"        "
 
 #: registration/templates/registration/login.html:14
 msgid "Forgot Password"
@@ -167,10 +243,6 @@ msgstr "Neues Passwort"
 #: registration/templates/registration/password_reset_confirm.html:12
 msgid "Set a new password!"
 msgstr "Wählen Sie ein neues Passwort!"
-
-#: registration/templates/registration/password_reset_confirm.html:16
-msgid "Change password"
-msgstr "Passwort ändern"
 
 #: registration/templates/registration/password_reset_confirm.html:21
 msgid ""
@@ -290,5 +362,37 @@ msgstr ""
 msgid "Welcome to the %(ok_name)s"
 msgstr "Wilkommen beim %(ok_name)s"
 
+#: registration/templates/registration/user_created.html:6
+msgid "Welcome!"
+msgstr "Herzlich Willkommen!"
+
+#: registration/templates/registration/user_created.html:11
+#, python-format
+msgid ""
+"\n"
+"You succesfully registered at %(OK_NAME)s. Shortly you will receive an email "
+"with a link. Use this link to set your password. After that you should be "
+"able to log in.\n"
+msgstr ""
+"\n"
+"Sie haben sich erfolgreich beim %(OK_NAME)s registriert. In Kürze erhalten "
+"Sie eine E-Mail mit einem Link über den Sie Ihr Passwort setzen können. Im "
+"Anschluss sollten Sie sich anmelden können."
+
+#: registration/templates/registration/user_created.html:17
+msgid "Back to the start page"
+msgstr "Zurück zur Startseite"
+
+#: registration/templates/registration/user_data.html:7
+msgid "User data for "
+msgstr "Benutzerdaten für "
+
+#:
+msgid "Please accept our "
+msgstr "Bitte akzeptieren sie unsere "
+
+#:
+msgid "privacy policy"
+msgstr "Datenschutzerklärung"
 #~ msgid "Change my password"
 #~ msgstr "Passwort andern"
