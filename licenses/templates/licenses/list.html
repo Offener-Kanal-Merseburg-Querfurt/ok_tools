@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+<h1> {% translate 'Your licenses' %}</h1>
+
+<a class='btn btn-primary' href={%url 'licenses:create' %}>
+    {% translate 'Create license' %}
+</a>
+
+{% endblock content %}
