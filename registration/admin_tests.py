@@ -1,7 +1,7 @@
 from .models import Profile
-from conftest import pdfToText
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from ok_tools.testing import pdfToText
 import pytest
 import registration.signals
 

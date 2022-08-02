@@ -1,10 +1,10 @@
 from .email import send_auth_mail
 from .models import Profile
-from conftest import PWD
-from conftest import pdfToText
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
+from ok_tools.testing import PWD
+from ok_tools.testing import pdfToText
 from unittest.mock import patch
 from urllib.error import HTTPError
 import logging

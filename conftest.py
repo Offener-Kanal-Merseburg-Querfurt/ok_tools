@@ -2,16 +2,14 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from ok_tools.testing import PWD
 from registration.models import Profile
-import PyPDF2
-import io
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
 
 
 User = get_user_model()
-PWD = 'testpassword'
 
 
 @pytest.fixture(scope="function")
@@ -86,12 +84,3 @@ def user(user_dict) -> User:
     ).save()
 
     return user
-
-# Global helper functions.
-
-
-def pdfToText(pdf) -> str:
-    """Convert pdf bytes into text."""
-    reader = PyPDF2.PdfReader(io.BytesIO(pdf))
-
-    return "\n".join(page.extract_text() for page in reader.pages)
