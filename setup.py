@@ -9,8 +9,9 @@ setup(
         'django-revproxy>=0.10.0',
         'django-crispy-forms',
         'django-bootstrap-datepicker-plus',
+        'django-durationwidget2',
         'reportlab',
-        'PyPDF2'
+        'PyPDF2',
     ],
     extras_require={
         'test': [

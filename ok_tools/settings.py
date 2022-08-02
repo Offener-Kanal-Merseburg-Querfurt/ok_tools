@@ -54,9 +54,11 @@ DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
 
 INSTALLED_APPS = [
     'registration',
+    'licenses',
 
     'crispy_forms',
     'bootstrap_datepicker_plus',
+    'durationwidget',
 
     'django.contrib.admin',
     'django.contrib.auth',
