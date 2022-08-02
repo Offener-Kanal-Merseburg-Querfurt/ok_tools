@@ -26,3 +26,5 @@ test
 
 # test coverage binary
 .coverage
+
+response.html

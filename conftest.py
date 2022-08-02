@@ -1,9 +1,15 @@
+from datetime import datetime
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core import mail
-import PyPDF2
-import io
+from ok_tools.testing import PWD
+from registration.models import Profile
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
+
+
+User = get_user_model()
 
 
 @pytest.fixture(scope="function")
@@ -24,6 +30,7 @@ class Browser(zope.testbrowser.browser.Browser):
         """Log-in the admin user."""
         self.login('admin@example.com')
 
+    # TODO password=PWD
     def login(self, email, password='password'):
         """Log-in a user at the login-page."""
         assert '/login/?next=' in self.url, \
@@ -40,7 +47,7 @@ def mail_outbox():
 
 
 @pytest.fixture(scope='function')
-def user() -> dict:
+def user_dict() -> dict:
     """Return a user as dict."""
     return {
         "email": "user@example.com",
@@ -57,11 +64,23 @@ def user() -> dict:
     }
 
 
-# Global helper functions.
+@pytest.fixture(scope='function')
+def user(user_dict) -> User:
+    """Return a registered user with profile and password."""
+    user = User.objects.create_user(user_dict['email'], password=PWD)
+    Profile(
+        okuser=user,
+        first_name=user_dict['first_name'],
+        last_name=user_dict['last_name'],
+        gender=user_dict['gender'],
+        phone_number=user_dict['mobile_number'],
+        mobile_number=user_dict['phone_number'],
+        birthday=datetime.strptime(
+            user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
+        street=user_dict['street'],
+        house_number=user_dict['house_number'],
+        zipcode=user_dict['zipcode'],
+        city=user_dict['city'],
+    ).save()
 
-
-def pdfToText(pdf) -> str:
-    """Convert pdf bytes into text."""
-    reader = PyPDF2.PdfReader(io.BytesIO(pdf))
-
-    return "\n".join(page.extract_text() for page in reader.pages)
+    return user

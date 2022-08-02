@@ -26,10 +26,15 @@ class UserDataForm(forms.ModelForm):
     email = forms.EmailField(label=_('Email address'))
 
     class Meta:
-        """The fields verified and okuser are not shown to the user."""
+        """
+        Excluded fields.
+
+        The fields verified, okuser and media_authority are not shown to the
+        user.
+        """
 
         model = Profile
-        exclude = ('verified', 'okuser')
+        exclude = ('verified', 'okuser', 'media_autority')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,11 +51,29 @@ class UserDataForm(forms.ModelForm):
             'house_number',
             'zipcode',
             'city',
+            HTML("""
+                {% load i18n %}
+
+                 {% if user.profile.verified %}
+                 <p>
+                    {% blocktranslate %}
+                       Your profile is already verified. To change further
+                       data please contact an employee.
+                    {% endblocktranslate %}
+                 </p>
+                 {% endif %}
+                 """
+                 ),
             FormActions(
                 Submit('submit', _('Submit changes')),
-                Submit('print', _('Fill out application form')),
-                Submit('manual-form', _('Apply manually'),
-                       css_class="btn btn-outline-secondary")
+                HTML("""
+                     {% load i18n %}
+                     <a class="btn btn-outline-primary"
+                     href="{% url 'print_registration' %}">
+                        {%translate 'Print registration form'%}
+                     </a>
+                     """
+                     )
             )
         )
 

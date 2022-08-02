@@ -33,8 +33,9 @@
           {%translate 'Profile'%}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'user_data' %}">{%translate 'Edit profile'%}</a>
+          <a class="dropdown-item" href="{% url 'print_registration' %}">{%translate 'Print Registration Form'%}</a>
           <a class="dropdown-item" href="{% url 'password_reset'%}">{%translate 'Change password'%}</a>
+          <a class="dropdown-item" href="{% url 'user_data' %}">{%translate 'Edit user data'%}</a>
         </div>
       </li>
       {% else %}

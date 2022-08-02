@@ -1,8 +1,10 @@
 from .email import send_auth_mail
 from .models import Profile
-from conftest import pdfToText
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.urls import reverse_lazy
+from ok_tools.testing import PWD
+from ok_tools.testing import pdfToText
 from unittest.mock import patch
 from urllib.error import HTTPError
 import logging
@@ -15,69 +17,68 @@ logger = logging.getLogger('django')
 User = get_user_model()
 
 DOMAIN = 'http://localhost:8000'
-USER_CREATED_URL = f'{DOMAIN}/profile/created/'
-REGISTER_URL = f'{DOMAIN}/register/'
-LOGIN_URL = f'{DOMAIN}/profile/login/'
-APPLY_URL = f'{DOMAIN}/profile/edit/'
+USER_CREATED_URL = f'{DOMAIN}{reverse_lazy("user_created")}'
+REGISTER_URL = f'{DOMAIN}{reverse_lazy("register")}'
+LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
+APPLY_URL = f'{DOMAIN}{reverse_lazy("print_registration")}'
+USER_EDIT_URL = f'{DOMAIN}{reverse_lazy("user_data")}'
 AUTH_URL = r'http://localhost:8000/profile/reset/.*/'
-PWD_RESET_URL = f'{DOMAIN}/profile/password_reset/'
-
-PWD = 'testpassword'
+PWD_RESET_URL = f'{DOMAIN}{reverse_lazy("password_reset")}'
 
 
-def test_registration__01(browser, user):
+def test_registration__01(browser, user_dict):
     """It is possible to register with an unused email address."""
-    _register_user(browser, user)
-    assert _success_string(user['email']) in browser.contents
+    _register_user(browser, user_dict)
+    assert _success_string(user_dict['email']) in browser.contents
     assert browser.url == USER_CREATED_URL
 
 
-def test_registration__02(browser, user):
+def test_registration__02(browser, user_dict):
     """It is not possible to register with an used email address."""
-    User(email=user['email']).save()
+    User(email=user_dict['email']).save()
 
-    _register_user(browser, user)
-    assert f'address {user["email"]} already exists' in browser.contents
+    _register_user(browser, user_dict)
+    assert f'address {user_dict["email"]} already exists' in browser.contents
     assert browser.url == REGISTER_URL
 
 
 # TODO how to check that the register form is still there
-def test_registration__03(browser, user):
+def test_registration__03(browser, user_dict):
     """It is not possible to register with an invalid email address."""
-    user['email'] = "example.com"
+    user_dict['email'] = "example.com"
 
-    _register_user(browser, user)
+    _register_user(browser, user_dict)
     assert 'Enter a valid email address' in browser.contents
     assert browser.url == REGISTER_URL
 
 
-def test_registration__04(browser, user):
+def test_registration__04(browser, user_dict):
     """It is possible to register with a valid phone number."""
-    user['phone_number'] = '+49346112345'
-    user['mobile_number'] = '015712345678'
-    _register_user(browser, user)
-    assert _success_string(user['email']) in browser.contents
+    user_dict['phone_number'] = '+49346112345'
+    user_dict['mobile_number'] = '015712345678'
+    _register_user(browser, user_dict)
+    assert _success_string(user_dict['email']) in browser.contents
     assert browser.url == USER_CREATED_URL
 
 
-def test_registration__05(db, user):
+def test_registration__05(db, user_dict):
     # db is needed for data base access in send_auth_mail
     """It is not possible to send an authentication mail to an unknown user."""
     with pytest.raises(User.DoesNotExist):
-        send_auth_mail(user['email'])
+        send_auth_mail(user_dict['email'])
 
 
-def test_registration__06(browser, user):
+def test_registration__06(browser, user_dict):
     """It is not possible to register without mandatory fields."""
-    user['first_name'] = None
-    _register_user(browser, user)
+    user_dict['first_name'] = None
+    _register_user(browser, user_dict)
     assert 'This field is required' in browser.contents
     assert browser.url == REGISTER_URL
 
 
-def test_registration__07(browser, mail_outbox, user):
+def test_registration__07(browser, mail_outbox, user_dict):
     """After the registration an email gets send."""
-    _register_user(browser, user)
+    _register_user(browser, user_dict)
     assert 1 == len(mail_outbox)
     assert _get_link_url_from_email(mail_outbox, AUTH_URL)
 
@@ -88,56 +89,56 @@ def test_registration__08():
         User.objects.create_user(email=None)
 
 
-def test_registration__09(user):
+def test_registration__09(user_dict):
     """A superuser needs to be a staff."""
     with pytest.raises(ValueError, match=r'.*must have is_staff=True.*'):
         User.objects.create_superuser(
-            email=user['email'], password=None, is_staff=False)
+            email=user_dict['email'], password=None, is_staff=False)
 
 
-def test_registration__10(user):
+def test_registration__10(user_dict):
     """A superuser needs to have the right to be a superuser."""
     with pytest.raises(ValueError, match=r'.*must have is_superuser=True.*'):
         User.objects.create_superuser(
-            email=user['email'], password=None, is_superuser=False)
+            email=user_dict['email'], password=None, is_superuser=False)
 
 
-def test_registration__11(user, db):
+def test_registration__11(db, user_dict):
     """
     String representation.
 
     A User gets represented by his/her email address. A Profile by its first
     and last name.
     """
-    testuser = User(email=user['email'])
-    assert user['email'] in testuser.__str__()
+    testuser = User(email=user_dict['email'])
+    assert user_dict['email'] in testuser.__str__()
     testprofil = Profile(
         okuser=testuser,
-        first_name=user['first_name'],
-        last_name=user['last_name']
+        first_name=user_dict['first_name'],
+        last_name=user_dict['last_name']
     )
-    assert user['first_name'] in testprofil.__str__()
-    assert user['last_name'] in testprofil.__str__()
+    assert user_dict['first_name'] in testprofil.__str__()
+    assert user_dict['last_name'] in testprofil.__str__()
 
 
-def test_registration__12(browser, user):
+def test_registration__12(browser, user_dict):
     """It is not possible to log in with an unknown email address."""
-    _log_in(browser, email=user['email'], password=PWD)
+    _log_in(browser, email=user_dict['email'], password=PWD)
     assert 'enter a correct email address and password' in browser.contents
 
 
-def test_registration__13b(browser, user):
+def test_registration__13b(browser, user_dict):
     """It is possible to log in with a known user."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
 
-    _log_in(browser, user['email'], password=PWD)
-    assert f'Hi {user["email"]}!' in browser.contents
+    _log_in(browser, user_dict['email'], password=PWD)
+    assert f'Hi {user_dict["email"]}!' in browser.contents
 
 
-def test_registration__14(browser, mail_outbox, user):
+def test_registration__14(browser, mail_outbox, user_dict):
     """A user can set a password after registration."""
-    _register_user(browser, user)
+    _register_user(browser, user_dict)
     assert 1 == len(mail_outbox)
     pw_url = _get_link_url_from_email(mail_outbox, AUTH_URL)
 
@@ -150,65 +151,65 @@ def test_registration__14(browser, mail_outbox, user):
     assert 'Password reset complete' in browser.contents
 
 
-def test_registration__15(browser, user, mail_outbox):
+def test_registration__15(browser, user_dict, mail_outbox):
     """It is possible to change the password."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
 
-    _log_in(browser, user['email'], password=PWD)
-    assert f'Hi {user["email"]}!' in browser.contents
+    _log_in(browser, user_dict['email'], password=PWD)
+    assert f'Hi {user_dict["email"]}!' in browser.contents
 
     browser.getLink('Change Password').click()
-    browser.getControl('Email').value = user['email']
+    browser.getControl('Email').value = user_dict['email']
     browser.getControl('Send').click()
     assert 1 == len(mail_outbox)
     assert _get_link_url_from_email(mail_outbox, AUTH_URL)
 
 
-def test_registration__17(browser, user):
+def test_registration__17(browser, user_dict):
     """Log in with wrong password."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
 
-    _log_in(browser, user['email'], password='wrongpassword')
+    _log_in(browser, user_dict['email'], password='wrongpassword')
     assert '/profile/login' in browser.url
     assert 'enter a correct email address and password' in browser.contents
 
 
-def test_registration__18(db, user):
+def test_registration__18(db, user_dict):
     """It is not possible to send an email to someone without Profile."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
 
     with pytest.raises(Profile.DoesNotExist):
-        send_auth_mail(user['email'])
+        send_auth_mail(user_dict['email'])
 
 
-def test_registration__19(browser, user, mail_outbox):
+def test_registration__19(browser, user_dict, mail_outbox):
     """It is possible to set a new password using email."""
-    _register_user(browser, user)
-    _request_pwd_reset(browser, user)
+    _register_user(browser, user_dict)
+    _request_pwd_reset(browser, user_dict)
 
     assert 2 == len(mail_outbox)
     assert _get_link_url_from_email(mail_outbox, AUTH_URL)
     assert 'password change' in mail_outbox[-1].body
-    assert user['first_name'] in mail_outbox[-1].body
+    assert user_dict['first_name'] in mail_outbox[-1].body
 
 
-def test_registration__20(db, browser, user):
+def test_registration__20(db, browser, user_dict):
     """It is not possible to send a password reset to an unknown user."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
 
     with patch('registration.models.OKUser.objects.get') as mock:
         mock.side_effect = User.DoesNotExist()
         with pytest.raises(HTTPError, match=r'.*500.*'):
-            _request_pwd_reset(browser, user)
+            _request_pwd_reset(browser, user_dict)
 
 
-def test_registration__21(db, user):
+def test_registration__21(db, user_dict):
     """Users with unverified profile don't have the permission 'verified'."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
     testprofile = Profile.objects.create(okuser=testuser)
     testprofile.save()
@@ -216,51 +217,61 @@ def test_registration__21(db, user):
     assert not testuser.has_perm('registration.verified')
 
 
-def test_registration__22(browser, user, mail_outbox):
+def test_registration__22(browser, user_dict, mail_outbox):
     """User can download a plain application form."""
-    register_with_pwd(browser, user, mail_outbox)
-    _log_in(browser, user['email'], PWD)
+    register_with_pwd(browser, user_dict, mail_outbox)
+    _log_in(browser, user_dict['email'], PWD)
     browser.open(APPLY_URL)
-    browser.getControl('Apply').click()
+    browser.getLink('Print template').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
-    assert user['first_name'] not in pdfToText(browser.contents)
-    assert user['last_name'] not in pdfToText(browser.contents)
+    assert user_dict['first_name'] not in pdfToText(browser.contents)
+    assert user_dict['last_name'] not in pdfToText(browser.contents)
 
 
-def test_registration__23(browser, user, mail_outbox):
+def test_registration__23(browser, user_dict, mail_outbox):
     """User can download an automatically created application form."""
-    register_with_pwd(browser, user, mail_outbox)
-    _log_in(browser, user['email'], PWD)
+    register_with_pwd(browser, user_dict, mail_outbox)
+    _log_in(browser, user_dict['email'], PWD)
     browser.open(APPLY_URL)
-    browser.getControl('application form').click()
+    browser.getLink('Print registration').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
-    assert user['first_name'] in pdfToText(browser.contents)
-    assert user['last_name'] in pdfToText(browser.contents)
+    assert user_dict['first_name'] in pdfToText(browser.contents)
+    assert user_dict['last_name'] in pdfToText(browser.contents)
 
 
-def test_registration__24(browser, user):
+def test_registration__24(browser, user_dict):
     """User without a profile can not create an application form."""
-    testuser = User.objects.create_user(email=user['email'], password=PWD)
+    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
     testuser.save()
-    _log_in(browser, user['email'], PWD)
-    with pytest.raises(HTTPError, match=r'.*500.*'):
-        browser.open(APPLY_URL)
+    _log_in(browser, user_dict['email'], PWD)
+
+    browser.open(APPLY_URL)
+    assert browser.url == DOMAIN + reverse_lazy('home')
+    assert f'There is no profile for {user_dict["email"]}' in browser.contents
 
 
-def test_registration__25(browser, user, mail_outbox):
+def test_registration__25(browser, user_dict, mail_outbox):
     """Users that are verified can only change their phone number."""
-    register_with_pwd(browser, user, mail_outbox)
-    _log_in(browser, user['email'], PWD)
-    testprofile = Profile.objects.get(first_name=user['first_name'])
+    register_with_pwd(browser, user_dict, mail_outbox)
+    _log_in(browser, user_dict['email'], PWD)
+    testprofile = Profile.objects.get(first_name=user_dict['first_name'])
     testprofile.verified = True
     testprofile.save()
-    browser.open(APPLY_URL)
-    with pytest.raises(AttributeError, match=r'.*readonly.*'):
-        browser.getControl(name='first_name').value = 'new_name'
-    browser.getControl(name='phone_number').value = '123456789012'
-    # TODO submit changes
+    browser.open(DOMAIN + reverse_lazy('user_data'))
+
+    assert browser.getControl(name='first_name').disabled
+    assert browser.getControl(name='gender').disabled
+
+    new_phone_number = '123456789012'
+    browser.getControl(name='phone_number').value = new_phone_number
+    browser.getControl('Submit').click()
+
+    assert USER_EDIT_URL == browser.url
+    assert 'successfully updated' in browser.contents
+    assert User.objects.get(
+        email=user_dict['email']).profile.phone_number == new_phone_number
 
 
 def test__registration__templates__privacy_policy__1(browser):
@@ -281,12 +292,103 @@ def test__registration__templates__navbar__1(browser):
     assert 'You are not logged in' in browser.contents
 
 
-"""Helper functions"""
+def test__registration__views__EditProfileView__1(db, browser, user_dict):
+    """It is not possible to change user data without a profile."""
+    User.objects.create_user(user_dict['email'], password=PWD).save()
+    _log_in(browser, user_dict['email'], PWD)
+    browser.open(USER_EDIT_URL)
+    assert browser.url == DOMAIN + reverse_lazy('home')
+    assert 'There is no profile' in browser.contents
 
 
-def register_with_pwd(browser, user: dict, mail_outbox, password=PWD):
+def test__registration__views__EditProfileView__2(browser, user):
+    """A not verified user with a profile can change his/her data."""
+    _log_in(browser, user.email, PWD)
+    browser.open(USER_EDIT_URL)
+    new_name = 'new_name'
+    browser.getControl(name='first_name').value = new_name
+    browser.getControl('Submit').click()
+    assert 'successfully updated' in browser.contents
+    assert User.objects.get(email=user.email).profile.first_name == new_name
+
+
+def test__registration__views__EditProfileView__3(browser, user):
+    """The edit form gets validated."""
+    _log_in(browser, user.email, PWD)
+    browser.open(USER_EDIT_URL)
+    browser.getControl(name='email').value = 'invalid_email'
+    browser.getControl('Submit').click()
+    assert browser.url == USER_EDIT_URL
+    assert 'Enter a valid email address' in browser.contents
+
+
+def test__registration__views__EditProfileView__4(browser, user):
+    """The email address needs to be unique."""
+    used_email = 'used@example.com'
+    User.objects.create_user(used_email, password=PWD)
+    _log_in(browser, user.email, PWD)
+
+    browser.open(USER_EDIT_URL)
+    browser.getControl(name='email').value = used_email
+    browser.getControl('Submit').click()
+
+    assert browser.url == USER_EDIT_URL
+    assert 'already exists.' in browser.contents
+
+
+def test__registration__views__EditProfileView__5(browser):
+    """The edit profile site is for logged in users only."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(USER_EDIT_URL)
+
+
+def test__registration__views__EditProfileView__6(browser, user):
+    """It is possible to edit the email address."""
+    _log_in(browser, user.email, PWD)
+    new_email = 'new_'+user.email
+
+    browser.open(USER_EDIT_URL)
+    browser.getControl(name='email').value = new_email
+    browser.getControl('Submit').click()
+
+    assert 'successfully updated' in browser.contents
+    assert User.objects.get(email=new_email)
+
+
+def test__registration__views__PrintRegistrationView__1(browser):
+    """It raises a 404 in case the user is not logged in."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(APPLY_URL)
+
+
+def test__registration__views__RegistrationFilledFormFile__1(
+        browser, user_dict):
+    """It redirects to the previous page if the user don't has a profile."""
+    User.objects.create_user(user_dict['email'], password=PWD)
+    _log_in(browser, user_dict['email'], password=PWD)
+    browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
+    assert DOMAIN + reverse_lazy('home') == browser.url
+    assert 'There is no profile' in browser.contents
+
+
+def test__registration__views_RegistrationFilledFormFile__2(browser):
+    """It raises a 404 in case the user is not logged in."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
+
+
+def test__registration__views_RegistrationPlainFormFile__1(browser):
+    """It is always possible to access the plain registration form."""
+    browser.open(DOMAIN + reverse_lazy('registration_plain_file'))
+    assert browser.headers['Content-Type'] == 'application/pdf'
+
+
+# Helper functions
+
+
+def register_with_pwd(browser, user_dict: dict, mail_outbox, password=PWD):
     """Register the given user and set a password."""
-    _register_user(browser, user)
+    _register_user(browser, user_dict)
     assert 1 == len(mail_outbox)
     pw_url = _get_link_url_from_email(mail_outbox, AUTH_URL)
 
@@ -299,7 +401,7 @@ def register_with_pwd(browser, user: dict, mail_outbox, password=PWD):
     assert 'Password reset complete' in browser.contents
 
 
-def _register_user(browser, user: dict):
+def _register_user(browser, user_dict: dict):
     """
     Register a user defined by the given dictionary.
 
@@ -310,17 +412,17 @@ def _register_user(browser, user: dict):
     assert '/register/' in browser.url, \
         f'Not on register page, URL is {browser.url}'
 
-    browser.getControl('Email').value = user['email']
-    browser.getControl('First name').value = user['first_name']
-    browser.getControl('Last name').value = user['last_name']
-    browser.getControl('Gender').value = user['gender']
-    browser.getControl('Phone number').value = user['phone_number']
-    browser.getControl('Mobile number').value = user['mobile_number']
-    browser.getControl('Birthday').value = user['birthday']
-    browser.getControl('Street').value = user['street']
-    browser.getControl('House number').value = user['house_number']
-    browser.getControl('Zipcode').value = user['zipcode']
-    browser.getControl('City').value = user['city']
+    browser.getControl('Email').value = user_dict['email']
+    browser.getControl('First name').value = user_dict['first_name']
+    browser.getControl('Last name').value = user_dict['last_name']
+    browser.getControl('Gender').value = user_dict['gender']
+    browser.getControl('Phone number').value = user_dict['phone_number']
+    browser.getControl('Mobile number').value = user_dict['mobile_number']
+    browser.getControl('Birthday').value = user_dict['birthday']
+    browser.getControl('Street').value = user_dict['street']
+    browser.getControl('House number').value = user_dict['house_number']
+    browser.getControl('Zipcode').value = user_dict['zipcode']
+    browser.getControl('City').value = user_dict['city']
     browser.getControl('accept').click()
     browser.getControl('Register').click()
 
@@ -336,13 +438,13 @@ def _log_in(browser, email, password):
     browser.getControl('Log In').click()
 
 
-def _request_pwd_reset(browser, user):
+def _request_pwd_reset(browser, user_dict):
     """Request an email to reset the password."""
     browser.open(PWD_RESET_URL)
     assert PWD_RESET_URL in browser.url
     assert 'Change Password' in browser.contents
 
-    browser.getControl('Email').value = user['email']
+    browser.getControl('Email').value = user_dict['email']
     browser.getControl('Send').click()
 
 

@@ -17,10 +17,7 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
-from registration.views import PasswordResetConfirmView
-from registration.views import PasswordResetView
-from registration.views import RegisterView
-from registration.views import user_data_view
+from registration import views
 
 
 urlpatterns = [
@@ -28,15 +25,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path(
         "profile/reset/<uidb64>/<token>/",
-        PasswordResetConfirmView.as_view(),
+        views.PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
     path('profile/password_reset/',
-         PasswordResetView.as_view(),
+         views.PasswordResetView.as_view(),
          name='password_reset'
          ),
     path('profile/', include('django.contrib.auth.urls')),
-    path('register/', RegisterView.as_view(), name='register'),
+    path('register/', views.RegisterView.as_view(), name='register'),
     path(
         'profile/created/',
         TemplateView.as_view(template_name='registration/user_created.html'),
@@ -46,5 +43,24 @@ urlpatterns = [
         TemplateView.as_view(template_name='privacy_policy.html'),
         name='privacy_policy'
     ),
-    path('profile/edit/', user_data_view, name='user_data'),
+    path(
+        'profile/application/',
+        views.PrintRegistrationView.as_view(),
+        name='print_registration'
+    ),
+    path(
+        'profile/application/file',
+        views.RegistrationFilledFormFile.as_view(),
+        name='registration_filled_file'
+    ),
+    path(
+        'profile/application/plain_file',
+        views.RegistrationPlainFormFile.as_view(),
+        name='registration_plain_file'
+    ),
+    path(
+        'profile/edit/',
+        views.EditProfileView.as_view(),
+        name='user_data'
+    ),
 ]
