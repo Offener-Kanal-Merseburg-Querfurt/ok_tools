@@ -1,8 +1,11 @@
 from datetime import datetime
+from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from licenses.models import default_category
 from ok_tools.testing import PWD
+from ok_tools.testing import create_license_request
 from registration.models import Profile
 import ok_tools.wsgi
 import pytest
@@ -84,3 +87,29 @@ def user(user_dict) -> User:
     ).save()
 
     return user
+
+
+@pytest.fixture(scope='function')
+def license_template_dict() -> dict:
+    """Return a dictionary containing all the data of an LicenseTemplate."""
+    return {
+        "title": "Test Title",
+        "subtitle": None,
+        "description": "This is a Test.",
+        "duration": timedelta(hours=1, minutes=1, seconds=1),
+        "suggested_date": None,
+        "repetitions_allowed": True,
+        "media_authority_exchange_allowed": True,
+        "youth_protection_necessary": False,
+        "store_in_ok_media_library": True,
+    }
+
+
+@pytest.fixture(scope='function')
+def license_request(user, license_template_dict):
+    """Return a license request."""
+    return create_license_request(
+        user,
+        default_category(),
+        license_template_dict,
+    )
