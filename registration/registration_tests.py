@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import PWD
+from ok_tools.testing import create_user
 from ok_tools.testing import log_in
 from ok_tools.testing import pdfToText
 from unittest.mock import patch
@@ -126,26 +127,22 @@ def test__registration__email__send_auth_mail__5(db, user_dict):
 
 
 def test__registration__email__send_auth_mail__6(
-        browser, user_dict, mail_outbox):
+        browser, user, mail_outbox):
     """It is possible to set a new password using email."""
-    _register_user(browser, user_dict)
-    _request_pwd_reset(browser, user_dict)
+    _request_pwd_reset(browser, user)
 
-    assert 2 == len(mail_outbox)
+    assert 1 == len(mail_outbox)
     assert _get_link_url_from_email(mail_outbox, AUTH_URL)
     assert 'password change' in mail_outbox[-1].body
-    assert user_dict['first_name'] in mail_outbox[-1].body
+    assert user.profile.first_name in mail_outbox[-1].body
 
 
-def test__registration__email__send_auth_mail__7(db, browser, user_dict):
+def test__registration__email__send_auth_mail__7(db, browser, user):
     """It is not possible to send a password reset to an unknown user."""
-    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
-    testuser.save()
-
     with patch('registration.models.OKUser.objects.get') as mock:
         mock.side_effect = User.DoesNotExist()
         with pytest.raises(HTTPError, match=r'.*500.*'):
-            _request_pwd_reset(browser, user_dict)
+            _request_pwd_reset(browser, user)
 
 
 def test__registration__models__UserManager__1():
@@ -222,16 +219,15 @@ def test__registration__signals__is_validated__1(db, user_dict):
 
 
 def test__registration__views__RegistrationPlainFormFile__1(
-        browser, user_dict, mail_outbox):
+        browser, user, mail_outbox):
     """User can download a plain application form."""
-    register_with_pwd(browser, user_dict, mail_outbox)
-    log_in(browser, user_dict['email'], PWD)
+    log_in(browser, user.email, PWD)
     browser.open(APPLY_URL)
     browser.getLink('Print template').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
-    assert user_dict['first_name'] not in pdfToText(browser.contents)
-    assert user_dict['last_name'] not in pdfToText(browser.contents)
+    assert user.profile.first_name not in pdfToText(browser.contents)
+    assert user.profile.last_name not in pdfToText(browser.contents)
 
 
 def test__registration__views__RegistrationPlainFormFile__2(browser):
@@ -271,13 +267,10 @@ def test__registration__templates__navbar__1(browser):
 
 
 def test__registration__views__EditProfileView__1(
-        browser, user_dict, mail_outbox):
+        browser, user_dict):
     """Users that are verified can only change their phone number."""
-    register_with_pwd(browser, user_dict, mail_outbox)
-    log_in(browser, user_dict['email'], PWD)
-    testprofile = Profile.objects.get(first_name=user_dict['first_name'])
-    testprofile.verified = True
-    testprofile.save()
+    user = create_user(user_dict, verified=True)
+    log_in(browser, user.email, PWD)
     browser.open(DOMAIN + reverse_lazy('user_data'))
 
     assert browser.getControl(name='first_name').disabled
@@ -379,34 +372,18 @@ def test__registration__views_RegistrationFilledFormFile__2(browser):
 
 
 def test__registration__views__RegistrationFilledFormFile__3(
-        browser, user_dict, mail_outbox):
+        browser, user):
     """User can download an automatically created application form."""
-    register_with_pwd(browser, user_dict, mail_outbox)
-    log_in(browser, user_dict['email'], PWD)
+    log_in(browser, user.email, PWD)
     browser.open(APPLY_URL)
     browser.getLink('Print registration').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
-    assert user_dict['first_name'] in pdfToText(browser.contents)
-    assert user_dict['last_name'] in pdfToText(browser.contents)
+    assert user.profile.first_name in pdfToText(browser.contents)
+    assert user.profile.last_name in pdfToText(browser.contents)
 
 
 # Helper functions
-
-
-def register_with_pwd(browser, user_dict: dict, mail_outbox, password=PWD):
-    """Register the given user and set a password."""
-    _register_user(browser, user_dict)
-    assert 1 == len(mail_outbox)
-    pw_url = _get_link_url_from_email(mail_outbox, AUTH_URL)
-
-    browser.open(pw_url)
-    browser.getControl('New password', index=0).value = password
-    browser.getControl('confirmation').value = password
-    browser.getControl('Change').click()
-
-    assert '/profile/reset/done' in browser.url
-    assert 'Password reset complete' in browser.contents
 
 
 def _register_user(browser, user_dict: dict):
@@ -435,13 +412,13 @@ def _register_user(browser, user_dict: dict):
     browser.getControl('Register').click()
 
 
-def _request_pwd_reset(browser, user_dict):
+def _request_pwd_reset(browser, user):
     """Request an email to reset the password."""
     browser.open(PWD_RESET_URL)
     assert PWD_RESET_URL in browser.url
     assert 'Change Password' in browser.contents
 
-    browser.getControl('Email').value = user_dict['email']
+    browser.getControl('Email').value = user.email
     browser.getControl('Send').click()
 
 

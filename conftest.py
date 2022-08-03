@@ -1,15 +1,8 @@
-from datetime import datetime
-from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core import mail
-from ok_tools.testing import PWD
-from registration.models import Profile
+from ok_tools.testing import create_user
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
-
-
-User = get_user_model()
 
 
 @pytest.fixture(scope="function")
@@ -65,22 +58,6 @@ def user_dict() -> dict:
 
 
 @pytest.fixture(scope='function')
-def user(user_dict) -> User:
+def user(user_dict):
     """Return a registered user with profile and password."""
-    user = User.objects.create_user(user_dict['email'], password=PWD)
-    Profile(
-        okuser=user,
-        first_name=user_dict['first_name'],
-        last_name=user_dict['last_name'],
-        gender=user_dict['gender'],
-        phone_number=user_dict['mobile_number'],
-        mobile_number=user_dict['phone_number'],
-        birthday=datetime.strptime(
-            user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
-        street=user_dict['street'],
-        house_number=user_dict['house_number'],
-        zipcode=user_dict['zipcode'],
-        city=user_dict['city'],
-    ).save()
-
-    return user
+    return create_user(user_dict)

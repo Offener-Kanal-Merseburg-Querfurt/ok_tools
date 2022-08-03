@@ -1,6 +1,7 @@
 from .models import Profile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 import pytest
 import registration.signals
@@ -28,65 +29,68 @@ def test__registration__signals__is_staff__1(db, user_dict):
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_staff__2(db, user_dict, browser):
+def test__registration__signals__is_staff__2(db, user, browser):
     """If a user gets staff status he/she has the permission 'verified'."""
-    _create_user(db, user_dict, verified=True)
+    user.profile.verified = True
+    user.profile.save()
     _login(browser)
 
     browser.getLink('User').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl('Staff status').click()
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_staff__3(db, user_dict, browser):
+def test__registration__signals__is_staff__3(db, user, browser):
     """If a user is no longer staff, the permission 'verified' gets revoked."""
-    _create_user(db, user_dict, is_staff=True)
+    user.is_staff = True
+    user.save()
     _login(browser)
 
     browser.getLink('User').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl('Staff status').click()
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_validated__1(db, user_dict, browser):
+def test__registration__signals__is_validated__1(db, user, browser):
     """After verification a user has the permission 'verified'."""
-    _create_user(db, user_dict)
     _login(browser)
     browser.getLink('Profiles').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl('Verified').selected = True
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_validated__2(db, user_dict, browser):
+def test__registration__signals__is_validated__2(db, user_dict):
     """A User created as verified has the permission 'verified'."""
-    _create_user(db, user_dict, verified=True)
-    testuser = User.objects.get(email=user_dict['email'])
+    user = create_user(user_dict, verified=True)
+
+    testuser = User.objects.get(email=user.email)
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_validated__3(db, user_dict, browser):
+def test__registration__signals__is_validated__3(db, user, browser):
     """If a user is no longer verified the permission gets revoked."""
-    _create_user(db, user_dict, verified=True)
+    user.profile.verified = True
+    user.profile.save()
     _login(browser)
 
     browser.getLink('Profiles').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl('Verified').selected = False
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
@@ -100,68 +104,65 @@ def test__registration__signals___get_permission__1(db):
         registration.signals._get_permission(Profile, 'testpermission')
 
 
-def test__registration__admin__UserAdmin__1(db, user_dict, browser):
+def test__registration__admin__UserAdmin__1(db, user, browser):
     """Modify a user without a change."""
-    _create_user(db, user_dict)
     _login(browser)
 
     browser.getLink('User').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__admin__UserAdmin__2(db, user_dict, browser):
+def test__registration__admin__UserAdmin__2(db, user, browser):
     """Modify a user with a change which not changes staff status."""
-    _create_user(db, user_dict)
     _login(browser)
 
     browser.getLink('User').click()
-    browser.getLink(user_dict['email']).click()
-    user_dict['email'] = 'new_'+user_dict['email']
-    browser.getControl('Email').value = user_dict['email']
+    browser.getLink(user.email).click()
+    new_email = 'new_' + user.email
+    browser.getControl('Email').value = new_email
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=new_email)
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__admin__ProfileAdmin__1(db, user_dict, browser):
+def test__registration__admin__ProfileAdmin__1(db, user, browser):
     """Modify a profile without a change."""
-    _create_user(db, user_dict)
     _login(browser)
 
     browser.getLink('Profile').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__admin__ProfileAdmin__2(db, user_dict, browser):
+def test__registration__admin__ProfileAdmin__2(db, user, browser):
     """Modify a profile without changing 'verified'."""
-    _create_user(db, user_dict)
     _login(browser)
 
     browser.getLink('Profile').click()
-    browser.getLink(user_dict['email']).click()
-    browser.getControl('First name').value = 'new_'+user_dict['first_name']
+    browser.getLink(user.email).click()
+
+    new_first_name = 'new_' + user.profile.first_name
+    browser.getControl('First name').value = new_first_name
     browser.getControl(name='_save').click()
 
-    testuser = User.objects.get(email=user_dict['email'])
+    testuser = User.objects.get(email=user.email)
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__admin__verify__1(db, user_dict, browser):
+def test__registration__admin__verify__1(db, user, user_dict, browser):
     """Verify multiple users."""
-    first_email = user_dict['email']
-    _create_user(db, user_dict)
+    first_email = user.email
     second_email = 'second_' + user_dict['email']
     user_dict['email'] = second_email
-    _create_user(db, user_dict)
+    create_user(user_dict)
     _login(browser)
 
     browser.getLink('Profile').click()
@@ -184,10 +185,10 @@ def test__registration__admin__verify__1(db, user_dict, browser):
 def test__registration__admin__unverify__1(db, user_dict, browser):
     """Unverify multiple users."""
     first_email = user_dict['email']
-    _create_user(db, user_dict, verified=True)
+    create_user(user_dict, verified=True)
     second_email = 'second_' + user_dict['email']
     user_dict['email'] = second_email
-    _create_user(db, user_dict, verified=True)
+    create_user(user_dict, verified=True)
     _login(browser)
 
     browser.getLink('Profile').click()
@@ -207,31 +208,17 @@ def test__registration__admin__unverify__1(db, user_dict, browser):
     assert 'successfully unverified' in browser.contents
 
 
-def test__registration__admin__response_change__1(db, user_dict, browser):
+def test__registration__admin__response_change__1(db, user, browser):
     """Print application form."""
-    _create_user(db, user_dict)
     _login(browser)
 
     browser.getLink('Profile').click()
-    browser.getLink(user_dict['email']).click()
+    browser.getLink(user.email).click()
     browser.getControl('Print').click()
 
     assert browser.headers['Content-Type'] == 'application/pdf'
-    assert user_dict['first_name'] in pdfToText(browser.contents)
-    assert user_dict['last_name'] in pdfToText(browser.contents)
-
-
-def _create_user(db, user_dict, verified=False, is_staff=False):
-    """Create a user with corresponding profile."""
-    testuser = User(email=user_dict['email'], password=PWD, is_staff=is_staff)
-    testuser.save()
-    Profile(okuser=testuser,
-            first_name=user_dict['first_name'],
-            last_name=user_dict['last_name'],
-            street=user_dict['street'],
-            house_number=user_dict['house_number'],
-            verified=verified
-            ).save()
+    assert user.profile.first_name in pdfToText(browser.contents)
+    assert user.profile.last_name in pdfToText(browser.contents)
 
 
 def _login(browser):
