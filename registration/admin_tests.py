@@ -13,14 +13,14 @@ VERIFIED_PERM = 'registration.verified'
 LOGIN_URL = 'http://localhost/admin'
 
 
-def test_admin__1(browser):
+def test__registration__admin__1(browser):
     """It is possible to log in as a valid admin user."""
     _login(browser)
     assert 'Site administration' in browser.contents
     assert browser.url == 'http://localhost/admin/'
 
 
-def test_admin__2(db, user_dict):
+def test__registration__signals__is_staff__1(db, user_dict):
     """A staff member has the permission 'verified'."""
     testuser = User(email=user_dict['email'], password=PWD, is_staff=True)
     testuser.save()
@@ -28,41 +28,7 @@ def test_admin__2(db, user_dict):
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__3(db, user_dict, browser):
-    """After verification a user has the permission 'verified'."""
-    _create_user(db, user_dict)
-    _login(browser)
-    browser.getLink('Profiles').click()
-    browser.getLink(user_dict['email']).click()
-    browser.getControl('Verified').selected = True
-    browser.getControl(name='_save').click()
-
-    testuser = User.objects.get(email=user_dict['email'])
-    assert testuser.has_perm(VERIFIED_PERM)
-
-
-def test_admin__4(db, user_dict, browser):
-    """A User created as verified has the permission 'verified'."""
-    _create_user(db, user_dict, verified=True)
-    testuser = User.objects.get(email=user_dict['email'])
-    assert testuser.has_perm(VERIFIED_PERM)
-
-
-def test_admin__5(db, user_dict, browser):
-    """If a user is no longer verified the permission gets revoked."""
-    _create_user(db, user_dict, verified=True)
-    _login(browser)
-
-    browser.getLink('Profiles').click()
-    browser.getLink(user_dict['email']).click()
-    browser.getControl('Verified').selected = False
-    browser.getControl(name='_save').click()
-
-    testuser = User.objects.get(email=user_dict['email'])
-    assert not testuser.has_perm(VERIFIED_PERM)
-
-
-def test_admin__6(db, user_dict, browser):
+def test__registration__signals__is_staff__2(db, user_dict, browser):
     """If a user gets staff status he/she has the permission 'verified'."""
     _create_user(db, user_dict, verified=True)
     _login(browser)
@@ -76,7 +42,7 @@ def test_admin__6(db, user_dict, browser):
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__7(db, user_dict, browser):
+def test__registration__signals__is_staff__3(db, user_dict, browser):
     """If a user is no longer staff, the permission 'verified' gets revoked."""
     _create_user(db, user_dict, is_staff=True)
     _login(browser)
@@ -90,7 +56,41 @@ def test_admin__7(db, user_dict, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__8(db):
+def test__registration__signals__is_validated__1(db, user_dict, browser):
+    """After verification a user has the permission 'verified'."""
+    _create_user(db, user_dict)
+    _login(browser)
+    browser.getLink('Profiles').click()
+    browser.getLink(user_dict['email']).click()
+    browser.getControl('Verified').selected = True
+    browser.getControl(name='_save').click()
+
+    testuser = User.objects.get(email=user_dict['email'])
+    assert testuser.has_perm(VERIFIED_PERM)
+
+
+def test__registration__signals__is_validated__2(db, user_dict, browser):
+    """A User created as verified has the permission 'verified'."""
+    _create_user(db, user_dict, verified=True)
+    testuser = User.objects.get(email=user_dict['email'])
+    assert testuser.has_perm(VERIFIED_PERM)
+
+
+def test__registration__signals__is_validated__3(db, user_dict, browser):
+    """If a user is no longer verified the permission gets revoked."""
+    _create_user(db, user_dict, verified=True)
+    _login(browser)
+
+    browser.getLink('Profiles').click()
+    browser.getLink(user_dict['email']).click()
+    browser.getControl('Verified').selected = False
+    browser.getControl(name='_save').click()
+
+    testuser = User.objects.get(email=user_dict['email'])
+    assert not testuser.has_perm(VERIFIED_PERM)
+
+
+def test__registration__signals___get_permission__1(db):
     """
     Helper function '_get_permission'.
 
@@ -100,7 +100,7 @@ def test_admin__8(db):
         registration.signals._get_permission(Profile, 'testpermission')
 
 
-def test_admin__9(db, user_dict, browser):
+def test__registration__admin__UserAdmin__1(db, user_dict, browser):
     """Modify a user without a change."""
     _create_user(db, user_dict)
     _login(browser)
@@ -113,7 +113,7 @@ def test_admin__9(db, user_dict, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__10(db, user_dict, browser):
+def test__registration__admin__UserAdmin__2(db, user_dict, browser):
     """Modify a user with a change which not changes staff status."""
     _create_user(db, user_dict)
     _login(browser)
@@ -128,7 +128,7 @@ def test_admin__10(db, user_dict, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__11(db, user_dict, browser):
+def test__registration__admin__ProfileAdmin__1(db, user_dict, browser):
     """Modify a profile without a change."""
     _create_user(db, user_dict)
     _login(browser)
@@ -141,7 +141,7 @@ def test_admin__11(db, user_dict, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__12(db, user_dict, browser):
+def test__registration__admin__ProfileAdmin__2(db, user_dict, browser):
     """Modify a profile without changing 'verified'."""
     _create_user(db, user_dict)
     _login(browser)
@@ -155,7 +155,7 @@ def test_admin__12(db, user_dict, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test_admin__13(db, user_dict, browser):
+def test__registration__admin__verify__1(db, user_dict, browser):
     """Verify multiple users."""
     first_email = user_dict['email']
     _create_user(db, user_dict)
@@ -181,7 +181,7 @@ def test_admin__13(db, user_dict, browser):
     assert 'successfully verified' in browser.contents
 
 
-def test_admin__14(db, user_dict, browser):
+def test__registration__admin__unverify__1(db, user_dict, browser):
     """Unverify multiple users."""
     first_email = user_dict['email']
     _create_user(db, user_dict, verified=True)
@@ -207,7 +207,7 @@ def test_admin__14(db, user_dict, browser):
     assert 'successfully unverified' in browser.contents
 
 
-def test__admin__15(db, user_dict, browser):
+def test__registration__admin__response_change__1(db, user_dict, browser):
     """Print application form."""
     _create_user(db, user_dict)
     _login(browser)
