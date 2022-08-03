@@ -1,6 +1,7 @@
 from .models import Profile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from ok_tools.testing import DOMAIN
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 import pytest
@@ -11,14 +12,13 @@ User = get_user_model()
 
 PWD = 'testpassword'
 VERIFIED_PERM = 'registration.verified'
-LOGIN_URL = 'http://localhost/admin'
 
 
 def test__registration__admin__1(browser):
     """It is possible to log in as a valid admin user."""
-    _login(browser)
+    browser.login_admin()
     assert 'Site administration' in browser.contents
-    assert browser.url == 'http://localhost/admin/'
+    assert browser.url == f'{DOMAIN}/admin/'
 
 
 def test__registration__signals__is_staff__1(db, user_dict):
@@ -33,7 +33,7 @@ def test__registration__signals__is_staff__2(db, user, browser):
     """If a user gets staff status he/she has the permission 'verified'."""
     user.profile.verified = True
     user.profile.save()
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('User').click()
     browser.getLink(user.email).click()
@@ -48,7 +48,7 @@ def test__registration__signals__is_staff__3(db, user, browser):
     """If a user is no longer staff, the permission 'verified' gets revoked."""
     user.is_staff = True
     user.save()
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('User').click()
     browser.getLink(user.email).click()
@@ -61,7 +61,7 @@ def test__registration__signals__is_staff__3(db, user, browser):
 
 def test__registration__signals__is_validated__1(db, user, browser):
     """After verification a user has the permission 'verified'."""
-    _login(browser)
+    browser.login_admin()
     browser.getLink('Profiles').click()
     browser.getLink(user.email).click()
     browser.getControl('Verified').selected = True
@@ -83,7 +83,7 @@ def test__registration__signals__is_validated__3(db, user, browser):
     """If a user is no longer verified the permission gets revoked."""
     user.profile.verified = True
     user.profile.save()
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('Profiles').click()
     browser.getLink(user.email).click()
@@ -106,7 +106,7 @@ def test__registration__signals___get_permission__1(db):
 
 def test__registration__admin__UserAdmin__1(db, user, browser):
     """Modify a user without a change."""
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('User').click()
     browser.getLink(user.email).click()
@@ -118,7 +118,7 @@ def test__registration__admin__UserAdmin__1(db, user, browser):
 
 def test__registration__admin__UserAdmin__2(db, user, browser):
     """Modify a user with a change which not changes staff status."""
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('User').click()
     browser.getLink(user.email).click()
@@ -132,7 +132,7 @@ def test__registration__admin__UserAdmin__2(db, user, browser):
 
 def test__registration__admin__ProfileAdmin__1(db, user, browser):
     """Modify a profile without a change."""
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('Profile').click()
     browser.getLink(user.email).click()
@@ -144,7 +144,7 @@ def test__registration__admin__ProfileAdmin__1(db, user, browser):
 
 def test__registration__admin__ProfileAdmin__2(db, user, browser):
     """Modify a profile without changing 'verified'."""
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('Profile').click()
     browser.getLink(user.email).click()
@@ -163,7 +163,7 @@ def test__registration__admin__verify__1(db, user, user_dict, browser):
     second_email = 'second_' + user_dict['email']
     user_dict['email'] = second_email
     create_user(user_dict)
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('Profile').click()
 
@@ -189,7 +189,7 @@ def test__registration__admin__unverify__1(db, user_dict, browser):
     second_email = 'second_' + user_dict['email']
     user_dict['email'] = second_email
     create_user(user_dict, verified=True)
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('Profile').click()
 
@@ -210,7 +210,7 @@ def test__registration__admin__unverify__1(db, user_dict, browser):
 
 def test__registration__admin__response_change__1(db, user, browser):
     """Print application form."""
-    _login(browser)
+    browser.login_admin()
 
     browser.getLink('Profile').click()
     browser.getLink(user.email).click()
@@ -219,9 +219,3 @@ def test__registration__admin__response_change__1(db, user, browser):
     assert browser.headers['Content-Type'] == 'application/pdf'
     assert user.profile.first_name in pdfToText(browser.contents)
     assert user.profile.last_name in pdfToText(browser.contents)
-
-
-def _login(browser):
-    """Log in to admin site with superuser."""
-    browser.open(LOGIN_URL)
-    browser.login_admin()

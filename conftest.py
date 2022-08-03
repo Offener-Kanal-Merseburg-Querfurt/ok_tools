@@ -1,4 +1,8 @@
 from django.core import mail
+from django.urls import reverse_lazy
+from ok_tools.testing import DOMAIN
+from ok_tools.testing import EMAIL
+from ok_tools.testing import PWD
 from ok_tools.testing import create_user
 import ok_tools.wsgi
 import pytest
@@ -21,12 +25,17 @@ class Browser(zope.testbrowser.browser.Browser):
 
     def login_admin(self):
         """Log-in the admin user."""
-        self.login('admin@example.com')
+        self.open(f'{DOMAIN}{reverse_lazy("admin:login")}')
+        self._login('admin@example.com', password='password')
 
-    # TODO password=PWD
-    def login(self, email, password='password'):
+    def login(self, email=EMAIL, password=PWD):
+        """Log-in a user."""
+        self.open(f'{DOMAIN}{reverse_lazy("login")}')
+        self._login(email, password)
+
+    def _login(self, email, password):
         """Log-in a user at the login-page."""
-        assert '/login/?next=' in self.url, \
+        assert '/login' in self.url, \
             f'Not on login page, URL is {self.url}'
         self.getControl('Email address').value = email
         self.getControl('Password').value = password
@@ -43,7 +52,7 @@ def mail_outbox():
 def user_dict() -> dict:
     """Return a user as dict."""
     return {
-        "email": "user@example.com",
+        "email": EMAIL,
         "first_name": "john",
         "last_name": "doe",
         "gender": "m",

@@ -4,9 +4,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
+from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
 from ok_tools.testing import create_user
-from ok_tools.testing import log_in
 from ok_tools.testing import pdfToText
 from unittest.mock import patch
 from urllib.error import HTTPError
@@ -102,16 +102,16 @@ def test__registration__email__send_auth_mail__3(
 
 
 def test__registration__email__send_auth_mail__4(
-        browser, user_dict, mail_outbox):
+        browser, mail_outbox):
     """It is possible to change the password."""
-    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
+    testuser = User.objects.create_user(email=EMAIL, password=PWD)
     testuser.save()
 
-    log_in(browser, user_dict['email'], password=PWD)
-    assert f'Hi {user_dict["email"]}!' in browser.contents
+    browser.login()
+    assert f'Hi {EMAIL}!' in browser.contents
 
     browser.getLink('Change Password').click()
-    browser.getControl('Email').value = user_dict['email']
+    browser.getControl('Email').value = EMAIL
     browser.getControl('Send').click()
     assert 1 == len(mail_outbox)
     assert _get_link_url_from_email(mail_outbox, AUTH_URL)
@@ -183,45 +183,40 @@ def test__registration__models__1(db, user_dict):
     assert user_dict['last_name'] in testprofil.__str__()
 
 
-def test__registration__backends__EmailBackend__1(browser, user_dict):
+def test__registration__backends__EmailBackend__1(browser):
     """It is not possible to log in with an unknown email address."""
-    log_in(browser, email=user_dict['email'], password=PWD)
+    browser.login()
     assert 'enter a correct email address and password' in browser.contents
 
 
-def test__registration__backends__EmailBackend__2(browser, user_dict):
+def test__registration__backends__EmailBackend__2(browser):
     """It is possible to log in with a known user."""
-    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
+    testuser = User.objects.create_user(email=EMAIL, password=PWD)
     testuser.save()
 
-    log_in(browser, user_dict['email'], password=PWD)
-    assert f'Hi {user_dict["email"]}!' in browser.contents
+    browser.login()
+    assert f'Hi {EMAIL}!' in browser.contents
 
 
-def test__registration__backends__EmailBackend__3(browser, user_dict):
+def test__registration__backends__EmailBackend__3(browser):
     """Log in with wrong password."""
-    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
+    testuser = User.objects.create_user(email=EMAIL, password=PWD)
     testuser.save()
 
-    log_in(browser, user_dict['email'], password='wrongpassword')
+    browser.login(password='wrongpassword')
     assert '/profile/login' in browser.url
     assert 'enter a correct email address and password' in browser.contents
 
 
-def test__registration__signals__is_validated__1(db, user_dict):
+def test__registration__signals__is_validated__1(db, user):
     """Users with unverified profile don't have the permission 'verified'."""
-    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
-    testuser.save()
-    testprofile = Profile.objects.create(okuser=testuser)
-    testprofile.save()
-
-    assert not testuser.has_perm('registration.verified')
+    assert not user.has_perm('registration.verified')
 
 
 def test__registration__views__RegistrationPlainFormFile__1(
-        browser, user, mail_outbox):
+        browser, user):
     """User can download a plain application form."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     browser.open(APPLY_URL)
     browser.getLink('Print template').click()
 
@@ -237,15 +232,15 @@ def test__registration__views__RegistrationPlainFormFile__2(browser):
 
 
 def test__registration__views__RegistrationFilledFormFile__2(
-        browser, user_dict):
+        browser):
     """User without a profile can not create an application form."""
-    testuser = User.objects.create_user(email=user_dict['email'], password=PWD)
+    testuser = User.objects.create_user(email=EMAIL, password=PWD)
     testuser.save()
-    log_in(browser, user_dict['email'], PWD)
+    browser.login()
 
     browser.open(APPLY_URL)
     assert browser.url == DOMAIN + reverse_lazy('home')
-    assert f'There is no profile for {user_dict["email"]}' in browser.contents
+    assert f'There is no profile for {EMAIL}' in browser.contents
 
 
 def test__registration__templates__privacy_policy__1(browser):
@@ -269,8 +264,8 @@ def test__registration__templates__navbar__1(browser):
 def test__registration__views__EditProfileView__1(
         browser, user_dict):
     """Users that are verified can only change their phone number."""
-    user = create_user(user_dict, verified=True)
-    log_in(browser, user.email, PWD)
+    create_user(user_dict, verified=True)
+    browser.login()
     browser.open(DOMAIN + reverse_lazy('user_data'))
 
     assert browser.getControl(name='first_name').disabled
@@ -288,8 +283,8 @@ def test__registration__views__EditProfileView__1(
 
 def test__registration__views__EditProfileView__2(db, browser, user_dict):
     """It is not possible to change user data without a profile."""
-    User.objects.create_user(user_dict['email'], password=PWD).save()
-    log_in(browser, user_dict['email'], PWD)
+    User.objects.create_user(EMAIL, password=PWD)
+    browser.login()
     browser.open(USER_EDIT_URL)
     assert browser.url == DOMAIN + reverse_lazy('home')
     assert 'There is no profile' in browser.contents
@@ -297,7 +292,7 @@ def test__registration__views__EditProfileView__2(db, browser, user_dict):
 
 def test__registration__views__EditProfileView__3(browser, user):
     """A not verified user with a profile can change his/her data."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     browser.open(USER_EDIT_URL)
     new_name = 'new_name'
     browser.getControl(name='first_name').value = new_name
@@ -308,7 +303,7 @@ def test__registration__views__EditProfileView__3(browser, user):
 
 def test__registration__views__EditProfileView__4(browser, user):
     """The edit form gets validated."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     browser.open(USER_EDIT_URL)
     browser.getControl(name='email').value = 'invalid_email'
     browser.getControl('Submit').click()
@@ -320,7 +315,7 @@ def test__registration__views__EditProfileView__5(browser, user):
     """The email address needs to be unique."""
     used_email = 'used@example.com'
     User.objects.create_user(used_email, password=PWD)
-    log_in(browser, user.email, PWD)
+    browser.login()
 
     browser.open(USER_EDIT_URL)
     browser.getControl(name='email').value = used_email
@@ -338,7 +333,7 @@ def test__registration__views__EditProfileView__6(browser):
 
 def test__registration__views__EditProfileView__7(browser, user):
     """It is possible to edit the email address."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     new_email = 'new_'+user.email
 
     browser.open(USER_EDIT_URL)
@@ -356,10 +351,10 @@ def test__registration__views__PrintRegistrationView__1(browser):
 
 
 def test__registration__views__RegistrationFilledFormFile__1(
-        browser, user_dict):
+        browser):
     """It redirects to the previous page if the user don't has a profile."""
-    User.objects.create_user(user_dict['email'], password=PWD)
-    log_in(browser, user_dict['email'], password=PWD)
+    User.objects.create_user(EMAIL, password=PWD)
+    browser.login()
     browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
     assert DOMAIN + reverse_lazy('home') == browser.url
     assert 'There is no profile' in browser.contents
@@ -374,7 +369,7 @@ def test__registration__views_RegistrationFilledFormFile__2(browser):
 def test__registration__views__RegistrationFilledFormFile__3(
         browser, user):
     """User can download an automatically created application form."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     browser.open(APPLY_URL)
     browser.getLink('Print registration').click()
 
