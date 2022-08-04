@@ -19,11 +19,11 @@ logger = logging.getLogger('django')
 
 User = get_user_model()
 
-USER_CREATED_URL = f'{DOMAIN}{reverse_lazy("user_created")}'
-REGISTER_URL = f'{DOMAIN}{reverse_lazy("register")}'
+USER_CREATED_URL = f'{DOMAIN}{reverse_lazy("registration:user_created")}'
+REGISTER_URL = f'{DOMAIN}{reverse_lazy("registration:register")}'
 LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
-APPLY_URL = f'{DOMAIN}{reverse_lazy("print_registration")}'
-USER_EDIT_URL = f'{DOMAIN}{reverse_lazy("user_data")}'
+APPLY_URL = f'{DOMAIN}{reverse_lazy("registration:print_registration")}'
+USER_EDIT_URL = f'{DOMAIN}{reverse_lazy("registration:user_data")}'
 AUTH_URL = r'http://localhost:8000/profile/reset/.*/'
 PWD_RESET_URL = f'{DOMAIN}{reverse_lazy("password_reset")}'
 
@@ -204,7 +204,7 @@ def test__registration__backends__EmailBackend__3(browser):
     testuser.save()
 
     browser.login(password='wrongpassword')
-    assert '/profile/login' in browser.url
+    assert LOGIN_URL in browser.url
     assert 'enter a correct email address and password' in browser.contents
 
 
@@ -227,7 +227,7 @@ def test__registration__views__RegistrationPlainFormFile__1(
 
 def test__registration__views__RegistrationPlainFormFile__2(browser):
     """It is always possible to access the plain registration form."""
-    browser.open(DOMAIN + reverse_lazy('registration_plain_file'))
+    browser.open(DOMAIN + reverse_lazy('registration:registration_plain_file'))
     assert browser.headers['Content-Type'] == 'application/pdf'
 
 
@@ -266,7 +266,7 @@ def test__registration__views__EditProfileView__1(
     """Users that are verified can only change their phone number."""
     create_user(user_dict, verified=True)
     browser.login()
-    browser.open(DOMAIN + reverse_lazy('user_data'))
+    browser.open(USER_EDIT_URL)
 
     assert browser.getControl(name='first_name').disabled
     assert browser.getControl(name='gender').disabled
@@ -355,7 +355,8 @@ def test__registration__views__RegistrationFilledFormFile__1(
     """It redirects to the previous page if the user don't has a profile."""
     User.objects.create_user(EMAIL, password=PWD)
     browser.login()
-    browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
+    browser.open(
+        DOMAIN + reverse_lazy('registration:registration_filled_file'))
     assert DOMAIN + reverse_lazy('home') == browser.url
     assert 'There is no profile' in browser.contents
 
@@ -363,7 +364,8 @@ def test__registration__views__RegistrationFilledFormFile__1(
 def test__registration__views_RegistrationFilledFormFile__2(browser):
     """It raises a 404 in case the user is not logged in."""
     with pytest.raises(HTTPError, match=r'.*404.*'):
-        browser.open(DOMAIN + reverse_lazy('registration_filled_file'))
+        browser.open(
+            DOMAIN + reverse_lazy('registration:registration_filled_file'))
 
 
 def test__registration__views__RegistrationFilledFormFile__3(
