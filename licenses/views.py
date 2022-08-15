@@ -38,8 +38,25 @@ class CreateLicenseView(generic.CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class UpdateLicensesView(generic.edit.UpdateView):
+    """Updates a LicenseRequest."""
+
+    form = forms.CreateLicenseRequestForm
+    model = LicenseRequest
+    template_name = 'licenses/update.html'
+    success_url = reverse_lazy('licenses:licenses')
+
+
+@method_decorator(login_required, name='dispatch')
 class DetailsLicensesView(generic.detail.DetailView):
     """Details of a LicenseRequest."""
 
     template_name = 'licenses/details.html'
     model = LicenseRequest
+    form = forms.CreateLicenseRequestForm
+
+    def get_context_data(self, **kwargs):
+        """Add the LicenseRequestForm to context."""
+        context = super().get_context_data(**kwargs)
+        context['form'] = forms.CreateLicenseRequestForm(instance=self.object)
+        return context

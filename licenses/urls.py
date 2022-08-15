@@ -18,5 +18,10 @@ urlpatterns = [
         '<int:pk>/',
         views.DetailsLicensesView.as_view(),
         name='details',
-    )
+    ),
+    path(
+        '<int:pk>/update',
+        views.UpdateLicensesView.as_view(),
+        name='update',
+    ),
 ]
