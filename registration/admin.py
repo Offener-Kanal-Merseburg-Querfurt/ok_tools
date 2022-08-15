@@ -58,7 +58,9 @@ class UserAdmin(BaseUserAdmin):
         """
         update_fields = []
         if form and form.changed_data:
-            if form.initial['is_staff'] != form.cleaned_data['is_staff']:
+            initial = form.initial.get('is_staff')
+            new = form.cleaned_data.get('is_staff')
+            if not (initial is None or new is None) and initial != new:
                 update_fields.append('is_staff')
 
         obj.save(update_fields=update_fields)
