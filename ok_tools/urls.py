@@ -17,51 +17,28 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
-from registration import views
+from registration.views import PasswordResetConfirmView
+from registration.views import PasswordResetView
 
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    path('admin/', admin.site.urls),
-    path('licenses/', include('licenses.urls')),
     path(
         "profile/reset/<uidb64>/<token>/",
-        views.PasswordResetConfirmView.as_view(),
+        PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
     path('profile/password_reset/',
-         views.PasswordResetView.as_view(),
+         PasswordResetView.as_view(),
          name='password_reset'
          ),
     path('profile/', include('django.contrib.auth.urls')),
-    path('register/', views.RegisterView.as_view(), name='register'),
-    path(
-        'profile/created/',
-        TemplateView.as_view(template_name='registration/user_created.html'),
-        name='user_created'),
+    path('admin/', admin.site.urls),
+    path('licenses/', include('licenses.urls')),
+    path('profile/', include('registration.urls')),
     path(
         'privacy_policy/',
         TemplateView.as_view(template_name='privacy_policy.html'),
         name='privacy_policy'
-    ),
-    path(
-        'profile/application/',
-        views.PrintRegistrationView.as_view(),
-        name='print_registration'
-    ),
-    path(
-        'profile/application/file',
-        views.RegistrationFilledFormFile.as_view(),
-        name='registration_filled_file'
-    ),
-    path(
-        'profile/application/plain_file',
-        views.RegistrationPlainFormFile.as_view(),
-        name='registration_plain_file'
-    ),
-    path(
-        'profile/edit/',
-        views.EditProfileView.as_view(),
-        name='user_data'
     ),
 ]
