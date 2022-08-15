@@ -1,21 +1,18 @@
 from . import forms
 from .models import LicenseRequest
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import generic
 
 
 @method_decorator(login_required, name='dispatch')
-class ListLicensesView(generic.View):
+class ListLicensesView(generic.list.ListView):
     """List all licenses of the user."""
 
+    # TODO filter by users licenses only
     template_name = 'licenses/list.html'
-
-    def get(self, request):
-        """Handle get requests."""
-        return render(request, self.template_name, {})
+    model = LicenseRequest
 
 
 @method_decorator(login_required, name='dispatch')

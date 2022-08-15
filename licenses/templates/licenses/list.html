@@ -5,6 +5,14 @@
 {% block content %}
 <h1> {% translate 'Your licenses' %}</h1>
 
+<ul>
+{% for license in object_list %}
+    <li>{{license}}</li>
+{% empty %}
+    <li>{% translate 'No licenses yet.' %}</li>
+{% endfor %}
+</ul>
+
 <a class='btn btn-primary' href={%url 'licenses:create' %}>
     {% translate 'Create license' %}
 </a>
