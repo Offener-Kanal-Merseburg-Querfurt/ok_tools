@@ -1,17 +1,39 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
+{% load static %}
 
 {% block content %}
 <h1> {% translate 'Your licenses' %}</h1>
 
-<ul>
-{% for license in object_list %}
-    <li>{{license}}</li>
-{% empty %}
-    <li>{% translate 'No licenses yet.' %}</li>
-{% endfor %}
-</ul>
+<table class=table>
+    <thead>
+        <tr>
+            <th scope="col">{% translate 'License' %}</th>
+            <th scope="col">{% translate 'Confirmed' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for license in object_list %}
+            <tr>
+                <td>{{license}}</td>
+                {% if license.confirmed %}
+                    <td>
+                    <img src={% static "admin/img/icon-yes.svg" %}
+                         alt={% translate 'Yes'%}>
+                    </td>
+                {% else %}
+                    <td>
+                    <img src={% static "admin/img/icon-no.svg" %}
+                         alt={% translate 'No'%}>
+                    </td>
+                {% endif %}
+            </tr>
+        {% empty %}
+            <td>{% translate 'No licenses yet.' %}</td>
+        {% endfor %}
+    </tbody>
+</table>
 
 <a class='btn btn-primary' href={%url 'licenses:create' %}>
     {% translate 'Create license' %}

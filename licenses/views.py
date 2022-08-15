@@ -10,9 +10,12 @@ from django.views import generic
 class ListLicensesView(generic.list.ListView):
     """List all licenses of the user."""
 
-    # TODO filter by users licenses only
     template_name = 'licenses/list.html'
     model = LicenseRequest
+
+    def get_queryset(self):
+        """List only the licenses of the logged in user."""
+        return self.model.objects.filter(okuser=self.request.user)
 
 
 @method_decorator(login_required, name='dispatch')
