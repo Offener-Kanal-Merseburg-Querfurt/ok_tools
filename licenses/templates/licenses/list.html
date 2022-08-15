@@ -16,7 +16,9 @@
     <tbody>
         {% for license in object_list %}
             <tr>
-                <td>{{license}}</td>
+                <td>
+                    <a href="{% url "licenses:details" license.id %}" class='link-dark'> {{license}} </a>
+                </td>
                 {% if license.confirmed %}
                     <td>
                     <img src={% static "admin/img/icon-yes.svg" %}

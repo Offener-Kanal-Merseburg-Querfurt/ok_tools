@@ -35,3 +35,11 @@ class CreateLicenseView(generic.CreateView):
         # TODO check if user has profile
         form.instance.okuser = self.request.user
         return form
+
+
+@method_decorator(login_required, name='dispatch')
+class DetailsLicensesView(generic.detail.DetailView):
+    """Details of a LicenseRequest."""
+
+    template_name = 'licenses/details.html'
+    model = LicenseRequest
