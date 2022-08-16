@@ -56,7 +56,7 @@ class UserAdmin(BaseUserAdmin):
 
         Observed field is 'is_staff'.
         Set update_fields to use the post_save signal to set permissions.
-        Necessary for registration/signals.py/is_validated .
+        Necessary for registration/signals.py/is_staff .
         """
         if form and form.changed_data:
             initial = form.initial.get('is_staff')
