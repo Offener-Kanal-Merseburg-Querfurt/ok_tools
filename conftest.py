@@ -83,6 +83,7 @@ def license_template_dict() -> dict:
         "subtitle": None,
         "description": "This is a Test.",
         "duration": timedelta(hours=1, minutes=1, seconds=1),
+        "further_persons": None,
         "suggested_date": None,
         "repetitions_allowed": True,
         "media_authority_exchange_allowed": True,

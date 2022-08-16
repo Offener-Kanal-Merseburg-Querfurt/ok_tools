@@ -60,6 +60,11 @@ class LicenseTemplate(models.Model):
         null=False,
     )
 
+    further_persons = models.TextField(
+        _('Further involved persons'),
+        blank=True,
+        null=True,
+    )
     duration = models.DurationField(  # timedelta
         _('Duration'),
         blank=False,

@@ -23,6 +23,8 @@ class CreateLicenseRequestForm(forms.ModelForm):
             'duration': TimeDurationWidget(show_days=False),
             'suggested_date': DatePickerInput(
                 format=settings.DATE_INPUT_FORMATS),
+            'further_persons': forms.Textarea(
+                attrs={'style': 'max-height: 4em'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -32,6 +34,7 @@ class CreateLicenseRequestForm(forms.ModelForm):
             'title',
             'subtitle',
             'description',
+            'further_persons',
             'category',
             'duration',
             'suggested_date',

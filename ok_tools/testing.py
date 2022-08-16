@@ -60,6 +60,7 @@ def create_license_request(
         title=license_template_dict['title'],
         subtitle=license_template_dict['subtitle'],
         description=license_template_dict['description'],
+        further_persons=license_template_dict['further_persons'],
         duration=license_template_dict['duration'],
         suggested_date=license_template_dict['suggested_date'],
         repetitions_allowed=license_template_dict['repetitions_allowed'],
