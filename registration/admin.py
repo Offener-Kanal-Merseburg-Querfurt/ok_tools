@@ -87,19 +87,22 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ['okuser__email', 'first_name', 'last_name']
     actions = ['verify', 'unverify']
 
-    # https://stackoverflow.com/a/54579134
+    # inspired from https://stackoverflow.com/a/54579134
     def save_model(self, request, obj, form, change):
         """
         Set update_fields.
 
         Observed field is 'verified'.
+        Set update_fields to use the post_save signal to set permissions.
+        Necessary for registration/signals.py/is_validated .
         """
-        update_fields = []
         if form and form.changed_data:
-            if form.initial['verified'] != form.cleaned_data['verified']:
-                update_fields.append('verified')
+            initial = form.initial.get('verified')
+            new = form.cleaned_data.get('verified')
+            if not (initial is None or new is None) and initial != new:
+                obj.save(update_fields=['verified'])
 
-        obj.save(update_fields=update_fields)
+        return super().save_model(request, obj, form, change)
 
     @admin.action(description=_('Verify selected profiles'))
     def verify(self, request, queryset):
