@@ -1,8 +1,11 @@
+from datetime import timedelta
 from django.core import mail
 from django.urls import reverse_lazy
+from licenses.models import default_category
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
+from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 import ok_tools.wsgi
 import pytest
@@ -70,3 +73,30 @@ def user_dict() -> dict:
 def user(user_dict):
     """Return a registered user with profile and password."""
     return create_user(user_dict)
+
+
+@pytest.fixture(scope='function')
+def license_template_dict() -> dict:
+    """Return a dictionary containing all the data of an LicenseTemplate."""
+    return {
+        "title": "Test Title",
+        "subtitle": None,
+        "description": "This is a Test.",
+        "duration": timedelta(hours=1, minutes=1, seconds=1),
+        "further_persons": None,
+        "suggested_date": None,
+        "repetitions_allowed": True,
+        "media_authority_exchange_allowed": True,
+        "youth_protection_necessary": False,
+        "store_in_ok_media_library": True,
+    }
+
+
+@pytest.fixture(scope='function')
+def license_request(user, license_template_dict):
+    """Return a license request."""
+    return create_license_request(
+        user,
+        default_category(),
+        license_template_dict,
+    )

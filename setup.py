@@ -32,6 +32,7 @@ setup(
         'Django>=4.0.5',
         'PyPDF2!=2.10.1',
         'django-bootstrap-datepicker-plus',
+        'django-durationwidget2',
         'django-crispy-forms',
         'django-revproxy>=0.10.0',
         'reportlab',

@@ -1,2 +1,8 @@
+from .models import Category
+from .models import LicenseRequest
+from django.contrib import admin
 
-# Register your models here.
+
+admin.site.register(LicenseRequest)
+
+admin.site.register(Category)
