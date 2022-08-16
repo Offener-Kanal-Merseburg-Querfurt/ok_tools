@@ -27,8 +27,9 @@ class Category(models.Model):
         return self.name
 
     class Meta:
-        """Defines the plural name."""
+        """Defines the message IDs."""
 
+        verbose_name = _('Category')
         verbose_name_plural = _('Categories')
 
 
@@ -108,6 +109,12 @@ class LicenseTemplate(models.Model):
         else:
             return self.title
 
+    class Meta:
+        """Defines the message IDs."""
+
+        verbose_name = _('License Template')
+        verbose_name_plural = _('License Templates')
+
 
 class LicenseRequest(LicenseTemplate, models.Model):
     """Model representing a license request (Beitragsfreistellung)."""
@@ -124,3 +131,9 @@ class LicenseRequest(LicenseTemplate, models.Model):
         on_delete=models.CASCADE,
         default=default_category
     )
+
+    class Meta:
+        """Defines the message IDs."""
+
+        verbose_name = _('License Request')
+        verbose_name_plural = _('License Requests')
