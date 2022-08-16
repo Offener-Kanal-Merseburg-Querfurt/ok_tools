@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<h1> {% translate "Details for "%} {{object}} </h1>
+<h1> {% translate "Details for "%}{{object}} </h1>
 
 <form method="post">
 {% csrf_token %}
@@ -34,7 +34,7 @@
     </tbody>
 </table>
 <div>
-<a class="btn btn-primary" href="{% url 'licenses:update' object.id %}">
+<a class="btn btn-primary" id='id_edit_LR' href="{% url 'licenses:update' object.id %}">
     {%translate 'Edit'%}
 </a>
 </div>
