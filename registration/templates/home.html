@@ -12,6 +12,6 @@
 {% else %}
   <p>{% translate 'You are not logged in' %}</p>
   <p><a class="btn btn-outline-primary" href="{% url 'login' %}">{%translate 'Log In'%}</a></p>
-  <p><a class="btn btn-outline-primary" href="{% url 'register' %}">{%translate 'Register'%}</a></p>
+  <p><a class="btn btn-outline-primary" href="{% url 'registration:register' %}">{%translate 'Register'%}</a></p>
 {% endif %}
 {% endblock %}

@@ -246,7 +246,7 @@ class RegisterView(generic.CreateView):
 
         send_auth_mail(email)
         messages.success(request, f'Successfully created user {user.email}')
-        return redirect('user_created')
+        return redirect('registration:user_created')
 
 
 class PasswordResetView(auth_views.PasswordResetView):

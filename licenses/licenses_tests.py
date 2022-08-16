@@ -2,9 +2,7 @@ from .models import LicenseRequest
 from .models import default_category
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
-from ok_tools.testing import PWD
 from ok_tools.testing import create_license_request
-from ok_tools.testing import log_in
 from urllib.error import HTTPError
 import pytest
 
@@ -17,7 +15,7 @@ LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
 
 def test__licenses__views__ListLicensesView__1(browser, user):
     """A logged in user can access his/her licenses overview."""
-    log_in(browser, user.email, password=PWD)
+    browser.login()
     browser.open(HOME_URL)
     browser.follow('Licenses')
     browser.follow('Overview')
@@ -34,7 +32,7 @@ def test__licenses__views__ListLicensesView__2(browser):
 
 def test__licenses__views__CreateLicenseView__1(browser, user):
     """A logged in user can access the create site."""
-    log_in(browser, user.email, password=PWD)
+    browser.login()
     browser.open(HOME_URL)
     browser.follow('Licenses')
     browser.follow('Create')
@@ -51,7 +49,7 @@ def test__licenses__views__CreateLicenseView__2(browser):
 
 def test__licenses__views__CreateLicenseView__3(browser, user):
     """A user can create a license."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     title = 'Test License'
 
     browser.open(CREATE_URL)
@@ -69,7 +67,7 @@ def test__licenses__views__CreateLicenseView__3(browser, user):
 
 def test__licenses__views__CreateLicenseView__4(browser, user):
     """A license needs a Title."""
-    log_in(browser, user.email, PWD)
+    browser.login()
     browser.open(CREATE_URL)
     browser.getControl('Description').value = 'This is a Test.'
     browser.getControl(name='duration_0').value = 0
@@ -90,7 +88,7 @@ def test__licenses__models__1(
     A LicenseRequest gets represented by the first and last name of its user.
     A Category get represented by its name.
     """
-    log_in(browser, user.email, PWD)
+    browser.login()
     subtitle = 'Test Subtitle'
     license_template_dict['subtitle'] = subtitle
     license_with_subtitle = create_license_request(
