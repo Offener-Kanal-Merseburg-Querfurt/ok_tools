@@ -26,6 +26,11 @@ class Category(models.Model):
         """Represent category by its String."""
         return self.name
 
+    class Meta:
+        """Defines the plural name."""
+
+        verbose_name_plural = _('Categories')
+
 
 def default_category():
     """Provide the default Category."""
@@ -36,39 +41,39 @@ class LicenseTemplate(models.Model):
     """Fields that are used vor a LicenseRequest and a finished License."""
 
     title = models.CharField(
-        _('title'),
+        _('Title'),
         blank=False,
         null=False,
         max_length=MAX_TITLE_LENGTH,
     )
 
     subtitle = models.CharField(
-        _('subtitle'),
+        _('Subtitle'),
         blank=True,
         null=True,
         max_length=MAX_TITLE_LENGTH,
     )
 
     description = models.TextField(
-        _('description'),
+        _('Description'),
         blank=False,
         null=False,
     )
 
     duration = models.DurationField(  # timedelta
-        _('duration'),
+        _('Duration'),
         blank=False,
         null=False,
     )
 
     suggested_date = models.DateTimeField(  # datetime
-        _('suggested broadcast date'),
+        _('Suggested broadcast date'),
         blank=True,
         null=True,
     )
 
     repetitions_allowed = models.BooleanField(
-        _('repetitions allowed'),
+        _('Repetitions allowed'),
         blank=False,
         null=False,
     )

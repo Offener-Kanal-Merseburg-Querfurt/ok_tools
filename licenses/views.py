@@ -29,8 +29,9 @@ class CreateLicenseView(generic.CreateView):
 
     success_url = reverse_lazy('licenses:licenses')
 
-    def form_valid(self, form):
-        """User of the created License is the current user."""
+    def get_form(self, form_class=None):
+        """User of created LicenseRequest is current user."""
+        form = super().get_form(form_class)
         # TODO check if user has profile
         form.instance.okuser = self.request.user
-        return super().form_valid(form)
+        return form

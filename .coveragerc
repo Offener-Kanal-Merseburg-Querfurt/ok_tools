@@ -1,5 +1,8 @@
 [run]
 branch = True
+source =
+    licenses
+    registration
 
 [report]
 precision=1

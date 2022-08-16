@@ -1,9 +1,10 @@
 from .models import LicenseRequest
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit
 from django import forms
-from django.forms import widgets
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from durationwidget.widgets import TimeDurationWidget
 
@@ -20,8 +21,8 @@ class CreateLicenseRequestForm(forms.ModelForm):
         # TODO better widgets
         widgets = {
             'duration': TimeDurationWidget(show_days=False),
-            'suggested_date': widgets.DateTimeInput(
-                attrs={'input_type': 'datetime'}),
+            'suggested_date': DatePickerInput(
+                format=settings.DATE_INPUT_FORMATS),
         }
 
     def __init__(self, *args, **kwargs):

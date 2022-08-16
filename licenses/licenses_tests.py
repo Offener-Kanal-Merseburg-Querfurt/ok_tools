@@ -85,7 +85,7 @@ def test__licenses__models__1(
     """
     String representation.
 
-    A LicenseRequest gets represented by the first and last name of its user.
+    A LicenseRequest gets represented by its title and subtitle.
     A Category get represented by its name.
     """
     browser.login()
@@ -94,6 +94,6 @@ def test__licenses__models__1(
     license_with_subtitle = create_license_request(
         user, default_category(), license_template_dict)
 
-    assert license_request.__str__() == license_request.title
-    assert license_with_subtitle.subtitle in license_with_subtitle.__str__()
+    assert str(license_request) == license_request.title
+    assert str(license_with_subtitle) in str(license_with_subtitle)
     assert license_request.category.__str__() == default_category().name
