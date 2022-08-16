@@ -157,6 +157,25 @@ def test__registration__admin__ProfileAdmin__2(db, user, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
+def test__registration__admin__ProfileAdmin__3(db, user_dict, browser):
+    """Create a profile using the admin interface."""
+    User.objects.create_user(user_dict['email'], password=PWD)
+
+    browser.login_admin()
+    browser.follow('Profile')
+    browser.follow('Add profile')
+
+    browser.getControl(user_dict['email']).click()  # select user
+    browser.getControl('First name').value = user_dict['first_name']
+    browser.getControl('Last name').value = user_dict['last_name']
+    browser.getControl('Street').value = user_dict['street']
+    browser.getControl('House number').value = user_dict['house_number']
+    browser.getControl(name='_save').click()
+
+    assert "was added successfully" in browser.contents
+    assert Profile.objects.get(first_name=user_dict['first_name'])
+
+
 def test__registration__admin__verify__1(db, user, user_dict, browser):
     """Verify multiple users."""
     first_email = user.email
