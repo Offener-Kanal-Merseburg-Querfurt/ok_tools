@@ -49,19 +49,20 @@ class UserAdmin(BaseUserAdmin):
     ordering = ['email']
     search_fields = ['email']
 
-    # https://stackoverflow.com/a/54579134
+    # inspired by https://stackoverflow.com/a/54579134
     def save_model(self, request, obj, form, change):
         """
         Set update_fields.
 
         Observed field is 'is_staff'.
+        Set update_fields to use the post_save signal to set permissions.
+        Necessary for registration/signals.py/is_staff .
         """
-        update_fields = []
         if form and form.changed_data:
-            if form.initial['is_staff'] != form.cleaned_data['is_staff']:
-                update_fields.append('is_staff')
-
-        obj.save(update_fields=update_fields)
+            initial = form.initial.get('is_staff')
+            new = form.cleaned_data.get('is_staff')
+            if not (initial is None or new is None) and initial != new:
+                obj.save(update_fields=['is_staff'])
 
         return super(UserAdmin, self).save_model(request, obj, form, change)
 

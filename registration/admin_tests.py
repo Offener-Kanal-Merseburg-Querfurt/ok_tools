@@ -21,6 +21,24 @@ def test__registration__admin__1(browser):
     assert browser.url == f'{DOMAIN}/admin/'
 
 
+def test__registration__admin__2(browser, user_dict):
+    """Create a user using the admin interface."""
+    password = 'userpassword'
+
+    browser.login_admin()
+    browser.follow('Users')
+    browser.follow('Add user')
+
+    browser.getControl('Email').value = user_dict['email']
+    browser.getControl('Password:').value = password
+    browser.getControl(name='password2').value = password
+    browser.getControl(name='_save').click()
+
+    assert 'was added successfully' in browser.contents
+    assert user_dict['email'] in browser.contents
+    assert User.objects.get(email=user_dict['email'])
+
+
 def test__registration__signals__is_staff__1(db, user_dict):
     """A staff member has the permission 'verified'."""
     testuser = User(email=user_dict['email'], password=PWD, is_staff=True)
