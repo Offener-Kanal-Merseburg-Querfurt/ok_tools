@@ -1,7 +1,5 @@
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
-from ok_tools.testing import PWD
-from ok_tools.testing import log_in
 from urllib.error import HTTPError
 import pytest
 
@@ -14,7 +12,7 @@ LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
 
 def test__licenses__views__ListLicensesView__1(browser, user):
     """A logged in user can access his/her licenses overview."""
-    log_in(browser, user.email, password=PWD)
+    browser.login()
     browser.open(HOME_URL)
     browser.follow('Licenses')
     browser.follow('Overview')
@@ -31,7 +29,7 @@ def test__licenses__views__ListLicensesView__2(browser):
 
 def test__licenses__views__CreateLicenseView__1(browser, user):
     """A logged in user can access the create site."""
-    log_in(browser, user.email, password=PWD)
+    browser.login()
     browser.open(HOME_URL)
     browser.follow('Licenses')
     browser.follow('Create')

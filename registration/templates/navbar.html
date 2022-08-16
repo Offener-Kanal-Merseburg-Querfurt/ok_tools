@@ -33,9 +33,9 @@
           {%translate 'Profile'%}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'print_registration' %}">{%translate 'Print Registration Form'%}</a>
+          <a class="dropdown-item" href="{% url 'registration:print_registration' %}">{%translate 'Print Registration Form'%}</a>
           <a class="dropdown-item" href="{% url 'password_reset'%}">{%translate 'Change password'%}</a>
-          <a class="dropdown-item" href="{% url 'user_data' %}">{%translate 'Edit user data'%}</a>
+          <a class="dropdown-item" href="{% url 'registration:user_data' %}">{%translate 'Edit user data'%}</a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -60,7 +60,7 @@
         <a class="nav-link" href="{% url 'login' %}">{%translate 'Login'%}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'register' %}"
+        <a class="nav-link" href="{% url 'registration:register' %}"
           >{%translate 'Register'%}</a
         >
       </li>

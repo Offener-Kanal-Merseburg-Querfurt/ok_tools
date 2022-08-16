@@ -69,7 +69,7 @@ class UserDataForm(forms.ModelForm):
                 HTML("""
                      {% load i18n %}
                      <a class="btn btn-outline-primary"
-                     href="{% url 'print_registration' %}">
+                     href="{% url 'registration:print_registration' %}">
                         {%translate 'Print registration form'%}
                      </a>
                      """
@@ -105,7 +105,6 @@ class ProfileForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_id = 'id-registerForm'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'register'
 
         self.helper.form_class = 'form-horizontal'
 

@@ -30,7 +30,7 @@ setup(
     ),
     install_requires=[
         'Django>=4.0.5',
-        'PyPDF2',
+        'PyPDF2!=2.10.1',
         'django-bootstrap-datepicker-plus',
         'django-crispy-forms',
         'django-revproxy>=0.10.0',

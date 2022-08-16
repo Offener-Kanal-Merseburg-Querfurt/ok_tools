@@ -1,15 +1,12 @@
-from datetime import datetime
-from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core import mail
+from django.urls import reverse_lazy
+from ok_tools.testing import DOMAIN
+from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
-from registration.models import Profile
+from ok_tools.testing import create_user
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
-
-
-User = get_user_model()
 
 
 @pytest.fixture(scope="function")
@@ -28,12 +25,17 @@ class Browser(zope.testbrowser.browser.Browser):
 
     def login_admin(self):
         """Log-in the admin user."""
-        self.login('admin@example.com')
+        self.open(f'{DOMAIN}{reverse_lazy("admin:login")}')
+        self._login('admin@example.com', password='password')
 
-    # TODO password=PWD
-    def login(self, email, password='password'):
+    def login(self, email=EMAIL, password=PWD):
+        """Log-in a user."""
+        self.open(f'{DOMAIN}{reverse_lazy("login")}')
+        self._login(email, password)
+
+    def _login(self, email, password):
         """Log-in a user at the login-page."""
-        assert '/login/?next=' in self.url, \
+        assert '/login' in self.url, \
             f'Not on login page, URL is {self.url}'
         self.getControl('Email address').value = email
         self.getControl('Password').value = password
@@ -50,7 +52,7 @@ def mail_outbox():
 def user_dict() -> dict:
     """Return a user as dict."""
     return {
-        "email": "user@example.com",
+        "email": EMAIL,
         "first_name": "john",
         "last_name": "doe",
         "gender": "m",
@@ -65,22 +67,6 @@ def user_dict() -> dict:
 
 
 @pytest.fixture(scope='function')
-def user(user_dict) -> User:
+def user(user_dict):
     """Return a registered user with profile and password."""
-    user = User.objects.create_user(user_dict['email'], password=PWD)
-    Profile(
-        okuser=user,
-        first_name=user_dict['first_name'],
-        last_name=user_dict['last_name'],
-        gender=user_dict['gender'],
-        phone_number=user_dict['mobile_number'],
-        mobile_number=user_dict['phone_number'],
-        birthday=datetime.strptime(
-            user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
-        street=user_dict['street'],
-        house_number=user_dict['house_number'],
-        zipcode=user_dict['zipcode'],
-        city=user_dict['city'],
-    ).save()
-
-    return user
+    return create_user(user_dict)
