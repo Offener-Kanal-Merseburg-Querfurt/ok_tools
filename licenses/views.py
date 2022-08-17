@@ -41,7 +41,7 @@ class CreateLicenseView(generic.CreateView):
 class UpdateLicensesView(generic.edit.UpdateView):
     """Updates a LicenseRequest."""
 
-    form = forms.CreateLicenseRequestForm
+    form = form_class = forms.CreateLicenseRequestForm
     model = LicenseRequest
     template_name = 'licenses/update.html'
     success_url = reverse_lazy('licenses:licenses')
@@ -53,7 +53,7 @@ class DetailsLicensesView(generic.detail.DetailView):
 
     template_name = 'licenses/details.html'
     model = LicenseRequest
-    form = forms.CreateLicenseRequestForm
+    form = form_class = forms.CreateLicenseRequestForm
 
     def get_context_data(self, **kwargs):
         """Add the LicenseRequestForm to context."""
