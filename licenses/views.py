@@ -1,9 +1,17 @@
 from . import forms
 from .models import LicenseRequest
+from .print import generate_license_file
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
+import django.http as http
+import logging
+
+
+logger = logging.getLogger('django')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -60,3 +68,24 @@ class DetailsLicensesView(generic.detail.DetailView):
         context = super().get_context_data(**kwargs)
         context['form'] = forms.CreateLicenseRequestForm(instance=self.object)
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class FilledLicenseFile(generic.View):
+    """View to deliver a filled license document."""
+
+    def get(self, request, pk):
+        """Print a license file of the current license request."""
+        try:
+            license = LicenseRequest.objects.get(pk=pk)
+        except LicenseRequest.DoesNotExist:
+            message = _('License not found.')
+            logger.error(message)
+            messages.error(request, message)
+            return http.HttpResponseRedirect(
+                request.META.get(
+                    'HTTP_REFERER', reverse_lazy('licenses:licenses')
+                )
+            )
+
+        return generate_license_file(request.user, license)
