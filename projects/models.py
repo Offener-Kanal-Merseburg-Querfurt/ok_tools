@@ -186,7 +186,7 @@ class Project(models.Model):
     )
 
     media_education_supervisor = models.ForeignKey(
-        Category,
+        MediaEducationSupervisor,
         on_delete=models.CASCADE,
         default=default_category
     )
@@ -195,8 +195,8 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         """Licenses are represented by its titles."""
-        if self.subtitle:
-            return f'{self.title} - {self.subtitle}'
+        if self.topic:
+            return f'{self.title} - {self.topic}'
         else:
             return self.title
 
