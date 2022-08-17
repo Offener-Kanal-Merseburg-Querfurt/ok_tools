@@ -132,6 +132,13 @@ class LicenseRequest(LicenseTemplate, models.Model):
         default=default_category
     )
 
+    confirmed = models.BooleanField(
+        _('Confirmed'),
+        blank=False,
+        null=False,
+        default=False,
+    )
+
     class Meta:
         """Defines the message IDs."""
 

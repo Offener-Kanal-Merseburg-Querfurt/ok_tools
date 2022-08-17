@@ -42,5 +42,5 @@ class CreateLicenseRequestForm(forms.ModelForm):
             'media_authority_exchange_allowed',
             'youth_protection_necessary',
             'store_in_ok_media_library',
-            Submit('create', _('Create License'))
+            Submit('save', _('Save'))
         )

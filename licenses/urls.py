@@ -7,11 +7,21 @@ urlpatterns = [
     path(
         '',
         views.ListLicensesView.as_view(),
-        name='licenses'
+        name='licenses',
     ),
     path(
         'create/',
         views.CreateLicenseView.as_view(),
-        name='create'
-    )
+        name='create',
+    ),
+    path(
+        '<int:pk>/',
+        views.DetailsLicensesView.as_view(),
+        name='details',
+    ),
+    path(
+        '<int:pk>/update',
+        views.UpdateLicensesView.as_view(),
+        name='update',
+    ),
 ]
