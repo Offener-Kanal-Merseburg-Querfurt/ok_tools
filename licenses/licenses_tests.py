@@ -11,9 +11,16 @@ HOME_URL = f'{DOMAIN}{reverse_lazy("home")}'
 LIST_URL = f'{DOMAIN}{reverse_lazy("licenses:licenses")}'
 CREATE_URL = f'{DOMAIN}{reverse_lazy("licenses:create")}'
 LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
-# the LR created first has the id 1
-DETAILS_URL = f'{DOMAIN}{reverse_lazy("licenses:details", args=[1])}'
-EDIT_URL = f'{DOMAIN}{reverse_lazy("licenses:update", args=[1])}'
+
+
+def details_url(id):
+    """Return details url."""
+    return f'{DOMAIN}{reverse_lazy("licenses:details", args=[id])}'
+
+
+def edit_url(id):
+    """Return edit url."""
+    return f'{DOMAIN}{reverse_lazy("licenses:update", args=[id])}'
 
 
 def test__licenses__views__ListLicensesView__1(browser, user):
@@ -56,7 +63,7 @@ def test__licenses__views__ListLicensesView__4(browser, license_request):
 def test__licenses__views__DetailsLicensesView__1(browser, license_request):
     """If no user is logged in the details view returns a 404."""
     with pytest.raises(HTTPError, match=r'.*404.*'):
-        browser.open(DETAILS_URL)
+        browser.open(details_url(license_request.id))
 
 
 def test__licenses__views__DetailsLicensesView__2(browser, license_request):
@@ -72,7 +79,7 @@ def test__licenses__views__DetailsLicensesView__2(browser, license_request):
 def test__licenses__views__DetailsLicensesView__3(browser, license_request):
     """It is possible to edit a LR over the details view."""
     browser.login()
-    browser.open(DETAILS_URL)
+    browser.open(details_url(license_request.id))
     browser.follow(id='id_edit_LR')
 
     assert f'Edit {license_request}:' in browser.contents
@@ -81,7 +88,7 @@ def test__licenses__views__DetailsLicensesView__3(browser, license_request):
 def test__licenses__views__UpdateLicensesView__1(browser, license_request):
     """The Description can be changed using the edit site."""
     browser.login()
-    browser.open(EDIT_URL)
+    browser.open(edit_url(license_request.id))
 
     new_description = "This is the new description."
     browser.getControl('Description').value = new_description

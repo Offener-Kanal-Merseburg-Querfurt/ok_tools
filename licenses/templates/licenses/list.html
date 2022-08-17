@@ -17,17 +17,17 @@
         {% for license in object_list %}
             <tr>
                 <td>
-                    <a href="{% url "licenses:details" license.id %}" class='link-dark'> {{license}} </a>
+                    <a href="{% url 'licenses:details' license.id %}" class="link-dark"> {{license}} </a>
                 </td>
                 {% if license.confirmed %}
                     <td>
-                    <img src={% static "admin/img/icon-yes.svg" %}
-                         alt={% translate 'Yes'%}>
+                    <img src="{% static 'admin/img/icon-yes.svg' %}"
+                         alt="{% translate 'Yes'%}">
                     </td>
                 {% else %}
                     <td>
-                    <img src={% static "admin/img/icon-no.svg" %}
-                         alt={% translate 'No'%}>
+                    <img src="{% static 'admin/img/icon-no.svg' %}"
+                         alt="{% translate 'No'%}">
                     </td>
                 {% endif %}
             </tr>
@@ -37,7 +37,7 @@
     </tbody>
 </table>
 
-<a class='btn btn-primary' href={%url 'licenses:create' %}>
+<a class="btn btn-primary" href="{%url 'licenses:create' %}">
     {% translate 'Create license' %}
 </a>
 
