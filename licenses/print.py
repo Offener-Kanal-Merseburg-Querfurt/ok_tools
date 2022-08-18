@@ -16,6 +16,7 @@ def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
     As template the '2017_Antrag_Einzelgenehmigung_ausfuellbar.pdf' from
     https://www.okmq.de/images/Formulare/2017_Antrag_Einzelgenehmigung_ausfuellbar.pdf
     is used.
+    The function assumes that the LicenseRequest has a user with profile.
     """
     def f(p): return str(p) if p else '  -------  '
 
@@ -41,7 +42,6 @@ def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
 
     user = lr.okuser
 
-    # TODO Null check?
     profile = user.profile
 
     # Herr/Frau
@@ -105,7 +105,7 @@ def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
     # Yes/No-Fields
     pdf_edits.setFontSize(20)
 
-    def choose(v): X_YES if v else X_NO
+    def choose(v): return X_YES if v else X_NO
 
     pdf_edits.drawString(choose(lr.repetitions_allowed), Y_REPEAT, 'x')
     pdf_edits.drawString(

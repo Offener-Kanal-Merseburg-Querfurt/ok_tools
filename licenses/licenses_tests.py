@@ -1,11 +1,17 @@
 from .models import LicenseRequest
 from .models import default_category
+from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import create_license_request
+from ok_tools.testing import create_user
+from ok_tools.testing import pdfToText
 from urllib.error import HTTPError
+import ok_tools.testing as testing
 import pytest
 
+
+User = get_user_model()
 
 HOME_URL = f'{DOMAIN}{reverse_lazy("home")}'
 LIST_URL = f'{DOMAIN}{reverse_lazy("licenses:licenses")}'
@@ -21,6 +27,11 @@ def details_url(id):
 def edit_url(id):
     """Return edit url."""
     return f'{DOMAIN}{reverse_lazy("licenses:update", args=[id])}'
+
+
+def print_url(id):
+    """Return print url."""
+    return f'{DOMAIN}{reverse_lazy("licenses:print", args=[id])}'
 
 
 def test__licenses__views__ListLicensesView__1(browser, user):
@@ -164,3 +175,59 @@ def test__licenses__models__1(
     assert str(license_request) == license_request.title
     assert str(license_with_subtitle) in str(license_with_subtitle)
     assert license_request.category.__str__() == default_category().name
+
+
+def test__licenses__print__1(browser, user, license_request):
+    """The printed license contains the necessary data."""
+    browser.login()
+    browser.open(details_url(license_request.id))
+    browser.follow(id='id_print_LR')
+
+    assert browser.headers['Content-Type'] == 'application/pdf'
+    pdftext = pdfToText(browser.contents)
+    assert user.email in pdftext
+    assert license_request.title in pdftext
+    assert 'x' in pdftext
+
+
+def test__licenses__views__FilledLicenseFile__1(browser, license_request):
+    """If no user is logged in the site returns a 404."""
+    with pytest.raises(HTTPError, match=r'.*404.*'):
+        browser.open(print_url(license_request.id))
+
+
+def test__licenses__views__FilledLicenseFile__2(db, user, browser):
+    """Try printing a not existing LR produces an error message."""
+    browser.login()
+    browser.open(print_url(1))
+
+    assert browser.url == LIST_URL
+    assert 'License not found.' in browser.contents
+
+
+def test__licenses__views__FilledLicenseFile__3(
+        browser, user, user_dict, license_request, license_template_dict):
+    """A LR from another user can not be printed."""
+    user_dict['email'] = 'new_'+user_dict['email']
+    second_user = create_user(user_dict)
+    second_lr = create_license_request(
+        second_user, default_category(), license_template_dict)
+
+    browser.login()  # login with user
+    browser.open(print_url(second_lr.id))
+
+    assert browser.url == LIST_URL
+    assert 'License not found.' in browser.contents
+
+
+def test__licenses__views__Filled_licenseFile__4(
+        browser, license_template_dict):
+    """The user of a LR needs to have a profile."""
+    user = User.objects.create_user(testing.EMAIL, password=testing.PWD)
+    lr = create_license_request(
+        user, default_category(), license_template_dict)
+
+    browser.login()
+    browser.open(print_url(lr.id))
+
+    assert "There is no profile" in browser.contents
