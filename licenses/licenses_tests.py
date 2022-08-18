@@ -106,6 +106,8 @@ def test__licenses__views__UpdateLicensesView__1(browser, license_request):
     browser.getControl('Save').click()
 
     assert LicenseRequest.objects.get(description=new_description)
+    assert browser.url == LIST_URL
+    assert 'successfully edited.' in browser.contents
 
 
 def test__licenses__views__CreateLicenseView__1(browser, user):
@@ -140,6 +142,7 @@ def test__licenses__views__CreateLicenseView__3(browser, user):
 
     assert LIST_URL == browser.url
     assert 'Your licenses' in browser.contents
+    assert 'successfully created' in browser.contents
     assert LicenseRequest.objects.get(title=title)
 
 
