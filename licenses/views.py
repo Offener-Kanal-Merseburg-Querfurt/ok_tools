@@ -1,9 +1,31 @@
 from . import forms
+from .generate_file import generate_license_file
 from .models import LicenseRequest
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
+from registration.views import _no_profile_error
+import django.http as http
+import logging
+
+
+User = get_user_model()
+logger = logging.getLogger('django')
+
+
+def _license_does_not_exist(request) -> http.HttpResponseRedirect:
+    message = _('License not found.')
+    logger.error(message)
+    messages.error(request, message)
+    return http.HttpResponseRedirect(
+        request.META.get(
+            'HTTP_REFERER', reverse_lazy('licenses:licenses')
+        )
+    )
 
 
 @method_decorator(login_required, name='dispatch')
@@ -60,3 +82,25 @@ class DetailsLicensesView(generic.detail.DetailView):
         context = super().get_context_data(**kwargs)
         context['form'] = forms.CreateLicenseRequestForm(instance=self.object)
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class FilledLicenseFile(generic.View):
+    """View to deliver a filled license document."""
+
+    def get(self, request, pk):
+        """Print a license file of the current license request."""
+        try:
+            license = LicenseRequest.objects.get(pk=pk)
+        except LicenseRequest.DoesNotExist:
+            return _license_does_not_exist(request)
+
+        if license.okuser != request.user:
+            return _license_does_not_exist(request)
+
+        try:
+            license.okuser.profile
+        except User.profile.RelatedObjectDoesNotExist:
+            return _no_profile_error(request)
+
+        return generate_license_file(request.user, license)
