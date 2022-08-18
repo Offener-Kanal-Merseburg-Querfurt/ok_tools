@@ -177,7 +177,7 @@ def test__licenses__models__1(
     assert license_request.category.__str__() == default_category().name
 
 
-def test__licenses__print__1(browser, user, license_request):
+def test__licenses__generate_file__1(browser, user, license_request):
     """The printed license contains the necessary data."""
     browser.login()
     browser.open(details_url(license_request.id))
@@ -208,7 +208,7 @@ def test__licenses__views__FilledLicenseFile__2(db, user, browser):
 def test__licenses__views__FilledLicenseFile__3(
         browser, user, user_dict, license_request, license_template_dict):
     """A LR from another user can not be printed."""
-    user_dict['email'] = 'new_'+user_dict['email']
+    user_dict['email'] = f'new_{user_dict["email"]}'
     second_user = create_user(user_dict)
     second_lr = create_license_request(
         second_user, default_category(), license_template_dict)

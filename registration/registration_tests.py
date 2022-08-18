@@ -240,7 +240,6 @@ def test__registration__views__RegistrationFilledFormFile__2(
 
     browser.open(APPLY_URL)
     assert browser.url == DOMAIN + reverse_lazy('home')
-    open('response.html', 'w').write(browser.contents)
     assert f'There is no profile for {EMAIL}' in browser.contents
 
 
