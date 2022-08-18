@@ -147,7 +147,7 @@ def test__registration__email__send_auth_mail__7(db, browser, user):
 
 def test__registration__email__send_auth_mail__8(
         db, browser, user, mail_outbox):
-    """Use http for the link send in the email."""
+    """Use https for the link send in the email."""
     send_auth_mail(user.email, DOMAIN, use_https=True)
 
     assert 'https://' in mail_outbox[0].body
