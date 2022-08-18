@@ -1,4 +1,6 @@
+from .email import send_mail
 from .models import Profile
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -11,8 +13,8 @@ logger = logging.getLogger('django')
 
 
 @receiver(post_save, sender=Profile)
-def is_validated(sender, instance, update_fields, **kwargs):
-    """If a profile is validated allow its user to log in."""
+def verify_profile(sender, instance, update_fields, **kwargs):
+    """If a profile is verified it sets permission and sends an email."""
     if ((update_fields and 'verified' in update_fields) or
             kwargs.get('created')):
         user = instance.okuser
@@ -20,6 +22,17 @@ def is_validated(sender, instance, update_fields, **kwargs):
 
         if instance.verified:
             user.user_permissions.add(verified_permission)
+            send_mail(
+                email_template_name='email/confirm_verification_body.html',
+                subject_template_name='email/confirm_verification_subject.txt',
+                context={
+                    "first_name": instance.first_name,
+                    "ok_name": settings.OK_NAME,
+                    "domain": 'localhost:8000',
+                },
+                from_email=settings.EMAIL_HOST_USER,
+                to_email=user.email,
+            )
         else:
             user.user_permissions.remove(verified_permission)
 

@@ -28,10 +28,12 @@ urlpatterns = [
         PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    path('profile/password_reset/',
-         PasswordResetView.as_view(),
-         name='password_reset'
-         ),
+    path(
+        'profile/password_reset/',
+        PasswordResetView.as_view(),
+        name='password_reset'
+    ),
+    # This includes upstream passsword reset, login/out views.
     path('profile/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('licenses/', include('licenses.urls')),
