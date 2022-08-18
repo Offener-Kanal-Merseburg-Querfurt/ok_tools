@@ -244,7 +244,7 @@ class RegisterView(generic.CreateView):
         )
         profile.save()
 
-        send_auth_mail(email)
+        send_auth_mail(email, request.get_host())
         messages.success(request, f'Successfully created user {user.email}')
         return redirect('registration:user_created')
 

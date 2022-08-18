@@ -43,7 +43,8 @@ def _send_auth_mail(
 
 
 def send_auth_mail(
-    email,
+    email: str,
+    domain: str,
     subject_template_name="registration/password_set_subject_customized.txt",
     email_template_name="registration/password_set_email_customized.html",
     use_https=False,
@@ -62,15 +63,21 @@ def send_auth_mail(
         logger.error(f'Profile for user {email} does not exist.')
         raise
 
+    # explicit if/else for branch coverage
+    if use_https:
+        protocol = "https"
+    else:
+        protocol = "http"
+
     context = {
         "first_name": profile.first_name,
         "email": email,
-        "domain": 'localhost:8000',  # TODO nicht hartcodieren
+        "domain": domain,
         "ok_name": settings.OK_NAME,
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "user": user,
         "token": token_generator.make_token(user),
-        "protocol": "https" if use_https else "http",
+        "protocol": protocol,
         **(extra_email_context or {}),
     }
     _send_auth_mail(

@@ -74,7 +74,7 @@ def test__registration__email__send_auth_mail__1(db, user_dict):
     # db is needed for data base access in send_auth_mail
     """It is not possible to send an authentication mail to an unknown user."""
     with pytest.raises(User.DoesNotExist):
-        send_auth_mail(user_dict['email'])
+        send_auth_mail(user_dict['email'], DOMAIN)
 
 
 def test__registration__email__send_auth_mail__2(
@@ -123,7 +123,7 @@ def test__registration__email__send_auth_mail__5(db, user_dict):
     testuser.save()
 
     with pytest.raises(Profile.DoesNotExist):
-        send_auth_mail(user_dict['email'])
+        send_auth_mail(user_dict['email'], DOMAIN)
 
 
 def test__registration__email__send_auth_mail__6(
@@ -143,6 +143,14 @@ def test__registration__email__send_auth_mail__7(db, browser, user):
         mock.side_effect = User.DoesNotExist()
         with pytest.raises(HTTPError, match=r'.*500.*'):
             _request_pwd_reset(browser, user)
+
+
+def test__registration__email__send_auth_mail__8(
+        db, browser, user, mail_outbox):
+    """Use https for the link send in the email."""
+    send_auth_mail(user.email, DOMAIN, use_https=True)
+
+    assert 'https://' in mail_outbox[0].body
 
 
 def test__registration__models__UserManager__1():
