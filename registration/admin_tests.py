@@ -77,7 +77,7 @@ def test__registration__signals__is_staff__3(db, user, browser):
     assert not testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_validated__1(db, user, browser):
+def test__registration__signals__verify_profile__1(db, user, browser):
     """After verification a user has the permission 'verified'."""
     browser.login_admin()
     browser.getLink('Profiles').click()
@@ -89,7 +89,27 @@ def test__registration__signals__is_validated__1(db, user, browser):
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_validated__2(db, user_dict):
+def test__registration__signals__verify_profile__1_05(
+        db, user, browser, mail_outbox):
+    """After verification a user gets send an email."""
+    assert 0 == len(mail_outbox)
+    browser.login_admin()
+    browser.handleErrors = False
+    browser.getLink('Profiles').click()
+    browser.getLink(user.email).click()
+    browser.getControl('Verified').selected = True
+    browser.getControl(name='_save').click()
+
+    assert 1 == len(mail_outbox)
+    assert 'has been verified' in mail_outbox[-1].subject
+    assert (
+        'We have received your application and verified your data. Your'
+        ' account is now fully activated.' in mail_outbox[-1].body
+    )
+    assert user.profile.first_name in mail_outbox[-1].body
+
+
+def test__registration__signals__verify_profile__2(db, user_dict):
     """A User created as verified has the permission 'verified'."""
     user = create_user(user_dict, verified=True)
 
@@ -97,7 +117,7 @@ def test__registration__signals__is_validated__2(db, user_dict):
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__is_validated__3(db, user, browser):
+def test__registration__signals__verify_profile__3(db, user, browser):
     """If a user is no longer verified the permission gets revoked."""
     user.profile.verified = True
     user.profile.save()
@@ -194,8 +214,10 @@ def test__registration__admin__ProfileAdmin__3(db, user_dict, browser):
     assert Profile.objects.get(first_name=user_dict['first_name'])
 
 
-def test__registration__admin__verify__1(db, user, user_dict, browser):
+def test__registration__admin__verify__1(
+        db, user, user_dict, browser, mail_outbox):
     """Verify multiple users."""
+    assert 0 == len(mail_outbox)
     first_email = user.email
     second_email = 'second_' + user_dict['email']
     user_dict['email'] = second_email
@@ -216,7 +238,40 @@ def test__registration__admin__verify__1(db, user, user_dict, browser):
 
     assert first_user.profile.verified
     assert second_user.profile.verified
-    assert 'successfully verified' in browser.contents
+    assert '2 profiles were successfully verified' in browser.contents
+    assert 2 == len(mail_outbox)
+
+
+def test__registration__admin__verify__2(
+        db, user, user_dict, browser, mail_outbox):
+    """It sets the attribute and sends email only if it was unverified."""
+    assert 0 == len(mail_outbox)
+    first_email = user.email
+    second_email = 'second_' + user_dict['email']
+    user_dict['email'] = second_email
+    create_user(user_dict)
+    user.profile.verified = True
+    user.profile.save()
+
+    browser.login_admin()
+
+    browser.getLink('Profile').click()
+
+    # select both profiles
+    browser.getControl(name='_selected_action').controls[0].selected = True
+    browser.getControl(name='_selected_action').controls[1].selected = True
+
+    browser.getControl('Action').value = 'verify'
+    browser.getControl('Go').click()
+
+    first_user = User.objects.get(email=first_email)
+    second_user = User.objects.get(email=second_email)
+
+    # The first user is still verified but did not get an email.
+    assert first_user.profile.verified
+    assert second_user.profile.verified
+    assert '1 profile was successfully verified' in browser.contents
+    assert 1 == len(mail_outbox)
 
 
 def test__registration__admin__unverify__1(db, user_dict, browser):

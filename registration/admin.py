@@ -95,7 +95,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
         Observed field is 'verified'.
         Set update_fields to use the post_save signal to set permissions.
-        Necessary for registration/signals.py/is_validated .
+        Necessary for registration/signals.py/verify_profile.
         """
         if form and form.changed_data:
             initial = form.initial.get('verified')
@@ -108,7 +108,7 @@ class ProfileAdmin(admin.ModelAdmin):
     @admin.action(description=_('Verify selected profiles'))
     def verify(self, request, queryset):
         """Verify all selected profiles."""
-        updated = queryset.update(verified=True)
+        updated = self._set_verified(queryset, True)
         self.message_user(request, _p(
             '%d profile was successfully verified.',
             '%d profiles were successfully verified.',
@@ -118,12 +118,26 @@ class ProfileAdmin(admin.ModelAdmin):
     @admin.action(description=_('Unverify selected profiles'))
     def unverify(self, request, queryset):
         """Unverify all selected profiles."""
-        updated = queryset.update(verified=False)
+        updated = self._set_verified(queryset, False)
         self.message_user(request, _p(
             '%d profile was successfully unverified.',
             '%d profiles were successfully unverified.',
             updated,
         ) % updated, messages.SUCCESS)
+
+    def _set_verified(self, queryset, value: bool) -> int:
+        """Set the `verified` attribute.
+
+        Return the amount of updated objects.
+        """
+        updated = 0
+        for obj in queryset:
+            if obj.verified == value:
+                continue
+            obj.verified = value
+            obj.save(update_fields=['verified'])
+            updated += 1
+        return updated
 
     def response_change(self, request, obj):
         """Add 'Print application' button to profile view."""

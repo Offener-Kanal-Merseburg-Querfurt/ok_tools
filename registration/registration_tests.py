@@ -216,7 +216,7 @@ def test__registration__backends__EmailBackend__3(browser):
     assert 'enter a correct email address and password' in browser.contents
 
 
-def test__registration__signals__is_validated__1(db, user):
+def test__registration__signals__verify_profile__1(db, user):
     """Users with unverified profile don't have the permission 'verified'."""
     assert not user.has_perm('registration.verified')
 

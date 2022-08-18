@@ -7,6 +7,22 @@
 {% block content %}
 {% if user.is_authenticated %}
   <p>Hi {{ user.email }}!</p>
+
+  {% if not user.profile.verified %}
+  <p>
+    {% blocktranslate %}
+    This account is not verified. Please print the application form, sign it and send it back to us. The account will then be verified.
+    {% endblocktranslate %}
+  <p>
+    <a class="btn btn-outline-primary" href="{% url 'registration:print_registration' %}">
+    {%translate 'Application form'%}</a>
+  <p>
+  </p>
+  {% else %}
+    {% blocktranslate %}
+    This account is verified.
+    {% endblocktranslate %}
+  {% endif %}
   <p><a class="btn btn-outline-primary" href="{% url 'logout' %}">{%translate 'Log Out'%}</a><p>
   <p><a class="btn btn-outline-primary" href="{% url 'password_reset' %}">{%translate 'Change Password'%}</a></p>
 {% else %}

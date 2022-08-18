@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from typing import Any
 import logging
 
 
@@ -14,13 +15,13 @@ logger = logging.getLogger('django')
 UserModel = get_user_model()
 
 
-def _send_auth_mail(
-    subject_template_name,
-    email_template_name,
-    context,
-    from_email,
-    to_email,
-):
+def send_mail(
+    subject_template_name: str,
+    email_template_name: str,
+    context: dict[str, Any],
+    from_email: str,
+    to_email: str,
+) -> None:
     """
     Send a django.core.mail.EmailMultiAlternatives to `to_email`.
 
@@ -80,7 +81,7 @@ def send_auth_mail(
         "protocol": protocol,
         **(extra_email_context or {}),
     }
-    _send_auth_mail(
+    send_mail(
         subject_template_name,
         email_template_name,
         context,
