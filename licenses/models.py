@@ -102,6 +102,8 @@ class LicenseTemplate(models.Model):
         null=False,
     )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self) -> str:
         """Licenses are represented by its titles."""
         if self.subtitle:
@@ -122,6 +124,7 @@ class LicenseRequest(LicenseTemplate, models.Model):
     okuser = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        verbose_name=_('User'),
         blank=False,
         null=False,
     )
