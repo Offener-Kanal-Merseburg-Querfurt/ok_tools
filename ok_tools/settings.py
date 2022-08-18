@@ -56,8 +56,9 @@ INSTALLED_APPS = [
     'registration',
     'licenses',
 
-    'crispy_forms',
     'bootstrap_datepicker_plus',
+    'crispy_forms',
+    'django_bootstrap_icons',
     'durationwidget',
 
     'django.contrib.admin',

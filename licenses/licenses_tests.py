@@ -71,6 +71,24 @@ def test__licenses__views__ListLicensesView__4(browser, license_request):
     assert 'Yes' in browser.contents  # the License Request is confirmed
 
 
+def test__licenses__views__ListLicensesView__5(browser, user, license_request):
+    """It is possible to edit a license from the list view."""
+    browser.login()
+    browser.open(LIST_URL)
+    browser.follow(id=f'id_edit_{license_request.id}')
+
+    assert browser.url == edit_url(license_request.id)
+
+
+def test__licenses__views__ListLicensesView__6(browser, user, license_request):
+    """It is possible to print a license from the list view."""
+    browser.login()
+    browser.open(LIST_URL)
+    browser.follow(id=f'id_print_{license_request.id}')
+
+    assert browser.url == print_url(license_request.id)
+
+
 def test__licenses__views__DetailsLicensesView__1(browser, license_request):
     """If no user is logged in the details view returns a 404."""
     with pytest.raises(HTTPError, match=r'.*404.*'):
