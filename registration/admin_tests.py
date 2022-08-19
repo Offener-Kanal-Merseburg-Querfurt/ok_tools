@@ -94,7 +94,6 @@ def test__registration__signals__verify_profile__1_05(
     """After verification a user gets send an email."""
     assert 0 == len(mail_outbox)
     browser.login_admin()
-    browser.handleErrors = False
     browser.getLink('Profiles').click()
     browser.getLink(user.email).click()
     browser.getControl('Verified').selected = True
