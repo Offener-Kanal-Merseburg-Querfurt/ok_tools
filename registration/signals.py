@@ -18,7 +18,7 @@ profile_verified = Signal()
 
 @receiver(post_save, sender=Profile)
 def verify_profile(sender, instance, update_fields, **kwargs):
-    """If a profile is verified it sets permission and sends an email."""
+    """If a profile is verified it sets permission."""
     if ((update_fields and 'verified' in update_fields) or
             kwargs.get('created')):
         user = instance.okuser
