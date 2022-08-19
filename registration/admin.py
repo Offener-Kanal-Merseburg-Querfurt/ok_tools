@@ -8,6 +8,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
+from registration.signals import profile_verified
 
 
 # register user
@@ -102,13 +103,14 @@ class ProfileAdmin(admin.ModelAdmin):
             new = form.cleaned_data.get('verified')
             if not (initial is None or new is None) and initial != new:
                 obj.save(update_fields=['verified'])
+                profile_verified.send(sender=self, obj=obj, request=request)
 
         return super().save_model(request, obj, form, change)
 
     @admin.action(description=_('Verify selected profiles'))
     def verify(self, request, queryset):
         """Verify all selected profiles."""
-        updated = self._set_verified(queryset, True)
+        updated = self._set_verified(queryset, True, request)
         self.message_user(request, _p(
             '%d profile was successfully verified.',
             '%d profiles were successfully verified.',
@@ -118,14 +120,14 @@ class ProfileAdmin(admin.ModelAdmin):
     @admin.action(description=_('Unverify selected profiles'))
     def unverify(self, request, queryset):
         """Unverify all selected profiles."""
-        updated = self._set_verified(queryset, False)
+        updated = self._set_verified(queryset, False, request)
         self.message_user(request, _p(
             '%d profile was successfully unverified.',
             '%d profiles were successfully unverified.',
             updated,
         ) % updated, messages.SUCCESS)
 
-    def _set_verified(self, queryset, value: bool) -> int:
+    def _set_verified(self, queryset, value: bool, request) -> int:
         """Set the `verified` attribute.
 
         Return the amount of updated objects.
@@ -136,6 +138,8 @@ class ProfileAdmin(admin.ModelAdmin):
                 continue
             obj.verified = value
             obj.save(update_fields=['verified'])
+            if obj.verified:
+                profile_verified.send(sender=self, obj=obj, request=request)
             updated += 1
         return updated
 

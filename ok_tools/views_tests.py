@@ -8,7 +8,6 @@ def test_views__home__1(browser, user):
 
 def test_views__home__2(browser, user):
     """It shows a message if the account is not verified."""
-    browser.handleErrors = False
     browser.login()
     assert (
         'This account is not verified. Please print the application form, sign'
