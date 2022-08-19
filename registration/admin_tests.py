@@ -89,25 +89,6 @@ def test__registration__signals__verify_profile__1(db, user, browser):
     assert testuser.has_perm(VERIFIED_PERM)
 
 
-def test__registration__signals__verify_profile__1_05(
-        db, user, browser, mail_outbox):
-    """After verification a user gets send an email."""
-    assert 0 == len(mail_outbox)
-    browser.login_admin()
-    browser.getLink('Profiles').click()
-    browser.getLink(user.email).click()
-    browser.getControl('Verified').selected = True
-    browser.getControl(name='_save').click()
-
-    assert 1 == len(mail_outbox)
-    assert 'has been verified' in mail_outbox[-1].subject
-    assert (
-        'We have received your application and verified your data. Your'
-        ' account is now fully activated.' in mail_outbox[-1].body
-    )
-    assert user.profile.first_name in mail_outbox[-1].body
-
-
 def test__registration__signals__verify_profile__2(db, user_dict):
     """A User created as verified has the permission 'verified'."""
     user = create_user(user_dict, verified=True)
@@ -129,6 +110,25 @@ def test__registration__signals__verify_profile__3(db, user, browser):
 
     testuser = User.objects.get(email=user.email)
     assert not testuser.has_perm(VERIFIED_PERM)
+
+
+def test__registration__signals__send_verification_mail__1(
+        db, user, browser, mail_outbox):
+    """After verification a user gets send an email."""
+    assert 0 == len(mail_outbox)
+    browser.login_admin()
+    browser.getLink('Profiles').click()
+    browser.getLink(user.email).click()
+    browser.getControl('Verified').selected = True
+    browser.getControl(name='_save').click()
+
+    assert 1 == len(mail_outbox)
+    assert 'has been verified' in mail_outbox[-1].subject
+    assert (
+        'We have received your application and verified your data. Your'
+        ' account is now fully activated.' in mail_outbox[-1].body
+    )
+    assert user.profile.first_name in mail_outbox[-1].body
 
 
 def test__registration__signals___get_permission__1(db):
