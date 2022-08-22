@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django import forms
 
 
 
@@ -191,6 +192,80 @@ class Project(models.Model):
         default=default_category
     )
 
+    tn_0_bis_6 = models.IntegerField(
+        _('bis 6 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_7_bis_10 = models.IntegerField(
+        _('7-10 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_11_bis_14 = models.IntegerField(
+        _('11-14 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_15_bis_18 = models.IntegerField(
+        _('15-18 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_19_bis_34 = models.IntegerField(
+        _('19-34 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_35_bis_50 = models.IntegerField(
+        _('35-50 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_51_bis_65 = models.IntegerField(
+        _('51-65 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_ueber_65 = models.IntegerField(
+        _('über 65 Jahre'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_age_not_given = models.IntegerField(
+        _('ohne Angabe'),
+        blank=False,
+        null=False,
+        default=0
+    )
+
+
+    tn_female = models.IntegerField(
+        _('weiblich'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_male = models.IntegerField(
+        _('männlich'),
+        blank=False,
+        null=False,
+        default=0
+    )
+    tn_gender_not_given = models.IntegerField(
+        _('ohne Angabe'),
+        blank=False,
+        null=False,
+        default=0
+    )
 
 
     def __str__(self) -> str:
@@ -199,6 +274,17 @@ class Project(models.Model):
             return f'{self.title} - {self.topic}'
         else:
             return self.title
+
+    def clean(self):
+        tn_age_sum = sum([
+            self.tn_0_bis_6, self.tn_7_bis_10, self.tn_11_bis_14,
+            self.tn_15_bis_18, self.tn_19_bis_34, self.tn_35_bis_50,
+            self.tn_51_bis_65, self.tn_ueber_65])
+        tn_gender_sum = sum([
+            self.tn_female, self.tn_male, self.tn_gender_not_given])
+        if tn_age_sum != tn_gender_sum:
+            raise forms.ValidationError(_(f'The sum of participants by age ({tn_age_sum}) does not match the sum of participants by gender ({tn_gender_sum}). Please correct your data.'))
+
 
     class Meta:
         """Defines the message IDs."""
