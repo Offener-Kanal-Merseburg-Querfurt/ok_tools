@@ -236,7 +236,7 @@ def test__licenses__views__Filled_licenseFile__4(
 def test__licenses__admin__LicenseRequestAdmin__1(
         browser, user, license_request, license_template_dict):
     """Confirm multiple LRs."""
-    license_request.confirmed = 1
+    license_request.confirmed = True
     license_request.save()
     for _ in range(3):
         create_license_request(user, default_category(), license_template_dict)

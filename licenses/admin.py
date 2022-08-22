@@ -52,7 +52,7 @@ class LicenseRequestAdmin(admin.ModelAdmin):
         for obj in queryset:
             if obj.confirmed != value:
                 obj.confirmed = value
-                # in case we need to to further actions when a license is
+                # in case we need to do further actions when a license is
                 # confirmed later
                 obj.save(update_fields=['confirmed'])
                 updated += 1
