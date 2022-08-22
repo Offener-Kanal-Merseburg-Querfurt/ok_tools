@@ -51,6 +51,12 @@ class CreateLicenseView(generic.CreateView):
 
     success_url = reverse_lazy('licenses:licenses')
 
+    def get_success_url(self) -> str:
+        """Show a message to confirm the creation."""
+        messages.success(
+            self.request, _(f'License {self.object} successfully created.'))
+        return super().get_success_url()
+
     def get_form(self, form_class=None):
         """User of created LicenseRequest is current user."""
         form = super().get_form(form_class)
@@ -67,6 +73,13 @@ class UpdateLicensesView(generic.edit.UpdateView):
     model = LicenseRequest
     template_name = 'licenses/update.html'
     success_url = reverse_lazy('licenses:licenses')
+
+    def get_success_url(self) -> str:
+        """Show a message to confirm the update."""
+        messages.success(
+            self.request, _(f'License {self.object} successfully edited.')
+        )
+        return super().get_success_url()
 
 
 @method_decorator(login_required, name='dispatch')

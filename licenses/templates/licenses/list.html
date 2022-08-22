@@ -11,6 +11,7 @@
         <tr>
             <th scope="col">{% translate 'License' %}</th>
             <th scope="col">{% translate 'Confirmed' %}</th>
+            <th scope="col">{% translate 'Actions' %}</th>
         </tr>
     </thead>
     <tbody>
@@ -19,17 +20,32 @@
                 <td>
                     <a href="{% url 'licenses:details' license.id %}" class="link-dark"> {{license}} </a>
                 </td>
+                <td>
                 {% if license.confirmed %}
-                    <td>
                     <img src="{% static 'admin/img/icon-yes.svg' %}"
                          alt="{% translate 'Yes'%}">
-                    </td>
                 {% else %}
-                    <td>
                     <img src="{% static 'admin/img/icon-no.svg' %}"
                          alt="{% translate 'No'%}">
-                    </td>
                 {% endif %}
+                </td>
+                <td>
+                    <div>
+                    <a class="btn btn-outline-dark"
+                       id="id_edit_{{license.id}}"
+                       href="{% url 'licenses:update' license.id %}"
+                       title="{%translate 'Edit license'%}">
+                       <img src="{% static 'img/pencil.svg' %}" alt="{% translate 'edit' %}">
+                    </a>
+                    <a class="btn btn-outline-dark"
+                       id="id_print_{{license.id}}"
+                       href="{% url 'licenses:print' license.id %}"
+                       target="_blank"
+                       title="{% translate 'Print official document'%}">
+                       <img src="{% static 'img/printer.svg' %}" alt="{% translate 'print' %}">
+                    </a>
+                    </div>
+                </td>
             </tr>
         {% empty %}
             <td>{% translate 'No licenses yet.' %}</td>
