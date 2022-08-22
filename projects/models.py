@@ -1,7 +1,6 @@
+from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django import forms
-
 
 
 MAX_TITLE_LENGTH = 255
@@ -57,8 +56,6 @@ class MediaEducationSupervisor(models.Model):
         verbose_name_plural = _('Media education supervisors')
 
 
-
-
 class ProjectCategory(models.Model):
     """
     Model representing a project category.
@@ -84,7 +81,6 @@ class ProjectCategory(models.Model):
         verbose_name_plural = _('Project categories')
 
 
-
 class TargetGroup(models.Model):
     """
     Model representing a target group.
@@ -108,8 +104,6 @@ class TargetGroup(models.Model):
 
         verbose_name = _('Target group')
         verbose_name_plural = _('Target groups')
-
-
 
 
 def default_category():
@@ -247,7 +241,6 @@ class Project(models.Model):
         default=0
     )
 
-
     tn_female = models.IntegerField(
         _('weiblich'),
         blank=False,
@@ -267,7 +260,6 @@ class Project(models.Model):
         default=0
     )
 
-
     def __str__(self) -> str:
         """Licenses are represented by its titles."""
         if self.topic:
@@ -283,12 +275,11 @@ class Project(models.Model):
         tn_gender_sum = sum([
             self.tn_female, self.tn_male, self.tn_gender_not_given])
         if tn_age_sum != tn_gender_sum:
-            raise forms.ValidationError(_(f'The sum of participants by age ({tn_age_sum}) does not match the sum of participants by gender ({tn_gender_sum}). Please correct your data.'))
-
+            raise forms.ValidationError(
+                _(f'The sum of participants by age ({tn_age_sum}) does not match the sum of participants by gender ({tn_gender_sum}). Please correct your data.'))
 
     class Meta:
         """Defines the message IDs."""
 
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')
-
