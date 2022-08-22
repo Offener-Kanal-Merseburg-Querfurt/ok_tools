@@ -85,8 +85,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR/'registration/templates',
-            BASE_DIR/'licenses/templates',
+            BASE_DIR/'licenses'/'templates',
+            BASE_DIR/'ok_tools'/'templates',
+            BASE_DIR/'registration'/'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {

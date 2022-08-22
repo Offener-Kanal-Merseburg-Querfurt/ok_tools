@@ -198,7 +198,7 @@ def test__licenses__models__1(
     assert license_request.category.__str__() == default_category().name
 
 
-def test__licenses__print__1(browser, user, license_request):
+def test__licenses__generate_file__1(browser, user, license_request):
     """The printed license contains the necessary data."""
     browser.login()
     browser.open(details_url(license_request.id))
@@ -229,7 +229,7 @@ def test__licenses__views__FilledLicenseFile__2(db, user, browser):
 def test__licenses__views__FilledLicenseFile__3(
         browser, user, user_dict, license_request, license_template_dict):
     """A LR from another user can not be printed."""
-    user_dict['email'] = 'new_'+user_dict['email']
+    user_dict['email'] = f'new_{user_dict["email"]}'
     second_user = create_user(user_dict)
     second_lr = create_license_request(
         second_user, default_category(), license_template_dict)
@@ -252,3 +252,49 @@ def test__licenses__views__Filled_licenseFile__4(
     browser.open(print_url(lr.id))
 
     assert "There is no profile" in browser.contents
+
+
+def test__licenses__admin__LicenseRequestAdmin__1(
+        browser, user, license_request, license_template_dict):
+    """Confirm multiple LRs."""
+    license_request.confirmed = True
+    license_request.save()
+    for _ in range(3):
+        create_license_request(user, default_category(), license_template_dict)
+
+    browser.login_admin()
+    browser.follow('License Requests')
+    for i in range(4):
+        # select all LRs
+        browser.getControl(name='_selected_action').controls[i].click()
+    browser.getControl('Action').value = 'confirm'
+    browser.getControl('Go').click()
+
+    assert '3 License Requests were successfully confirmed.'\
+        in browser.contents
+    for lr in LicenseRequest.objects.filter():
+        assert lr.confirmed
+
+
+def test__licenses__admin__LicenseRequestAdmin__2(
+        browser, user, license_request, license_template_dict):
+    """Unconfirm multiple LRs."""
+    license_request.save()
+    for _ in range(3):
+        lr = create_license_request(
+            user, default_category(), license_template_dict)
+        lr.confirmed = True
+        lr.save()
+
+    browser.login_admin()
+    browser.follow('License Requests')
+    for i in range(4):
+        # select all LRs
+        browser.getControl(name='_selected_action').controls[i].click()
+    browser.getControl('Action').value = 'unconfirm'
+    browser.getControl('Go').click()
+
+    assert '3 License Requests were successfully unconfirmed.'\
+        in browser.contents
+    for lr in LicenseRequest.objects.filter():
+        assert not lr.confirmed

@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktranslate %}
+Your Account for {{ ok_name }} has been verified
+{% endblocktranslate %}

@@ -44,7 +44,7 @@ def _validation_errors(request, template_name, form) -> http.HttpResponse:
 
 
 def _no_profile_error(request) -> http.HttpResponseRedirect:
-    message = _(f'There is no profile for {request.user}')
+    message = _('There is no profile for %(user)s') % {'user': request.user}
     logger.error(message)
     messages.error(request, message)
     return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
@@ -244,7 +244,7 @@ class RegisterView(generic.CreateView):
         )
         profile.save()
 
-        send_auth_mail(email)
+        send_auth_mail(email, request.get_host())
         messages.success(request, f'Successfully created user {user.email}')
         return redirect('registration:user_created')
 

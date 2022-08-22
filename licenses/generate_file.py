@@ -9,6 +9,14 @@ from reportlab.pdfgen import canvas
 import io
 
 
+def f(p):
+    """Return a readable data representation."""
+    if p:
+        return str(p)
+    else:
+        return '  -------  '
+
+
 def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
     """
     Generate a License as pdf file.
@@ -18,8 +26,6 @@ def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
     is used.
     The function assumes that the LicenseRequest has a user with profile.
     """
-    def f(p): return str(p) if p else '  -------  '
-
     TEXTSIZE = 7.5
 
     # page 1
@@ -105,7 +111,12 @@ def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
     # Yes/No-Fields
     pdf_edits.setFontSize(20)
 
-    def choose(v): return X_YES if v else X_NO
+    def choose(v):
+        """Set Position depending on boolean."""
+        if v:
+            return X_YES
+        else:
+            return X_NO
 
     pdf_edits.drawString(choose(lr.repetitions_allowed), Y_REPEAT, 'x')
     pdf_edits.drawString(

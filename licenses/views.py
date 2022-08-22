@@ -1,6 +1,6 @@
 from . import forms
+from .generate_file import generate_license_file
 from .models import LicenseRequest
-from .print import generate_license_file
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
