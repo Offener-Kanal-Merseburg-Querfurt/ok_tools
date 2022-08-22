@@ -142,6 +142,24 @@ class LicenseRequest(LicenseTemplate, models.Model):
         default=False,
     )
 
+    # confirmed Licenses are not editable
+    def save(self, update_fields=None, *args, **kwargs) -> None:
+        """
+        Make confirmed License Requests not editable.
+
+        Nevertheless the confirmed status itself should stay editable.
+        """
+        if self.id is None:
+            return super().save(*args, **kwargs)
+
+        old = LicenseRequest.objects.get(id=self.id)
+
+        # editing is allowed if only action was to unconfirm license
+        if old.confirmed and update_fields != ['confirmed']:
+            return
+
+        return super().save(*args, **kwargs)
+
     class Meta:
         """Defines the message IDs."""
 

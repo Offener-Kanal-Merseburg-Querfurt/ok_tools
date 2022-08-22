@@ -81,6 +81,16 @@ class UpdateLicensesView(generic.edit.UpdateView):
         )
         return super().get_success_url()
 
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        """Show error message for editing confirmed License Requests."""
+        license = self.get_object()
+        if license.confirmed:
+            message = _('The License %(license)s is already confirmed and'
+                        ' therefor no longer editable.') % {'license': license}
+            logger.error(message)
+            messages.error(request, message)
+        return super().post(request, *args, **kwargs)
+
 
 @method_decorator(login_required, name='dispatch')
 class DetailsLicensesView(generic.detail.DetailView):

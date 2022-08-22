@@ -16,7 +16,7 @@ class CreateLicenseRequestForm(forms.ModelForm):
         """The okuser field is not visible for the user."""
 
         model = LicenseRequest
-        exclude = ('okuser',)
+        exclude = ('okuser', 'confirmed')
 
         # TODO better widgets
         widgets = {

@@ -59,6 +59,16 @@ class LicenseRequestAdmin(admin.ModelAdmin):
 
         return updated
 
+    def save_model(self, request, obj, form, change) -> None:
+        """Set update_fields so changing 'confirmed' is still possible."""
+        if form and form.changed_data:
+            initial = form.initial.get('confirmed')
+            new = form.cleaned_data.get('confirmed')
+            if not (initial is None or new is None) and initial != new:
+                return obj.save(update_fields=['confirmed'])
+
+        return super().save_model(request, obj, form, change)
+
 
 admin.site.register(LicenseRequest, LicenseRequestAdmin)
 

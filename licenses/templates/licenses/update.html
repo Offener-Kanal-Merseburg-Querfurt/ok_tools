@@ -11,6 +11,15 @@
     {% endblocktranslate %}
 </h1>
 
-{% crispy form %}
+{% if object.confirmed %}
+<p>
+    {% blocktranslate %}
+        Your License is already confirmed and no longer editable.
+    {% endblocktranslate %}
+</p>
+<a class="btn btn-primary" href="{% url 'licenses:licenses' %}"> {% translate 'Back to overview'%}</a>
+{% else %}
+    {% crispy form %}
+{% endif %}
 
 {% endblock content %}
