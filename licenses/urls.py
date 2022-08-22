@@ -20,8 +20,13 @@ urlpatterns = [
         name='details',
     ),
     path(
-        '<int:pk>/update',
+        '<int:pk>/update/',
         views.UpdateLicensesView.as_view(),
         name='update',
     ),
+    path(
+        '<int:pk>/filled_license_file/',
+        views.FilledLicenseFile.as_view(),
+        name='print'
+    )
 ]

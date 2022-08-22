@@ -1,0 +1,24 @@
+{% load i18n %}
+
+{% blocktranslate %}
+Hello {{ first_name }},
+{% endblocktranslate %}
+
+{% blocktranslate %}
+We have received your application and verified your data. Your account is now fully activated.
+{% endblocktranslate %}
+
+{% blocktranslate %}
+You can now login and file a license request.
+{% endblocktranslate %}
+
+
+{% block login_link %}
+https://{{ domain }}{% url 'home' %}
+{% endblock %}
+
+{% blocktranslate %}
+Have a great day,
+
+The {{ ok_name }} team
+{% endblocktranslate %}
