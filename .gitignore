@@ -10,6 +10,7 @@ db.sqlite3*
 *.egg-info
 ok_tools-debug.log
 static/
+!licenses/static/img/
 
 # ides and editors
 .idea/

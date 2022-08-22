@@ -2,7 +2,6 @@
 
 {% load i18n %}
 {% load static %}
-{% load bootstrap_icons %}
 
 {% block content %}
 <h1> {% translate 'Your licenses' %}</h1>
@@ -36,14 +35,14 @@
                        id="id_edit_{{license.id}}"
                        href="{% url 'licenses:update' license.id %}"
                        title="{%translate 'Edit license'%}">
-                        {% bs_icon 'pencil' %}
+                       <img src="{% static 'img/pencil.svg' %}" alt="{% translate 'edit' %}">
                     </a>
                     <a class="btn btn-outline-dark"
                        id="id_print_{{license.id}}"
                        href="{% url 'licenses:print' license.id %}"
                        target="_blank"
                        title="{% translate 'Print official document'%}">
-                        {% bs_icon 'printer' %}
+                       <img src="{% static 'img/printer.svg' %}" alt="{% translate 'print' %}">
                     </a>
                     </div>
                 </td>

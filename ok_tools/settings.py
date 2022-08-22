@@ -58,7 +58,6 @@ INSTALLED_APPS = [
 
     'bootstrap_datepicker_plus',
     'crispy_forms',
-    'django_bootstrap_icons',
     'durationwidget',
 
     'django.contrib.admin',
