@@ -331,19 +331,15 @@ def test__licenses__admin__LicenseRequestAdmin__2(
 
 
 def test__licenses__admin__LicenseRequestAdmin__3(browser, license_request):
-    """Unconfirm a single LR."""
+    """Try to edit an confirmed License Request."""
     license_request.confirmed = True
     license_request.save()
 
     browser.login_admin()
     browser.follow('License Request')
     browser.follow(license_request.title)
-    browser.getControl('Confirmed').click()
-    browser.getControl(name='_save').click()
 
-    lr = LicenseRequest.objects.get(id=license_request.id)
-    assert 'was changed successfully' in browser.contents
-    assert not lr.confirmed
+    assert 'Confirmed licenses are not editable!' in browser.contents
 
 
 def test__licenses__admin__LicenseRequestAdmin__4(browser, license_request):

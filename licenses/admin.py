@@ -2,13 +2,19 @@ from .models import Category
 from .models import LicenseRequest
 from django.contrib import admin
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
+import logging
+
+
+logger = logging.getLogger('django')
 
 
 class LicenseRequestAdmin(admin.ModelAdmin):
     """How should the LicenseRequests be shown on the admin site."""
 
+    change_form_template = 'admin/licenses_change_form_edit.html'
     list_display = (
         '__str__',
         'okuser',
@@ -59,15 +65,21 @@ class LicenseRequestAdmin(admin.ModelAdmin):
 
         return updated
 
-    def save_model(self, request, obj, form, change) -> None:
-        """Set update_fields so changing 'confirmed' is still possible."""
-        if form and form.changed_data:
-            initial = form.initial.get('confirmed')
-            new = form.cleaned_data.get('confirmed')
-            if not (initial is None or new is None) and initial != new:
-                return obj.save(update_fields=['confirmed'])
+    def changeform_view(
+            self, request, object_id, form_url="", extra_context=None):
+        """Don't show the save buttons if LR is confirmed."""
+        license = get_object_or_404(LicenseRequest, pk=object_id)
+        extra_context = extra_context or {}
 
-        return super().save_model(request, obj, form, change)
+        extra_context['object'] = license
+
+        if license.confirmed:
+            extra_context['show_save_and_continue'] = False
+            extra_context['show_save'] = False
+            extra_context['show_save_and_add_another'] = False
+
+        return super().changeform_view(
+            request, object_id, form_url, extra_context)
 
 
 admin.site.register(LicenseRequest, LicenseRequestAdmin)

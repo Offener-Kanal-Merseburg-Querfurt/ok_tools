@@ -75,7 +75,7 @@ admin.site.register(User, UserAdmin)
 class ProfileAdmin(admin.ModelAdmin):
     """How should the profile be shown on the admin site."""
 
-    change_form_template = 'admin/change_form_edit.html'
+    change_form_template = 'admin/registration_change_form_edit.html'
 
     list_display = [
         'okuser',

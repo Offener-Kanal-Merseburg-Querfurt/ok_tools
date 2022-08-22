@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+import logging
 
 
+logger = logging.getLogger('django')
 User = get_user_model()
 
 MAX_TITLE_LENGTH = 255
@@ -156,6 +158,7 @@ class LicenseRequest(LicenseTemplate, models.Model):
 
         # editing is allowed if only action was to unconfirm license
         if old.confirmed and update_fields != ['confirmed']:
+            logger.info(f'Not saved {self} because it is already confirmed.')
             return
 
         return super().save(*args, **kwargs)
