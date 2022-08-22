@@ -260,13 +260,6 @@ class Project(models.Model):
         default=0
     )
 
-    def __str__(self) -> str:
-        """Licenses are represented by its titles."""
-        if self.topic:
-            return f'{self.title} - {self.topic}'
-        else:
-            return self.title
-
     def clean(self):
         tn_age_sum = sum([
             self.tn_0_bis_6, self.tn_7_bis_10, self.tn_11_bis_14,
