@@ -231,3 +231,49 @@ def test__licenses__views__Filled_licenseFile__4(
     browser.open(print_url(lr.id))
 
     assert "There is no profile" in browser.contents
+
+
+def test__licenses__admin__LicenseRequestAdmin__1(
+        browser, user, license_request, license_template_dict):
+    """Confirm multiple LRs."""
+    license_request.confirmed = True
+    license_request.save()
+    for _ in range(3):
+        create_license_request(user, default_category(), license_template_dict)
+
+    browser.login_admin()
+    browser.follow('License Requests')
+    for i in range(4):
+        # select all LRs
+        browser.getControl(name='_selected_action').controls[i].click()
+    browser.getControl('Action').value = 'confirm'
+    browser.getControl('Go').click()
+
+    assert '3 License Requests were successfully confirmed.'\
+        in browser.contents
+    for lr in LicenseRequest.objects.filter():
+        assert lr.confirmed
+
+
+def test__licenses__admin__LicenseRequestAdmin__2(
+        browser, user, license_request, license_template_dict):
+    """Unconfirm multiple LRs."""
+    license_request.save()
+    for _ in range(3):
+        lr = create_license_request(
+            user, default_category(), license_template_dict)
+        lr.confirmed = True
+        lr.save()
+
+    browser.login_admin()
+    browser.follow('License Requests')
+    for i in range(4):
+        # select all LRs
+        browser.getControl(name='_selected_action').controls[i].click()
+    browser.getControl('Action').value = 'unconfirm'
+    browser.getControl('Go').click()
+
+    assert '3 License Requests were successfully unconfirmed.'\
+        in browser.contents
+    for lr in LicenseRequest.objects.filter():
+        assert not lr.confirmed
