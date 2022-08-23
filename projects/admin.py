@@ -14,6 +14,8 @@ admin.site.register(TargetGroup)
 
 
 class ProjectAdmin(admin.ModelAdmin):
+    """Admin interface definitions for Projects."""
+
     list_display = ('title', 'topic', 'begin_date', 'project_leader')
     fieldsets = (
         (_('Project data'), {

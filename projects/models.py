@@ -261,6 +261,7 @@ class Project(models.Model):
     )
 
     def clean(self):
+        """Validate participants by age agains participants by gender."""
         tn_age_sum = sum([
             self.tn_0_bis_6, self.tn_7_bis_10, self.tn_11_bis_14,
             self.tn_15_bis_18, self.tn_19_bis_34, self.tn_35_bis_50,
@@ -269,7 +270,9 @@ class Project(models.Model):
             self.tn_female, self.tn_male, self.tn_gender_not_given])
         if tn_age_sum != tn_gender_sum:
             raise forms.ValidationError(
-                _(f'The sum of participants by age ({tn_age_sum}) does not match the sum of participants by gender ({tn_gender_sum}). Please correct your data.'))
+                _(f'The sum of participants by age ({tn_age_sum}) does not '
+                  f'match the sum of participants by gender ({tn_gender_sum}).'
+                  ' Please correct your data.'))
 
     class Meta:
         """Defines the message IDs."""
