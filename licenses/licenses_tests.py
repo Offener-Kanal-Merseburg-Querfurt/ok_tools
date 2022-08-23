@@ -1,5 +1,6 @@
 from .models import LicenseRequest
 from .models import default_category
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
@@ -7,6 +8,7 @@ from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 from urllib.error import HTTPError
+import datetime
 import ok_tools.testing as testing
 import pytest
 
@@ -177,6 +179,24 @@ def test__licenses__views__CreateLicenseView__4(browser, user):
     assert CREATE_URL == browser.url
     assert 'This field is required' in browser.contents
     assert not LicenseRequest.objects.filter()
+
+
+def test__licenses__views__CreateLicenseView__5(
+        db, browser, user, license_template_dict):
+    """A license representing a Screen Board has a fixed duration."""
+    browser.login()
+    browser.open(CREATE_URL)
+    browser.getControl('Title').value = license_template_dict['title']
+    browser.getControl(
+        'Description').value = license_template_dict['description']
+    browser.getControl('Screen Board').click()
+    browser.getControl('Save').click()
+
+    open('response.html', 'w').write(browser.contents)
+    assert (lr := LicenseRequest.objects.get(
+        title=license_template_dict['title']))
+    assert lr.duration == datetime.timedelta(
+        seconds=settings.SCREEN_BOARD_DURATION)
 
 
 def test__licenses__models__1(

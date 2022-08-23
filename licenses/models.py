@@ -142,6 +142,13 @@ class LicenseRequest(LicenseTemplate, models.Model):
         default=False,
     )
 
+    is_screen_board = models.BooleanField(
+        _('Screen Board'),
+        blank=False,
+        null=False,
+        default=False,
+    )
+
     class Meta:
         """Defines the message IDs."""
 
