@@ -198,6 +198,17 @@ def test__licenses__models__1(
     assert license_request.category.__str__() == default_category().name
 
 
+def test__licenses__models__2(
+        db, license_request, license_template_dict, user):
+    """Each new LR gets a unique, visible number."""
+    lr1 = license_request
+    lr2 = create_license_request(
+        user, default_category(), license_template_dict)
+
+    assert lr1.number == 1
+    assert lr2.number == 2
+
+
 def test__licenses__generate_file__1(browser, user, license_request):
     """The printed license contains the necessary data."""
     browser.login()

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 
@@ -121,6 +122,15 @@ class LicenseTemplate(models.Model):
 class LicenseRequest(LicenseTemplate, models.Model):
     """Model representing a license request (Beitragsfreistellung)."""
 
+    # a visible identification number (not djangos id)
+    number = models.IntegerField(
+        _('Number'),
+        default=1,
+        unique=True,
+        blank=False,
+        null=False,
+    )
+
     okuser = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -141,6 +151,17 @@ class LicenseRequest(LicenseTemplate, models.Model):
         null=False,
         default=False,
     )
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        """Emulate an Autofield for number."""
+        last = LicenseRequest.objects.order_by('number').last()
+        if last:
+            i = last.number
+            i += 1
+            self.number = i
+
+        return super().save(*args, **kwargs)
 
     class Meta:
         """Defines the message IDs."""
