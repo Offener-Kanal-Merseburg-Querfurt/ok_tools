@@ -7,9 +7,8 @@ from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit
 from django import forms
 from django.conf import settings
-from django.forms.utils import ErrorDict
 from django.utils.translation import gettext_lazy as _
-from durationwidget.widgets import TimeDurationWidget
+import datetime
 
 
 class CreateLicenseRequestForm(forms.ModelForm):
@@ -23,7 +22,7 @@ class CreateLicenseRequestForm(forms.ModelForm):
 
         # TODO better widgets
         widgets = {
-            'duration': TimeDurationWidget(show_days=False),
+            'duration': forms.widgets.TimeInput,
             'suggested_date': DatePickerInput(
                 format=settings.DATE_INPUT_FORMATS),
             'further_persons': forms.Textarea(
@@ -32,10 +31,15 @@ class CreateLicenseRequestForm(forms.ModelForm):
 
     def is_valid(self) -> bool:
         """If the LR is a screen_board, duration is not required."""
-        if (self.errors == {'duration': ['This field is required.']} and
-                self.instance.is_screen_board):
-            self._errors = ErrorDict()
-            return self.is_bound
+        times = self.data.get('duration').split(':')
+        if (not self.data.get('is_screen_board') and
+            not datetime.timedelta(
+                hours=int(times[0]),
+                minutes=int(times[1]),
+                seconds=int(times[2])
+        )):
+            self.add_error('duration', _('The duration field is required.'))
+            return super().is_valid and False  # to collect further errors
 
         return super().is_valid()
 
