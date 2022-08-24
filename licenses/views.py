@@ -1,6 +1,7 @@
 from . import forms
 from .generate_file import generate_license_file
 from .models import LicenseRequest
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from registration.views import _no_profile_error
+import datetime
 import django.http as http
 import logging
 
@@ -64,6 +66,13 @@ class CreateLicenseView(generic.CreateView):
         form.instance.okuser = self.request.user
         return form
 
+    def form_valid(self, form):
+        """Screen Boards always have a fixed duration."""
+        if form.instance.is_screen_board:
+            form.instance.duration = datetime.timedelta(
+                seconds=settings.SCREEN_BOARD_DURATION)
+        return super().form_valid(form)
+
 
 @method_decorator(login_required, name='dispatch')
 class UpdateLicensesView(generic.edit.UpdateView):
@@ -90,6 +99,13 @@ class UpdateLicensesView(generic.edit.UpdateView):
             logger.error(message)
             messages.error(request, message)
         return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Screen Boards always have a fixed duration."""
+        if form.instance.is_screen_board:
+            form.instance.duration = datetime.timedelta(
+                seconds=settings.SCREEN_BOARD_DURATION)
+        return super().form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')

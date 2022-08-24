@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 import logging
+import datetime
 
 
 logger = logging.getLogger('django')
@@ -70,8 +72,10 @@ class LicenseTemplate(models.Model):
     )
     duration = models.DurationField(  # timedelta
         _('Duration'),
-        blank=False,
+        help_text=_('Format: hh:mm:ss'),
+        blank=True,
         null=False,
+        default=datetime.timedelta(seconds=0),
     )
 
     suggested_date = models.DateTimeField(  # datetime
@@ -123,6 +127,15 @@ class LicenseTemplate(models.Model):
 class LicenseRequest(LicenseTemplate, models.Model):
     """Model representing a license request (Beitragsfreistellung)."""
 
+    # a visible identification number (not djangos id)
+    number = models.IntegerField(
+        _('Number'),
+        default=1,
+        unique=True,
+        blank=False,
+        null=False,
+    )
+
     okuser = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -143,14 +156,29 @@ class LicenseRequest(LicenseTemplate, models.Model):
         null=False,
         default=False,
     )
+    
+    is_screen_board = models.BooleanField(
+        _('Screen Board'),
+        blank=False,
+        null=False,
+        default=False,
+    )
 
-    # confirmed Licenses are not editable
+
+    @transaction.atomic
     def save(self, update_fields=None, *args, **kwargs) -> None:
         """
         Make confirmed License Requests not editable.
 
         Nevertheless the confirmed status itself should stay editable.
         """
+        # Emulate an Autofield for number.
+        last = LicenseRequest.objects.order_by('number').last()
+        if last:
+            i = last.number
+            i += 1
+            self.number = i
+        
         if self.id is None:
             return super().save(*args, **kwargs)
 
@@ -162,6 +190,7 @@ class LicenseRequest(LicenseTemplate, models.Model):
             return
 
         return super().save(*args, **kwargs)
+
 
     class Meta:
         """Defines the message IDs."""
