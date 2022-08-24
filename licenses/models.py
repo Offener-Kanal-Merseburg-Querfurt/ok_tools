@@ -147,7 +147,8 @@ class LicenseRequest(LicenseTemplate, models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        default=default_category
+        default=default_category,
+        verbose_name=_('Category'),
     )
 
     confirmed = models.BooleanField(

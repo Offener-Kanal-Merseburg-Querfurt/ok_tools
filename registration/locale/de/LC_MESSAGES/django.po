@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-01 15:42+0200\n"
+"POT-Creation-Date: 2022-08-24 10:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +17,303 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: registration/admin.py:23 registration/admin.py:38
-msgid "E-Mail address"
-msgstr "E-Mail-Adresse"
+#: licenses/admin.py:25
+msgid "Confirm selected License Requests"
+msgstr "Ausgewählte Freistellungen genehmigen"
 
-#: registration/admin.py:26 registration/admin.py:41
-msgid "Password"
-msgstr "Passwort"
+#: licenses/admin.py:35
+msgid "Unconfirm selected License Requests"
+msgstr "Ausgewählte Freistellungen zurückziehen"
 
-#: registration/admin.py:33 registration/admin.py:44
-msgid "Staff"
-msgstr "Mitarbeiter"
+#: licenses/forms.py:41
+msgid "The duration field is required."
+msgstr "Es muss eine Dauer angegeben werden."
 
-#: registration/admin.py:104
-msgid "Verify selected profiles"
-msgstr "Ausgewählte Profile verifizieren"
+#: licenses/forms.py:63
+msgid "Save"
+msgstr "Speichern"
 
-#: registration/admin.py:114
-msgid "Unverify selected profiles"
-msgstr "Ausgewählte Profile deverifizieren"
+#: licenses/generate_file.py:154
+msgid "license_request.pdf"
+msgstr "freistellung.pdf"
 
-#: registration/forms.py:26 registration/forms.py:61
-msgid "Email address"
-msgstr "E-Mail-Adresse"
+#: licenses/models.py:20 licenses/models.py:33 licenses/models.py:139
+#: licenses/templates/licenses/details.html:16
+msgid "Category"
+msgstr "Kategorie"
 
-#: registration/forms.py:50
-msgid "Submit changes"
-msgstr "Änderungen bestätigen"
+#: licenses/models.py:34
+msgid "Categories"
+msgstr "Kategorien"
 
-#: registration/forms.py:51
-msgid "Fill out application form"
-msgstr "Nutzer*innenantrag ausfüllen"
+#: licenses/models.py:39
+msgid "Not Selected"
+msgstr "Nicht ausgewählt"
 
-#: registration/forms.py:52
-msgid "Apply manually"
-msgstr "Nutzer*innenantrag manuell ausfüllen"
+#: licenses/models.py:46
+msgid "Title"
+msgstr "Titel"
 
-#: registration/forms.py:63
-msgid "I accept"
-msgstr "I stimme zu"
+#: licenses/models.py:53
+msgid "Subtitle"
+msgstr "Untertitel"
 
-#: registration/forms.py:67
-msgid "Birthday"
-msgstr "Geburtstag"
+#: licenses/models.py:60
+msgid "Description"
+msgstr "Beschreibung"
 
-#: registration/forms.py:104 registration/templates/home.html:15
+#: licenses/models.py:66
+msgid "Further involved persons"
+msgstr "Weitere Personen"
+
+#: licenses/models.py:71
+msgid "Duration"
+msgstr "Dauer"
+
+#: licenses/models.py:72
+msgid "Format: hh:mm:ss"
+msgstr "Format: hh:mm:ss"
+
+#: licenses/models.py:79
+msgid "Suggested broadcast date"
+msgstr "Gewünschtes Sendedatum"
+
+#: licenses/models.py:85
+msgid "Repetitions allowed"
+msgstr "Wiederholungen erlauben"
+
+#: licenses/models.py:91
+msgid "Media Authority exchange allowed"
+msgstr "Austausch zwischen Bürgermedien erlauben"
+
+#: licenses/models.py:97
+msgid "Youth protection necessary"
+msgstr "Jugendschutz notwendig"
+
+#: licenses/models.py:103
+msgid "Store in OK media library"
+msgstr "In OK-Mediathek speichern"
+
+#: licenses/models.py:120
+msgid "License Template"
+msgstr "Freistellungstemplate"
+
+#: licenses/models.py:121
+msgid "License Templates"
+msgstr "Freistellungstemplates"
+
+#: licenses/models.py:130
+msgid "User"
+msgstr "Nutzer"
+
+#: licenses/models.py:143 licenses/templates/licenses/list.html:13
+msgid "Confirmed"
+msgstr "Genehmigt"
+
+#: licenses/models.py:150
+msgid "Screen Board"
+msgstr "Bildschirmtafel"
+
+#: licenses/models.py:159
+msgid "License Request"
+msgstr "Freistellungsantrag"
+
+#: licenses/models.py:160
+msgid "License Requests"
+msgstr "Freistellungsanträge"
+
+#: licenses/templates/licenses/create.html:7
+msgid "Create a license"
+msgstr "Freistellung erstellen"
+
+#: licenses/templates/licenses/details.html:8
+msgid "Details for "
+msgstr "Details zu "
+
+#: licenses/templates/licenses/details.html:24
+#: licenses/templates/licenses/list.html:26
+msgid "Yes"
+msgstr "Ja"
+
+#: licenses/templates/licenses/details.html:27
+#: licenses/templates/licenses/list.html:29
+msgid "No"
+msgstr "Nein"
+
+#: licenses/templates/licenses/details.html:38
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: licenses/templates/licenses/details.html:41
+msgid "Print"
+msgstr "Drucken"
+
+#: licenses/templates/licenses/list.html:7
+msgid "Your licenses"
+msgstr "Ihre Freistellungen"
+
+#: licenses/templates/licenses/list.html:12
+msgid "License"
+msgstr "Freistellung"
+
+#: licenses/templates/licenses/list.html:14
+msgid "Actions"
+msgstr "Aktionen"
+
+#: licenses/templates/licenses/list.html:37
+msgid "Edit license"
+msgstr "Freistellung bearbeiten"
+
+#: licenses/templates/licenses/list.html:38
+msgid "edit"
+msgstr "bearbeiten"
+
+#: licenses/templates/licenses/list.html:44
+msgid "Print official document"
+msgstr "Offiziellen Antrag drucken"
+
+#: licenses/templates/licenses/list.html:45
+msgid "print"
+msgstr "drucken"
+
+#: licenses/templates/licenses/list.html:51
+msgid "No licenses yet."
+msgstr "Bisher sind keine Freistellungen vorhanden."
+
+#: licenses/templates/licenses/list.html:57
+#: registration/templates/navbar.html:55
+msgid "Create license"
+msgstr "Freistellung erstellen"
+
+#: licenses/templates/licenses/update.html:9
+#, python-format
+msgid ""
+"\n"
+"        Edit %(object)s:\n"
+"    "
+msgstr ""
+"\n"
+"        %(object)s bearbeiten:\n"
+"    "
+
+#: licenses/views.py:23
+msgid "License not found."
+msgstr "Freistellung nicht gefunden."
+
+#: licenses/views.py:59
+#, python-format
+msgid "License %(license)s successfully created."
+msgstr "Freistellung %(license)s erfolgreich erstellt."
+
+#: licenses/views.py:90
+#, python-format
+msgid "License %(license)s successfully edited."
+msgstr "Freistellung %(license)s erfolgreich bearbeitet."
+
+#: ok_tools/templates/home.html:13
+msgid ""
+"\n"
+"    This account is not verified. Please print the application form, sign it "
+"and bring it with your personal ID back to us. The account will then be "
+"verified.\n"
+"    "
+msgstr ""
+"\n"
+"   Dieser Account ist nicht verifiziert. Bitte drucken Sie zuerst das "
+"Antragsformular (Nutzer*innenantrag) aus und bringen Sie es unterschrieben, "
+"zusammen mit Ihrem Personalausweis bei uns vorbei. Ihr Account wird dann von "
+"uns verifiziert."
+
+#: ok_tools/templates/home.html:18
+msgid "Application form"
+msgstr "Nutzer*innenantrag"
+
+#: ok_tools/templates/home.html:22
+msgid ""
+"\n"
+"    This account is verified.\n"
+"    "
+msgstr ""
+"\n"
+"    Ihr Account ist verifiziert.\n"
+"    "
+
+#: ok_tools/templates/home.html:26
+msgid "Log Out"
+msgstr "Abmelden"
+
+#: ok_tools/templates/home.html:27
+#: registration/templates/registration/password_reset_form.html:7
+msgid "Change Password"
+msgstr "Passwort ändern"
+
+#: ok_tools/templates/home.html:29
+msgid "You are not logged in"
+msgstr "Sie sind nicht angemeldet."
+
+#: ok_tools/templates/home.html:30
+#: registration/templates/registration/login.html:9
+#: registration/templates/registration/password_reset_done.html:12
+msgid "Log In"
+msgstr "Anmelden"
+
+#: ok_tools/templates/home.html:31 registration/forms.py:122
+#: registration/templates/navbar.html:64
 #: registration/templates/registration/register.html:7
 msgid "Register"
 msgstr "Registrieren"
+
+#: registration/admin.py:24 registration/admin.py:39
+msgid "E-Mail address"
+msgstr "E-Mail-Adresse"
+
+#: registration/admin.py:27 registration/admin.py:42
+msgid "Password"
+msgstr "Passwort"
+
+#: registration/admin.py:34 registration/admin.py:45
+msgid "Staff"
+msgstr "Mitarbeiter"
+
+#: registration/admin.py:110
+msgid "Verify selected profiles"
+msgstr "Ausgewählte Profile verifizieren"
+
+#: registration/admin.py:120
+msgid "Unverify selected profiles"
+msgstr "Ausgewählte Profile deverifizieren"
+
+#: registration/forms.py:26 registration/forms.py:80
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: registration/forms.py:60
+msgid ""
+"Your profile is already verified. To change further data please contact an "
+"employee."
+msgstr ""
+"Ihr Profile ist bereits verifiziert. Wenden Sie sich bitte an einen "
+"Mitarbeiter um weitere Daten zu ändern."
+
+#: registration/forms.py:64
+msgid "Submit changes"
+msgstr "Änderungen bestätigen"
+
+#: registration/forms.py:82
+msgid "I accept"
+msgstr "I stimme zu"
+
+#: registration/forms.py:86
+msgid "Birthday"
+msgstr "Geburtstag"
+
+#: registration/forms.py:132
+msgid "Please accept our "
+msgstr "Bitte akzeptieren sie unsere "
+
+#: registration/forms.py:132
+msgid "privacy policy"
+msgstr "Datenschutzerklärung"
 
 #: registration/models.py:17
 msgid "The given email must be set"
@@ -158,25 +407,56 @@ msgstr "Nutzer_innenantrag.pdf"
 msgid "Print application"
 msgstr "Nutzer*innenantrag drucken"
 
-#: registration/templates/home.html:10
-msgid "Log Out"
-msgstr "Abmelden"
+#: registration/templates/email/confirm_verification_body.html:3
+#, python-format
+msgid ""
+"\n"
+"Hello %(first_name)s,\n"
+msgstr ""
+"\n"
+"Hallo %(first_name)s,\n"
 
-#: registration/templates/home.html:11
-#: registration/templates/registration/password_reset_form.html:7
-msgid "Change Password"
-msgstr "Passwort ändern"
+#: registration/templates/email/confirm_verification_body.html:7
+msgid ""
+"\n"
+"We have received your application and verified your data. Your account is "
+"now fully activated.\n"
+msgstr ""
+"\n"
+"Wir haben Ihren Nutzer*innenantrag erhalten und Ihre Daten verifiziert. Ihr "
+"Account ist jetzt vollständig aktiviert.\n"
 
-#: registration/templates/home.html:13
-msgid "You are not logged in"
-msgstr "Sie sind nicht angemeldet."
+#: registration/templates/email/confirm_verification_body.html:11
+msgid ""
+"\n"
+"You can now login and file a license request.\n"
+msgstr ""
+"\n"
+"Sie können sich jetzt einloggen und Freistellungsanträge erstellen.\n"
 
-#: registration/templates/home.html:14
-#: registration/templates/registration/login.html:9
-#: registration/templates/registration/login.html:13
-#: registration/templates/registration/password_reset_done.html:12
-msgid "Log In"
-msgstr "Anmelden"
+#: registration/templates/email/confirm_verification_body.html:20
+#: registration/templates/registration/password_reset_email.html:19
+#: registration/templates/registration/password_set_email_customized.html:16
+#, python-format
+msgid ""
+"\n"
+"Have a great day,\n"
+"\n"
+"The %(ok_name)s team\n"
+msgstr ""
+"\n"
+"Mit freundlichen Grüßen,\n"
+"\n"
+"Ihr %(ok_name)s-Team\n"
+
+#: registration/templates/email/confirm_verification_subject.txt:2
+#, python-format
+msgid ""
+"\n"
+"Your Account for %(ok_name)s has been verified\n"
+msgstr ""
+"\n"
+"Ihr Account für %(ok_name)s wurde verifiziert\n"
 
 #: registration/templates/navbar.html:21
 msgid "Logout"
@@ -187,23 +467,30 @@ msgid "Profile"
 msgstr "Profil"
 
 #: registration/templates/navbar.html:36
-msgid "Edit profile"
-msgstr "Profil bearbeiten"
+msgid "Print Registration Form"
+msgstr "Nutzer*innenantrag drucken"
 
 #: registration/templates/navbar.html:37
 #: registration/templates/registration/password_reset_confirm.html:16
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: registration/templates/navbar.html:42
+#: registration/templates/navbar.html:38
+#: registration/templates/registration/print_registration.html:32
+msgid "Edit user data"
+msgstr "Profil bearbeiten"
+
+#: registration/templates/navbar.html:51
+msgid "Licenses"
+msgstr "Freistellungen"
+
+#: registration/templates/navbar.html:54
+msgid "Overview"
+msgstr "Übersicht"
+
+#: registration/templates/navbar.html:60
 msgid "Login"
 msgstr "Anmelden"
-
-#: registration/templates/navbar.html:46
-#, fuzzy
-#| msgid "Register"
-msgid "register"
-msgstr "Registrieren"
 
 #: registration/templates/privacy_policy.html:6
 msgid "Privacy Policy"
@@ -218,6 +505,15 @@ msgstr ""
 "\n"
 "        Dies ist die Datenschutzerklärung.\n"
 "        "
+
+#: registration/templates/registration/edit_profile.html:7
+#: registration/templates/registration/print_registration.html:7
+msgid "User data for "
+msgstr "Nutzerdaten für "
+
+#: registration/templates/registration/login.html:13
+msgid "Log in"
+msgstr "Anmelden"
 
 #: registration/templates/registration/login.html:14
 msgid "Forgot Password"
@@ -304,20 +600,6 @@ msgstr ""
 "\n"
 "Ihr Benutzernahme lautet: %(user.get_username)s\n"
 
-#: registration/templates/registration/password_reset_email.html:19
-#: registration/templates/registration/password_set_email_customized.html:16
-#, python-format
-msgid ""
-"\n"
-"Have a great day,\n"
-"\n"
-"The %(ok_name)s team\n"
-msgstr ""
-"\n"
-"Mit freundlichen Grüßen,\n"
-"\n"
-"Ihr %(ok_name)s-Team\n"
-
 #: registration/templates/registration/password_reset_form.html:8
 msgid ""
 "Enter your email address below, and we'll send you a link so you can set a "
@@ -362,11 +644,19 @@ msgstr ""
 msgid "Welcome to the %(ok_name)s"
 msgstr "Wilkommen beim %(ok_name)s"
 
+#: registration/templates/registration/print_registration.html:29
+msgid "Print registration form"
+msgstr "Nutzer*innenantrag drucken"
+
+#: registration/templates/registration/print_registration.html:35
+msgid "Print template only"
+msgstr "Nur Vorlage drucken"
+
 #: registration/templates/registration/user_created.html:6
 msgid "Welcome!"
 msgstr "Herzlich Willkommen!"
 
-#: registration/templates/registration/user_created.html:11
+#: registration/templates/registration/user_created.html:9
 #, python-format
 msgid ""
 "\n"
@@ -377,22 +667,31 @@ msgstr ""
 "\n"
 "Sie haben sich erfolgreich beim %(OK_NAME)s registriert. In Kürze erhalten "
 "Sie eine E-Mail mit einem Link über den Sie Ihr Passwort setzen können. Im "
-"Anschluss sollten Sie sich anmelden können."
+"Anschluss sollten Sie sich anmelden können.\n"
 
-#: registration/templates/registration/user_created.html:17
+#: registration/templates/registration/user_created.html:15
 msgid "Back to the start page"
 msgstr "Zurück zur Startseite"
 
-#: registration/templates/registration/user_data.html:7
-msgid "User data for "
-msgstr "Benutzerdaten für "
+#: registration/views.py:47
+#, python-format
+msgid "There is no profile for %(user)s"
+msgstr "Es existiert kein Profil für %(user)s"
 
-#:
-msgid "Please accept our "
-msgstr "Bitte akzeptieren sie unsere "
+#: registration/views.py:200
+msgid "Your profile was successfully updated."
+msgstr "Ihr Profil wurde erfolgreich aktualisiert."
 
-#:
-msgid "privacy policy"
-msgstr "Datenschutzerklärung"
+#~ msgid "Apply manually"
+#~ msgstr "Nutzer*innenantrag manuell ausfüllen"
+
+#~ msgid "Edit profile"
+#~ msgstr "Profil bearbeiten"
+
+#, fuzzy
+#~| msgid "Register"
+#~ msgid "register"
+#~ msgstr "Registrieren"
+
 #~ msgid "Change my password"
 #~ msgstr "Passwort andern"

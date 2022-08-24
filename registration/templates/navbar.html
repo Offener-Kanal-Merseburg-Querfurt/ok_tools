@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %} {% load static %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="{% url 'home'%}">{{OK_NAME_SHORT}}</a>
@@ -17,9 +17,6 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       {% if user.is_authenticated%}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'logout' %}">{%translate 'Logout'%}</a>
-      </li>
       <li class="nav-item dropdown">
         <a
           class="nav-link dropdown-toggle"
@@ -33,9 +30,17 @@
           {%translate 'Profile'%}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'registration:print_registration' %}">{%translate 'Print Registration Form'%}</a>
-          <a class="dropdown-item" href="{% url 'password_reset'%}">{%translate 'Change password'%}</a>
-          <a class="dropdown-item" href="{% url 'registration:user_data' %}">{%translate 'Edit user data'%}</a>
+          <a class="dropdown-item" href="{% url 'registration:user_data' %}"
+            >{%translate 'Edit user data'%}</a
+          >
+          <a class="dropdown-item" href="{% url 'password_reset'%}"
+            >{%translate 'Change password'%}</a
+          >
+          <a
+            class="dropdown-item"
+            href="{% url 'registration:print_registration' %}"
+            >{%translate 'Print Registration Form'%}</a
+          >
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -51,20 +56,39 @@
           {%translate 'Licenses'%}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'licenses:licenses' %}">{%translate 'Overview'%}</a>
-          <a class="dropdown-item" href="{% url 'licenses:create'%}">{%translate 'Create license'%}</a>
+          <a class="dropdown-item" href="{% url 'licenses:licenses' %}"
+            >{%translate 'Overview'%}</a
+          >
+          <a class="dropdown-item" href="{% url 'licenses:create'%}"
+            >{%translate 'Create license'%}</a
+          >
         </div>
       </li>
-      {% else %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'login' %}">{%translate 'Login'%}</a>
-      </li>
-      <li class="nav-item">
+      {% else %} {% endif %}
+    </ul>
+    <div class="d-flex justify-content-end">
+      <ul class="navbar-nav mr-auto">
+        {%if user.is_authenticated %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'logout' %}">
+            <img src="{% static 'img/box-arrow-left.svg'%}" alt="" />
+            {%translate 'Logout' %}
+          </a>
+        </li>
+        {% else %}
+        <li class="nav-item">
         <a class="nav-link" href="{% url 'registration:register' %}"
           >{%translate 'Register'%}</a
         >
-      </li>
-      {% endif %}
-    </ul>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="{% url 'login' %}">
+          <img src="{% static 'img/box-arrow-in-right.svg'%}" alt="" />
+          {%translate 'Login' %}
+        </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
   </div>
 </nav>
