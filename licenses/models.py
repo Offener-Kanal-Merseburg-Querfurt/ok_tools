@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
+import datetime
 
 
 User = get_user_model()
@@ -69,8 +70,10 @@ class LicenseTemplate(models.Model):
     )
     duration = models.DurationField(  # timedelta
         _('Duration'),
-        blank=False,
+        help_text=_('Format: hh:mm:ss'),
+        blank=True,
         null=False,
+        default=datetime.timedelta(seconds=0),
     )
 
     suggested_date = models.DateTimeField(  # datetime
@@ -147,6 +150,13 @@ class LicenseRequest(LicenseTemplate, models.Model):
 
     confirmed = models.BooleanField(
         _('Confirmed'),
+        blank=False,
+        null=False,
+        default=False,
+    )
+
+    is_screen_board = models.BooleanField(
+        _('Screen Board'),
         blank=False,
         null=False,
         default=False,

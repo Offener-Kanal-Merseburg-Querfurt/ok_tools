@@ -1,0 +1,14 @@
+        <script>
+        function showDuration() {
+            element = document.getElementById('div_id_duration')
+            if (!document.getElementById("id_is_screen_board").checked){
+                element.style.display = "initial"
+                element.prop('required', false)
+            } else {
+                element.style.display = "none"
+                element.prop('required', true)
+            }
+            // document.getElementById().remove()
+        }
+        window.onload = function(){ showDuration() }
+        </script>
