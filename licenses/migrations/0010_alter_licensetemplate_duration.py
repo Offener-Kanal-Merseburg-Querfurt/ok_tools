@@ -7,7 +7,7 @@ from django.db import models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('licenses', '0009_licenserequest_is_screen_board'),
+        ('licenses', '0009_licenserequest_number'),
     ]
 
     operations = [
