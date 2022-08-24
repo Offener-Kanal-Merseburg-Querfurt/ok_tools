@@ -1,0 +1,13 @@
+{% extends 'admin/change_form.html' %}
+
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    {% if object.confirmed %}
+    <p>
+        {% blocktranslate %}
+            Confirmed licenses are not editable!
+        {% endblocktranslate %}
+   {% endif %}
+{% endblock %}

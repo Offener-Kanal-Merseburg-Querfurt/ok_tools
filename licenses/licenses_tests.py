@@ -1,5 +1,6 @@
 from .models import LicenseRequest
 from .models import default_category
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
@@ -7,6 +8,7 @@ from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 from urllib.error import HTTPError
+import datetime
 import ok_tools.testing as testing
 import pytest
 
@@ -128,6 +130,48 @@ def test__licenses__views__UpdateLicensesView__1(browser, license_request):
     assert 'successfully edited.' in browser.contents
 
 
+def test__licenses__views__UpdateLicensesView__2(browser, license_request):
+    """It is not possible to edit a confirmed LR."""
+    license_request.confirmed = True
+    license_request.save()
+
+    browser.login()
+    browser.open(edit_url(license_request.id))
+
+    assert 'Your License is already confirmed and no longer editable.'\
+        in browser.contents
+
+
+def test__licenses__views__UpdateLicensesView__3(browser, license_request):
+    """Even if the form is still available, a confirmed LR is not editable."""
+    browser.login()
+    browser.open(edit_url(license_request.id))
+
+    license_request.confirmed = True
+    license_request.save()
+
+    old_description = license_request.description
+    browser.getControl('Description').value = "This is the new description."
+    browser.getControl('Save').click()
+
+    assert 'is already confirmed and therefor no longer editable.'\
+        in browser.contents
+    lr = LicenseRequest.objects.get(id=license_request.id)
+    assert lr.description == old_description
+
+
+def test__licenses__views__UpdateLicensesView__4(browser, license_request):
+    """After a license was changed to a screen board, the duration is fixed."""
+    browser.login()
+    browser.open(edit_url(license_request.id))
+
+    browser.getControl('Screen Board').click()
+    browser.getControl('Save').click()
+
+    assert (LicenseRequest.objects.get(id=license_request.id).duration ==
+            datetime.timedelta(seconds=settings.SCREEN_BOARD_DURATION))
+
+
 def test__licenses__views__CreateLicenseView__1(browser, user):
     """A logged in user can access the create site."""
     browser.login()
@@ -153,9 +197,7 @@ def test__licenses__views__CreateLicenseView__3(browser, user):
     browser.open(CREATE_URL)
     browser.getControl('Title').value = title
     browser.getControl('Description').value = 'This is a Test.'
-    browser.getControl(name='duration_0').value = 0
-    browser.getControl(name='duration_1').value = 0
-    browser.getControl(name='duration_2').value = 10
+    browser.getControl('Duration').value = '00:00:10'
     browser.getControl('Save').click()
 
     assert LIST_URL == browser.url
@@ -169,13 +211,42 @@ def test__licenses__views__CreateLicenseView__4(browser, user):
     browser.login()
     browser.open(CREATE_URL)
     browser.getControl('Description').value = 'This is a Test.'
-    browser.getControl(name='duration_0').value = 0
-    browser.getControl(name='duration_1').value = 0
-    browser.getControl(name='duration_2').value = 10
+    browser.getControl('Duration').value = '00:00:10'
     browser.getControl('Save').click()
 
     assert CREATE_URL == browser.url
     assert 'This field is required' in browser.contents
+    assert not LicenseRequest.objects.filter()
+
+
+def test__licenses__views__CreateLicenseView__5(
+        db, browser, user, license_template_dict):
+    """A license representing a Screen Board has a fixed duration."""
+    browser.login()
+    browser.open(CREATE_URL)
+    browser.getControl('Title').value = license_template_dict['title']
+    browser.getControl(
+        'Description').value = license_template_dict['description']
+    browser.getControl('Screen Board').click()
+    browser.getControl('Save').click()
+
+    assert (lr := LicenseRequest.objects.get(
+        title=license_template_dict['title']))
+    assert lr.duration == datetime.timedelta(
+        seconds=settings.SCREEN_BOARD_DURATION)
+
+
+def test__licenses__forms__CreateLicenseRequestForm__1(
+        browser, user, license_template_dict):
+    """A LR needs a duration or needs to be a Screen Board."""
+    browser.login()
+    browser.open(CREATE_URL)
+    browser.getControl('Title').value = license_template_dict['title']
+    browser.getControl(
+        'Description').value = license_template_dict['description']
+    browser.getControl('Save').click()
+
+    assert 'The duration field is required.' in browser.contents
     assert not LicenseRequest.objects.filter()
 
 
@@ -196,6 +267,17 @@ def test__licenses__models__1(
     assert str(license_request) == license_request.title
     assert str(license_with_subtitle) in str(license_with_subtitle)
     assert license_request.category.__str__() == default_category().name
+
+
+def test__licenses__models__2(
+        db, license_request, license_template_dict, user):
+    """Each new LR gets a unique, visible number."""
+    lr1 = license_request
+    lr2 = create_license_request(
+        user, default_category(), license_template_dict)
+
+    assert lr1.number == 1
+    assert lr2.number == 2
 
 
 def test__licenses__generate_file__1(browser, user, license_request):
@@ -298,3 +380,42 @@ def test__licenses__admin__LicenseRequestAdmin__2(
         in browser.contents
     for lr in LicenseRequest.objects.filter():
         assert not lr.confirmed
+
+
+def test__licenses__admin__LicenseRequestAdmin__3(browser, license_request):
+    """Try to edit an confirmed License Request."""
+    license_request.confirmed = True
+    license_request.save()
+
+    browser.login_admin()
+    browser.follow('License Request')
+    browser.follow(license_request.title)
+
+    assert 'Confirmed licenses are not editable!' in browser.contents
+
+
+def test__licenses__admin__LicenseRequestAdmin__4(browser, license_request):
+    """Change a license request in the admin view."""
+    new_title = f'new_{license_request.title}'
+
+    browser.login_admin()
+    browser.follow('License Request')
+    browser.follow(license_request.title)
+    browser.getControl('Title').value = new_title
+    browser.getControl(name='_save').click()
+
+    lr = LicenseRequest.objects.get(id=license_request.id)
+    assert 'was changed successfully' in browser.contents
+    assert lr.title == new_title
+
+
+def test__licenses__admin__LicenseRequestAdmin__5(browser, license_request):
+    """Change a LR without an actual change."""
+    browser.login_admin()
+    browser.follow('License Request')
+    browser.follow(license_request.title)
+    browser.getControl(name='_save').click()
+
+    lr = LicenseRequest.objects.get(id=license_request.id)
+    assert 'was changed successfully' in browser.contents
+    assert license_request == lr

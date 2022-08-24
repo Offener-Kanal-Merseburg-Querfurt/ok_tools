@@ -3,6 +3,7 @@ branch = True
 source =
     licenses
     registration
+    projects
 
 [report]
 precision=1
