@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
-import logging
 import datetime
+import logging
 
 
 logger = logging.getLogger('django')
@@ -156,14 +156,13 @@ class LicenseRequest(LicenseTemplate, models.Model):
         null=False,
         default=False,
     )
-    
+
     is_screen_board = models.BooleanField(
         _('Screen Board'),
         blank=False,
         null=False,
         default=False,
     )
-
 
     @transaction.atomic
     def save(self, update_fields=None, *args, **kwargs) -> None:
@@ -178,7 +177,7 @@ class LicenseRequest(LicenseTemplate, models.Model):
             i = last.number
             i += 1
             self.number = i
-        
+
         if self.id is None:
             return super().save(*args, **kwargs)
 
@@ -190,7 +189,6 @@ class LicenseRequest(LicenseTemplate, models.Model):
             return
 
         return super().save(*args, **kwargs)
-
 
     class Meta:
         """Defines the message IDs."""

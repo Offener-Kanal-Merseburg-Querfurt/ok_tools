@@ -161,7 +161,6 @@ def test__licenses__views__UpdateLicensesView__3(browser, license_request):
 
 
 def test__licenses__views__UpdateLicensesView__4(browser, license_request):
-
     """After a license was changed to a screen board, the duration is fixed."""
     browser.login()
     browser.open(edit_url(license_request.id))
