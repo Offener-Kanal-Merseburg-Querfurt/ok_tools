@@ -58,7 +58,6 @@ INSTALLED_APPS = [
 
     'bootstrap_datepicker_plus',
     'crispy_forms',
-    'durationwidget',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -212,6 +211,9 @@ EMAIL_HOST_PASSWORD = ''
 # name of the OK
 OK_NAME = 'Offener Kanal Merseburg-Querfurt e.V.'
 OK_NAME_SHORT = 'OK Merseburg'
+
+# the fixed duration of a screen board (Bildschirmtafel) in seconds
+SCREEN_BOARD_DURATION = 20
 
 # Which site should be seen after log in and log out
 LOGIN_REDIRECT_URL = 'home'

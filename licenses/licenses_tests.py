@@ -1,5 +1,6 @@
 from .models import LicenseRequest
 from .models import default_category
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
@@ -7,6 +8,7 @@ from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 from urllib.error import HTTPError
+import datetime
 import ok_tools.testing as testing
 import pytest
 
@@ -128,6 +130,18 @@ def test__licenses__views__UpdateLicensesView__1(browser, license_request):
     assert 'successfully edited.' in browser.contents
 
 
+def test__licenses__views__UpdateLicensesView__2(browser, license_request):
+    """After a license was changed to a screen board, the duration is fixed."""
+    browser.login()
+    browser.open(edit_url(license_request.id))
+
+    browser.getControl('Screen Board').click()
+    browser.getControl('Save').click()
+
+    assert (LicenseRequest.objects.get(id=license_request.id).duration ==
+            datetime.timedelta(seconds=settings.SCREEN_BOARD_DURATION))
+
+
 def test__licenses__views__CreateLicenseView__1(browser, user):
     """A logged in user can access the create site."""
     browser.login()
@@ -153,9 +167,7 @@ def test__licenses__views__CreateLicenseView__3(browser, user):
     browser.open(CREATE_URL)
     browser.getControl('Title').value = title
     browser.getControl('Description').value = 'This is a Test.'
-    browser.getControl(name='duration_0').value = 0
-    browser.getControl(name='duration_1').value = 0
-    browser.getControl(name='duration_2').value = 10
+    browser.getControl('Duration').value = '00:00:10'
     browser.getControl('Save').click()
 
     assert LIST_URL == browser.url
@@ -169,13 +181,42 @@ def test__licenses__views__CreateLicenseView__4(browser, user):
     browser.login()
     browser.open(CREATE_URL)
     browser.getControl('Description').value = 'This is a Test.'
-    browser.getControl(name='duration_0').value = 0
-    browser.getControl(name='duration_1').value = 0
-    browser.getControl(name='duration_2').value = 10
+    browser.getControl('Duration').value = '00:00:10'
     browser.getControl('Save').click()
 
     assert CREATE_URL == browser.url
     assert 'This field is required' in browser.contents
+    assert not LicenseRequest.objects.filter()
+
+
+def test__licenses__views__CreateLicenseView__5(
+        db, browser, user, license_template_dict):
+    """A license representing a Screen Board has a fixed duration."""
+    browser.login()
+    browser.open(CREATE_URL)
+    browser.getControl('Title').value = license_template_dict['title']
+    browser.getControl(
+        'Description').value = license_template_dict['description']
+    browser.getControl('Screen Board').click()
+    browser.getControl('Save').click()
+
+    assert (lr := LicenseRequest.objects.get(
+        title=license_template_dict['title']))
+    assert lr.duration == datetime.timedelta(
+        seconds=settings.SCREEN_BOARD_DURATION)
+
+
+def test__licenses__forms__CreateLicenseRequestForm__1(
+        browser, user, license_template_dict):
+    """A LR needs a duration or needs to be a Screen Board."""
+    browser.login()
+    browser.open(CREATE_URL)
+    browser.getControl('Title').value = license_template_dict['title']
+    browser.getControl(
+        'Description').value = license_template_dict['description']
+    browser.getControl('Save').click()
+
+    assert 'The duration field is required.' in browser.contents
     assert not LicenseRequest.objects.filter()
 
 
