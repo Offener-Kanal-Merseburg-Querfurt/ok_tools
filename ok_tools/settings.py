@@ -55,6 +55,7 @@ DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
 INSTALLED_APPS = [
     'registration',
     'licenses',
+    'projects',
 
     'bootstrap_datepicker_plus',
     'crispy_forms',

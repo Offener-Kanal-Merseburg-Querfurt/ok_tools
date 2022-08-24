@@ -26,6 +26,7 @@ setup(
             'ok_tools',
             'registration',
             'licenses',
+            'projects',
         ],
     ),
     install_requires=[
