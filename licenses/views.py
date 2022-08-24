@@ -54,7 +54,9 @@ class CreateLicenseView(generic.CreateView):
     def get_success_url(self) -> str:
         """Show a message to confirm the creation."""
         messages.success(
-            self.request, _(f'License {self.object} successfully created.'))
+            self.request, _('License %(license)s successfully created.') % {
+                'license': str(self.object)})
+
         return super().get_success_url()
 
     def get_form(self, form_class=None):
@@ -77,7 +79,8 @@ class UpdateLicensesView(generic.edit.UpdateView):
     def get_success_url(self) -> str:
         """Show a message to confirm the update."""
         messages.success(
-            self.request, _(f'License {self.object} successfully edited.')
+            self.request, _('License %(license)s successfully edited.') % {
+                'license': self.object}
         )
         return super().get_success_url()
 

@@ -51,18 +51,14 @@ class UserDataForm(forms.ModelForm):
             'house_number',
             'zipcode',
             'city',
-            HTML("""
-                {% load i18n %}
-
-                 {% if user.profile.verified %}
+            HTML('''
+                 {{% if user.profile.verified %}}
                  <p>
-                    {% blocktranslate %}
-                       Your profile is already verified. To change further
-                       data please contact an employee.
-                    {% endblocktranslate %}
+                    {}
                  </p>
-                 {% endif %}
-                 """
+                 {{% endif %}}
+                 '''.format(_('Your profile is already verified. To change '
+                              'further data please contact an employee.'))
                  ),
             FormActions(
                 Submit('submit', _('Submit changes')),
@@ -130,11 +126,14 @@ class ProfileForm(forms.ModelForm):
 
 def _privacy_policy() -> str:
     return '''
-    {{% load i18n %}}
-    <p> {{% translate 'Please accept our ' %}}
-        <a href="{}" target="_blank">{{% translate 'privacy policy' %}}</a>
+    <p> {}
+        <a href="{}" target="_blank">{}</a>
     </p>
-    '''.format(reverse_lazy('privacy_policy'))
+    '''.format(
+        _('Please accept our '),
+        reverse_lazy('privacy_policy'),
+        _('privacy policy')
+    )
 
 
 class PasswordResetForm(auth_forms.PasswordResetForm):
