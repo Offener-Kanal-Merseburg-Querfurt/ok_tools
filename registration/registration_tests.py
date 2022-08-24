@@ -102,15 +102,13 @@ def test__registration__email__send_auth_mail__3(
 
 
 def test__registration__email__send_auth_mail__4(
-        browser, mail_outbox):
+        db, user, browser, mail_outbox):
     """It is possible to change the password."""
-    testuser = User.objects.create_user(email=EMAIL, password=PWD)
-    testuser.save()
-
     browser.login()
-    assert f'Hi {EMAIL}!' in browser.contents
+    assert (f'Hi {user.profile.first_name} {user.profile.last_name}!' in
+            browser.contents)
 
-    browser.getLink('Change Password').click()
+    browser.follow('Change password')
     browser.getControl('Email').value = EMAIL
     browser.getControl('Send').click()
     assert 1 == len(mail_outbox)
@@ -151,6 +149,19 @@ def test__registration__email__send_auth_mail__8(
     send_auth_mail(user.email, DOMAIN, use_https=True)
 
     assert 'https://' in mail_outbox[0].body
+
+
+def test__registration__email__send_auth_mail__9(
+        browser, mail_outbox):
+    """It is possible to change the password without a profile."""
+    User.objects.create_user(email=EMAIL, password=PWD)
+    browser.login()
+
+    browser.follow('Change password')
+    browser.getControl('Email').value = EMAIL
+    browser.getControl('Send').click()
+    assert 1 == len(mail_outbox)
+    assert _get_link_url_from_email(mail_outbox, AUTH_URL)
 
 
 def test__registration__models__UserManager__1():
@@ -197,13 +208,11 @@ def test__registration__backends__EmailBackend__1(browser):
     assert 'enter a correct email address and password' in browser.contents
 
 
-def test__registration__backends__EmailBackend__2(browser):
+def test__registration__backends__EmailBackend__2(db, user, browser):
     """It is possible to log in with a known user."""
-    testuser = User.objects.create_user(email=EMAIL, password=PWD)
-    testuser.save()
-
     browser.login()
-    assert f'Hi {EMAIL}!' in browser.contents
+    assert (f'Hi {user.profile.first_name} {user.profile.last_name}!' in
+            browser.contents)
 
 
 def test__registration__backends__EmailBackend__3(browser):
