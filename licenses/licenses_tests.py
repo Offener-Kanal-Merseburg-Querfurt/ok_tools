@@ -131,6 +131,36 @@ def test__licenses__views__UpdateLicensesView__1(browser, license_request):
 
 
 def test__licenses__views__UpdateLicensesView__2(browser, license_request):
+    """It is not possible to edit a confirmed LR."""
+    license_request.confirmed = True
+    license_request.save()
+
+    browser.login()
+    browser.open(edit_url(license_request.id))
+
+    assert 'Your License is already confirmed and no longer editable.'\
+        in browser.contents
+
+
+def test__licenses__views__UpdateLicensesView__3(browser, license_request):
+    """Even if the form is still available, a confirmed LR is not editable."""
+    browser.login()
+    browser.open(edit_url(license_request.id))
+
+    license_request.confirmed = True
+    license_request.save()
+
+    old_description = license_request.description
+    browser.getControl('Description').value = "This is the new description."
+    browser.getControl('Save').click()
+
+    assert 'is already confirmed and therefor no longer editable.'\
+        in browser.contents
+    lr = LicenseRequest.objects.get(id=license_request.id)
+    assert lr.description == old_description
+
+
+def test__licenses__views__UpdateLicensesView__4(browser, license_request):
     """After a license was changed to a screen board, the duration is fixed."""
     browser.login()
     browser.open(edit_url(license_request.id))
@@ -350,3 +380,42 @@ def test__licenses__admin__LicenseRequestAdmin__2(
         in browser.contents
     for lr in LicenseRequest.objects.filter():
         assert not lr.confirmed
+
+
+def test__licenses__admin__LicenseRequestAdmin__3(browser, license_request):
+    """Try to edit an confirmed License Request."""
+    license_request.confirmed = True
+    license_request.save()
+
+    browser.login_admin()
+    browser.follow('License Request')
+    browser.follow(license_request.title)
+
+    assert 'Confirmed licenses are not editable!' in browser.contents
+
+
+def test__licenses__admin__LicenseRequestAdmin__4(browser, license_request):
+    """Change a license request in the admin view."""
+    new_title = f'new_{license_request.title}'
+
+    browser.login_admin()
+    browser.follow('License Request')
+    browser.follow(license_request.title)
+    browser.getControl('Title').value = new_title
+    browser.getControl(name='_save').click()
+
+    lr = LicenseRequest.objects.get(id=license_request.id)
+    assert 'was changed successfully' in browser.contents
+    assert lr.title == new_title
+
+
+def test__licenses__admin__LicenseRequestAdmin__5(browser, license_request):
+    """Change a LR without an actual change."""
+    browser.login_admin()
+    browser.follow('License Request')
+    browser.follow(license_request.title)
+    browser.getControl(name='_save').click()
+
+    lr = LicenseRequest.objects.get(id=license_request.id)
+    assert 'was changed successfully' in browser.contents
+    assert license_request == lr

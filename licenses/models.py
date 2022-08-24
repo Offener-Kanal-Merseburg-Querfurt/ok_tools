@@ -3,8 +3,10 @@ from django.db import models
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 import datetime
+import logging
 
 
+logger = logging.getLogger('django')
 User = get_user_model()
 
 MAX_TITLE_LENGTH = 255
@@ -163,13 +165,28 @@ class LicenseRequest(LicenseTemplate, models.Model):
     )
 
     @transaction.atomic
-    def save(self, *args, **kwargs):
-        """Emulate an Autofield for number."""
+    def save(self, update_fields=None, *args, **kwargs) -> None:
+        """
+        Make confirmed License Requests not editable.
+
+        Nevertheless the confirmed status itself should stay editable.
+        """
+        # Emulate an Autofield for number.
         last = LicenseRequest.objects.order_by('number').last()
         if last:
             i = last.number
             i += 1
             self.number = i
+
+        if self.id is None:
+            return super().save(*args, **kwargs)
+
+        old = LicenseRequest.objects.get(id=self.id)
+
+        # editing is allowed if only action was to unconfirm license
+        if old.confirmed and update_fields != ['confirmed']:
+            logger.info(f'Not saved {self} because it is already confirmed.')
+            return
 
         return super().save(*args, **kwargs)
 
