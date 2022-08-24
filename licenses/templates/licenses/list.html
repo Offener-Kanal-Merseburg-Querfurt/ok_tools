@@ -31,12 +31,14 @@
                 </td>
                 <td>
                     <div>
+                    {% if not license.confirmed%}
                     <a class="btn btn-outline-dark"
                        id="id_edit_{{license.id}}"
                        href="{% url 'licenses:update' license.id %}"
                        title="{%translate 'Edit license'%}">
                        <img src="{% static 'img/pencil.svg' %}" alt="{% translate 'edit' %}">
                     </a>
+                    {% endif %}
                     <a class="btn btn-outline-dark"
                        id="id_print_{{license.id}}"
                        href="{% url 'licenses:print' license.id %}"

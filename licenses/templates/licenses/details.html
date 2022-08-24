@@ -34,9 +34,11 @@
     </tbody>
 </table>
 <div>
+{% if not object.confirmed %}
 <a class="btn btn-primary" id="id_edit_LR" href="{% url 'licenses:update' object.id %}">
     {%translate 'Edit'%}
 </a>
+{% endif %}
 <a class="btn btn-primary" id="id_print_LR" href="{% url 'licenses:print' object.id %}" target="_blank">
     {%translate 'Print'%}
 </a>
