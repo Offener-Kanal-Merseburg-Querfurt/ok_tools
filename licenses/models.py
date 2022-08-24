@@ -174,7 +174,7 @@ class LicenseRequest(LicenseTemplate, models.Model):
         """
         # Emulate an Autofield for number.
         last = LicenseRequest.objects.order_by('number').last()
-        if last:
+        if not self.number and last:
             i = last.number
             i += 1
             self.number = i

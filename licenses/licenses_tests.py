@@ -280,6 +280,16 @@ def test__licenses__models__2(
     assert lr2.number == 2
 
 
+def test__licenses__models__3(db, license_request):
+    """The LR number always stays the same."""
+    n1 = license_request.number
+    license_request.subtitle = 'new_subtitle'
+    license_request.save()
+    n2 = license_request.number
+
+    assert n1 == n2
+
+
 def test__licenses__generate_file__1(browser, user, license_request):
     """The printed license contains the necessary data."""
     browser.login()
