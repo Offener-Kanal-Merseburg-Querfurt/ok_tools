@@ -9,6 +9,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 import datetime
+import re
 
 
 class CreateLicenseRequestForm(forms.ModelForm):
@@ -31,13 +32,26 @@ class CreateLicenseRequestForm(forms.ModelForm):
 
     def is_valid(self) -> bool:
         """If the LR is a screen_board, duration is not required."""
-        times = self.data.get('duration').split(':')
-        if (not self.data.get('is_screen_board') and
-            not datetime.timedelta(
+        if self.data.get('is_screen_board'):
+            # it's a screen board, we are fine
+            return super().is_valid()
+
+        duration = self.data.get('duration') or ""
+        if not re.fullmatch(r'\d{2}:\d{2}:\d{2}', duration):
+            # duration format is not valid
+            self.add_error(
+                'duration',
+                _('Invalid format. Please use the format hh:mm:ss.')
+            )
+            return super().is_valid() and False  # to collect further errors
+
+        times = duration.split(':')
+        if (not datetime.timedelta(
                 hours=int(times[0]),
                 minutes=int(times[1]),
                 seconds=int(times[2])
         )):
+            # the duration format is valid but duration is 0
             self.add_error('duration', _('The duration field is required.'))
             return super().is_valid and False  # to collect further errors
 
