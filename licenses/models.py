@@ -173,13 +173,12 @@ class LicenseRequest(LicenseTemplate, models.Model):
         Nevertheless the confirmed status itself should stay editable.
         """
         # Emulate an Autofield for number.
-        last = LicenseRequest.objects.order_by('number').last()
-        if last:
-            i = last.number
-            i += 1
-            self.number = i
+        if self.id is None:  # license is new created
+            if last := LicenseRequest.objects.order_by('number').last():
+                i = last.number
+                i += 1
+                self.number = i
 
-        if self.id is None:
             return super().save(*args, **kwargs)
 
         old = LicenseRequest.objects.get(id=self.id)
