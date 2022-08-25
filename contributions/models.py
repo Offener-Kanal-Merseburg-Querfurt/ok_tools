@@ -18,7 +18,7 @@ class Contribution(models.Model):
         null=False,
     )
 
-    broadcast_date = models.DateTimeField(
+    broadcast_date = models.DateTimeField(  # datetime
         _('Broadcast Date'),
         blank=False,
         null=False,

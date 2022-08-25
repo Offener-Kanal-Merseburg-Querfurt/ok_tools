@@ -1,3 +1,4 @@
+from contributions.models import Contribution
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -70,4 +71,13 @@ def create_license_request(
             'youth_protection_necessary'],
         store_in_ok_media_library=license_template_dict[
             'store_in_ok_media_library'],
+    )
+
+
+def create_contribution(license_request, contribution_dict):
+    """Create and store a contribution."""
+    return Contribution.objects.create(
+        license=license_request,
+        broadcast_date=contribution_dict['broadcast_date'],
+        live=contribution_dict['live'],
     )

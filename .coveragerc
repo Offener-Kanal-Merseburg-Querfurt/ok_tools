@@ -4,6 +4,7 @@ source =
     licenses
     registration
     projects
+    contributions
 
 [report]
 precision=1

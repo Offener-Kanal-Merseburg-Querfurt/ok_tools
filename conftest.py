@@ -1,3 +1,4 @@
+from datetime import datetime
 from datetime import timedelta
 from django.core import mail
 from django.urls import reverse_lazy
@@ -5,6 +6,7 @@ from licenses.models import default_category
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
+from ok_tools.testing import create_contribution
 from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 import ok_tools.wsgi
@@ -99,4 +101,22 @@ def license_request(user, license_template_dict):
         user,
         default_category(),
         license_template_dict,
+    )
+
+
+@pytest.fixture(scope='function')
+def contribution_dict() -> dict:
+    """Return a dictionary with  all additional data for a contribution."""
+    return {
+        'broadcast_date': datetime(year=2022, month=8, day=25, hour=12),
+        'live': False,
+    }
+
+
+@pytest.fixture(scope='function')
+def contribution(license_request, contribution_dict):
+    """Return a stored contribution."""
+    return create_contribution(
+        license_request,
+        contribution_dict,
     )
