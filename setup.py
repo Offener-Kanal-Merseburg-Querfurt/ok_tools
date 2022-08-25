@@ -36,6 +36,7 @@ setup(
         'django-crispy-forms',
         'django-extensions',
         'django-revproxy>=0.10.0',
+        'openpyxl',
         'reportlab',
     ],
     extras_require={

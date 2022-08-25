@@ -248,7 +248,11 @@ LOGGING = {
             'level': DJANGO_LOG_LEVEL,
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'ok_tools-debug.log'),
+            'formatter': 'timestamp',
         },
+        'console': {
+            'class': 'logging.StreamHandler'
+        }
     },
     'loggers': {
         'django': {
@@ -256,5 +260,10 @@ LOGGING = {
             'level': DJANGO_LOG_LEVEL,
             'propagate': True,
         },
+        'console': {
+            'handlers': ['console'],
+            'level': DJANGO_LOG_LEVEL,
+            'propagate': True,
+        }
     },
 }
