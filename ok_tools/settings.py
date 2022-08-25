@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'registration',
     'licenses',
     'projects',
+    'contributions',
 
     'bootstrap_datepicker_plus',
     'crispy_forms',
