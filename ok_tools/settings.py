@@ -258,8 +258,7 @@ LOGGING = {
             'formatter': 'timestamp',
         },
         'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'levelname',
+            'class': 'logging.StreamHandler'
         }
     },
     'loggers': {
@@ -270,7 +269,7 @@ LOGGING = {
         },
         'console': {
             'handlers': ['console'],
-            'level': 'CRITICAL',
+            'level': DJANGO_LOG_LEVEL,
             'propagate': True,
         }
     },
