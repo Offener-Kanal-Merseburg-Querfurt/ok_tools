@@ -258,7 +258,8 @@ LOGGING = {
             'formatter': 'timestamp',
         },
         'console': {
-            'class': 'logging.StreamHandler'
+            'class': 'logging.StreamHandler',
+            'formatter': 'levelname',
         }
     },
     'loggers': {
