@@ -241,6 +241,10 @@ LOGGING = {
         'timestamp': {
             'format': '{asctime} {levelname} {message}',
             'style': '{',
+        },
+        'levelname': {
+            'format': '{levelname} {message}',
+            'style': '{',
         }
     },
     'handlers': {
@@ -251,7 +255,8 @@ LOGGING = {
             'formatter': 'timestamp',
         },
         'console': {
-            'class': 'logging.StreamHandler'
+            'class': 'logging.StreamHandler',
+            'formatter': 'levelname',
         }
     },
     'loggers': {

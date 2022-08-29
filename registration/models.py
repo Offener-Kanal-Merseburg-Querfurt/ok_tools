@@ -1,8 +1,8 @@
-from datetime import date
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -80,6 +80,11 @@ class MediaAuthority(models.Model):
         return self.name
 
 
+def now():
+    """Provide the current datetime for created_at."""
+    return timezone.now()
+
+
 def default_media_authority():
     """Provide the default MediaAuthority."""
     return MediaAuthority.objects.get_or_create(
@@ -127,7 +132,7 @@ class Profile(models.Model):
 
     # birthday
     birthday = models.DateField(
-        _('birthday'), default=date.fromisoformat('1990-09-01'))
+        _('birthday'), blank=False, null=True)
 
     # address (street, zipcode, location) mandatory
     street = models.CharField(_('street'), null=True, max_length=95)
@@ -146,7 +151,7 @@ class Profile(models.Model):
                     ' employee.')
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=now)
 
     media_autority = models.ForeignKey(
         MediaAuthority,
