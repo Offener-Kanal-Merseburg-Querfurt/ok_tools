@@ -10,6 +10,7 @@ from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 from unittest.mock import patch
 from urllib.error import HTTPError
+import datetime
 import logging
 import pytest
 import re
@@ -228,6 +229,30 @@ def test__registration__backends__EmailBackend__3(browser):
 def test__registration__signals__verify_profile__1(db, user):
     """Users with unverified profile don't have the permission 'verified'."""
     assert not user.has_perm('registration.verified')
+
+
+def test__registration__signals__verify_profile__2(db, user_dict):
+    """
+    Create a profile without a user.
+
+    The not existing user does not get verified.
+    """
+    profile = Profile.objects.create(
+        first_name=user_dict['first_name'],
+        last_name=['last_name'],
+        gender=user_dict['gender'],
+        birthday=datetime.datetime.strptime(
+            user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
+        street=user_dict['street'],
+        house_number=user_dict['house_number'],
+        zipcode=user_dict['zipcode'],
+        city=user_dict['city'],
+    )
+
+    with pytest.raises(
+            AttributeError,
+            match=r'\'NoneType\' object has no attribute \'has_perm\''):
+        profile.okuser.has_perm('registration.verified')
 
 
 def test__registration__views__RegistrationPlainFormFile__1(
