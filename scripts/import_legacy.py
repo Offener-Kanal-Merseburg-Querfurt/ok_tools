@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError
 from django.db import transaction
 from licenses.models import Category
 from openpyxl import load_workbook
@@ -16,6 +15,21 @@ import pytz
 User = get_user_model()
 logger = logging.getLogger('console')
 
+NR = 0
+W = 2
+M = 3
+FIRST_NAME = 5
+LAST_NAME = 6
+STREET = 7
+H_NUMBER = 8
+ZIPCODE = 9
+CITY = 10
+BIRTHDAY = 12
+PHONE = 13
+MOBILE = 14
+E_MAIL = 15
+CREATED_AT = 16
+
 
 def run():
     """Run the import."""
@@ -29,25 +43,16 @@ def run():
 
 @transaction.atomic
 def import_users(ws: Worksheet):
-    """Import users from xlsx."""
+    """
+    Import users from xlsx.
+
+    When two profiles where found for one user the newer one gets chosen.
+    When there is no creation datetime given the profile gets handled as the
+    newest.
+    """
+    ids = {}
     rows = ws.rows
-
     header = next(rows)
-
-    NR = 0
-    W = 2
-    M = 3
-    FIRST_NAME = 5
-    LAST_NAME = 6
-    STREET = 7
-    H_NUMBER = 8
-    ZIPCODE = 9
-    CITY = 10
-    BIRTHDAY = 12
-    PHONE = 13
-    MOBILE = 14
-    E_MAIL = 15
-    CREATED_AT = 16
 
     assert header[W].value == 'weiblich'
     assert header[M].value == 'männlich'
@@ -65,70 +70,117 @@ def import_users(ws: Worksheet):
 
     for row in rows:
 
-        # determine gender
-        m = _get_bool(row[M])
-        w = _get_bool(row[W])
-        if not (m != w):
-            gender = "none"
-            logger.warn(
-                f'Could not determine gender from user {row[NR].value}')
-        if w:
-            gender = "w"
-        else:
-            gender = "M"
-
         if row[E_MAIL].value:
             user, user_created = User.objects.get_or_create(
                 email=row[E_MAIL].value)
 
-            try:
-                user.profile
-                logger.error(f'Could not add profile {row[NR].value}, because'
-                             f' user with {row[E_MAIL].value} already exists.')
-            except User.profile.RelatedObjectDoesNotExist:
-                pass
-
             if not user_created:
-                logger.info(f'Already found a user for {row[NR].value}')
+                # user with email already exists
+                logger.info('Already found a user. I will take the newer one.')
+                created_profile = user.profile
+                # TODO maybe catch if no profile
+
+                # if datetime is none handle as the newest
+                new_created = _get_datetime(row[CREATED_AT])
+                if (not new_created or
+                   new_created > created_profile.created_at):
+                    Profile.objects.get(id=created_profile.id).delete()
+                    print(_chosen_profile(
+                        row=row, profile=created_profile, switched=True))
+                elif (new_created == created_profile.created_at):
+                    # assume that this is the same user
+                    continue
+                else:
+                    print(_chosen_profile(
+                        row=row, profile=created_profile, switched=False))
+                    continue
 
         else:
             user = None
 
-        try:
-            obj, created = Profile.objects.get_or_create(
-                okuser=user,
-                first_name=row[FIRST_NAME].value,
-                last_name=row[LAST_NAME].value,
-                gender=gender,
-                phone_number=_get_phone_number(row[PHONE]),
-                mobile_number=_get_phone_number(row[MOBILE]),
-                birthday=_get_datetime(row[BIRTHDAY]),
-                street=row[STREET].value,
-                house_number=row[H_NUMBER].value,
-                zipcode=row[ZIPCODE].value,
-                city=row[CITY].value,
-                created_at=(_get_datetime(row[CREATED_AT])
-                            or datetime.datetime.now(
-                                pytz.timezone(settings.TIME_ZONE))
-                            ),
-            )
-
-        except IntegrityError as e:
-            if (str(e) ==
-                    'UNIQUE constraint failed:'
-                    ' registration_profile.okuser_id'):
-                logger.warn(
-                    f'User Nr. {row[NR].value} already has a profile with'
-                    f' different properties {row[E_MAIL].value}')
-            else:
-                raise
+        obj, created = Profile.objects.get_or_create(
+            okuser=user,
+            first_name=row[FIRST_NAME].value,
+            last_name=row[LAST_NAME].value,
+            gender=_get_gender(row),
+            phone_number=_get_phone_number(row[PHONE]),
+            mobile_number=_get_phone_number(row[MOBILE]),
+            birthday=_get_datetime(row[BIRTHDAY]),
+            street=row[STREET].value,
+            house_number=row[H_NUMBER].value,
+            zipcode=row[ZIPCODE].value,
+            city=row[CITY].value,
+            created_at=(_get_datetime(row[CREATED_AT])
+                        or datetime.datetime.now(
+                            pytz.timezone(settings.TIME_ZONE))
+                        ),
+        )
 
         if not created:
+            # user without email but same properties already exists
             logger.warn(f'Profile for {obj} from user number {row[NR].value}'
                         ' already exists.')
 
+        ids[row[NR].value] = obj.id
+
+        if len(list := Profile.objects.filter(
+                first_name=row[FIRST_NAME], last_name=row[LAST_NAME])) > 1:
+            logger.warn(f'Found two similar profiles for {list[0]}')
+            raise NotImplementedError
+
+
+def _get_gender(row) -> str:
+    """Return the gender of the profile."""
+    m = _get_bool(row[M])
+    w = _get_bool(row[W])
+    if not (m != w):
+        logger.warn(
+            f'Could not determine gender from user {row[NR].value}')
+        return "none"
+    if w:
+        return "w"
+    else:
+        return "m"
+
+
+def _chosen_profile(row, profile: Profile, switched):
+    """Show which profile where chosen."""
+    return f"""
+    (1) {'==chosen==' if switched else ''}
+
+    created at:.....{row[CREATED_AT].value}
+    email:..........{row[E_MAIL].value}
+    first name:.....{row[FIRST_NAME].value}
+    last name:......{row[LAST_NAME].value}
+    street:.........{row[STREET].value}
+    house number:...{row[H_NUMBER].value}
+    zipcode:........{row[ZIPCODE].value}
+    city:...........{row[CITY].value}
+    birthday:.......{row[BIRTHDAY].value}
+    phone:..........{row[PHONE].value}
+    mobile:.........{row[MOBILE].value}
+
+    ======================================
+    (2) {'==chosen==' if not switched else ''}
+
+
+    created at:.....{profile.created_at}
+    email:..........{profile.okuser.email}
+    first name:.....{profile.first_name}
+    last name:......{profile.last_name}
+    street:.........{profile.street}
+    house number:...{profile.house_number}
+    zipcode:........{profile.zipcode}
+    city:...........{profile.city}
+    birthday:.......{profile.birthday}
+    phone:..........{profile.phone_number}
+    mobile:.........{profile.mobile_number}
+
+    """
+
 
 def _get_phone_number(cell: Cell) -> int:
+    """Clean the phon number from non digit characters."""
     if number := cell.value:
         return "".join([n for n in number if n.isdigit()])
     else:
@@ -136,9 +188,12 @@ def _get_phone_number(cell: Cell) -> int:
 
 
 def _get_datetime(cell: Cell) -> datetime.datetime:
+    """Return a Datetime or None if the cell is not a date."""
     if cell.is_date:
+        # TODO trotzdem offset berücksichtigen
         aware_datetime = cell.value.replace(
-            tzinfo=pytz.timezone(settings.TIME_ZONE))
+            # because djangos datetimefield stores with tz utc
+            tzinfo=datetime.timezone.utc)
         return aware_datetime
     else:
         if cell.value:
@@ -149,7 +204,7 @@ def _get_datetime(cell: Cell) -> datetime.datetime:
 
 def _get_bool(cell: Cell) -> bool:
     """
-    Try to convert the cell value to a boolen.
+    Try to convert the cell value to a boolean.
 
     The default value is False.
     """
