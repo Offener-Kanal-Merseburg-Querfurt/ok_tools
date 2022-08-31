@@ -267,7 +267,7 @@ LOGGING = {
         },
         'console': {
             'handlers': ['console'],
-            'level': DJANGO_LOG_LEVEL,
+            'level': 'CRITICAL',
             'propagate': True,
         }
     },

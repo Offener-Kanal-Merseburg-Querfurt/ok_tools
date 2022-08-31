@@ -48,7 +48,7 @@ class LicenseTemplate(models.Model):
     title = models.CharField(
         _('Title'),
         blank=False,
-        null=False,
+        null=True,
         max_length=MAX_TITLE_LENGTH,
     )
 

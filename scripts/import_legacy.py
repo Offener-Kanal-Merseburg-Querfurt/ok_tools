@@ -12,7 +12,6 @@ from registration.models import Profile
 import datetime
 import logging
 import pytz
-import re
 
 
 User = get_user_model()
@@ -149,7 +148,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
                     Profile.objects.get(id=created_profile.id).delete()
                     old_numbers = ids.remove_by_id(created_profile.id)
 
-                    print(_chosen_profile(
+                    logger.info(_chosen_profile(
                         row=row, profile=created_profile, switched=switched))
                 elif (new_created == created_profile.created_at):
                     # assume that this is the same user
@@ -157,7 +156,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
                     continue
                 else:
                     ids.add(row[NR].value, created_profile.id)
-                    print(_chosen_profile(
+                    logger.info(_chosen_profile(
                         row=row, profile=created_profile, switched=switched))
                     continue
 
@@ -325,6 +324,7 @@ def import_categories(ws: Worksheet) -> dict:
     return ids
 
 
+@transaction.atomic
 def import_primary_categories(
         ws: Worksheet, user_ids: IdNumberMap, category_ids: dict):
     """
@@ -366,8 +366,8 @@ def import_primary_categories(
     assert header[CUT].value == 'Schnitt'
     assert header[LIVE].value == 'live'
 
-    def _get_user(user_nr: Cell) -> User:
-        """Return the corresponding user or None if an error occured."""
+    def _get_profile(user_nr: Cell) -> User:
+        """Return the corresponding profile or None if an error occured."""
         assert user_nr.data_type == cell_meta.TYPE_NUMERIC
 
         id = user_ids.get_id(user_nr.value)
@@ -376,12 +376,12 @@ def import_primary_categories(
             return
 
         try:
-            user = User.objects.get(id=id)
-        except User.DoesNotExist:
+            profile = Profile.objects.get(id=id)
+        except Profile.DoesNotExist:
             logger.error(f'Invalid id {id}.')
             return
 
-        return user
+        return profile
 
     def _get_further_persons(camera: Cell, cut: Cell):
         further_persons = []
@@ -427,32 +427,39 @@ def import_primary_categories(
             logger.warn('No time found.')
             return date
 
-        match = re.match(r'\d{2}:\d{2}:\d{2}', time_c.value)
-
-        if not match:
-            logger.error(f'Invalid time format {time_c.value}.')
+        if not time_c.is_date:
+            logger.error(f'Unsupported start date format {time_c.value}')
             return date
 
-        times = match[0].split(':')
-
+        time: datetime.time = time_c.value
         date.replace(
-            hour=int(times[0]),
-            minute=int(times[1]),
-            seconds=int(times[2]),
+            hour=time.hour,
+            minute=time.minute,
+            second=time.second,
+            microsecond=time.microsecond,
         )
 
         return date
 
     for row in rows:
+
+        profile = _get_profile(row[USER_NR])
+        if not profile:
+            continue
+
+        category = _get_category(row[USER_NR])
+        if not category:
+            category = Category.objects.get_or_create(name='Sonstiges')[0]
+
         lr, lr_created = LicenseRequest.objects.get_or_create(
             number=row[NR].value,
-            okuser=_get_user(row[USER_NR]),
+            profile=profile,
             title=row[TITLE].value,
             subtitle=row[SUBTITLE].value,
             description=row[DESCRIPTION].value,
             further_persons=_get_further_persons(row[CAMERA], row[CUT]),
             duration=_get_duration(row),  # handle screen_boards
-            category=_get_category(row[CATEGORY_NR]),
+            category=category,
             confirmed=True,
             is_screen_board=_is_screen_board(row),
         )
@@ -466,7 +473,7 @@ def import_primary_categories(
             live=_get_bool(row[LIVE]),
         )
 
-        if lr_created and contrib_created:
+        if not lr_created and not contrib_created:
             logger.warn(f'Contribution {contrib} already exists.')
         elif lr_created and not contrib_created:
             logger.error(f'Only expected primary contributions. {contrib} is a'
