@@ -148,7 +148,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
                     Profile.objects.get(id=created_profile.id).delete()
                     old_numbers = ids.remove_by_id(created_profile.id)
 
-                    print(_chosen_profile(
+                    logger.info(_chosen_profile(
                         row=row, profile=created_profile, switched=switched))
                 elif (new_created == created_profile.created_at):
                     # assume that this is the same user
@@ -156,7 +156,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
                     continue
                 else:
                     ids.add(row[NR].value, created_profile.id)
-                    print(_chosen_profile(
+                    logger.info(_chosen_profile(
                         row=row, profile=created_profile, switched=switched))
                     continue
 
@@ -324,7 +324,7 @@ def import_categories(ws: Worksheet) -> dict:
     return ids
 
 
-@transaction.actomic
+@transaction.atomic
 def import_primary_categories(
         ws: Worksheet, user_ids: IdNumberMap, category_ids: dict):
     """
