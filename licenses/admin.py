@@ -27,7 +27,7 @@ class LicenseRequestAdmin(admin.ModelAdmin):
     ordering = ['-created_at']
 
     # TODO it is not possible to search in string representation
-    search_fields = ['okuser__email', 'title', 'subtitle']
+    search_fields = ['subtitle', 'number']
     actions = ['confirm', 'unconfirm']
 
     @display(description=_('User'))

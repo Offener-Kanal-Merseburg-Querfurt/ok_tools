@@ -115,7 +115,7 @@ class LicenseTemplate(models.Model):
         if self.subtitle:
             return f'{self.title} - {self.subtitle}'
         else:
-            return self.title
+            return self.title or ""
 
     class Meta:
         """Defines the message IDs."""
@@ -174,7 +174,11 @@ class LicenseRequest(LicenseTemplate, models.Model):
         """
         # Emulate an Autofield for number.
         if self.id is None:  # license is new created
-            if last := LicenseRequest.objects.order_by('number').last():
+
+            if (LicenseRequest.objects.filter(number=self.number) and
+                    # number already exists
+                    (last := LicenseRequest.objects.order_by('number')
+                     .last())):
                 i = last.number
                 i += 1
                 self.number = i

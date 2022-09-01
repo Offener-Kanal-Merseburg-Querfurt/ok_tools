@@ -99,9 +99,11 @@ def run():
 
     user_ids = import_users(wb['users'])
 
-    import_primary_categories(wb['contributions'], user_ids, category_ids)
+    import_primary_contributions(wb['contributions'], user_ids, category_ids)
 
     import_projects(wb['projects'])
+
+    import_repetitions(wb['repetitions'], user_ids, category_ids)
 
 
 @transaction.atomic
@@ -303,7 +305,7 @@ def _get_bool(cell: Cell) -> bool:
                 logger.warn(f'Could not covert formula {cell.value} to bool.')
                 return None
         case _:
-            logger.warn(f'Could not convert {cell.value} with type'
+            logger.warn(f'Could not convert "{cell.value}" with type'
                         f'{cell.data_type} to bool ')
             return None
 
@@ -333,7 +335,7 @@ def import_categories(ws: Worksheet) -> dict:
 
 
 @transaction.atomic
-def import_primary_categories(
+def import_primary_contributions(
         ws: Worksheet, user_ids: IdNumberMap, category_ids: dict):
     """
     Import contributions from xlsx.
@@ -374,23 +376,6 @@ def import_primary_categories(
     assert header[CUT].value == 'Schnitt'
     assert header[LIVE].value == 'live'
 
-    def _get_profile(user_nr: Cell) -> User:
-        """Return the corresponding profile or None if an error occured."""
-        assert user_nr.data_type == cell_meta.TYPE_NUMERIC
-
-        id = user_ids.get_id(user_nr.value)
-        if not id:
-            logger.error(f'Invalid user number {user_nr.value}.')
-            return
-
-        try:
-            profile = Profile.objects.get(id=id)
-        except Profile.DoesNotExist:
-            logger.error(f'Invalid id {id}.')
-            return
-
-        return profile
-
     def _get_further_persons(camera: Cell, cut: Cell):
         further_persons = []
 
@@ -412,53 +397,20 @@ def import_primary_categories(
     def _is_screen_board(row):
         return row[TITLE] == SCREEN_BOARD_STR
 
-    def _get_category(category_nr: Cell):
-        assert category_nr.data_type == cell_meta.TYPE_NUMERIC
-
-        id = category_ids.get(category_nr.value)
-        if not id:
-            logger.error(f'Invalid category number {category_nr.value}.')
-            return
-
-        try:
-            category = Category.objects.get(id=id)
-        except Category.DoesNotExist:
-            logger.error(f'Invalid id {id}.')
-            return
-
-        return category
-
-    def _get_broadcast_date(date_c: Cell, time_c: Cell):
-        date = _get_datetime(date_c)
-
-        time = _get_time(time_c)
-
-        if not date:
-            logger.error('No date for broadcast_date found.')
-            return None
-
-        if not time:
-            logger.error('No time for broadcast_date found.')
-            return date
-
-        date.replace(
-            hour=time.hour,
-            minute=time.minute,
-            second=time.second,
-            microsecond=time.microsecond,
-        )
-
-        return date
-
     for row in rows:
 
-        profile = _get_profile(row[USER_NR])
+        profile = _get_profile(row[USER_NR], user_ids)
         if not profile:
             continue
 
-        category = _get_category(row[USER_NR])
-        if not category:
-            category = Category.objects.get_or_create(name='Sonstiges')[0]
+        category = _get_category(row[USER_NR], category_ids)
+
+        try:
+            LicenseRequest.objects.get(number=row[NR].value)
+            logger.warn('Number already taken.')
+            continue
+        except LicenseRequest.DoesNotExist:
+            pass
 
         lr, lr_created = LicenseRequest.objects.get_or_create(
             number=row[NR].value,
@@ -489,6 +441,50 @@ def import_primary_categories(
                          'repetition.')
 
 
+def _get_broadcast_date(date_c: Cell, time_c: Cell):
+    date = _get_datetime(date_c)
+
+    time = _get_time(time_c)
+
+    if not date:
+        logger.error('No date for broadcast_date found.')
+        return None
+
+    if not time:
+        logger.error('No time for broadcast_date found.')
+        return date
+
+    date.replace(
+        hour=time.hour,
+        minute=time.minute,
+        second=time.second,
+        microsecond=time.microsecond,
+    )
+
+    return date
+
+
+def _get_category(cell: Cell, category_ids: dict):
+    category_nr = _get_number(cell)
+
+    if not category_nr:
+        logger.warn(f'Invalid category number {cell.value}')
+        return Category.objects.get_or_create(name='Sonstiges')[0]
+
+    id = category_ids.get(cell.value)
+    if not id:
+        logger.warn(f'Invalid category number {cell.value}.')
+        return Category.objects.get_or_create(name='Sonstiges')[0]
+
+    try:
+        category = Category.objects.get(id=id)
+    except Category.DoesNotExist:
+        logger.error(f'Invalid id {id}.')
+        return Category.objects.get_or_create(name='Sonstiges')[0]
+
+    return category
+
+
 def _get_time(time_c: Cell) -> datetime.time:
     """Return a datetime.time element and None if an error occurs."""
     if not time_c.value:
@@ -507,7 +503,7 @@ def _get_duration(cell: Cell) -> datetime.timedelta:
     if cell.data_type == cell_meta.TYPE_NUMERIC:
         return datetime.timedelta(minutes=cell.value)
     else:
-        logger.error(f'Could not convert {cell.data_type} to timedelta.')
+        logger.error(f'Could not convert "{cell.data_type}" to timedelta.')
         return None
 
 
@@ -535,24 +531,6 @@ def import_projects(ws: Worksheet):
     WITHOUT_GENDER = 21
     TARGET_GROUP = 22
     CATEGORY = 23
-
-    def _get_number(cell: Cell) -> int:
-        if not cell.value:
-            return 0
-
-        match cell.data_type:
-            case cell_meta.TYPE_NUMERIC:
-                return cell.value
-            case cell_meta.TYPE_STRING:
-                if (v := cell.value).isdigit():
-                    return int(v)
-                else:
-                    logger.error(f'Could not convert {v} to int.')
-                    return 0
-            case _:
-                logger.error(
-                    f'Could not convert type {type(cell.value)} to int.')
-                return 0
 
     def _get_me_supervisors(cell: Cell) -> list[MediaEducationSupervisor]:
         if cell.data_type != cell_meta.TYPE_STRING:
@@ -652,3 +630,99 @@ def import_projects(ws: Worksheet):
         else:
             for s in me_supervisors:
                 project.media_education_supervisors.add(s.id)
+
+
+def import_repetitions(
+        ws: Worksheet, user_ids: IdNumberMap, category_ids: dict):
+    """
+    Import repetitions from xlsx.
+
+    Assumes that every repetition has an existing primary contribution and
+    an existing user.
+    """
+    NR = 0
+    TITLE = 1
+    SUBTITLE = 2
+    NEW_DATE = 5
+    NEW_TIME = 6
+    USER_NR = 7
+    DURATION = 8
+    CATEGORY = 12
+    LIVE = 14
+
+    rows = ws.rows
+    header = next(rows)
+
+    assert header[NR].value == 'lfd_nr'
+    assert header[TITLE].value == 'titel'
+    assert header[SUBTITLE].value == 'untertitel'
+    assert header[NEW_DATE].value == 'Sendedatum'
+    assert header[NEW_TIME].value == 'Sendezeit'
+    assert header[USER_NR].value == 'Nutzer_Nr'
+    assert header[DURATION].value == 'Länge'
+    assert header[CATEGORY].value == 'Rubrik'
+    assert header[LIVE].value == 'live'
+
+    for row in rows:
+
+        licenses = LicenseRequest.objects.filter(
+            title=row[TITLE].value,
+            profile=_get_profile(row[USER_NR], user_ids),
+            duration=_get_duration(row[DURATION]),
+        )
+
+        if not licenses:
+            logger.error('No primary contribution found.')
+            continue
+        if len(licenses) != 1:
+            logger.error('More then one primary contribution.'
+                         ' Just taking the first one.')
+            continue
+
+        license = licenses[0]
+
+        contr, contr_created = Contribution.objects.get_or_create(
+            license=license,
+            broadcast_date=_get_broadcast_date(row[NEW_DATE], row[NEW_TIME]),
+            live=_get_bool(row[LIVE]),
+        )
+
+        if contr_created:
+            logger.warn(f'Repetition {contr} already exists.')
+
+
+def _get_number(cell: Cell) -> int:
+    if not cell.value:
+        return 0
+
+    match cell.data_type:
+        case cell_meta.TYPE_NUMERIC:
+            return cell.value
+        case cell_meta.TYPE_STRING:
+            if (v := cell.value).isdigit():
+                return int(v)
+            else:
+                logger.error(f'Could not convert "{v}" to int.')
+                return 0
+        case _:
+            logger.error(
+                f'Could not convert type {type(cell.value)} to int.')
+            return 0
+
+
+def _get_profile(user_nr: Cell, user_ids: IdNumberMap) -> User:
+    """Return the corresponding profile or None if an error occured."""
+    assert user_nr.data_type == cell_meta.TYPE_NUMERIC
+
+    id = user_ids.get_id(user_nr.value)
+    if not id:
+        logger.error(f'Invalid user number {user_nr.value}.')
+        return
+
+    try:
+        profile = Profile.objects.get(id=id)
+    except Profile.DoesNotExist:
+        logger.error(f'Invalid id {id}.')
+        return
+
+    return profile
