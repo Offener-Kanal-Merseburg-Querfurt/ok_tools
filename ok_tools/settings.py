@@ -270,7 +270,7 @@ LOGGING = {
         },
         'console': {
             'handlers': ['console'],
-            'level': 'CRITICAL',
+            'level': 'ERROR',
             'propagate': True,
         }
     },
