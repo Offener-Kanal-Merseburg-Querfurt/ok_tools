@@ -2,12 +2,18 @@ from contributions.models import Contribution
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.utils import IntegrityError
 from licenses.models import Category
 from licenses.models import LicenseRequest
 from openpyxl import load_workbook
 from openpyxl.cell import cell as cell_meta
 from openpyxl.cell.cell import Cell
 from openpyxl.worksheet.worksheet import Worksheet
+from projects.models import MediaEducationSupervisor
+from projects.models import Project
+from projects.models import ProjectCategory
+from projects.models import ProjectLeader
+from projects.models import TargetGroup
 from registration.models import Profile
 import datetime
 import logging
@@ -94,6 +100,8 @@ def run():
     user_ids = import_users(wb['users'])
 
     import_primary_categories(wb['contributions'], user_ids, category_ids)
+
+    import_projects(wb['projects'])
 
 
 @transaction.atomic
@@ -278,7 +286,7 @@ def _get_bool(cell: Cell) -> bool:
     """
     Try to convert the cell value to a boolean.
 
-    The default value is False.
+    If no conversion was possible None is returned.
     """
     if not cell.value:
         return False
@@ -293,11 +301,11 @@ def _get_bool(cell: Cell) -> bool:
                 return False
             else:
                 logger.warn(f'Could not covert formula {cell.value} to bool.')
-                return False
+                return None
         case _:
             logger.warn(f'Could not convert {cell.value} with type'
                         f'{cell.data_type} to bool ')
-            return False
+            return None
 
 
 @transaction.atomic
@@ -423,15 +431,16 @@ def import_primary_categories(
     def _get_broadcast_date(date_c: Cell, time_c: Cell):
         date = _get_datetime(date_c)
 
-        if not time_c.value:
-            logger.warn('No time found.')
+        time = _get_time(time_c)
+
+        if not date:
+            logger.error('No date for broadcast_date found.')
+            return None
+
+        if not time:
+            logger.error('No time for broadcast_date found.')
             return date
 
-        if not time_c.is_date:
-            logger.error(f'Unsupported start date format {time_c.value}')
-            return date
-
-        time: datetime.time = time_c.value
         date.replace(
             hour=time.hour,
             minute=time.minute,
@@ -478,3 +487,168 @@ def import_primary_categories(
         elif lr_created and not contrib_created:
             logger.error(f'Only expected primary contributions. {contrib} is a'
                          'repetition.')
+
+
+def _get_time(time_c: Cell) -> datetime.time:
+    """Return a datetime.time element and None if an error occurs."""
+    if not time_c.value:
+        logger.warn('No time found.')
+        return None
+
+    if not time_c.is_date:
+        logger.error(f'Unsupported time format {time_c.value}')
+        return None
+
+    return time_c.value
+
+
+def _get_duration(cell: Cell) -> datetime.timedelta:
+    """Return a datetime.timedelta or None if not convertible."""
+    if cell.data_type == cell_meta.TYPE_NUMERIC:
+        return datetime.timedelta(minutes=cell.value)
+    else:
+        logger.error(f'Could not convert {cell.data_type} to timedelta.')
+        return None
+
+
+def import_projects(ws: Worksheet):
+    """Import projects from xlsx."""
+    DAY = 1
+    DURATION = 2
+    TITLE = 3
+    TOPIC = 4
+    LEADER = 5
+    E_SUPERVISIOR = 6
+    EXTERNAL_V = 7
+    YOUTH_PROTECTION = 8
+    U6 = 10
+    U11 = 11
+    U15 = 12
+    U19 = 13
+    U35 = 14
+    U51 = 15
+    U66 = 16
+    O65 = 17
+    NO_AGE = 18
+    M = 19
+    W = 20
+    WITHOUT_GENDER = 21
+    TARGET_GROUP = 22
+    CATEGORY = 23
+
+    def _get_number(cell: Cell) -> int:
+        if not cell.value:
+            return 0
+
+        match cell.data_type:
+            case cell_meta.TYPE_NUMERIC:
+                return cell.value
+            case cell_meta.TYPE_STRING:
+                if (v := cell.value).isdigit():
+                    return int(v)
+                else:
+                    logger.error(f'Could not convert {v} to int.')
+                    return 0
+            case _:
+                logger.error(
+                    f'Could not convert type {type(cell.value)} to int.')
+                return 0
+
+    def _get_me_supervisors(cell: Cell) -> list[MediaEducationSupervisor]:
+        if cell.data_type != cell_meta.TYPE_STRING:
+            logger.error(
+                f'Unsupported cell type {cell.data_type} for supervisors')
+            return []
+
+        name_list = cell.value.split(',')
+        s_list = []
+
+        for n in name_list:
+            s, s_created = MediaEducationSupervisor.objects.get_or_create(
+                name=n
+            )
+            s_list.append(s)
+
+        return s_list
+
+    rows = ws.rows
+    header = next(rows)
+
+    assert header[DAY].value == 'Veranstaltungstag'
+    assert header[DURATION].value == 'Veranstaltungsdauer'
+    assert header[TITLE].value == 'Veranstaltung'
+    assert header[TOPIC].value == 'Thema'
+    assert header[LEADER].value == 'Veranstaltungsleiter'
+    assert header[E_SUPERVISIOR].value == 'medienpädagogische Betreuer'
+    assert header[EXTERNAL_V].value == 'externer V_ort'
+    assert header[YOUTH_PROTECTION].value == 'Jugendmedienschutz'
+    assert header[U6].value == 'unter 6'
+    assert header[U11].value == '7 bis 10'
+    assert header[U15].value == '11 bis 14'
+    assert header[U19].value == '15 bis 18'
+    assert header[U35].value == '19 bis 34'
+    assert header[U51].value == '35 bis 50'
+    assert header[U66].value == '51 bis 65'
+    assert header[O65].value == 'älter 65'
+    assert header[NO_AGE].value == 'ohne alter'
+    assert header[M].value == 'männlich'
+    assert header[W].value == 'weiblich'
+    assert header[WITHOUT_GENDER].value == 'kein G'
+    assert header[TARGET_GROUP].value == 'Zielgruppe'
+    assert header[CATEGORY].value == 'Projektausrichtung'
+
+    for row in rows:
+        leader, leader_created = ProjectLeader.objects.get_or_create(
+            name=row[LEADER].value
+        )
+
+        me_supervisors = _get_me_supervisors(row[E_SUPERVISIOR])
+
+        category, category_created = ProjectCategory.objects.get_or_create(
+            name=row[CATEGORY].value
+        )
+
+        target_gr, target_gr_created = TargetGroup.objects.get_or_create(
+            name=row[TARGET_GROUP].value
+        )
+
+        duration = _get_duration(row[DURATION])
+        if not duration:
+            logger.warn(f'Now duration for project "{row[TITLE]}"')
+
+        begin_date = _get_datetime(row[DAY])
+        if not begin_date:
+            logger.warn(f'No begin_date for project "{row[TITLE]}')
+
+        try:
+            project, project_created = Project.objects.get_or_create(
+                title=row[TITLE].value,
+                topic=row[TOPIC].value,
+                duration=duration,
+                begin_date=begin_date,
+                external_venue=_get_bool(row[EXTERNAL_V]),
+                jugendmedienschutz=_get_bool(row[YOUTH_PROTECTION]),
+                target_group=target_gr,
+                project_category=category,
+                project_leader=leader,
+                tn_0_bis_6=_get_number(row[U6]),
+                tn_7_bis_10=_get_number(row[U11]),
+                tn_11_bis_14=_get_number(row[U15]),
+                tn_15_bis_18=_get_number(row[U19]),
+                tn_19_bis_34=_get_number(row[U35]),
+                tn_35_bis_50=_get_number(row[U51]),
+                tn_51_bis_65=_get_number(row[U66]),
+                tn_ueber_65=_get_number(row[O65]),
+                tn_age_not_given=_get_number(row[NO_AGE]),
+                tn_female=_get_number(row[W]),
+                tn_male=_get_number(row[M]),
+                tn_gender_not_given=_get_number(row[WITHOUT_GENDER]),
+            )
+        except IntegrityError:
+            raise
+
+        if project_created:
+            logger.warn(f'Project "{row[TITLE]}" already exists.')
+        else:
+            for s in me_supervisors:
+                project.media_education_supervisors.add(s.id)
