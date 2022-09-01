@@ -180,10 +180,9 @@ class Project(models.Model):
         null=False,
     )
 
-    media_education_supervisor = models.ForeignKey(
+    media_education_supervisors = models.ManyToManyField(
         MediaEducationSupervisor,
-        on_delete=models.CASCADE,
-        default=default_category
+        blank=False,
     )
 
     tn_0_bis_6 = models.IntegerField(
@@ -258,6 +257,12 @@ class Project(models.Model):
         blank=False,
         null=False,
         default=0
+    )
+    tn_diverse = models.IntegerField(
+        _('diverse'),
+        blank=False,
+        null=False,
+        default=0,
     )
 
     def clean(self):
