@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from licenses.models import LicenseRequest
 from registration.models import Profile
 
@@ -10,6 +11,7 @@ from registration.models import Profile
 User = get_user_model()
 
 
+@transaction.atomic
 def run():
     """Import test data."""
     # admin
