@@ -234,6 +234,9 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+# path to legacy data
+LEGACY_DATA = '../legacy_data/data.xlsx'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
