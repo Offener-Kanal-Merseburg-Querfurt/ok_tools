@@ -81,7 +81,7 @@ def run():
     )
 
     l2 = LicenseRequest.objects.create(
-        okuser=user1,
+        okuser=user2,
         title='Title1',
         description='This is the description.',
         duration=timedelta(minutes=30),
