@@ -23,20 +23,22 @@ import pytz
 User = get_user_model()
 logger = logging.getLogger('console')
 
-NR = 0
-W = 2
-M = 3
-FIRST_NAME = 5
-LAST_NAME = 6
-STREET = 7
-H_NUMBER = 8
-ZIPCODE = 9
-CITY = 10
-BIRTHDAY = 12
-PHONE = 13
-MOBILE = 14
-E_MAIL = 15
-CREATED_AT = 16
+DEFAULT_CATEGORY_NAME = 'Sonstiges'
+
+
+def run():
+    """Run the import."""
+    wb = load_workbook(filename=settings.LEGACY_DATA)
+
+    category_ids: IdNumberMap = import_categories(wb['categories'])
+
+    user_ids = import_users(wb['users'])
+
+    import_primary_contributions(wb['contributions'], user_ids, category_ids)
+
+    import_projects(wb['projects'])
+
+    import_repetitions(wb['repetitions'], user_ids, category_ids)
 
 
 @transaction.atomic
@@ -48,8 +50,10 @@ class IdNumberMap:
     One Id can have multiple numbers.
     """
 
-    number_to_id: dict[int, int] = {}
-    id_to_numbers: dict[int, set[int]] = {}
+    # map one number to one id
+    number_to_id: dict[int, int]
+    # map on id to multiple numbers
+    id_to_numbers: dict[int, set[int]]
 
     def __init__(self) -> None:
         self.number_to_id = {}
@@ -90,32 +94,86 @@ class IdNumberMap:
         return numbers
 
 
-def run():
-    """Run the import."""
-    # TODO set filename by settings.by
-    wb = load_workbook(filename="../legacy_data/data.xlsx")
-
-    category_ids: IdNumberMap = import_categories(wb['categories'])
-
-    user_ids = import_users(wb['users'])
-
-    import_primary_contributions(wb['contributions'], user_ids, category_ids)
-
-    import_projects(wb['projects'])
-
-    import_repetitions(wb['repetitions'], user_ids, category_ids)
-
-
 @transaction.atomic
 def import_users(ws: Worksheet) -> IdNumberMap:
     """
     Import users from xlsx.
 
     When two profiles where found for one user the newer one gets chosen.
-    When there is no creation datetime given the profile gets handled as the
+    When there is no creation datetime given, the profile gets handled as the
     newest.
-    Returns a bidict mapping the old user numbers to the new ids.
+    Returns a IdNumberMap mapping the old user numbers to the new ids.
     """
+    NR = 0
+    W = 2
+    M = 3
+    FIRST_NAME = 5
+    LAST_NAME = 6
+    STREET = 7
+    H_NUMBER = 8
+    ZIPCODE = 9
+    CITY = 10
+    BIRTHDAY = 12
+    PHONE = 13
+    MOBILE = 14
+    E_MAIL = 15
+    CREATED_AT = 16
+
+    def _get_phone_number(cell: Cell) -> int:
+        """Clean the phone number from non digit characters."""
+        if number := cell.value:
+            return "".join([n for n in number if n.isdigit()])
+        else:
+            return None
+
+    def _chosen_profile(row, profile: Profile, switched):
+        """Show which profile where chosen."""
+        return f"""
+        (1) {'==chosen==' if switched else ''}
+
+        created at:.....{row[CREATED_AT].value}
+        email:..........{row[E_MAIL].value}
+        first name:.....{row[FIRST_NAME].value}
+        last name:......{row[LAST_NAME].value}
+        street:.........{row[STREET].value}
+        house number:...{row[H_NUMBER].value}
+        zipcode:........{row[ZIPCODE].value}
+        city:...........{row[CITY].value}
+        birthday:.......{row[BIRTHDAY].value}
+        phone:..........{row[PHONE].value}
+        mobile:.........{row[MOBILE].value}
+
+        ======================================
+        (2) {'==chosen==' if not switched else ''}
+
+
+        created at:.....{profile.created_at}
+        email:..........{profile.okuser.email}
+        first name:.....{profile.first_name}
+        last name:......{profile.last_name}
+        street:.........{profile.street}
+        house number:...{profile.house_number}
+        zipcode:........{profile.zipcode}
+        city:...........{profile.city}
+        birthday:.......{profile.birthday}
+        phone:..........{profile.phone_number}
+        mobile:.........{profile.mobile_number}
+
+        """
+
+    def _get_gender(row) -> str:
+        """Return the gender of the profile."""
+        m = _get_bool(row[M])
+        w = _get_bool(row[W])
+        if not (m != w):
+            logger.warn(
+                f'Could not determine gender from user {row[NR].value}')
+            return "none"
+        if w:
+            return "w"
+        else:
+            return "m"
+
     ids: IdNumberMap = IdNumberMap()
     rows = ws.rows
     header = next(rows)
@@ -211,105 +269,6 @@ def import_users(ws: Worksheet) -> IdNumberMap:
     return ids
 
 
-def _get_gender(row) -> str:
-    """Return the gender of the profile."""
-    m = _get_bool(row[M])
-    w = _get_bool(row[W])
-    if not (m != w):
-        logger.warn(
-            f'Could not determine gender from user {row[NR].value}')
-        return "none"
-    if w:
-        return "w"
-    else:
-        return "m"
-
-
-def _chosen_profile(row, profile: Profile, switched):
-    """Show which profile where chosen."""
-    return f"""
-    (1) {'==chosen==' if switched else ''}
-
-    created at:.....{row[CREATED_AT].value}
-    email:..........{row[E_MAIL].value}
-    first name:.....{row[FIRST_NAME].value}
-    last name:......{row[LAST_NAME].value}
-    street:.........{row[STREET].value}
-    house number:...{row[H_NUMBER].value}
-    zipcode:........{row[ZIPCODE].value}
-    city:...........{row[CITY].value}
-    birthday:.......{row[BIRTHDAY].value}
-    phone:..........{row[PHONE].value}
-    mobile:.........{row[MOBILE].value}
-
-    ======================================
-    (2) {'==chosen==' if not switched else ''}
-
-
-    created at:.....{profile.created_at}
-    email:..........{profile.okuser.email}
-    first name:.....{profile.first_name}
-    last name:......{profile.last_name}
-    street:.........{profile.street}
-    house number:...{profile.house_number}
-    zipcode:........{profile.zipcode}
-    city:...........{profile.city}
-    birthday:.......{profile.birthday}
-    phone:..........{profile.phone_number}
-    mobile:.........{profile.mobile_number}
-
-    """
-
-
-def _get_phone_number(cell: Cell) -> int:
-    """Clean the phon number from non digit characters."""
-    if number := cell.value:
-        return "".join([n for n in number if n.isdigit()])
-    else:
-        return None
-
-
-def _get_datetime(cell: Cell) -> datetime.datetime:
-    """Return a Datetime or None if the cell is not a date."""
-    if cell.is_date:
-        # TODO trotzdem offset berücksichtigen
-        aware_datetime = cell.value.replace(
-            # because djangos datetimefield stores with tz utc
-            tzinfo=datetime.timezone.utc)
-        return aware_datetime
-    else:
-        if cell.value:
-            logger.warn(f'Could not format date {cell.value}')
-
-        return None
-
-
-def _get_bool(cell: Cell) -> bool:
-    """
-    Try to convert the cell value to a boolean.
-
-    If no conversion was possible None is returned.
-    """
-    if not cell.value:
-        return False
-
-    match cell.data_type:
-        case cell_meta.TYPE_BOOL:
-            return cell.value
-        case cell_meta.TYPE_FORMULA:
-            if cell.value == '=TRUE()':
-                return True
-            elif cell.value == '=FALSE()':
-                return False
-            else:
-                logger.warn(f'Could not covert formula {cell.value} to bool.')
-                return None
-        case _:
-            logger.warn(f'Could not convert "{cell.value}" with type'
-                        f'{cell.data_type} to bool ')
-            return None
-
-
 @transaction.atomic
 def import_categories(ws: Worksheet) -> dict:
     """
@@ -376,7 +335,8 @@ def import_primary_contributions(
     assert header[CUT].value == 'Schnitt'
     assert header[LIVE].value == 'live'
 
-    def _get_further_persons(camera: Cell, cut: Cell):
+    def _get_further_persons(camera: Cell, cut: Cell) -> str:
+        """Create a string for the 'further_persons' field."""
         further_persons = []
 
         if camera.value:
@@ -386,7 +346,8 @@ def import_primary_contributions(
 
         return '\n'.join(further_persons)
 
-    def _get_duration(row):
+    def _get_duration(row) -> datetime.timedelta:
+        """Return the duration and concern screen boards."""
         if _is_screen_board(row):
             return datetime.timedelta(seconds=settings.SCREEN_BOARD_DURATION)
 
@@ -394,7 +355,8 @@ def import_primary_contributions(
 
         return datetime.timedelta(minutes=row[DURATION].value)
 
-    def _is_screen_board(row):
+    def _is_screen_board(row) -> bool:
+        """Determine wether the contribution is a screen board."""
         return row[TITLE] == SCREEN_BOARD_STR
 
     for row in rows:
@@ -441,72 +403,7 @@ def import_primary_contributions(
                          'repetition.')
 
 
-def _get_broadcast_date(date_c: Cell, time_c: Cell):
-    date = _get_datetime(date_c)
-
-    time = _get_time(time_c)
-
-    if not date:
-        logger.error('No date for broadcast_date found.')
-        return None
-
-    if not time:
-        logger.error('No time for broadcast_date found.')
-        return date
-
-    date.replace(
-        hour=time.hour,
-        minute=time.minute,
-        second=time.second,
-        microsecond=time.microsecond,
-    )
-
-    return date
-
-
-def _get_category(cell: Cell, category_ids: dict):
-    category_nr = _get_number(cell)
-
-    if not category_nr:
-        logger.warn(f'Invalid category number {cell.value}')
-        return Category.objects.get_or_create(name='Sonstiges')[0]
-
-    id = category_ids.get(cell.value)
-    if not id:
-        logger.warn(f'Invalid category number {cell.value}.')
-        return Category.objects.get_or_create(name='Sonstiges')[0]
-
-    try:
-        category = Category.objects.get(id=id)
-    except Category.DoesNotExist:
-        logger.error(f'Invalid id {id}.')
-        return Category.objects.get_or_create(name='Sonstiges')[0]
-
-    return category
-
-
-def _get_time(time_c: Cell) -> datetime.time:
-    """Return a datetime.time element and None if an error occurs."""
-    if not time_c.value:
-        logger.warn('No time found.')
-        return None
-
-    if not time_c.is_date:
-        logger.error(f'Unsupported time format {time_c.value}')
-        return None
-
-    return time_c.value
-
-
-def _get_duration(cell: Cell) -> datetime.timedelta:
-    """Return a datetime.timedelta or None if not convertible."""
-    if cell.data_type == cell_meta.TYPE_NUMERIC:
-        return datetime.timedelta(minutes=cell.value)
-    else:
-        logger.error(f'Could not convert "{cell.data_type}" to timedelta.')
-        return None
-
-
+@transaction.atomic
 def import_projects(ws: Worksheet):
     """Import projects from xlsx."""
     DAY = 1
@@ -691,7 +588,127 @@ def import_repetitions(
             logger.warn(f'Repetition {contr} already exists.')
 
 
+def _get_broadcast_date(
+        date_c: Cell, time_c: Cell) -> datetime.datetime | None:
+    """Return the broadcast_date or None if no broadcast date where found."""
+    date = _get_datetime(date_c)
+
+    time = _get_time(time_c)
+
+    if not date:
+        logger.error('No date for broadcast_date found.')
+        return None
+
+    if not time:
+        logger.error('No time for broadcast_date found.')
+        return date
+
+    date.replace(
+        hour=time.hour,
+        minute=time.minute,
+        second=time.second,
+        microsecond=time.microsecond,
+    )
+
+    return date
+
+
+def _get_category(cell: Cell, category_ids: dict) -> Category:
+    """
+    Determine the category from the given category number.
+
+    Return the default category, defined through DEFAULT_CATEGORY_NAME if
+    the category number is not valid.
+    """
+    category_nr = _get_number(cell)
+
+    if not category_nr:
+        logger.warn(f'Invalid category number {cell.value}')
+        return Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0]
+
+    id = category_ids.get(cell.value)
+    if not id:
+        logger.warn(f'Invalid category number {cell.value}.')
+        return Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0]
+
+    try:
+        category = Category.objects.get(id=id)
+    except Category.DoesNotExist:
+        logger.error(f'Invalid id {id}.')
+        return Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0]
+
+    return category
+
+
+def _get_time(time_c: Cell) -> datetime.time:
+    """Return a datetime.time element and None if an error occurs."""
+    if not time_c.value:
+        logger.warn('No time found.')
+        return None
+
+    if not time_c.is_date:
+        logger.error(f'Unsupported time format {time_c.value}')
+        return None
+
+    return time_c.value
+
+
+def _get_duration(cell: Cell) -> datetime.timedelta:
+    """Return a datetime.timedelta or None if not convertible."""
+    if cell.data_type == cell_meta.TYPE_NUMERIC:
+        return datetime.timedelta(minutes=cell.value)
+    else:
+        logger.error(f'Could not convert "{cell.data_type}" to timedelta.')
+        return None
+
+
+def _get_datetime(cell: Cell) -> datetime.datetime:
+    """Return a Datetime or None if the cell is not a date."""
+    if cell.is_date:
+        # TODO trotzdem offset berücksichtigen
+        aware_datetime = cell.value.replace(
+            # because djangos datetimefield stores with tz utc
+            tzinfo=datetime.timezone.utc)
+        return aware_datetime
+    else:
+        if cell.value:
+            logger.warn(f'Could not format date {cell.value}')
+
+        return None
+
+
+def _get_bool(cell: Cell) -> bool:
+    """
+    Try to convert the cell value to a boolean.
+
+    If no conversion was possible None is returned.
+    """
+    if not cell.value:
+        return False
+
+    match cell.data_type:
+        case cell_meta.TYPE_BOOL:
+            return cell.value
+        case cell_meta.TYPE_FORMULA:
+            if cell.value == '=TRUE()':
+                return True
+            elif cell.value == '=FALSE()':
+                return False
+            else:
+                logger.warn(f'Could not covert formula {cell.value} to bool.')
+                return None
+        case _:
+            logger.warn(f'Could not convert "{cell.value}" with type'
+                        f'{cell.data_type} to bool ')
+            return None
+
+
 def _get_number(cell: Cell) -> int:
+    """
+    Convert the cell value to int if possible.
+
+    Otherwise return 0.
+    """
     if not cell.value:
         return 0
 
@@ -710,8 +727,8 @@ def _get_number(cell: Cell) -> int:
             return 0
 
 
-def _get_profile(user_nr: Cell, user_ids: IdNumberMap) -> User:
-    """Return the corresponding profile or None if an error occured."""
+def _get_profile(user_nr: Cell, user_ids: IdNumberMap) -> User | None:
+    """Return the corresponding profile or None if an error occurs."""
     assert user_nr.data_type == cell_meta.TYPE_NUMERIC
 
     id = user_ids.get_id(user_nr.value)
