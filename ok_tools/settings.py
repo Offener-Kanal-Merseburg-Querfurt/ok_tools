@@ -179,7 +179,7 @@ STATIC_URL = 'static/'
 # ManifestStaticFilesStorage is recommended in production, to prevent outdatedhttp://localhost:8000/
 # JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
 # See https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#manifeststaticfilesstorage
-STATICFILES_STORAGE = f'django.contrib.staticfiles.storage.{config.get("django", "staticfiles_storage", fallback="ManifestStaticFilesStorage")}'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
