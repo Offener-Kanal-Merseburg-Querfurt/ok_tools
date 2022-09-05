@@ -265,6 +265,22 @@ def test__licenses__forms__CreateLicenseRequestForm__2(
             in browser.contents)
 
 
+def test__licenses__forms__CreateLicenseRequestForm__3(
+        browser, user, license_template_dict):
+    """The duration field can have the input format mm:ss."""
+    browser.login()
+    browser.open(CREATE_URL)
+    browser.getControl('Title').value = license_template_dict['title']
+    browser.getControl(
+        'Description').value = license_template_dict['description']
+    browser.getControl('Duration').value = '30:20'
+    browser.getControl('Save').click()
+
+    assert (LicenseRequest.objects.get(
+            title=license_template_dict['title']).duration ==
+            datetime.timedelta(minutes=30, seconds=20))
+
+
 def test__licenses__models__1(
         browser, user, license_request, license_template_dict):
     """

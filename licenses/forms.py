@@ -5,10 +5,10 @@ from crispy_forms.layout import HTML
 from crispy_forms.layout import Field
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit
+from datetime import timedelta
 from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-import datetime
 import re
 
 
@@ -37,7 +37,10 @@ class CreateLicenseRequestForm(forms.ModelForm):
             return super().is_valid()
 
         duration = self.data.get('duration') or ""
-        if not re.fullmatch(r'\d{2}:\d{2}:\d{2}', duration):
+        hh_mm_ss = r'\d{2}:\d{2}:\d{2}'
+        mm_ss = r'\d{2}:\d{2}'
+        if (not re.fullmatch(hh_mm_ss, duration) and
+                not re.fullmatch(mm_ss, duration)):
             # duration format is not valid
             self.add_error(
                 'duration',
@@ -46,11 +49,20 @@ class CreateLicenseRequestForm(forms.ModelForm):
             return super().is_valid() and False  # to collect further errors
 
         times = duration.split(':')
-        if (not datetime.timedelta(
+        if re.fullmatch(hh_mm_ss, duration):
+            datetime = timedelta(
                 hours=int(times[0]),
                 minutes=int(times[1]),
                 seconds=int(times[2])
-        )):
+            )
+        else:
+            assert re.fullmatch(mm_ss, duration)
+            datetime = timedelta(
+                minutes=int(times[0]),
+                hours=int(times[1]),
+            )
+
+        if (not datetime):
             # the duration format is valid but duration is 0
             self.add_error('duration', _('The duration field is required.'))
             return super().is_valid and False  # to collect further errors

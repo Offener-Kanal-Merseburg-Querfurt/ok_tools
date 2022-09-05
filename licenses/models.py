@@ -72,7 +72,7 @@ class LicenseTemplate(models.Model):
     )
     duration = models.DurationField(  # timedelta
         _('Duration'),
-        help_text=_('Format: hh:mm:ss'),
+        help_text=_('Format: hh:mm:ss or mm:ss'),
         blank=True,
         null=False,
         default=datetime.timedelta(seconds=0),
