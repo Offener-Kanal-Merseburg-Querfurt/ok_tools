@@ -41,12 +41,12 @@ Before using the multi language functionality it is necessary to compile the :co
 Import legacy data
 ==================
 
-It is possible to import legacy data from `.xlsx`. Therefore the script
-`import_legacy.py` was implemented. To run the script run::
+It is possible to import legacy data from :code:`.xlsx`. Therefore the script
+:code:`import_legacy.py` was implemented. To run the script run::
 
     python manage.py runscript import_legacy
 
 The script takes one workbook with multiple worksheets. The worksheets need to
-be named `users`, `contributions`, `categories`, `repetitions` and `projects`.
-The path of the imported date can be changed by editing `LEGACY_DATA` in the
-settings.py. The default path is `../legacy_data/data.xlsx`.
+be named :code:`users`, :code:`contributions`, :code:`categories`, :code:`repetitions` and :code:`projects`.
+The path of the imported date can be changed by editing :code:`LEGACY_DATA` in the
+:code:`settings.py`. The default path is :code:`../legacy_data/data.xlsx`.
