@@ -18,8 +18,8 @@ class ContributionAdmin(admin.ModelAdmin):
     @display(description=_('User'))
     def get_user(self, obj):
         """Return the first an last name of the contributions user."""
-        return (f'{obj.license.okuser.profile.first_name}'
-                f' {obj.license.okuser.profile.last_name}')
+        return (f'{obj.license.profile.first_name}'
+                f' {obj.license.profile.last_name}')
 
 
 admin.site.register(Contribution, ContributionAdmin)

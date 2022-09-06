@@ -39,7 +39,12 @@ class ListLicensesView(generic.list.ListView):
 
     def get_queryset(self):
         """List only the licenses of the logged in user."""
-        return self.model.objects.filter(okuser=self.request.user)
+        try:
+            profile = self.request.user.profile
+        except User.profile.RelatedObjectDoesNotExist:
+            return
+
+        return self.model.objects.filter(profile=profile)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -64,9 +69,16 @@ class CreateLicenseView(generic.CreateView):
     def get_form(self, form_class=None):
         """User of created LicenseRequest is current user."""
         form = super().get_form(form_class)
-        # TODO check if user has profile
-        form.instance.okuser = self.request.user
+        form.instance.profile = self.request.user.profile
         return form
+
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
+        """Get handler to create a LR."""
+        try:
+            self.request.user.profile
+        except User.profile.RelatedObjectDoesNotExist:
+            return _no_profile_error(request)
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         """Screen Boards always have a fixed duration."""
@@ -137,12 +149,8 @@ class FilledLicenseFile(generic.View):
         except LicenseRequest.DoesNotExist:
             return _license_does_not_exist(request)
 
-        if license.okuser != request.user:
+        if (not license.profile.okuser or
+                license.profile.okuser != request.user):
             return _license_does_not_exist(request)
-
-        try:
-            license.okuser.profile
-        except User.profile.RelatedObjectDoesNotExist:
-            return _no_profile_error(request)
 
         return generate_license_file(request.user, license)

@@ -30,6 +30,7 @@ setup(
         ],
     ),
     install_requires=[
+        'bidict',
         'Django>=4.0.5',
         'PyPDF2!=2.10.1',
         'django-bootstrap-datepicker-plus',

@@ -4,12 +4,14 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
+from ok_tools.testing import EMAIL
+from ok_tools.testing import PWD
 from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
+from registration.models import Profile
 from urllib.error import HTTPError
 import datetime
-import ok_tools.testing as testing
 import pytest
 
 
@@ -89,6 +91,15 @@ def test__licenses__views__ListLicensesView__6(browser, user, license_request):
     browser.follow(id=f'id_print_{license_request.id}')
 
     assert browser.url == print_url(license_request.id)
+
+
+def test__licenses__views__ListLicensesView__7(browser):
+    """A user without a profile can not see any LRs."""
+    User.objects.create_user(email=EMAIL, password=PWD)
+    browser.login()
+    browser.open(LIST_URL)
+
+    assert 'No licenses yet.' in browser.contents
 
 
 def test__licenses__views__DetailsLicensesView__1(browser, license_request):
@@ -236,6 +247,14 @@ def test__licenses__views__CreateLicenseView__5(
         seconds=settings.SCREEN_BOARD_DURATION)
 
 
+def test__licenses__views__CreateLicenseView__6(browser):
+    """It is not possible to create a LR without a Profile."""
+    User.objects.create_user(email=EMAIL, password=PWD)
+    browser.login()
+    browser.open(CREATE_URL)
+    assert 'There is no profile' in browser.contents
+
+
 def test__licenses__forms__CreateLicenseRequestForm__1(
         browser, user, license_template_dict):
     """A LR needs a duration or needs to be a Screen Board."""
@@ -293,7 +312,7 @@ def test__licenses__models__1(
     subtitle = 'Test Subtitle'
     license_template_dict['subtitle'] = subtitle
     license_with_subtitle = create_license_request(
-        user, default_category(), license_template_dict)
+        user.profile, default_category(), license_template_dict)
 
     assert str(license_request) == license_request.title
     assert str(license_with_subtitle) in str(license_with_subtitle)
@@ -305,7 +324,7 @@ def test__licenses__models__2(
     """Each new LR gets a unique, visible number."""
     lr1 = license_request
     lr2 = create_license_request(
-        user, default_category(), license_template_dict)
+        user.profile, default_category(), license_template_dict)
 
     assert lr1.number == 1
     assert lr2.number == 2
@@ -355,7 +374,7 @@ def test__licenses__views__FilledLicenseFile__3(
     user_dict['email'] = f'new_{user_dict["email"]}'
     second_user = create_user(user_dict)
     second_lr = create_license_request(
-        second_user, default_category(), license_template_dict)
+        second_user.profile, default_category(), license_template_dict)
 
     browser.login()  # login with user
     browser.open(print_url(second_lr.id))
@@ -364,17 +383,17 @@ def test__licenses__views__FilledLicenseFile__3(
     assert 'License not found.' in browser.contents
 
 
-def test__licenses__views__Filled_licenseFile__4(
-        browser, license_template_dict):
-    """The user of a LR needs to have a profile."""
-    user = User.objects.create_user(testing.EMAIL, password=testing.PWD)
-    lr = create_license_request(
-        user, default_category(), license_template_dict)
+# def test__licenses__views__FilledLicenseFile__4(
+#         browser, license_template_dict):
+#     """The user of a LR needs to have a profile."""
+#     user = User.objects.create_user(testing.EMAIL, password=testing.PWD)
+#     lr = create_license_request(
+#         user, default_category(), license_template_dict)
 
-    browser.login()
-    browser.open(print_url(lr.id))
+#     browser.login()
+#     browser.open(print_url(lr.id))
 
-    assert "There is no profile" in browser.contents
+#     assert "There is no profile" in browser.contents
 
 
 def test__licenses__admin__LicenseRequestAdmin__1(
@@ -383,7 +402,8 @@ def test__licenses__admin__LicenseRequestAdmin__1(
     license_request.confirmed = True
     license_request.save()
     for _ in range(3):
-        create_license_request(user, default_category(), license_template_dict)
+        create_license_request(
+            user.profile, default_category(), license_template_dict)
 
     browser.login_admin()
     browser.follow('License Requests')
@@ -405,7 +425,7 @@ def test__licenses__admin__LicenseRequestAdmin__2(
     license_request.save()
     for _ in range(3):
         lr = create_license_request(
-            user, default_category(), license_template_dict)
+            user.profile, default_category(), license_template_dict)
         lr.confirmed = True
         lr.save()
 
@@ -460,3 +480,18 @@ def test__licenses__admin__LicenseRequestAdmin__5(browser, license_request):
     lr = LicenseRequest.objects.get(id=license_request.id)
     assert 'was changed successfully' in browser.contents
     assert license_request == lr
+
+
+def test__licenses__admin__LicenseRequestAdmin__6(
+        browser, license_template_dict, user_dict):
+    """Show LRs with a profile without user."""
+    profile = Profile.objects.create(
+        first_name=user_dict['first_name'],
+        last_name=user_dict['last_name']
+    )
+    create_license_request(profile, default_category(), license_template_dict)
+
+    browser.login_admin()
+    browser.follow('License Request')
+
+    assert '-' in browser.contents

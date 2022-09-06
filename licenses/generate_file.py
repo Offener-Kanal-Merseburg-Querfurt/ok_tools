@@ -46,9 +46,9 @@ def generate_license_file(user, lr: LicenseRequest) -> FileResponse:
     Y_DURATION = 399
     Y_SEND_DATE = 370
 
-    user = lr.okuser
+    user = lr.profile.okuser
 
-    profile = user.profile
+    profile = lr.profile
 
     # Herr/Frau
     pdf_edits.drawString(

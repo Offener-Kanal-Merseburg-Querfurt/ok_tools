@@ -1,13 +1,12 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
+from registration.models import Profile
 import datetime
 import logging
 
 
 logger = logging.getLogger('django')
-User = get_user_model()
 
 MAX_TITLE_LENGTH = 255
 
@@ -63,7 +62,7 @@ class LicenseTemplate(models.Model):
     description = models.TextField(
         _('Description'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     further_persons = models.TextField(
@@ -88,25 +87,25 @@ class LicenseTemplate(models.Model):
     repetitions_allowed = models.BooleanField(
         _('Repetitions allowed'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     media_authority_exchange_allowed = models.BooleanField(
         _('Media Authority exchange allowed'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     youth_protection_necessary = models.BooleanField(
         _('Youth protection necessary'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     store_in_ok_media_library = models.BooleanField(
         _('Store in OK media library'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -137,10 +136,10 @@ class LicenseRequest(LicenseTemplate, models.Model):
         null=False,
     )
 
-    okuser = models.ForeignKey(
-        User,
+    profile = models.ForeignKey(
+        Profile,
         on_delete=models.CASCADE,
-        verbose_name=_('User'),
+        verbose_name=_('Profile'),
         blank=False,
         null=False,
     )
