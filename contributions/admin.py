@@ -12,6 +12,7 @@ class ContributionAdmin(admin.ModelAdmin):
         'get_user',
         'broadcast_date',
     )
+    autocomplete_fields = ['license']
 
     ordering = ['-broadcast_date']
 
