@@ -23,8 +23,6 @@ import pytz
 User = get_user_model()
 logger = logging.getLogger('console')
 
-DEFAULT_CATEGORY_NAME = 'Sonstiges'
-
 
 def run():
     """Run the import."""
@@ -203,7 +201,6 @@ def import_users(ws: Worksheet) -> IdNumberMap:
                 # user with email already exists
                 logger.info('Already found a user. I will take the newer one.')
                 created_profile = user.profile
-                # TODO maybe catch if no profile
 
                 # if datetime is none handle as the newest
                 new_created = _get_datetime(row[CREATED_AT])
@@ -359,13 +356,18 @@ def import_primary_contributions(
         """Determine wether the contribution is a screen board."""
         return row[TITLE] == SCREEN_BOARD_STR
 
+    no_prof_cnt = 0
+    no_cat_cnt = 0
     for row in rows:
 
         profile = _get_profile(row[USER_NR], user_ids)
         if not profile:
+            no_prof_cnt += 1
             continue
 
-        category = _get_category(row[USER_NR], category_ids)
+        category, error = _get_category(row[USER_NR], category_ids)
+        if error:
+            no_cat_cnt += 1
 
         try:
             LicenseRequest.objects.get(number=row[NR].value)
@@ -401,6 +403,13 @@ def import_primary_contributions(
         elif lr_created and not contrib_created:
             logger.error(f'Only expected primary contributions. {contrib} is a'
                          'repetition.')
+
+    if no_prof_cnt:
+        logger.critical(f'Could not find profile for {no_prof_cnt} primary'
+                        ' contributions')
+    if no_cat_cnt:
+        logger.critical(f'Could not find category for {no_cat_cnt} primary'
+                        ' contributions.')
 
 
 @transaction.atomic
@@ -560,16 +569,25 @@ def import_repetitions(
     assert header[CATEGORY].value == 'Rubrik'
     assert header[LIVE].value == 'live'
 
+    no_prim_found = 0
     for row in rows:
 
+        # TODO nach altem Datum und alter Sendezeit
         licenses = LicenseRequest.objects.filter(
             title=row[TITLE].value,
             profile=_get_profile(row[USER_NR], user_ids),
             duration=_get_duration(row[DURATION]),
         )
 
+        broadcast_date = _get_broadcast_date(row[NEW_DATE], row[NEW_TIME])
         if not licenses:
-            logger.error('No primary contribution found.')
+            if broadcast_date.year == 2022:
+                logger.critical('No primary contribution for repetition'
+                                f' {row[NR].value} from 2022.')
+            else:
+                logger.error('No primary contribution found.')
+
+            no_prim_found += 1
             continue
         if len(licenses) != 1:
             logger.error('More then one primary contribution.'
@@ -586,6 +604,10 @@ def import_repetitions(
 
         if contr_created:
             logger.warn(f'Repetition {contr} already exists.')
+
+    if no_prim_found:
+        logger.critical('Could not find primary contribution'
+                        f' for {no_prim_found} repetitions.')
 
 
 def _get_broadcast_date(
@@ -613,31 +635,34 @@ def _get_broadcast_date(
     return date
 
 
-def _get_category(cell: Cell, category_ids: dict) -> Category:
+def _get_category(cell: Cell, category_ids: dict) -> tuple[Category, bool]:
     """
     Determine the category from the given category number.
 
-    Return the default category, defined through DEFAULT_CATEGORY_NAME if
-    the category number is not valid.
+    Return the category and a boolean weather the category was found.
     """
     category_nr = _get_number(cell)
+    DEFAULT_CATEGORY_NAME = f'unbekannt_{category_nr}'
 
     if not category_nr:
         logger.warn(f'Invalid category number {cell.value}')
-        return Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0]
+        return (Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0],
+                True)
 
     id = category_ids.get(cell.value)
     if not id:
         logger.warn(f'Invalid category number {cell.value}.')
-        return Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0]
+        return (Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0],
+                True)
 
     try:
         category = Category.objects.get(id=id)
     except Category.DoesNotExist:
         logger.error(f'Invalid id {id}.')
-        return Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0]
+        return (Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0],
+                True)
 
-    return category
+    return category, False
 
 
 def _get_time(time_c: Cell) -> datetime.time:
