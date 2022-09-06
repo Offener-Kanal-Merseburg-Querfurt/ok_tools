@@ -549,6 +549,8 @@ def import_repetitions(
     NR = 0
     TITLE = 1
     SUBTITLE = 2
+    OLD_DATE = 3
+    OLD_TIME = 4
     NEW_DATE = 5
     NEW_TIME = 6
     USER_NR = 7
@@ -562,6 +564,8 @@ def import_repetitions(
     assert header[NR].value == 'lfd_nr'
     assert header[TITLE].value == 'titel'
     assert header[SUBTITLE].value == 'untertitel'
+    assert header[OLD_DATE].value == 'altesDatum'
+    assert header[OLD_TIME].value == 'alteSendezeit'
     assert header[NEW_DATE].value == 'Sendedatum'
     assert header[NEW_TIME].value == 'Sendezeit'
     assert header[USER_NR].value == 'Nutzer_Nr'
@@ -570,17 +574,22 @@ def import_repetitions(
     assert header[LIVE].value == 'live'
 
     no_prim_found = 0
+    no_clear_prim = 0
     for row in rows:
 
+        old_broadcast_date = _get_broadcast_date(row[OLD_DATE], row[OLD_TIME])
+        if old_broadcast_date is None:
+            logger.error(f'No old broadcastdate found for {row[NR].value}.')
+            continue
+
         # TODO nach altem Datum und alter Sendezeit
-        licenses = LicenseRequest.objects.filter(
-            title=row[TITLE].value,
-            profile=_get_profile(row[USER_NR], user_ids),
-            duration=_get_duration(row[DURATION]),
+        contributions = Contribution.objects.filter(
+            broadcast_date=old_broadcast_date,
         )
 
         broadcast_date = _get_broadcast_date(row[NEW_DATE], row[NEW_TIME])
-        if not licenses:
+
+        if not contributions:
             if broadcast_date.year == 2022:
                 logger.critical('No primary contribution for repetition'
                                 f' {row[NR].value} from 2022.')
@@ -589,12 +598,17 @@ def import_repetitions(
 
             no_prim_found += 1
             continue
-        if len(licenses) != 1:
-            logger.error('More then one primary contribution.'
-                         ' Just taking the first one.')
+        if len(contributions) != 1:
+            if broadcast_date.year == 2022:
+                logger.critical('More than one primary contribution for'
+                                f' repetition {row[NR].value} from 2022.')
+            else:
+                logger.error('More then one primary contribution'
+                             f' ({row[NR].value}). Just taking the first one.')
+            no_clear_prim += 1
             continue
 
-        license = licenses[0]
+        license = contributions[0].license
 
         contr, contr_created = Contribution.objects.get_or_create(
             license=license,
@@ -608,6 +622,10 @@ def import_repetitions(
     if no_prim_found:
         logger.critical('Could not find primary contribution'
                         f' for {no_prim_found} repetitions.')
+
+    if no_clear_prim:
+        logger.critical('Found more then one primary contribution for'
+                        f' {no_clear_prim} repetitions.')
 
 
 def _get_broadcast_date(
@@ -625,7 +643,7 @@ def _get_broadcast_date(
         logger.error('No time for broadcast_date found.')
         return date
 
-    date.replace(
+    date = date.replace(
         hour=time.hour,
         minute=time.minute,
         second=time.second,
@@ -690,10 +708,9 @@ def _get_duration(cell: Cell) -> datetime.timedelta:
 def _get_datetime(cell: Cell) -> datetime.datetime:
     """Return a Datetime or None if the cell is not a date."""
     if cell.is_date:
-        # TODO trotzdem offset berücksichtigen
         aware_datetime = cell.value.replace(
-            # because djangos datetimefield stores with tz utc
-            tzinfo=datetime.timezone.utc)
+            # TODO über settings
+            tzinfo=datetime.timezone(-datetime.timedelta(hours=2)))
         return aware_datetime
     else:
         if cell.value:
