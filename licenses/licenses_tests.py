@@ -383,19 +383,6 @@ def test__licenses__views__FilledLicenseFile__3(
     assert 'License not found.' in browser.contents
 
 
-# def test__licenses__views__FilledLicenseFile__4(
-#         browser, license_template_dict):
-#     """The user of a LR needs to have a profile."""
-#     user = User.objects.create_user(testing.EMAIL, password=testing.PWD)
-#     lr = create_license_request(
-#         user, default_category(), license_template_dict)
-
-#     browser.login()
-#     browser.open(print_url(lr.id))
-
-#     assert "There is no profile" in browser.contents
-
-
 def test__licenses__admin__LicenseRequestAdmin__1(
         browser, user, license_request, license_template_dict):
     """Confirm multiple LRs."""
