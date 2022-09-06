@@ -708,9 +708,8 @@ def _get_duration(cell: Cell) -> datetime.timedelta:
 def _get_datetime(cell: Cell) -> datetime.datetime:
     """Return a Datetime or None if the cell is not a date."""
     if cell.is_date:
-        # TODO trotzdem offset berücksichtigen
         aware_datetime = cell.value.replace(
-            # because djangos datetimefield stores with tz utc
+            # TODO über settings
             tzinfo=datetime.timezone(-datetime.timedelta(hours=2)))
         return aware_datetime
     else:
