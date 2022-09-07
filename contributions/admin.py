@@ -1,4 +1,5 @@
 from .models import Contribution
+from .models import DisaImport
 from django.contrib import admin
 from django.contrib.admin.decorators import display
 from django.utils.translation import gettext_lazy as _
@@ -24,3 +25,5 @@ class ContributionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Contribution, ContributionAdmin)
+
+admin.site.register(DisaImport)

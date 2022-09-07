@@ -1,3 +1,6 @@
+from .disa_import import validate
+from datetime import datetime
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from licenses.models import LicenseRequest
@@ -39,3 +42,38 @@ class Contribution(models.Model):
 
         verbose_name = _('Contribution')
         verbose_name_plural = _('Contributions')
+
+
+class DisaImport(models.Model):
+    """
+    Model representing the DISA-Import.
+
+    The Contributions get imported from a xlsx-file.
+    """
+
+    def timestamp_path(instance, filename):
+        """Create a path based on the current timestamp."""
+        now: datetime = datetime.now()
+        return (f'{now.year}/{now.month}/{now.day}/{now.hour}-{now.minute}-'
+                f'{now.second}-{now.microsecond}.xlsx')
+
+    file = models.FileField(
+        verbose_name=_('DISA export file'),
+        upload_to=timestamp_path,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['xlsx']),
+        ],
+        blank=False,
+        null=False,
+    )
+
+    def clean(self) -> None:
+        """Validate the uploaded file."""
+        validate(self.file)
+        return super().clean()
+
+    class Meta:
+        """Defines the message IDs."""
+
+        verbose_name = _('DISA-Import')
+        verbose_name_plural = _('DISA-Imports')
