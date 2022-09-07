@@ -28,7 +28,7 @@ def run():
         password="userpassword",
     )
 
-    Profile.objects.create(
+    profile1 = Profile.objects.create(
         okuser=user1,
         first_name='Max',
         last_name='Mustermann',
@@ -46,7 +46,7 @@ def run():
         password="userpassword",
     )
 
-    Profile.objects.create(
+    profile2 = Profile.objects.create(
         okuser=user2,
         first_name='Monika',
         last_name='Mustermann',
@@ -59,7 +59,7 @@ def run():
     )
 
     l1 = LicenseRequest.objects.create(
-        okuser=user1,
+        profile=profile1,
         title='Title1',
         description='This is the description.',
         duration=timedelta(minutes=30),
@@ -71,7 +71,7 @@ def run():
     )
 
     LicenseRequest.objects.create(
-        okuser=user1,
+        profile=profile2,
         title='Title2',
         description='This is the description.',
         duration=timedelta(minutes=30),
@@ -83,7 +83,7 @@ def run():
     )
 
     l2 = LicenseRequest.objects.create(
-        okuser=user2,
+        profile=profile2,
         title='Title1',
         description='This is the description.',
         duration=timedelta(minutes=30),

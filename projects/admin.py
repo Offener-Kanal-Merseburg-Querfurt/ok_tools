@@ -30,7 +30,7 @@ class ProjectAdmin(admin.ModelAdmin):
                 'project_category',
                 'target_group',
                 'project_leader',
-                'media_education_supervisor'
+                'media_education_supervisors'
             )
         }),
         (_('Participant numbers - by age'), {

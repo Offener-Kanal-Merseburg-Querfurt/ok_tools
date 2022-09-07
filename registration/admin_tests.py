@@ -1,9 +1,11 @@
 from .models import Profile
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
+import datetime
 import pytest
 import registration.signals
 
@@ -196,15 +198,18 @@ def test__registration__admin__ProfileAdmin__2(db, user, browser):
 
 def test__registration__admin__ProfileAdmin__3(db, user_dict, browser):
     """Create a profile using the admin interface."""
-    User.objects.create_user(user_dict['email'], password=PWD)
+    user = User.objects.create_user(user_dict['email'], password=PWD)
 
     browser.login_admin()
     browser.follow('Profile')
     browser.follow('Add profile')
 
-    browser.getControl(user_dict['email']).click()  # select user
+    browser.getControl(name='okuser')._control.force_value(
+        user.id)  # select user
     browser.getControl('First name').value = user_dict['first_name']
     browser.getControl('Last name').value = user_dict['last_name']
+    browser.getControl('Birthday').value = datetime.datetime.strptime(
+        user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
     browser.getControl('Street').value = user_dict['street']
     browser.getControl('House number').value = user_dict['house_number']
     browser.getControl(name='_save').click()

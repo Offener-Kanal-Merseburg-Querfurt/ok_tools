@@ -1,13 +1,12 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
+from registration.models import Profile
 import datetime
 import logging
 
 
 logger = logging.getLogger('django')
-User = get_user_model()
 
 MAX_TITLE_LENGTH = 255
 
@@ -23,7 +22,8 @@ class Category(models.Model):
         _('Category'),
         blank=False,
         null=True,
-        max_length=255
+        max_length=255,
+        unique=True,
     )
 
     def __str__(self) -> str:
@@ -48,7 +48,7 @@ class LicenseTemplate(models.Model):
     title = models.CharField(
         _('Title'),
         blank=False,
-        null=False,
+        null=True,
         max_length=MAX_TITLE_LENGTH,
     )
 
@@ -62,7 +62,7 @@ class LicenseTemplate(models.Model):
     description = models.TextField(
         _('Description'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     further_persons = models.TextField(
@@ -87,25 +87,25 @@ class LicenseTemplate(models.Model):
     repetitions_allowed = models.BooleanField(
         _('Repetitions allowed'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     media_authority_exchange_allowed = models.BooleanField(
         _('Media Authority exchange allowed'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     youth_protection_necessary = models.BooleanField(
         _('Youth protection necessary'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     store_in_ok_media_library = models.BooleanField(
         _('Store in OK media library'),
         blank=False,
-        null=False,
+        null=True,
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -115,7 +115,7 @@ class LicenseTemplate(models.Model):
         if self.subtitle:
             return f'{self.title} - {self.subtitle}'
         else:
-            return self.title
+            return self.title or ""
 
     class Meta:
         """Defines the message IDs."""
@@ -136,10 +136,10 @@ class LicenseRequest(LicenseTemplate, models.Model):
         null=False,
     )
 
-    okuser = models.ForeignKey(
-        User,
+    profile = models.ForeignKey(
+        Profile,
         on_delete=models.CASCADE,
-        verbose_name=_('User'),
+        verbose_name=_('Profile'),
         blank=False,
         null=False,
     )
@@ -174,7 +174,11 @@ class LicenseRequest(LicenseTemplate, models.Model):
         """
         # Emulate an Autofield for number.
         if self.id is None:  # license is new created
-            if last := LicenseRequest.objects.order_by('number').last():
+
+            if (LicenseRequest.objects.filter(number=self.number) and
+                    # number already exists
+                    (last := LicenseRequest.objects.order_by('number')
+                     .last())):
                 i = last.number
                 i += 1
                 self.number = i

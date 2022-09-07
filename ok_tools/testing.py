@@ -49,14 +49,14 @@ def create_user(user_dict, verified=False, is_staff=False) -> User:
 
 
 def create_license_request(
-        user, category, license_template_dict) -> LicenseRequest:
+        profile, category, license_template_dict) -> LicenseRequest:
     """
     Create a LicenseRequest.
 
     license_template_dict contains all data of an LicenseTemplate.
     """
     return LicenseRequest.objects.create(
-        okuser=user,
+        profile=profile,
         category=category,
         title=license_template_dict['title'],
         subtitle=license_template_dict['subtitle'],

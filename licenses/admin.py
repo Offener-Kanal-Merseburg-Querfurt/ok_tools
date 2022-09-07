@@ -2,6 +2,7 @@ from .models import Category
 from .models import LicenseRequest
 from django.contrib import admin
 from django.contrib import messages
+from django.contrib.admin.decorators import display
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
@@ -17,7 +18,8 @@ class LicenseRequestAdmin(admin.ModelAdmin):
     change_form_template = 'admin/licenses_change_form_edit.html'
     list_display = (
         '__str__',
-        'okuser',
+        'get_user',
+        'profile',
         'created_at',
         'confirmed',
     )
@@ -25,8 +27,14 @@ class LicenseRequestAdmin(admin.ModelAdmin):
     ordering = ['-created_at']
 
     # TODO it is not possible to search in string representation
-    search_fields = ['okuser__email', 'title', 'subtitle']
+    search_fields = ['subtitle', 'number']
     actions = ['confirm', 'unconfirm']
+
+    @display(description=_('User'))
+    def get_user(self, obj):
+        """Return the user of the license as string."""
+        if user := obj.profile.okuser:
+            return str(user)
 
     @admin.action(description=_('Confirm selected License Requests'))
     def confirm(self, request, queryset):

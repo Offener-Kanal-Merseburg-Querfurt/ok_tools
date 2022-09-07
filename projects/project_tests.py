@@ -37,12 +37,12 @@ def test__admin__2(db):
     proj = Project.objects.create(
         project_category=pc,
         project_leader=pl,
-        media_education_supervisor=mes,
         target_group=tg,
         duration=timedelta(days=1),
         external_venue=False,
         jugendmedienschutz=False
     )
+    proj.media_education_supervisors.add(mes.id)
     proj.tn_0_bis_6 = 2
     proj.tn_7_bis_10 = 2
     proj.tn_female = 3

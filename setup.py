@@ -30,12 +30,14 @@ setup(
         ],
     ),
     install_requires=[
+        'bidict',
         'Django>=4.0.5',
         'PyPDF2!=2.10.1',
         'django-bootstrap-datepicker-plus',
         'django-crispy-forms',
         'django-extensions',
         'django-revproxy>=0.10.0',
+        'openpyxl',
         'reportlab',
     ],
     extras_require={

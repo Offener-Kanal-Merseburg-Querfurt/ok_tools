@@ -21,13 +21,13 @@ def verify_profile(sender, instance, update_fields, **kwargs):
     """If a profile is verified it sets permission."""
     if ((update_fields and 'verified' in update_fields) or
             kwargs.get('created')):
-        user = instance.okuser
-        verified_permission = _get_permission(Profile, 'verified')
+        if user := instance.okuser:
+            verified_permission = _get_permission(Profile, 'verified')
 
-        if instance.verified:
-            user.user_permissions.add(verified_permission)
-        else:
-            user.user_permissions.remove(verified_permission)
+            if instance.verified:
+                user.user_permissions.add(verified_permission)
+            else:
+                user.user_permissions.remove(verified_permission)
 
 
 @receiver(profile_verified)

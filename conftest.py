@@ -98,7 +98,7 @@ def license_template_dict() -> dict:
 def license_request(user, license_template_dict):
     """Return a license request."""
     return create_license_request(
-        user,
+        user.profile,
         default_category(),
         license_template_dict,
     )

@@ -84,6 +84,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'verified',
         'created_at',
     ]
+    autocomplete_fields = ['okuser']
     ordering = ['-created_at']
 
     search_fields = ['okuser__email', 'first_name', 'last_name']

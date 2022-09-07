@@ -234,12 +234,19 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+# path to legacy data
+LEGACY_DATA = '../legacy_data/data.xlsx'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'timestamp': {
             'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        },
+        'levelname': {
+            'format': '{levelname} {message}',
             'style': '{',
         }
     },
@@ -248,7 +255,12 @@ LOGGING = {
             'level': DJANGO_LOG_LEVEL,
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'ok_tools-debug.log'),
+            'formatter': 'timestamp',
         },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'levelname',
+        }
     },
     'loggers': {
         'django': {
@@ -256,5 +268,10 @@ LOGGING = {
             'level': DJANGO_LOG_LEVEL,
             'propagate': True,
         },
+        'console': {
+            'handlers': ['console'],
+            'level': 'CRITICAL',
+            'propagate': True,
+        }
     },
 }
