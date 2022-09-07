@@ -24,6 +24,7 @@ User = get_user_model()
 logger = logging.getLogger('console')
 
 
+@transaction.atomic
 def run():
     """Run the import."""
     wb = load_workbook(filename=settings.LEGACY_DATA)
@@ -365,7 +366,7 @@ def import_primary_contributions(
             no_prof_cnt += 1
             continue
 
-        category, error = _get_category(row[USER_NR], category_ids)
+        category, error = _get_category(row[CATEGORY_NR], category_ids)
         if error:
             no_cat_cnt += 1
 
@@ -498,11 +499,11 @@ def import_projects(ws: Worksheet):
 
         duration = _get_duration(row[DURATION])
         if not duration:
-            logger.warn(f'Now duration for project "{row[TITLE]}"')
+            logger.warn(f'Now duration for project "{row[TITLE].value}"')
 
         begin_date = _get_datetime(row[DAY])
         if not begin_date:
-            logger.warn(f'No begin_date for project "{row[TITLE]}')
+            logger.warn(f'No begin_date for project "{row[TITLE].value}')
 
         try:
             project, project_created = Project.objects.get_or_create(
@@ -555,6 +556,7 @@ def import_repetitions(
     NEW_TIME = 6
     USER_NR = 7
     DURATION = 8
+    DESCRIPTION = 11
     CATEGORY = 12
     LIVE = 14
 
@@ -570,6 +572,7 @@ def import_repetitions(
     assert header[NEW_TIME].value == 'Sendezeit'
     assert header[USER_NR].value == 'Nutzer_Nr'
     assert header[DURATION].value == 'Länge'
+    assert header[DESCRIPTION].value == 'Beschreibung'
     assert header[CATEGORY].value == 'Rubrik'
     assert header[LIVE].value == 'live'
 
@@ -596,9 +599,34 @@ def import_repetitions(
             else:
                 logger.error('No primary contribution found.')
 
+            logger.warn(f'Creating a new License for {row[NR].value}.')
+
+            profile = _get_profile(row[USER_NR], user_ids)
+            if not profile:
+                continue
+
+            category, c_created = Category.objects.get_or_create(
+                name=row[CATEGORY].value
+            )
+
+            license, lr_created = LicenseRequest.objects.get_or_create(
+                number=row[NR].value,
+                profile=profile,
+                title=row[TITLE].value,
+                subtitle=row[SUBTITLE].value,
+                description=row[DESCRIPTION].value,
+                duration=_get_duration(row[DURATION]),
+                category=category,
+                confirmed=True,
+            )
+
+            if not lr_created:
+                logger.warn(f'License {license} already exists.')
+
             no_prim_found += 1
+
             continue
-        if len(contributions) != 1:
+        elif len(contributions) != 1:
             if broadcast_date.year == 2022:
                 logger.critical('More than one primary contribution for'
                                 f' repetition {row[NR].value} from 2022.')
@@ -606,9 +634,10 @@ def import_repetitions(
                 logger.error('More then one primary contribution'
                              f' ({row[NR].value}). Just taking the first one.')
             no_clear_prim += 1
+            license = contributions[0].license
             continue
-
-        license = contributions[0].license
+        else:
+            license = contributions[0].license
 
         contr, contr_created = Contribution.objects.get_or_create(
             license=license,
