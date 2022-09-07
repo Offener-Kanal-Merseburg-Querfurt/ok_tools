@@ -198,13 +198,14 @@ def test__registration__admin__ProfileAdmin__2(db, user, browser):
 
 def test__registration__admin__ProfileAdmin__3(db, user_dict, browser):
     """Create a profile using the admin interface."""
-    User.objects.create_user(user_dict['email'], password=PWD)
+    user = User.objects.create_user(user_dict['email'], password=PWD)
 
     browser.login_admin()
     browser.follow('Profile')
     browser.follow('Add profile')
 
-    browser.getControl(user_dict['email']).click()  # select user
+    browser.getControl(name='okuser')._control.force_value(
+        user.id)  # select user
     browser.getControl('First name').value = user_dict['first_name']
     browser.getControl('Last name').value = user_dict['last_name']
     browser.getControl('Birthday').value = datetime.datetime.strptime(
