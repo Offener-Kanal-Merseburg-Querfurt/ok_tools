@@ -122,7 +122,7 @@ def disa_import(request, file):
         nr = re.match(r'^\d+', row[TITLE].value)[0]
 
         try:
-            license = LicenseRequest.objects.get(number=nr)
+            license: LicenseRequest = LicenseRequest.objects.get(number=nr)
         except LicenseRequest.DoesNotExist:
             msg = _('No license with number %(n)s found.') % {'n': nr}
             logger.error(msg)
@@ -141,6 +141,14 @@ def disa_import(request, file):
             second=b_lst[5],
             microsecond=b_lst[6]*10**4,
         )
+
+        if (license.repetitions_allowed is False and
+                models.Contribution.objects.filter(license=license)):
+            msg = _('No repetitions for number %(n)s allowed and already'
+                    ' found a primary contribution.' % {'n': nr})
+            logger.error(msg)
+            messages.error(request, msg)
+            continue
 
         contr, contr_created = models.Contribution.objects.get_or_create(
             license=license,

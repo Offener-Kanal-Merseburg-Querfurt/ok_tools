@@ -6,6 +6,7 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
@@ -227,6 +228,24 @@ def test__contributions__disa_import__4(browser, disaimport):
 
     assert not Contribution.objects.filter()
     assert 'No license with number 1 found.' in browser.contents
+
+
+def test__contributions__disa_import__5(browser, db, license_request):
+    """Don't import repetitions if no repetitions are allowed."""
+    license_request.repetitions_allowed = False
+    license_request.save()
+
+    disaimport = DisaImport()
+    with _open('repetitions.xlsx') as f:
+        disaimport.file.save('test.xlsx', File(f), save=True)
+    disaimport.save()
+
+    browser.login_admin()
+    browser.open(disa_url_change(disaimport.id))
+    browser.getControl(name='_import_disa').click()
+
+    assert len(Contribution.objects.filter(license=license_request)) == 1
+    assert 'No repetitions for number 1 allowed' in browser.contents
 
 
 def test__contributions__admin__1(browser, db, license_request):
