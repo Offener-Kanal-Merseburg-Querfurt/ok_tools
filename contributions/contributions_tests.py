@@ -205,8 +205,7 @@ def test__contributions__disa_import__1(db, license_request):
 
 def test__contributions__disa_import__2(db, license_request):
     """Do not create duplicated contributions."""
-    with _open('valid.xlsx') as f:
-        disa_import(None, f)
+    with _open('double.xlsx') as f:
         disa_import(None, f)
 
     assert len(Contribution.objects.filter()) == 1
@@ -246,6 +245,25 @@ def test__contributions__disa_import__5(browser, db, license_request):
 
     assert len(Contribution.objects.filter(license=license_request)) == 1
     assert 'No repetitions for number 1 allowed' in browser.contents
+
+
+def test__contributions__disa_import__6(db, license_request):
+    """Update contributions with another import."""
+    with _open('valid.xlsx') as f:
+        disa_import(None, f)
+
+    assert len(Contribution.objects.filter()) == 1
+
+    with _open('valid_update.xlsx') as f:
+        disa_import(None, f)
+
+    assert len(Contribution.objects.filter()) == 2
+
+    contributions = Contribution.objects.filter().order_by('broadcast_date')
+    assert (contributions[0].broadcast_date ==
+            datetime(2022, 9, 8, 9, 30, tzinfo=ZoneInfo(settings.TIME_ZONE)))
+    assert (contributions[1].broadcast_date ==
+            datetime(2022, 9, 8, 10, 30, tzinfo=ZoneInfo(settings.TIME_ZONE)))
 
 
 def test__contributions__admin__1(browser, db, license_request):

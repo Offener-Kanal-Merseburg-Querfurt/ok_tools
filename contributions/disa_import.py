@@ -113,6 +113,7 @@ def disa_import(request, file):
     next(rows)  # ignore headers
     next(rows)  # ignore empty row
 
+    dates = {}
     for row in rows:
         if not any([row[i].value for i in range(TYPE)]):
             break
@@ -141,6 +142,11 @@ def disa_import(request, file):
             second=b_lst[5],
             microsecond=b_lst[6]*10**4,
         )
+
+        if not dates.get(hash(broadcast_date.date())):
+            models.Contribution.objects.filter(
+                broadcast_date__date=broadcast_date.date()).delete()
+            dates[hash(broadcast_date.date())] = True
 
         if (license.repetitions_allowed is False and
                 models.Contribution.objects.filter(license=license)):
