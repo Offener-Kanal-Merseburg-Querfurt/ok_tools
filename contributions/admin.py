@@ -1,6 +1,7 @@
 from .disa_import import disa_import
 from .models import Contribution
 from .models import DisaImport
+from admin_searchable_dropdown.filters import AutocompleteFilterFactory
 from django import http
 from django.contrib import admin
 from django.contrib import messages
@@ -13,14 +14,25 @@ class ContributionAdmin(admin.ModelAdmin):
     """How should the Contribution be shown on the admin site."""
 
     list_display = (
-        '__str__',
+        'get_title',
+        'get_subtitle',
         'get_user',
         'broadcast_date',
+        'get_number',
     )
     autocomplete_fields = ['license']
 
     ordering = ['-broadcast_date']
-    search_fields = ['license__number']
+    search_fields = [
+        'license__title',
+        'license__subtitle',
+        'license__number',
+    ]
+    search_help_text = _('Title, Subtitle, Number')
+
+    list_filter = [
+        AutocompleteFilterFactory(_('Profile'), 'license__profile'),
+    ]
 
     readonly_fields = ('_is_primary',)
 
@@ -28,11 +40,26 @@ class ContributionAdmin(admin.ModelAdmin):
     def _is_primary(self, obj):
         return obj.is_primary()
 
+    @display(description=_('Title'))
+    def get_title(self, obj):
+        """Return the title of the corresponding license."""
+        return obj.license.title
+
+    @display(description=_('Subtitle'))
+    def get_subtitle(self, obj):
+        """Return the subtitle of the corresponding license."""
+        return obj.license.subtitle
+
     @display(description=_('User'))
     def get_user(self, obj):
         """Return the first an last name of the contributions user."""
         return (f'{obj.license.profile.first_name}'
                 f' {obj.license.profile.last_name}')
+
+    @display(description=_('Number'))
+    def get_number(self, obj):
+        """Return the number of the license request."""
+        return obj.license.number
 
 
 admin.site.register(Contribution, ContributionAdmin)

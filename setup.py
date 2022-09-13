@@ -33,6 +33,7 @@ setup(
         'bidict',
         'Django>=4.0.5',
         'PyPDF2!=2.10.1',
+        'django-admin-searchable-dropdown',
         'django-bootstrap-datepicker-plus',
         'django-crispy-forms',
         'django-extensions',
