@@ -606,7 +606,7 @@ def import_repetitions(
                 continue
 
             category, c_created = Category.objects.get_or_create(
-                name=row[CATEGORY].value
+                name=row[CATEGORY].value or 'unbekannt'
             )
 
             license, lr_created = LicenseRequest.objects.get_or_create(
@@ -738,7 +738,7 @@ def _get_datetime(cell: Cell) -> datetime.datetime:
     """Return a Datetime or None if the cell is not a date."""
     if cell.is_date:
         aware_datetime = cell.value.replace(
-            tzinfo=datetime.timezone(ZoneInfo(settings.TIME_ZONE)))
+            tzinfo=ZoneInfo(settings.TIME_ZONE))
         return aware_datetime
     else:
         if cell.value:
