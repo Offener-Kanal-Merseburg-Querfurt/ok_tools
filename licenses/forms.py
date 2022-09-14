@@ -44,7 +44,7 @@ class CreateLicenseRequestForm(forms.ModelForm):
             # duration format is not valid
             self.add_error(
                 'duration',
-                _('Invalid format. Please use the format hh:mm:ss.')
+                _('Invalid format. Please use the format hh:mm:ss or mm:ss.')
             )
             return super().is_valid() and False  # to collect further errors
 

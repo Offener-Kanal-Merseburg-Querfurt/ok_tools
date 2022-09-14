@@ -275,9 +275,13 @@ class Project(models.Model):
             self.tn_female, self.tn_male, self.tn_gender_not_given])
         if tn_age_sum != tn_gender_sum:
             raise forms.ValidationError(
-                _(f'The sum of participants by age ({tn_age_sum}) does not '
-                  f'match the sum of participants by gender ({tn_gender_sum}).'
-                  ' Please correct your data.'))
+                _('The sum of participants by age (%(age)s) does not '
+                  'match the sum of participants by gender (%(gender)s).'
+                  ' Please correct your data.') % {
+                      'age': tn_age_sum,
+                      'gender': tn_gender_sum,
+                }
+            )
 
     class Meta:
         """Defines the message IDs."""

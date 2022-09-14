@@ -280,7 +280,7 @@ def test__licenses__forms__CreateLicenseRequestForm__2(
     browser.getControl('Duration').value = 'invalid00:01:20'
     browser.getControl('Save').click()
 
-    assert ('Invalid format. Please use the format hh:mm:ss.'
+    assert ('Invalid format. Please use the format hh:mm:ss or mm:ss.'
             in browser.contents)
 
 

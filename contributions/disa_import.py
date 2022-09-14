@@ -81,7 +81,7 @@ def validate(file):
 
     for i in range(TYPE):
         if blank[i].value:
-            e(_('Cell row %(row)s is not empty.') %
+            e(_('Row %(row)s is not empty.') %
               {'row': blank[i].row})
             break
 
