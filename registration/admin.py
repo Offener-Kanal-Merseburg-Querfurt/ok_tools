@@ -8,8 +8,12 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
+from django_admin_listfilter_dropdown.filters import DropdownFilter
 from registration.signals import profile_verified
+import logging
 
+
+logger = logging.getLogger('django')
 
 # register user
 User = get_user_model()
@@ -71,6 +75,46 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(User, UserAdmin)
 
 
+class BirthmonthFilter(admin.SimpleListFilter):
+    """Filter profiles using a given birth month."""
+
+    template = 'django_admin_listfilter_dropdown/dropdown_filter.html'
+    title = _('birthmonth')
+    parameter_name = 'birthday'
+
+    def lookups(self, request, model_admin):
+        """Labels for the possible months."""
+        return (
+            (1, _('January')),
+            (2, _('February')),
+            (3, _('March')),
+            (4, _('April')),
+            (5, _('May')),
+            (6, _('June')),
+            (7, _('July')),
+            (8, _('August')),
+            (9, _('September')),
+            (10, _('October')),
+            (11, _('November')),
+            (12, _('December')),
+        )
+
+    def queryset(self, request, queryset):
+        """Filter the profiles using the given month."""
+        if self.value() is None:
+            return
+
+        try:
+            value = int(self.value())
+        except ValueError:
+            raise ValueError(f'Unsupported filter option {self.value()}')
+
+        if value < 0 or value > 12:
+            raise ValueError(f'Unsupported filter option {self.value()}')
+
+        return queryset.filter(birthday__month=int(value))
+
+
 # register profile
 class ProfileAdmin(admin.ModelAdmin):
     """How should the profile be shown on the admin site."""
@@ -81,6 +125,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'okuser',
         'first_name',
         'last_name',
+        'birthday',
         'verified',
         'created_at',
     ]
@@ -88,6 +133,12 @@ class ProfileAdmin(admin.ModelAdmin):
     ordering = ['-created_at']
 
     search_fields = ['okuser__email', 'first_name', 'last_name']
+    search_help_text = _('e-mail, first name, last name')
+
+    list_filter = [
+        BirthmonthFilter,
+        ('media_authority__name', DropdownFilter)
+    ]
     actions = ['verify', 'unverify']
 
     # inspired from https://stackoverflow.com/a/54579134

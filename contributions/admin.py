@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.admin.decorators import display
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
+from rangefilter.filters import DateTimeRangeFilter
 
 
 class ContributionAdmin(admin.ModelAdmin):
@@ -32,6 +33,7 @@ class ContributionAdmin(admin.ModelAdmin):
 
     list_filter = [
         AutocompleteFilterFactory(_('Profile'), 'license__profile'),
+        ('broadcast_date', DateTimeRangeFilter),
     ]
 
     readonly_fields = ('_is_primary',)

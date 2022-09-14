@@ -3,8 +3,10 @@ from .models import Project
 from .models import ProjectCategory
 from .models import ProjectLeader
 from .models import TargetGroup
+from admin_searchable_dropdown.filters import AutocompleteFilterFactory
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from rangefilter.filter import DateTimeRangeFilter
 
 
 admin.site.register(MediaEducationSupervisor)
@@ -16,7 +18,25 @@ admin.site.register(TargetGroup)
 class ProjectAdmin(admin.ModelAdmin):
     """Admin interface definitions for Projects."""
 
-    list_display = ('title', 'topic', 'begin_date', 'project_leader')
+    list_display = (
+        'title',
+        'topic',
+        'begin_date',
+        'project_leader',
+        'jugendmedienschutz'
+    )
+
+    ordering = ('-begin_date',)
+    search_fields = ('title', 'topic')
+    search_help_text = _('title, topic')
+
+    list_filter = (
+        AutocompleteFilterFactory(_('Target Group'), 'target_group'),
+        AutocompleteFilterFactory(_('Project Category'), 'project_category'),
+        'jugendmedienschutz',
+        ('begin_date', DateTimeRangeFilter),
+    )
+
     fieldsets = (
         (_('Project data'), {
             'fields': (

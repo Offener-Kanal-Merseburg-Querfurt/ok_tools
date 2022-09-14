@@ -153,7 +153,7 @@ class Profile(models.Model):
 
     created_at = models.DateTimeField(default=now)
 
-    media_autority = models.ForeignKey(
+    media_authority = models.ForeignKey(
         MediaAuthority,
         on_delete=models.CASCADE,
         default=default_media_authority,

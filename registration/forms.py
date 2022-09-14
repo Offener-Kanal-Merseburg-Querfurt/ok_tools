@@ -34,7 +34,7 @@ class UserDataForm(forms.ModelForm):
         """
 
         model = Profile
-        exclude = ('verified', 'okuser', 'media_autority', 'created_at')
+        exclude = ('verified', 'okuser', 'media_authority', 'created_at')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
