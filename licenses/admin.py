@@ -26,7 +26,7 @@ class DurationFilter(admin.SimpleListFilter):
             ('10m', _('<= 10 minutes')),
             ('30m', _('<= 30 minutes, >10 minutes')),
             ('1h', _('<= 1 hour, > 30 minutes')),
-            ('1h+', _('> 1h ')),
+            ('1h+', _('> 1 hour ')),
         )
 
     def queryset(self, request, queryset):
@@ -53,9 +53,9 @@ class DurationFilter(admin.SimpleListFilter):
                     duration__gt=datetime.timedelta(hours=1),
                 )
             case _:
-                msg = f'Not implemented filter option {self.value()}.'
+                msg = f'Invalid value {self.value()}.'
                 logger.error(msg)
-                raise NotImplementedError(msg)
+                raise ValueError(msg)
 
 
 class LicenseRequestAdmin(admin.ModelAdmin):

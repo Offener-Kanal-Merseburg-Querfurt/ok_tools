@@ -1,3 +1,5 @@
+from .admin import DurationFilter
+from .admin import LicenseRequestAdmin
 from .models import LicenseRequest
 from .models import default_category
 from django.conf import settings
@@ -10,6 +12,7 @@ from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 from registration.models import Profile
+from unittest.mock import patch
 from urllib.error import HTTPError
 import datetime
 import pytest
@@ -517,3 +520,73 @@ def test__licenses__admin__LicenseRequestAdmin__8(
     browser.follow('License Request')
 
     assert '-' in browser.contents
+
+
+def test__licenses__admin__LicenseRequestAdmin__9(
+        browser, license_template_dict, user):
+    """Filter LR by duration."""
+    def _lr():
+        return create_license_request(
+            user.profile, default_category(), license_template_dict, )
+
+    def _a(str):
+        assert str in browser.contents
+
+    def _na(str):
+        assert str not in browser.contents
+
+    until_10 = _lr()
+    until_10.title = 'title1'
+    until_10.duration = datetime.timedelta(minutes=10)
+    until_10.save()
+
+    until_30 = _lr()
+    until_30.title = 'title2'
+    until_30.duration = datetime.timedelta(minutes=30)
+    until_30.save()
+
+    until_1h = _lr()
+    until_1h.title = 'title3'
+    until_1h.duration = datetime.timedelta(hours=1)
+    until_1h.save()
+
+    over_1h = _lr()
+    over_1h.title = 'title4'
+    over_1h.duration = datetime.timedelta(hours=1, minutes=1)
+    over_1h.save()
+
+    browser.login_admin()
+    browser.follow('License Request')
+
+    browser.follow('<= 10 minutes')
+    _a(until_10.title)
+    _na(until_30.title)
+    _na(until_1h.title)
+    _na(over_1h.title)
+
+    browser.follow('<= 30 minutes')
+    _na(until_10.title)
+    _a(until_30.title)
+    _na(until_1h.title)
+    _na(over_1h.title)
+
+    browser.follow('<= 1 hour')
+    _na(until_10.title)
+    _na(until_30.title)
+    _a(until_1h.title)
+    _na(over_1h.title)
+
+    browser.follow('> 1 hour')
+    _na(until_10.title)
+    _na(until_30.title)
+    _na(until_1h.title)
+    _a(over_1h.title)
+
+
+def test__licenses__admin__DurationFilter__1():
+    """Handle invalid values."""
+    with patch.object(DurationFilter, 'value', return_value='invalid'):
+        with pytest.raises(ValueError, match=r'Invalid value .*'):
+            filter = DurationFilter(
+                {}, {}, LicenseRequest, LicenseRequestAdmin)
+            filter.queryset(None, None)

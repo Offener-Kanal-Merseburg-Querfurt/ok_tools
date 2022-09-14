@@ -1,10 +1,13 @@
-from .models import Profile
+from .admin import BirthmonthFilter
+from .admin import Profile
+from .admin import ProfileAdmin
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
+from unittest.mock import patch
 import datetime
 import pytest
 import registration.signals
@@ -216,6 +219,44 @@ def test__registration__admin__ProfileAdmin__3(db, user_dict, browser):
 
     assert "was added successfully" in browser.contents
     assert Profile.objects.get(first_name=user_dict['first_name'])
+
+
+def test__registration__admin__ProfileAdmin__4(browser, user_dict):
+    """Filter profiles by birth month."""
+    user1 = create_user(user_dict)
+    user1.profile.birthday.replace(month=1)
+
+    user_dict['email'] = f'new_{user_dict["email"]}'
+    user2 = create_user(user_dict)
+    user2.profile.birthday.replace(month=2)
+
+    browser.login_admin()
+    browser.follow('Profile')
+    # TODO how to select from the filter list
+
+
+def test__registration__admin__ProfileAdmin__5():
+    """Handle invalid int values."""
+    with patch.object(BirthmonthFilter, 'value', return_value='13'):
+        with pytest.raises(ValueError, match=r'Unsupported filter option .*'):
+            filter = BirthmonthFilter(
+                {}, {}, Profile, ProfileAdmin)
+            filter.queryset(None, None)
+
+    with patch.object(BirthmonthFilter, 'value', return_value='0'):
+        with pytest.raises(ValueError, match=r'Unsupported filter option .*'):
+            filter = BirthmonthFilter(
+                {}, {}, Profile, ProfileAdmin)
+            filter.queryset(None, None)
+
+
+def test__registration__admin__ProfileAdmin__6():
+    """Handle invalid values that are not of type int."""
+    with patch.object(BirthmonthFilter, 'value', return_value='3.5'):
+        with pytest.raises(ValueError, match=r'Unsupported filter option .*'):
+            filter = BirthmonthFilter(
+                {}, {}, Profile, ProfileAdmin)
+            filter.queryset(None, None)
 
 
 def test__registration__admin__verify__1(

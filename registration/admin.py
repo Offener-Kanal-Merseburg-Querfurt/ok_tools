@@ -109,7 +109,7 @@ class BirthmonthFilter(admin.SimpleListFilter):
         except ValueError:
             raise ValueError(f'Unsupported filter option {self.value()}')
 
-        if value < 0 or value > 12:
+        if value < 1 or value > 12:
             raise ValueError(f'Unsupported filter option {self.value()}')
 
         return queryset.filter(birthday__month=int(value))
