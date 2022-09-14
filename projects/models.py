@@ -16,7 +16,7 @@ class ProjectLeader(models.Model):
     name = models.CharField(
         _('Full name'),
         blank=False,
-        null=True,
+        null=False,
         max_length=255
     )
 
@@ -41,7 +41,7 @@ class MediaEducationSupervisor(models.Model):
     name = models.CharField(
         _('Full name'),
         blank=False,
-        null=True,
+        null=False,
         max_length=255
     )
 
@@ -66,7 +66,7 @@ class ProjectCategory(models.Model):
     name = models.CharField(
         _('Project category'),
         blank=False,
-        null=True,
+        null=False,
         max_length=255
     )
 
@@ -91,7 +91,7 @@ class TargetGroup(models.Model):
     name = models.CharField(
         _('Target group'),
         blank=False,
-        null=True,
+        null=False,
         max_length=255
     )
 

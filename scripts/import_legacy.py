@@ -20,6 +20,8 @@ import datetime
 import logging
 
 
+EMPTY_VALUE = 'unbekannt'
+
 User = get_user_model()
 logger = logging.getLogger('console')
 
@@ -484,17 +486,17 @@ def import_projects(ws: Worksheet):
 
     for row in rows:
         leader, leader_created = ProjectLeader.objects.get_or_create(
-            name=row[LEADER].value
+            name=row[LEADER].value or EMPTY_VALUE
         )
 
         me_supervisors = _get_me_supervisors(row[E_SUPERVISIOR])
 
         category, category_created = ProjectCategory.objects.get_or_create(
-            name=row[CATEGORY].value
+            name=row[CATEGORY].value or EMPTY_VALUE
         )
 
         target_gr, target_gr_created = TargetGroup.objects.get_or_create(
-            name=row[TARGET_GROUP].value
+            name=row[TARGET_GROUP].value or EMPTY_VALUE
         )
 
         duration = _get_duration(row[DURATION])
@@ -606,7 +608,7 @@ def import_repetitions(
                 continue
 
             category, c_created = Category.objects.get_or_create(
-                name=row[CATEGORY].value or 'unbekannt'
+                name=row[CATEGORY].value or EMPTY_VALUE
             )
 
             license, lr_created = LicenseRequest.objects.get_or_create(
