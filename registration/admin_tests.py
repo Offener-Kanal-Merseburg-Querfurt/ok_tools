@@ -221,18 +221,22 @@ def test__registration__admin__ProfileAdmin__3(db, user_dict, browser):
     assert Profile.objects.get(first_name=user_dict['first_name'])
 
 
-def test__registration__admin__ProfileAdmin__4(browser, user_dict):
+def test__registration__admin__ProfileAdmin__4(db, user_dict):
     """Filter profiles by birth month."""
-    user1 = create_user(user_dict)
-    user1.profile.birthday.replace(month=1)
+    user_dict['birthday'] = '05.01.1989'
+    birthday = create_user(user_dict)
 
     user_dict['email'] = f'new_{user_dict["email"]}'
-    user2 = create_user(user_dict)
-    user2.profile.birthday.replace(month=2)
+    user_dict['birthday'] = '05.02.1989'
+    no_birthday = create_user(user_dict)
 
-    browser.login_admin()
-    browser.follow('Profile')
-    # TODO how to select from the filter list
+    with patch.object(BirthmonthFilter, 'value', return_value='1'):
+        filter = BirthmonthFilter(
+            {}, {}, Profile, ProfileAdmin)
+        profiles = filter.queryset(None, Profile.objects.all())
+
+    assert birthday.profile in profiles
+    assert no_birthday.profile not in profiles
 
 
 def test__registration__admin__ProfileAdmin__5():
