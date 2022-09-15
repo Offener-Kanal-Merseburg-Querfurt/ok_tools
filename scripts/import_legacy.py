@@ -117,6 +117,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
     MOBILE = 14
     E_MAIL = 15
     CREATED_AT = 16
+    MEMBER = 19
 
     def _get_phone_number(cell: Cell) -> int:
         """Clean the phone number from non digit characters."""
@@ -190,6 +191,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
     assert header[MOBILE].value == 'Tel_diest'
     assert header[E_MAIL].value == 'e_mail'
     assert header[CREATED_AT].value == 'Nutzer seit'
+    assert header[MEMBER].value == 'Vereinsmitglied'
 
     for row in rows:
         switched = False
@@ -245,6 +247,8 @@ def import_users(ws: Worksheet) -> IdNumberMap:
                         or datetime.datetime.now(
                             ZoneInfo(settings.TIME_ZONE))
                         ),
+            member=_get_bool(row[MEMBER]) or False,
+            verified=True,
         )
 
         if not created:
@@ -261,8 +265,9 @@ def import_users(ws: Worksheet) -> IdNumberMap:
 
         if len(list := Profile.objects.filter(
                 first_name=row[FIRST_NAME], last_name=row[LAST_NAME])) > 1:
-            logger.warn(f'Found two similar profiles for {list[0]}')
-            raise NotImplementedError
+            msg = f'Found two similar profiles for {list[0]}'
+            logger.warn(msg)
+            raise NotImplementedError(msg)
 
     return ids
 

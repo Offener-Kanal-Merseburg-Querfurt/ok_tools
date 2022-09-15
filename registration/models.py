@@ -159,6 +159,13 @@ class Profile(models.Model):
         default=default_media_authority,
     )
 
+    member = models.BooleanField(
+        _('member'),
+        default=False,
+        blank=False,
+        null=False,
+    )
+
     def __str__(self):
         """Represent Profile by first and last name."""
         return f'{self.first_name} {self.last_name}'

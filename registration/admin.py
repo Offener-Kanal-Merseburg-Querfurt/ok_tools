@@ -127,6 +127,7 @@ class ProfileAdmin(admin.ModelAdmin):
         'last_name',
         'birthday',
         'verified',
+        'member',
         'created_at',
     ]
     autocomplete_fields = ['okuser']
@@ -137,7 +138,8 @@ class ProfileAdmin(admin.ModelAdmin):
 
     list_filter = [
         BirthmonthFilter,
-        ('media_authority__name', DropdownFilter)
+        ('media_authority__name', DropdownFilter),
+        'member',
     ]
     actions = ['verify', 'unverify']
 

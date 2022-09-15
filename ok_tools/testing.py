@@ -27,7 +27,8 @@ def pdfToText(pdf) -> str:
     return "\n".join(page.extract_text() for page in reader.pages)
 
 
-def create_user(user_dict, verified=False, is_staff=False) -> User:
+def create_user(
+        user_dict, verified=False, is_staff=False, member=False) -> User:
     """Create a user with an unverified profile."""
     user = User.objects.create_user(
         user_dict['email'], password=PWD, is_staff=is_staff)
@@ -45,6 +46,7 @@ def create_user(user_dict, verified=False, is_staff=False) -> User:
         zipcode=user_dict['zipcode'],
         city=user_dict['city'],
         verified=verified,
+        member=member,
     ).save()
 
     return user
