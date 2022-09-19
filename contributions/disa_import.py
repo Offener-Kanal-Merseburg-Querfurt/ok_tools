@@ -19,6 +19,7 @@ TYPE = 11
 
 WS_NAME = 'Auftragsfenster'
 INFO = 'Infoblock'
+IGNORED_PREFIXES = ['Trailer', 'Programmvorschau']
 
 
 def validate(file):
@@ -117,7 +118,11 @@ def disa_import(request, file):
     for row in rows:
         if not any([row[i].value for i in range(TYPE)]):
             break
-        if row[TYPE].value == INFO:
+
+        if (
+            row[TYPE].value == INFO or
+            any([row[TITLE].value.startswith(x) for x in IGNORED_PREFIXES])
+        ):
             continue
 
         nr = re.match(r'^\d+', row[TITLE].value)[0]
