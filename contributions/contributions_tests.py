@@ -1,4 +1,5 @@
 from .admin import ContributionAdmin
+from .admin import ContributionResource
 from .admin import YearFilter
 from .disa_import import disa_import
 from .disa_import import validate
@@ -340,3 +341,44 @@ def test__contributions__admin__YearFilter__2():
             filter = YearFilter(
                 {}, {}, Contribution, ContributionAdmin)
             filter.queryset(None, None)
+
+
+def test__contributions__admin__ContributionResource__1(
+        browser, license_request, contribution_dict):
+    """Export primary contributions only."""
+    contribution_dict['broadcast_date'] = datetime(
+        year=2022,
+        month=9,
+        day=20,
+        hour=9,
+        tzinfo=ZoneInfo(settings.TIME_ZONE)
+    )
+    contr1 = create_contribution(license_request, contribution_dict)
+
+    contribution_dict['broadcast_date'] = datetime(
+        year=2022,
+        month=9,
+        day=21,
+        hour=18,
+        tzinfo=ZoneInfo(settings.TIME_ZONE)
+    )
+    contr2 = create_contribution(license_request, contribution_dict)
+
+    assert contr1.is_primary()
+    assert not contr2.is_primary()
+
+    browser.login_admin()
+    browser.open(A_CON_URL)
+
+    browser.follow('Export')
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert browser.headers['Content-Type'] == 'text/csv'
+    assert str(contr1.broadcast_date.date()) in str(browser.contents)
+    assert str(contr2.broadcast_date.date()) not in str(browser.contents)
+
+
+def test__contributions__admin__ContributionResource__2(db):
+    """Export with no given queryset."""
+    ContributionResource().export(None, None)
