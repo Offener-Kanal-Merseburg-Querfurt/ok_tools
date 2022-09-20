@@ -80,6 +80,9 @@ class ProjectCategory(models.Model):
         verbose_name = _('Project category')
         verbose_name_plural = _('Project categories')
 
+        # used by the admin_searchable_dropdown filter in the admin view
+        ordering = ['id']
+
 
 class TargetGroup(models.Model):
     """
@@ -104,6 +107,9 @@ class TargetGroup(models.Model):
 
         verbose_name = _('Target group')
         verbose_name_plural = _('Target groups')
+
+        # used by the admin_searchable_dropdown filter in the admin view
+        ordering = ['id']
 
 
 def default_category():

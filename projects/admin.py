@@ -10,9 +10,25 @@ from rangefilter.filter import DateTimeRangeFilter
 
 
 admin.site.register(MediaEducationSupervisor)
-admin.site.register(ProjectCategory)
 admin.site.register(ProjectLeader)
-admin.site.register(TargetGroup)
+
+
+class ProjectCategoryAdmin(admin.ModelAdmin):
+    """At search_fields for the AutocompleteFilterFactory."""
+
+    search_fields = ['name']
+
+
+admin.site.register(ProjectCategory, ProjectCategoryAdmin)
+
+
+class TargetGroupAdmin(admin.ModelAdmin):
+    """At search_fields for the AutocompleteFilterFactory."""
+
+    search_fields = ['name']
+
+
+admin.site.register(TargetGroup, TargetGroupAdmin)
 
 
 class ProjectAdmin(admin.ModelAdmin):
