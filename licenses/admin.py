@@ -69,10 +69,9 @@ class YearFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         """Filter after creation date for this or last year."""
-        if self.value() is None:
-            return
-
         match self.value():
+            case None:
+                return
             case 'this':
                 return queryset.filter(
                     created_at__year=datetime.datetime.now().year)
