@@ -22,6 +22,14 @@ logger = logging.getLogger('django')
 class ContributionResource(resources.ModelResource):
     """Define the export for Contributions."""
 
+    def export(self, queryset=None, *args, **kwargs):
+        """Only export primary contributions."""
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        queryset = [x for x in queryset if x.is_primary()]
+        return super().export(queryset, *args, **kwargs)
+
     def _f(field, name=None):
         """Shortcut for field creation."""
         return Field(attribute=field, column_name=name)
@@ -75,6 +83,7 @@ class ContributionAdmin(ExportMixin, admin.ModelAdmin):
     """How should the Contribution be shown on the admin site."""
 
     resource_class = ContributionResource
+    export_template_name = 'admin/export.html'
 
     list_display = (
         'get_title',

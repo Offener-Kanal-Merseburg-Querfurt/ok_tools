@@ -1,0 +1,35 @@
+{% extends "admin/import_export/base.html" %}
+{% load i18n %}
+{% load admin_urls %}
+{% load import_export_tags %}
+
+{% block breadcrumbs_last %}
+{% translate "Export" %}
+{% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+  {% csrf_token %}
+
+    <fieldset class="module aligned">
+      {% for field in form %}
+        <div class="form-row">
+          {{ field.errors }}
+
+          {{ field.label_tag }}
+
+          {{ field }}
+
+          {% if field.field.help_text %}
+          <p class="help">{{ field.field.help_text|safe }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </fieldset>
+    <p> {% translate "This will only export primary contributions." %}</p>
+
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% translate "Submit" %}">
+    </div>
+</form>
+{% endblock %}
