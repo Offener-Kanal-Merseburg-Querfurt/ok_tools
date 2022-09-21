@@ -1,5 +1,6 @@
 from .admin import DurationFilter
 from .admin import LicenseRequestAdmin
+from .admin import YearFilter
 from .models import LicenseRequest
 from .models import default_category
 from django.conf import settings
@@ -24,6 +25,8 @@ HOME_URL = f'{DOMAIN}{reverse_lazy("home")}'
 LIST_URL = f'{DOMAIN}{reverse_lazy("licenses:licenses")}'
 CREATE_URL = f'{DOMAIN}{reverse_lazy("licenses:create")}'
 LOGIN_URL = f'{DOMAIN}{reverse_lazy("login")}'
+A_LICENSE_URL = (f'{DOMAIN}'
+                 f'{reverse_lazy("admin:licenses_licenserequest_changelist")}')
 
 
 def details_url(id):
@@ -622,5 +625,44 @@ def test__licenses__admin__DurationFilter__1():
     with patch.object(DurationFilter, 'value', return_value='invalid'):
         with pytest.raises(ValueError, match=r'Invalid value .*'):
             filter = DurationFilter(
+                {}, {}, LicenseRequest, LicenseRequestAdmin)
+            filter.queryset(None, None)
+
+
+def test__licenses__admin__YearFilter__1(browser, user, license_template_dict):
+    """Licenses can be filtered by the year of its creation date."""
+    created_at = datetime.datetime(
+        day=8, month=9, year=datetime.datetime.now().year)
+    license_template_dict['title'] = 'new_title'
+    lr1 = create_license_request(
+        user.profile, default_category(), license_template_dict)
+    lr1.created_at = created_at
+    lr1.save()
+
+    created_at = datetime.datetime(
+        day=8, month=9, year=(datetime.datetime.now().year-1))
+    license_template_dict['title'] = 'old_title'
+    lr2 = create_license_request(
+        user.profile, default_category(), license_template_dict)
+    lr2.created_at = created_at
+    lr2.save()
+
+    browser.login_admin()
+    browser.open(A_LICENSE_URL)
+
+    browser.follow('This year')
+    assert str(lr1) in browser.contents
+    assert str(lr2) not in browser.contents
+
+    browser.follow('Last year')
+    assert str(lr1) not in browser.contents
+    assert str(lr2) in browser.contents
+
+
+def test__licenses__admin__YearFilter__2():
+    """Handle invalid values."""
+    with patch.object(YearFilter, 'value', return_value='invalid'):
+        with pytest.raises(ValueError, match=r'Invalid value .*'):
+            filter = YearFilter(
                 {}, {}, LicenseRequest, LicenseRequestAdmin)
             filter.queryset(None, None)

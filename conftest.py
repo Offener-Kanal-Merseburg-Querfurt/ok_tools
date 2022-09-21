@@ -11,7 +11,12 @@ from ok_tools.testing import PWD
 from ok_tools.testing import create_contribution
 from ok_tools.testing import create_disaimport
 from ok_tools.testing import create_license_request
+from ok_tools.testing import create_project
 from ok_tools.testing import create_user
+from projects.models import Project
+from projects.models import ProjectLeader
+from projects.models import default_category as default_project_category
+from projects.models import default_target_group
 from zoneinfo import ZoneInfo
 import ok_tools.wsgi
 import pytest
@@ -139,3 +144,26 @@ def contribution(license_request, contribution_dict):
 def disaimport() -> DisaImport:
     """Create a DISA import."""
     return create_disaimport()
+
+
+@pytest.fixture(scope='function')
+def project_dict() -> dict:
+    """Create a dict with all necessary properties to create a project."""
+    return {
+        'title': 'title',
+        'topic': 'topic',
+        'duration': timedelta(hours=1, minutes=30),
+        'begin_date': datetime(year=2022, month=9, day=20, hour=9),
+        'end_date': datetime(year=2022, month=9, day=20, hour=10),
+        'external_venue': False,
+        'jugendmedienschutz': False,
+        'target_group': default_target_group(),
+        'project_category': default_project_category(),
+        'project_leader': ProjectLeader.objects.create(name='leader'),
+    }
+
+
+@pytest.fixture(scope='function')
+def project(project_dict) -> Project:
+    """Create a project."""
+    return create_project(project_dict)

@@ -39,6 +39,7 @@ setup(
         'django-bootstrap-datepicker-plus',
         'django-crispy-forms',
         'django-extensions',
+        'django-import-export',
         'django-revproxy>=0.10.0',
         'openpyxl',
         'reportlab',

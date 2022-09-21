@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_extensions',
     'django_admin_listfilter_dropdown',
+    'import_export',
     'rangefilter',
 
     'django.contrib.admin',
