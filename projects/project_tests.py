@@ -10,6 +10,7 @@ from datetime import timedelta
 from django import forms
 from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
+from ok_tools.testing import TZ
 from ok_tools.testing import create_project
 from unittest.mock import patch
 import pytest
@@ -66,12 +67,12 @@ def test__projects__admin__YearFilter__1(browser, project_dict):
     """Projects can be filtered by the year of the start date."""
     project_dict['title'] = 'new_title'
     project_dict['begin_date'] = datetime(
-        year=datetime.now().year, month=9, day=20, hour=9)
+        year=datetime.now().year, month=9, day=20, hour=9, tzinfo=TZ)
     proj1 = create_project(project_dict)
 
     project_dict['title'] = 'old_title'
     project_dict['begin_date'] = datetime(
-        year=datetime.now().year-1, month=9, day=20, hour=9)
+        year=datetime.now().year-1, month=9, day=20, hour=9, tzinfo=TZ)
     proj2 = create_project(project_dict)
 
     browser.login_admin()

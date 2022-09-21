@@ -1,13 +1,13 @@
 from contributions.models import DisaImport
 from datetime import datetime
 from datetime import timedelta
-from django.conf import settings
 from django.core import mail
 from django.urls import reverse_lazy
 from licenses.models import default_category
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
+from ok_tools.testing import TZ
 from ok_tools.testing import create_contribution
 from ok_tools.testing import create_disaimport
 from ok_tools.testing import create_license_request
@@ -17,7 +17,6 @@ from projects.models import Project
 from projects.models import ProjectLeader
 from projects.models import default_category as default_project_category
 from projects.models import default_target_group
-from zoneinfo import ZoneInfo
 import ok_tools.wsgi
 import pytest
 import zope.testbrowser.browser
@@ -125,7 +124,7 @@ def contribution_dict() -> dict:
                                    month=8,
                                    day=25,
                                    hour=12,
-                                   tzinfo=ZoneInfo(settings.TIME_ZONE)
+                                   tzinfo=TZ,
                                    ),
         'live': False,
     }
@@ -153,8 +152,8 @@ def project_dict() -> dict:
         'title': 'title',
         'topic': 'topic',
         'duration': timedelta(hours=1, minutes=30),
-        'begin_date': datetime(year=2022, month=9, day=20, hour=9),
-        'end_date': datetime(year=2022, month=9, day=20, hour=10),
+        'begin_date': datetime(year=2022, month=9, day=20, hour=9, tzinfo=TZ),
+        'end_date': datetime(year=2022, month=9, day=20, hour=10, tzinfo=TZ),
         'external_venue': False,
         'jugendmedienschutz': False,
         'target_group': default_target_group(),

@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
+from ok_tools.testing import TZ
 from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
@@ -632,7 +633,7 @@ def test__licenses__admin__DurationFilter__1():
 def test__licenses__admin__YearFilter__1(browser, user, license_template_dict):
     """Licenses can be filtered by the year of its creation date."""
     created_at = datetime.datetime(
-        day=8, month=9, year=datetime.datetime.now().year)
+        day=8, month=9, year=datetime.datetime.now().year, tzinfo=TZ)
     license_template_dict['title'] = 'new_title'
     lr1 = create_license_request(
         user.profile, default_category(), license_template_dict)
@@ -640,7 +641,7 @@ def test__licenses__admin__YearFilter__1(browser, user, license_template_dict):
     lr1.save()
 
     created_at = datetime.datetime(
-        day=8, month=9, year=(datetime.datetime.now().year-1))
+        day=8, month=9, year=(datetime.datetime.now().year-1), tzinfo=TZ)
     license_template_dict['title'] = 'old_title'
     lr2 = create_license_request(
         user.profile, default_category(), license_template_dict)
