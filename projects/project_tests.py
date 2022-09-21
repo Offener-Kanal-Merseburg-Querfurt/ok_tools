@@ -115,6 +115,19 @@ def test__projects__admin__ProjectResource__1(browser, project_dict):
     assert str(s2) in str(browser.contents)
 
 
+def test__projects__admin__ProjectResource__2(browser, project):
+    """Export begin and end date in correct timezone."""
+    browser.login_admin()
+    browser.open(A_PROJ_URL)
+
+    browser.follow('Export')
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert str(project.begin_date.time()) in str(browser.contents)
+    assert str(project.end_date.time()) in str(browser.contents)
+
+
 def test__projects__models__1(db, project):
     """Project gets represented by its title."""
     assert str(project) == project.title

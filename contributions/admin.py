@@ -3,6 +3,7 @@ from .models import Contribution
 from .models import DisaImport
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
 from django import http
+from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.decorators import display
@@ -12,6 +13,7 @@ from import_export import resources
 from import_export.admin import ExportMixin
 from import_export.fields import Field
 from rangefilter.filters import DateTimeRangeFilter
+from zoneinfo import ZoneInfo
 import datetime
 import logging
 
@@ -41,6 +43,20 @@ class ContributionResource(resources.ModelResource):
     broadcast_time = _f('broadcast_date__time', _('Broadcast Time'))
     profile = _f('license__profile', _('Profile'))
     duration = _f('license__duration', _('Duration'))
+
+    def dehydrate_broadcast_date(self, contribution: Contribution):
+        """Show broadcast date in current time zone."""
+        return str(contribution
+                   .broadcast_date
+                   .astimezone(tz=ZoneInfo(settings.TIME_ZONE))
+                   .date())
+
+    def dehydrate_broadcast_time(self, contribution: Contribution):
+        """Show broadcast date in current time zone."""
+        return str(contribution
+                   .broadcast_date
+                   .astimezone(tz=ZoneInfo(settings.TIME_ZONE))
+                   .time())
 
     class Meta:
         """Define meta properties for Contribution export."""

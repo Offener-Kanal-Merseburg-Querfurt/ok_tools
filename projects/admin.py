@@ -4,12 +4,14 @@ from .models import ProjectCategory
 from .models import ProjectLeader
 from .models import TargetGroup
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
+from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from import_export import resources
 from import_export.admin import ExportMixin
 from import_export.fields import Field
 from rangefilter.filters import DateTimeRangeFilter
+from zoneinfo import ZoneInfo
 import datetime
 import logging
 
@@ -70,16 +72,28 @@ class ProjectResource(resources.ModelResource):
     no_gender = _f('tn_gender_not_given', _('ohne Angabe'))
     supervisors = Field()
 
+    def dehydrate_begin_date(self, project: Project):
+        """Return the begin datetime in the current time zone."""
+        tz_datetime = project.begin_date.astimezone(
+            tz=ZoneInfo(settings.TIME_ZONE))
+        return f'{tz_datetime.date()} {tz_datetime.time()}'
+
+    def dehydrate_end_date(self, project: Project):
+        """Return the end datetime in the current time zone."""
+        tz_datetime = project.end_date.astimezone(
+            tz=ZoneInfo(settings.TIME_ZONE))
+        return f'{tz_datetime.date()} {tz_datetime.time()}'
+
+    def dehydrate_supervisors(self, project: Project):
+        """Convert all supervisors to one string."""
+        return ', '.join(
+            [str(x) for x in project.media_education_supervisors.all()])
+
     class Meta:
         """Define meta properties for the Project export."""
 
         model = Project
         fields = []
-
-    def dehydrate_supervisors(self, project):
-        """Convert all supervisors to one string."""
-        return ', '.join(
-            [str(x) for x in project.media_education_supervisors.all()])
 
 
 class YearFilter(admin.SimpleListFilter):

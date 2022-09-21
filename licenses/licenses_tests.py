@@ -15,6 +15,7 @@ from ok_tools.testing import pdfToText
 from registration.models import Profile
 from unittest.mock import patch
 from urllib.error import HTTPError
+from zoneinfo import ZoneInfo
 import datetime
 import pytest
 
@@ -666,3 +667,35 @@ def test__licenses__admin__YearFilter__2():
             filter = YearFilter(
                 {}, {}, LicenseRequest, LicenseRequestAdmin)
             filter.queryset(None, None)
+
+
+def test__licenses__admin__LicenseRequestResource__1(browser, license_request):
+    """Export the datetime properties using the current time zone."""
+    license_request.suggested_date = datetime.datetime(
+        year=2022,
+        month=9,
+        day=21,
+        hour=0,
+        tzinfo=ZoneInfo(settings.TIME_ZONE),
+    )
+
+    license_request.created_at = datetime.datetime(
+        year=2022,
+        month=9,
+        day=20,
+        hour=0,
+        tzinfo=ZoneInfo(settings.TIME_ZONE),
+    )
+
+    license_request.save()
+
+    browser.login_admin()
+    browser.open(A_LICENSE_URL)
+    browser.follow('Export')
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert str(license_request.suggested_date.date()) in str(browser.contents)
+    assert str(license_request.suggested_date.time()) in str(browser.contents)
+    assert str(license_request.created_at.date()) in str(browser.contents)
+    assert str(license_request.created_at.time()) in str(browser.contents)
