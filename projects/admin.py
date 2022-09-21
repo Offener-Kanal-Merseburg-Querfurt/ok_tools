@@ -14,7 +14,7 @@ admin.site.register(ProjectLeader)
 
 
 class ProjectCategoryAdmin(admin.ModelAdmin):
-    """At search_fields for the AutocompleteFilterFactory."""
+    """Add search_fields for the AutocompleteFilterFactory."""
 
     search_fields = ['name']
 
@@ -23,7 +23,7 @@ admin.site.register(ProjectCategory, ProjectCategoryAdmin)
 
 
 class TargetGroupAdmin(admin.ModelAdmin):
-    """At search_fields for the AutocompleteFilterFactory."""
+    """Add search_fields for the AutocompleteFilterFactory."""
 
     search_fields = ['name']
 
