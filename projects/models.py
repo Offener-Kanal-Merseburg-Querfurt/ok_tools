@@ -290,6 +290,10 @@ class Project(models.Model):
                 }
             )
 
+    def __str__(self) -> str:
+        """Represent a profile by its title."""
+        return self.title
+
     class Meta:
         """Defines the message IDs."""
 

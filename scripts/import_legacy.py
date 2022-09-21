@@ -447,6 +447,9 @@ def import_projects(ws: Worksheet):
     CATEGORY = 23
 
     def _get_me_supervisors(cell: Cell) -> list[MediaEducationSupervisor]:
+        if cell.value is None:
+            return []
+
         if cell.data_type != cell_meta.TYPE_STRING:
             logger.error(
                 f'Unsupported cell type {cell.data_type} for supervisors')
@@ -540,10 +543,12 @@ def import_projects(ws: Worksheet):
             raise
 
         if project_created:
-            logger.warn(f'Project "{row[TITLE]}" already exists.')
+            logger.warn(f'Project "{row[TITLE].value}" already exists.')
         else:
             for s in me_supervisors:
                 project.media_education_supervisors.add(s.id)
+
+            project.save()
 
 
 def import_repetitions(

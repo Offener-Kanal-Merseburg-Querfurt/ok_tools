@@ -1,11 +1,21 @@
+from .admin import ProjectAdmin
+from .admin import YearFilter
 from .models import MediaEducationSupervisor
 from .models import Project
 from .models import ProjectCategory
 from .models import ProjectLeader
 from .models import TargetGroup
+from datetime import datetime
 from datetime import timedelta
 from django import forms
+from django.urls import reverse_lazy
+from ok_tools.testing import DOMAIN
+from ok_tools.testing import create_project
+from unittest.mock import patch
 import pytest
+
+
+A_PROJ_URL = f'{DOMAIN}{reverse_lazy("admin:projects_project_changelist")}'
 
 
 def test__admin__1(browser):
@@ -50,3 +60,61 @@ def test__admin__2(db):
         proj.clean()
     proj.tn_male = 1
     proj.clean()
+
+
+def test__projects__admin__YearFilter__1(browser, project_dict):
+    """Projects can be filtered by the year of the start date."""
+    project_dict['title'] = 'new_title'
+    project_dict['begin_date'] = datetime(
+        year=datetime.now().year, month=9, day=20, hour=9)
+    proj1 = create_project(project_dict)
+
+    project_dict['title'] = 'old_title'
+    project_dict['begin_date'] = datetime(
+        year=datetime.now().year-1, month=9, day=20, hour=9)
+    proj2 = create_project(project_dict)
+
+    browser.login_admin()
+    browser.open(A_PROJ_URL)
+
+    browser.follow('This year')
+    assert proj1.title in browser.contents
+    assert proj2.title not in browser.contents
+
+    browser.follow('Last year')
+    assert proj1.title not in browser.contents
+    assert proj2.title in browser.contents
+
+
+def test__projects__admin__YearFilter__2():
+    """Handle invalid values."""
+    with patch.object(YearFilter, 'value', return_value='invalid'):
+        with pytest.raises(ValueError, match=r'Invalid value .*'):
+            filter = YearFilter(
+                {}, {}, Project, ProjectAdmin)
+            filter.queryset(None, None)
+
+
+def test__projects__admin__ProjectResource__1(browser, project_dict):
+    """Export projects."""
+    s1 = MediaEducationSupervisor.objects.create(name='supervisor1')
+    s2 = MediaEducationSupervisor.objects.create(name='supervisor2')
+    supervisors = [s1, s2]
+
+    create_project(project_dict, supervisors)
+
+    browser.login_admin()
+    browser.open(A_PROJ_URL)
+
+    browser.follow('Export')
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert browser.headers['Content-Type'] == 'text/csv'
+    assert str(s1) in str(browser.contents)
+    assert str(s2) in str(browser.contents)
+
+
+def test__projects__models__1(db, project):
+    """Project gets represented by its title."""
+    assert str(project) == project.title

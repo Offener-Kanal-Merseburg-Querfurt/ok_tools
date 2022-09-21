@@ -5,6 +5,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files import File
 from licenses.models import LicenseRequest
+from projects.models import MediaEducationSupervisor
+from projects.models import Project
 from registration.models import Profile
 import PyPDF2
 import io
@@ -101,3 +103,29 @@ def create_disaimport() -> DisaImport:
 
     obj.save()
     return obj
+
+
+def create_project(
+    project_dict, me_supervisors: list[MediaEducationSupervisor] = None
+) -> Project:
+    """Create and return a project."""
+    project = Project.objects.create(
+        title=project_dict['title'],
+        topic=project_dict['topic'],
+        duration=project_dict['duration'],
+        begin_date=project_dict['begin_date'],
+        end_date=project_dict['end_date'],
+        external_venue=project_dict['external_venue'],
+        jugendmedienschutz=project_dict['jugendmedienschutz'],
+        target_group=project_dict['target_group'],
+        project_category=project_dict['project_category'],
+        project_leader=project_dict['project_leader'],
+    )
+
+    if me_supervisors is not None:
+        for supervisor in me_supervisors:
+            project.media_education_supervisors.add(supervisor.id)
+
+    project.save()
+
+    return project

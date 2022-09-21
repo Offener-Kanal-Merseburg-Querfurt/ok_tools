@@ -169,8 +169,6 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
             first_name = None
 
         context['first_name'] = ' '+first_name if first_name else ''
-        # TODO not hard coded
-        context['domain'] = 'localhost:8000'
 
         super().send_mail(
             subject_template_name,
