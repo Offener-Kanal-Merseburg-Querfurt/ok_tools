@@ -11,6 +11,7 @@ from django import forms
 from django.urls import reverse_lazy
 from ok_tools.datetime import TZ
 from ok_tools.testing import DOMAIN
+from ok_tools.testing import TZ
 from ok_tools.testing import create_project
 from unittest.mock import patch
 import pytest

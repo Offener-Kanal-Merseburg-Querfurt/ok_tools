@@ -8,6 +8,7 @@ from licenses.models import LicenseRequest
 from projects.models import MediaEducationSupervisor
 from projects.models import Project
 from registration.models import Profile
+from zoneinfo import ZoneInfo
 import PyPDF2
 import io
 
@@ -20,6 +21,7 @@ User = get_user_model()
 EMAIL = "user@example.com"
 PWD = 'testpassword'
 DOMAIN = 'http://localhost:8000'
+TZ = ZoneInfo(settings.TIME_ZONE)
 
 
 def pdfToText(pdf) -> str:
