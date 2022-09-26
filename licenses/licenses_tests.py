@@ -10,7 +10,6 @@ from ok_tools.datetime import TZ
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
-from ok_tools.testing import TZ
 from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
