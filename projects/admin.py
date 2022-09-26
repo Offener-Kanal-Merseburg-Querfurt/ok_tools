@@ -162,6 +162,7 @@ class ProjectAdmin(ExportMixin, admin.ModelAdmin):
                 'end_date',
                 'external_venue',
                 'jugendmedienschutz',
+                'democracy_project',
                 'project_category',
                 'target_group',
                 'project_leader',

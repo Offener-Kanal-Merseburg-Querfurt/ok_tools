@@ -167,6 +167,13 @@ class Project(models.Model):
         null=False,
     )
 
+    democracy_project = models.BooleanField(
+        _('Democracy project'),
+        blank=False,
+        null=False,
+        default=False,
+    )
+
     target_group = models.ForeignKey(
         TargetGroup,
         on_delete=models.CASCADE,
