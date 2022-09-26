@@ -168,7 +168,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
         m = _get_bool(row[M])
         w = _get_bool(row[W])
         if not (m != w):
-            logger.warn(
+            logger.warning(
                 f'Could not determine gender from user {row[NR].value}')
             return "none"
         if w:
@@ -255,8 +255,8 @@ def import_users(ws: Worksheet) -> IdNumberMap:
 
         if not created:
             # user without email but same properties already exists
-            logger.warn(f'Profile for {obj} from user number {row[NR].value}'
-                        ' already exists.')
+            logger.warning(f'Profile for {obj} from user number '
+                           f'{row[NR].value} already exists.')
 
         ids.add(row[NR].value, obj.id)
         if switched:
@@ -268,7 +268,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
         if len(list := Profile.objects.filter(
                 first_name=row[FIRST_NAME], last_name=row[LAST_NAME])) > 1:
             msg = f'Found two similar profiles for {list[0]}'
-            logger.warn(msg)
+            logger.warning(msg)
             raise NotImplementedError(msg)
 
     return ids
@@ -379,7 +379,7 @@ def import_primary_contributions(
 
         try:
             LicenseRequest.objects.get(number=row[NR].value)
-            logger.warn('Number already taken.')
+            logger.warning('Number already taken.')
             continue
         except LicenseRequest.DoesNotExist:
             pass
@@ -398,7 +398,7 @@ def import_primary_contributions(
         )
 
         if not lr_created:
-            logger.warn(f'License {lr} already exists.')
+            logger.warning(f'License {lr} already exists.')
 
         contrib, contrib_created = Contribution.objects.get_or_create(
             license=lr,
@@ -407,7 +407,7 @@ def import_primary_contributions(
         )
 
         if not lr_created and not contrib_created:
-            logger.warn(f'Contribution {contrib} already exists.')
+            logger.warning(f'Contribution {contrib} already exists.')
         elif lr_created and not contrib_created:
             logger.error(f'Only expected primary contributions. {contrib} is a'
                          'repetition.')
@@ -509,11 +509,11 @@ def import_projects(ws: Worksheet):
 
         duration = _get_duration(row[DURATION])
         if not duration:
-            logger.warn(f'Now duration for project "{row[TITLE].value}"')
+            logger.warning(f'Now duration for project "{row[TITLE].value}"')
 
         begin_date = _get_datetime(row[DAY])
         if not begin_date:
-            logger.warn(f'No begin_date for project "{row[TITLE].value}')
+            logger.warning(f'No begin_date for project "{row[TITLE].value}')
 
         try:
             project, project_created = Project.objects.get_or_create(
@@ -543,7 +543,7 @@ def import_projects(ws: Worksheet):
             raise
 
         if project_created:
-            logger.warn(f'Project "{row[TITLE].value}" already exists.')
+            logger.warning(f'Project "{row[TITLE].value}" already exists.')
         else:
             for s in me_supervisors:
                 project.media_education_supervisors.add(s.id)
@@ -611,7 +611,7 @@ def import_repetitions(
             else:
                 logger.error('No primary contribution found.')
 
-            logger.warn(f'Creating a new License for {row[NR].value}.')
+            logger.warning(f'Creating a new License for {row[NR].value}.')
 
             profile = _get_profile(row[USER_NR], user_ids)
             if not profile:
@@ -633,7 +633,7 @@ def import_repetitions(
             )
 
             if not lr_created:
-                logger.warn(f'License {license} already exists.')
+                logger.warning(f'License {license} already exists.')
 
             no_prim_found += 1
 
@@ -658,7 +658,7 @@ def import_repetitions(
         )
 
         if contr_created:
-            logger.warn(f'Repetition {contr} already exists.')
+            logger.warning(f'Repetition {contr} already exists.')
 
     if no_prim_found:
         logger.critical('Could not find primary contribution'
@@ -704,13 +704,13 @@ def _get_category(cell: Cell, category_ids: dict) -> tuple[Category, bool]:
     DEFAULT_CATEGORY_NAME = f'unbekannt_{category_nr}'
 
     if not category_nr:
-        logger.warn(f'Invalid category number {cell.value}')
+        logger.warning(f'Invalid category number {cell.value}')
         return (Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0],
                 True)
 
     id = category_ids.get(cell.value)
     if not id:
-        logger.warn(f'Invalid category number {cell.value}.')
+        logger.warning(f'Invalid category number {cell.value}.')
         return (Category.objects.get_or_create(name=DEFAULT_CATEGORY_NAME)[0],
                 True)
 
@@ -727,7 +727,7 @@ def _get_category(cell: Cell, category_ids: dict) -> tuple[Category, bool]:
 def _get_time(time_c: Cell) -> datetime.time:
     """Return a datetime.time element and None if an error occurs."""
     if not time_c.value:
-        logger.warn('No time found.')
+        logger.warning('No time found.')
         return None
 
     if not time_c.is_date:
@@ -754,7 +754,7 @@ def _get_datetime(cell: Cell) -> datetime.datetime:
         return aware_datetime
     else:
         if cell.value:
-            logger.warn(f'Could not format date {cell.value}')
+            logger.warning(f'Could not format date {cell.value}')
 
         return None
 
@@ -777,11 +777,12 @@ def _get_bool(cell: Cell) -> bool:
             elif cell.value == '=FALSE()':
                 return False
             else:
-                logger.warn(f'Could not covert formula {cell.value} to bool.')
+                logger.warning(
+                    f'Could not covert formula {cell.value} to bool.')
                 return None
         case _:
-            logger.warn(f'Could not convert "{cell.value}" with type'
-                        f'{cell.data_type} to bool ')
+            logger.warning(f'Could not convert "{cell.value}" with type'
+                           f'{cell.data_type} to bool ')
             return None
 
 
