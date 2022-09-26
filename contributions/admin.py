@@ -3,7 +3,6 @@ from .models import Contribution
 from .models import DisaImport
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
 from django import http
-from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.decorators import display
@@ -12,8 +11,8 @@ from django.utils.translation import ngettext as _p
 from import_export import resources
 from import_export.admin import ExportMixin
 from import_export.fields import Field
+from ok_tools.datetime import TZ
 from rangefilter.filters import DateTimeRangeFilter
-from zoneinfo import ZoneInfo
 import datetime
 import logging
 
@@ -48,14 +47,14 @@ class ContributionResource(resources.ModelResource):
         """Show broadcast date in current time zone."""
         return str(contribution
                    .broadcast_date
-                   .astimezone(tz=ZoneInfo(settings.TIME_ZONE))
+                   .astimezone(tz=TZ)
                    .date())
 
     def dehydrate_broadcast_time(self, contribution: Contribution):
         """Show broadcast date in current time zone."""
         return str(contribution
                    .broadcast_date
-                   .astimezone(tz=ZoneInfo(settings.TIME_ZONE))
+                   .astimezone(tz=TZ)
                    .time())
 
     class Meta:

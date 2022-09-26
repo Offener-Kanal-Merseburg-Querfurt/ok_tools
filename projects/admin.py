@@ -4,14 +4,13 @@ from .models import ProjectCategory
 from .models import ProjectLeader
 from .models import TargetGroup
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
-from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from import_export import resources
 from import_export.admin import ExportMixin
 from import_export.fields import Field
+from ok_tools.datetime import TZ
 from rangefilter.filters import DateTimeRangeFilter
-from zoneinfo import ZoneInfo
 import datetime
 import logging
 
@@ -75,13 +74,13 @@ class ProjectResource(resources.ModelResource):
     def dehydrate_begin_date(self, project: Project) -> str:
         """Return the begin datetime in the current time zone."""
         tz_datetime = project.begin_date.astimezone(
-            tz=ZoneInfo(settings.TIME_ZONE))
+            tz=TZ)
         return f'{tz_datetime.date()} {tz_datetime.time()}'
 
     def dehydrate_end_date(self, project: Project) -> str:
         """Return the end datetime in the current time zone."""
         tz_datetime = project.end_date.astimezone(
-            tz=ZoneInfo(settings.TIME_ZONE))
+            tz=TZ)
         return f'{tz_datetime.date()} {tz_datetime.time()}'
 
     def dehydrate_supervisors(self, project: Project) -> str:

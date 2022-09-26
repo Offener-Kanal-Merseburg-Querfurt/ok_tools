@@ -6,17 +6,16 @@ from .models import default_category
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
+from ok_tools.datetime import TZ
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
-from ok_tools.testing import TZ
 from ok_tools.testing import create_license_request
 from ok_tools.testing import create_user
 from ok_tools.testing import pdfToText
 from registration.models import Profile
 from unittest.mock import patch
 from urllib.error import HTTPError
-from zoneinfo import ZoneInfo
 import datetime
 import pytest
 
@@ -677,7 +676,7 @@ def test__licenses__admin__LicenseRequestResource__1(browser, license_request):
         month=9,
         day=21,
         hour=0,
-        tzinfo=ZoneInfo(settings.TIME_ZONE),
+        tzinfo=TZ,
     )
 
     license_request.created_at = datetime.datetime(
@@ -685,7 +684,7 @@ def test__licenses__admin__LicenseRequestResource__1(browser, license_request):
         month=9,
         day=20,
         hour=0,
-        tzinfo=ZoneInfo(settings.TIME_ZONE),
+        tzinfo=TZ,
     )
 
     license_request.save()

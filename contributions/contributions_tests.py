@@ -11,10 +11,10 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.urls import reverse_lazy
 from licenses.models import default_category
+from ok_tools.datetime import TZ
 from ok_tools.testing import DOMAIN
 from ok_tools.testing import EMAIL
 from ok_tools.testing import PWD
-from ok_tools.testing import TZ
 from ok_tools.testing import _open
 from ok_tools.testing import create_contribution
 from ok_tools.testing import create_disaimport

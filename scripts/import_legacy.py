@@ -5,6 +5,7 @@ from django.db import transaction
 from django.db.utils import IntegrityError
 from licenses.models import Category
 from licenses.models import LicenseRequest
+from ok_tools.datetime import TZ
 from openpyxl import load_workbook
 from openpyxl.cell import cell as cell_meta
 from openpyxl.cell.cell import Cell
@@ -15,7 +16,6 @@ from projects.models import ProjectCategory
 from projects.models import ProjectLeader
 from projects.models import TargetGroup
 from registration.models import Profile
-from zoneinfo import ZoneInfo
 import datetime
 import logging
 
@@ -246,9 +246,7 @@ def import_users(ws: Worksheet) -> IdNumberMap:
             zipcode=row[ZIPCODE].value,
             city=row[CITY].value,
             created_at=(_get_datetime(row[CREATED_AT])
-                        or datetime.datetime.now(
-                            ZoneInfo(settings.TIME_ZONE))
-                        ),
+                        or datetime.datetime.now(TZ)),
             member=_get_bool(row[MEMBER]) or False,
             verified=True,
         )
@@ -750,7 +748,7 @@ def _get_datetime(cell: Cell) -> datetime.datetime:
     """Return a Datetime or None if the cell is not a date."""
     if cell.is_date:
         aware_datetime = cell.value.replace(
-            tzinfo=ZoneInfo(settings.TIME_ZONE))
+            tzinfo=TZ)
         return aware_datetime
     else:
         if cell.value:

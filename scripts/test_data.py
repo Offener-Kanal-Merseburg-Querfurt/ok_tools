@@ -2,12 +2,11 @@ from contributions.models import Contribution
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from licenses.models import LicenseRequest
+from ok_tools.datetime import TZ
 from registration.models import Profile
-from zoneinfo import ZoneInfo
 
 
 User = get_user_model()
@@ -104,7 +103,7 @@ def run():
             day=19,
             hour=18,
             minute=30,
-            tzinfo=ZoneInfo(settings.TIME_ZONE)
+            tzinfo=TZ,
         ),
         live=False,
     )
@@ -117,7 +116,7 @@ def run():
             day=19,
             hour=19,
             minute=30,
-            tzinfo=ZoneInfo(settings.TIME_ZONE)
+            tzinfo=TZ,
         ),
         live=False,
     )

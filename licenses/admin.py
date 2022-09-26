@@ -2,7 +2,6 @@ from .models import Category
 from .models import LicenseRequest
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
 from django import forms
-from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -11,8 +10,8 @@ from django.utils.translation import ngettext as _p
 from import_export import resources
 from import_export.admin import ExportMixin
 from import_export.fields import Field
+from ok_tools.datetime import TZ
 from rangefilter.filters import DateTimeRangeFilter
-from zoneinfo import ZoneInfo
 import datetime
 import logging
 
@@ -53,20 +52,19 @@ class LicenseRequestResource(resources.ModelResource):
         """Return the suggested date in the current time zone."""
         return str(license
                    .suggested_date
-                   .astimezone(ZoneInfo(settings.TIME_ZONE))
+                   .astimezone(TZ)
                    .date())
 
     def dehydrate_suggested_time(self, license: LicenseRequest):
         """Return the suggested time in the current time zone."""
         return str(license
                    .suggested_date
-                   .astimezone(ZoneInfo(settings.TIME_ZONE))
+                   .astimezone(TZ)
                    .time())
 
     def dehydrate_created_at(self, license: LicenseRequest):
         """Return the created_at datetime in the current time zone."""
-        tz_datetime = license.created_at.astimezone(
-            ZoneInfo(settings.TIME_ZONE))
+        tz_datetime = license.created_at.astimezone(TZ)
         return f'{tz_datetime.date()} {tz_datetime.time()}'
 
     class Meta:
