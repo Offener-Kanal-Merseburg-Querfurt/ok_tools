@@ -31,10 +31,12 @@ class UserAdmin(BaseUserAdmin):
         (_('Password'), {
             'fields': ('password',)
         }),
-        # https://github.com/gocept/ok_tools/issues/11
-        # (_('permissions'), {
-        #     'fields': ('user_permissions',)
-        # }),
+        (_('Admin'), {
+            'fields': ('is_superuser',)
+        }),
+        (_('permissions'), {
+            'fields': ('user_permissions',)
+        }),
         (_('Staff'), {
             'fields': ('is_staff',)
         }),
