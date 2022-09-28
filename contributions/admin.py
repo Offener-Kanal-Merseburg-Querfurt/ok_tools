@@ -20,6 +20,72 @@ import logging
 logger = logging.getLogger('django')
 
 
+class ProgramResource(resources.ModelResource):
+    """Define the export for the TV program."""
+
+    def export(self, queryset=None, *args, **kwargs):
+        """Export contributions in correct order."""
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        queryset = queryset.order_by('broadcast_date')
+        return super().export(queryset, *args, **kwargs)
+
+    def _f(field=None, name=None):
+        """Shortcut for field creation."""
+        return Field(attribute=field, column_name=name)
+
+    broadcast_date = _f('broadcast_date__date', _('Broadcast Date'))
+    broadcast_start_time = _f(name=_('Start Time'))
+    broadcast_end_time = _f(name=_('End Time'))
+    title = _f('license__title', _('Title'))
+    subtitle = _f('license__subtitle', _('Subtitle'))
+    description = _f('license__description', _('Description'))
+    credits = _f(name=_('Credits'))
+    screen_board = _f(name=_('Screen Board'))
+    category = _f('license__category', name=_('Category'))
+
+    def dehydrate_broadcast_date(self, contribution: Contribution):
+        """Show broadcast date in current time zone."""
+        return str(contribution
+                   .broadcast_date
+                   .astimezone(tz=TZ)
+                   .date())
+
+    def dehydrate_broadcast_start_time(self, contribution: Contribution):
+        """Show broadcast time in current time zone."""
+        return str(contribution
+                   .broadcast_date
+                   .astimezone(tz=TZ)
+                   .time())
+
+    def dehydrate_broadcast_end_time(self, contribution: Contribution):
+        """Show broadcast time in current time zone."""
+        end_datetime = (contribution.broadcast_date.astimezone(tz=TZ)
+                        + contribution.license.duration)
+
+        assert end_datetime.date() == contribution.broadcast_date.date()
+
+        return str(end_datetime.time())
+
+    def dehydrate_credits(self, contribution: Contribution):
+        """Show the author with introduction."""
+        INTRODUCTION = 'Ein Nutzerbeitrag von'
+        return f'{INTRODUCTION} {contribution.license.profile}'
+
+    def dehydrate_screen_board(self, contribution: Contribution):
+        """Show weather the contribution is a screen board."""
+        # TODO create screen boards for any gap in the program
+        return False
+
+    class Meta:
+        """Define meta properties for Contribution export."""
+
+        name = _('Program')
+        model = Contribution
+        fields = []
+
+
 class ContributionResource(resources.ModelResource):
     """Define the export for Contributions."""
 
@@ -60,6 +126,7 @@ class ContributionResource(resources.ModelResource):
     class Meta:
         """Define meta properties for Contribution export."""
 
+        name = _('Data export')
         model = Contribution
         fields = ['live']
 
@@ -97,7 +164,7 @@ class YearFilter(admin.SimpleListFilter):
 class ContributionAdmin(ExportMixin, admin.ModelAdmin):
     """How should the Contribution be shown on the admin site."""
 
-    resource_class = ContributionResource
+    resource_classes = [ProgramResource, ContributionResource]
     export_template_name = 'admin/export.html'
 
     list_display = (

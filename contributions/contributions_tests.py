@@ -1,5 +1,6 @@
 from .admin import ContributionAdmin
 from .admin import ContributionResource
+from .admin import ProgramResource
 from .admin import YearFilter
 from .disa_import import _check_title
 from .disa_import import disa_import
@@ -7,6 +8,7 @@ from .disa_import import validate
 from .models import Contribution
 from .models import DisaImport
 from datetime import datetime
+from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -375,6 +377,7 @@ def test__contributions__admin__ContributionResource__1(
     browser.open(A_CON_URL)
 
     browser.follow('Export')
+    browser.getControl('Data export').click()
     browser.getControl('csv').click()
     browser.getControl('Submit').click()
 
@@ -403,9 +406,66 @@ def test__contributions__admin__ContributionResource__3(
     browser.open(A_CON_URL)
 
     browser.follow('Export')
+    browser.getControl('Data export').click()
     browser.getControl('csv').click()
     browser.getControl('Submit').click()
 
     assert browser.headers['Content-Type'] == 'text/csv'
     assert str(contr1.broadcast_date.date()) in str(browser.contents)
     assert str(contr1.broadcast_date.time()) in str(browser.contents)
+
+
+def test__contributions__admin__ProgramResource__1(
+        browser, license_template_dict, user, contribution_dict):
+    """Export the programm."""
+    license_template_dict['title'] = 'first_title'
+    license_template_dict['duration'] = timedelta(hours=1, minutes=30)
+    license1 = create_license_request(
+        user.profile, default_category(), license_template_dict)
+
+    contribution_dict['broadcast_date'] = datetime(
+        year=2022,
+        month=9,
+        day=28,
+        hour=9,
+        tzinfo=TZ,
+    )
+    contr1 = create_contribution(license1, contribution_dict)
+
+    license_template_dict['title'] = 'second_title'
+    license2 = create_license_request(
+        user.profile, default_category(), license_template_dict)
+
+    contribution_dict['broadcast_date'] = datetime(
+        year=2022,
+        month=9,
+        day=28,
+        hour=11,
+        tzinfo=TZ,
+    )
+    contr2 = create_contribution(license2, contribution_dict)
+
+    browser.login_admin()
+    browser.open(A_CON_URL)
+
+    browser.follow('Export')
+    browser.getControl('Program').click()
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert browser.headers['Content-Type'] == 'text/csv'
+
+    assert str(contr1.broadcast_date.time()) in str(browser.contents)
+    assert (str((contr1.broadcast_date + license1.duration).time())
+            in str(browser.contents))
+    assert license1.title in str(browser.contents)
+
+    assert str(contr2.broadcast_date.time()) in str(browser.contents)
+    assert (str((contr2.broadcast_date + license2.duration).time())
+            in str(browser.contents))
+    assert license2.title in str(browser.contents)
+
+
+def test__contributions__admin__ProgramResource__2(db):
+    """Export with no given queryset."""
+    ProgramResource().export(None, None)

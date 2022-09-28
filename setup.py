@@ -38,7 +38,7 @@ setup(
         'django-bootstrap-datepicker-plus',
         'django-crispy-forms',
         'django-extensions',
-        'django-import-export',
+        'django-import-export>=3.0.0b0',
         'django-revproxy>=0.10.0',
         'icalendar',
         'openpyxl',
