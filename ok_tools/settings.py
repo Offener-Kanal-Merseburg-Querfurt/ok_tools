@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'icalendar',
     'import_export',
     'rangefilter',
+    'tablib',
 
     'django.contrib.admin',
     'django.contrib.auth',

@@ -43,6 +43,7 @@ setup(
         'icalendar',
         'openpyxl',
         'reportlab',
+        'tablib',
     ],
     extras_require={
         'test': [

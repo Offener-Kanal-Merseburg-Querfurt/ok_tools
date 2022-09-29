@@ -8,6 +8,7 @@ from .disa_import import validate
 from .models import Contribution
 from .models import DisaImport
 from datetime import datetime
+from datetime import time
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -440,7 +441,8 @@ def test__contributions__admin__ProgramResource__1(
         year=2022,
         month=9,
         day=28,
-        hour=11,
+        hour=10,
+        minute=30,
         tzinfo=TZ,
     )
     contr2 = create_contribution(license2, contribution_dict)
@@ -464,6 +466,9 @@ def test__contributions__admin__ProgramResource__1(
     assert (str((contr2.broadcast_date + license2.duration).time())
             in str(browser.contents))
     assert license2.title in str(browser.contents)
+
+    assert str(time(hour=0, minute=0)) in str(browser.contents)
+    assert 'Bildschirmzeitung' in str(browser.contents)
 
 
 def test__contributions__admin__ProgramResource__2(db):
