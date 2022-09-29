@@ -424,27 +424,14 @@ def test__contributions__admin__ProgramResource__1(
     license1 = create_license_request(
         user.profile, default_category(), license_template_dict)
 
-    contribution_dict['broadcast_date'] = datetime(
-        year=2022,
-        month=9,
-        day=28,
-        hour=9,
-        tzinfo=TZ,
-    )
+    contribution_dict['broadcast_date'] = datetime(2022, 9, 28, 9, tzinfo=TZ)
     contr1 = create_contribution(license1, contribution_dict)
 
     license_template_dict['title'] = 'second_title'
     license2 = create_license_request(
         user.profile, default_category(), license_template_dict)
 
-    contribution_dict['broadcast_date'] = datetime(
-        year=2022,
-        month=9,
-        day=28,
-        hour=10,
-        minute=30,
-        tzinfo=TZ,
-    )
+    contribution_dict['broadcast_date'] = datetime(2022, 9, 28, 10, tzinfo=TZ)
     contr2 = create_contribution(license2, contribution_dict)
 
     browser.login_admin()
