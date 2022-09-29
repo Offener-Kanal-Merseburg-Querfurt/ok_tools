@@ -431,7 +431,8 @@ def test__contributions__admin__ProgramResource__1(
     license2 = create_license_request(
         user.profile, default_category(), license_template_dict)
 
-    contribution_dict['broadcast_date'] = datetime(2022, 9, 28, 10, tzinfo=TZ)
+    contribution_dict['broadcast_date'] = datetime(
+        2022, 9, 28, 10, 30, tzinfo=TZ)
     contr2 = create_contribution(license2, contribution_dict)
 
     browser.login_admin()
