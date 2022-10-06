@@ -264,8 +264,12 @@ def test__registration__admin__YearFilter__2():
             filter.queryset(None, None)
 
 
-def test__registration__admin__ProfileResource__1(browser, user):
+def test__registration__admin__ProfileResource__1(browser, user_dict):
     """Export profiles."""
+    user_dict['phone_number'] = '0123456789'
+    user_dict['mobile_number'] = '+49123456789'
+    user: User = create_user(user_dict)
+    profile: Profile = user.profile
     browser.login_admin()
     browser.open(LIST_URL)
 
@@ -274,4 +278,20 @@ def test__registration__admin__ProfileResource__1(browser, user):
     browser.getControl('Submit').click()
 
     assert browser.headers['Content-Type'] == 'text/csv'
-    assert str(user.email) in str(browser.contents)
+    export = str(browser.contents)
+    assert str(profile.first_name) in export
+    assert str(profile.last_name) in export
+    assert str(profile.gender) in export
+    assert str(user.email) in export
+    assert str(profile.phone_number) in export
+    assert str(profile.mobile_number) in export
+    assert str(profile.birthday) in export
+    assert str(profile.street) in export
+    assert str(profile.house_number) in export
+    assert str(profile.zipcode) in export
+    assert str(profile.city) in export
+    created_at = profile.created_at.astimezone(TZ)
+    assert str(created_at.date()) in export
+    assert str(created_at.time()) in export
+    assert str(profile.member) in export
+    assert str(profile.media_authority) in export

@@ -72,7 +72,7 @@ class ProjectCategory(models.Model):
 
     def __str__(self) -> str:
         """Represent category by its String."""
-        return self.name
+        return str(self.name)
 
     class Meta:
         """Defines the message IDs."""
@@ -100,7 +100,7 @@ class TargetGroup(models.Model):
 
     def __str__(self) -> str:
         """Represent target group by its String."""
-        return self.name
+        return str(self.name)
 
     class Meta:
         """Defines the message IDs."""

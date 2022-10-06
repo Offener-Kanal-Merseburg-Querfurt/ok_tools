@@ -41,8 +41,8 @@ def create_user(
         first_name=user_dict['first_name'],
         last_name=user_dict['last_name'],
         gender=user_dict['gender'],
-        phone_number=user_dict['mobile_number'],
-        mobile_number=user_dict['phone_number'],
+        phone_number=user_dict['phone_number'],
+        mobile_number=user_dict['mobile_number'],
         birthday=datetime.strptime(
             user_dict['birthday'], settings.DATE_INPUT_FORMATS).date(),
         street=user_dict['street'],

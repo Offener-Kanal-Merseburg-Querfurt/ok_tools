@@ -414,6 +414,33 @@ def test__contributions__admin__ContributionResource__3(
     assert str(contr1.broadcast_date.time()) in str(browser.contents)
 
 
+def test__contributions__admin__ContributionResource__4(
+        browser, license, contribution_dict):
+    """All necessary data are included in the export."""
+    license.subtitle = 'subtitle'
+    license.save()
+    contr = create_contribution(license, contribution_dict)
+
+    browser.login_admin()
+    browser.open(A_CON_URL)
+
+    browser.follow('Export')
+    browser.getControl('Data export').click()
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert browser.headers['Content-Type'] == 'text/csv'
+    export = str(browser.contents)
+
+    assert str(license.number) in export
+    assert license.title in export
+    assert license.subtitle in export
+    assert str(license.duration) in export
+    assert (f'{license.profile.first_name} {license.profile.last_name}'
+            in export)
+    assert str(contr.live) in export
+
+
 def test__contributions__admin__ProgramResource__1(
         browser, license_dict, user, contribution_dict):
     """Export the programm."""

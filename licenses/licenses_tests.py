@@ -709,6 +709,44 @@ def test__licenses__admin__LicenseResource__2(browser, license):
     assert str(license.title) in str(browser.contents)
 
 
+def test__licenses__admin__LicenseResource__3(browser, license: License):
+    """Export a license with all necessary data."""
+    license.subtitle = 'Subtitle'
+    license.further_persons = 'cut: another person'
+    license.suggested_date = datetime.datetime(
+        year=2022,
+        month=10,
+        day=10,
+        hour=9,
+        tzinfo=TZ,
+    )
+    license.save()
+
+    browser.login_admin()
+    browser.open(A_LICENSE_URL)
+    browser.follow('Export')
+    browser.getControl('csv').click()
+    browser.getControl('Submit').click()
+
+    assert browser.headers['Content-Type'] == 'text/csv'
+    export = str(browser.contents)
+
+    assert str(license.number) in export
+    assert license.title in export
+    assert license.subtitle in export
+    assert license.description in export
+    assert (f'{license.profile.first_name} {license.profile.last_name}' in
+            export)
+    assert license.further_persons in export
+    assert str(license.duration) in export
+    assert str(license.suggested_date.astimezone(TZ).date()) in export
+    assert str(license.suggested_date.astimezone(TZ).time()) in export
+    assert str(license.repetitions_allowed) in export
+    assert str(license.media_authority_exchange_allowed) in export
+    assert str(license.youth_protection_necessary) in export
+    assert str(license.store_in_ok_media_library) in export
+
+
 def test__licenses__admin__DurationRangeFilter__1(
         browser, license_dict, user):
     """Filter licenses after duration."""

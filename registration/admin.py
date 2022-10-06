@@ -76,7 +76,7 @@ class ProfileResource(resources.ModelResource):
     last_name = _f('last_name', _('last name'))
     gender = _f('gender', _('gender'))
     email = _f('okuser__email', _('email address'))
-    phone_number = _f('phonenumber', _('phone number'))
+    phone_number = _f('phone_number', _('phone number'))
     mobile_number = _f('mobile_number', _('mobile number'))
     birthday = _f('birthday', _('birthday'))
     street = _f('street', _('street'))
@@ -95,7 +95,8 @@ class ProfileResource(resources.ModelResource):
 
     def dehydrate_created_at(self, profile: Profile):
         """Export the created_at datetime object in the current time zone."""
-        return str(profile.created_at.astimezone(TZ))
+        created_at = profile.created_at.astimezone(TZ)
+        return f'{created_at.date()} {created_at.time()}'
 
 
 class BirthmonthFilter(admin.SimpleListFilter):

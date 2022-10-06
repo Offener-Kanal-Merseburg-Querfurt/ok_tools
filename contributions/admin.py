@@ -171,6 +171,7 @@ class ContributionResource(resources.ModelResource):
     broadcast_time = _f('broadcast_date__time', _('Broadcast Time'))
     profile = _f('license__profile', _('Profile'))
     duration = _f('license__duration', _('Duration'))
+    live = _f('live', _('Live'))
 
     def dehydrate_broadcast_date(self, contribution: Contribution):
         """Show broadcast date in current time zone."""
@@ -191,7 +192,7 @@ class ContributionResource(resources.ModelResource):
 
         name = _('Data export')
         model = Contribution
-        fields = ['live']
+        fields = []
 
 
 class WeekFilter(admin.SimpleListFilter):
