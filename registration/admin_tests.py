@@ -22,6 +22,14 @@ LIST_URL = (f'{DOMAIN}'
             f'{reverse_lazy("admin:registration_profile_changelist")}')
 
 
+def a_change_url(id):
+    """Return admin change url."""
+    return (
+        f'{DOMAIN}'
+        f'{reverse_lazy("admin:registration_profile_change", args=[id])}'
+    )
+
+
 def test__registration__admin__1(browser):
     """It is possible to log in as a valid admin user."""
     browser.login_admin()
@@ -128,6 +136,20 @@ def test__registration__admin__ProfileAdmin__6():
             filter = BirthmonthFilter(
                 {}, {}, Profile, ProfileAdmin)
             filter.queryset(None, None)
+
+
+def test__registration__admin__ProfileAdmin__7(browser, user):
+    """The verification of a user can be revoked."""
+    profile: Profile = user.profile
+    profile.verified = True
+    profile.save()
+
+    browser.login_admin()
+    browser.open(a_change_url(profile.id))
+    browser.getControl('Verified').click()
+    browser.getControl(name='_save').click()
+
+    assert not Profile.objects.get(id=profile.id).verified
 
 
 def test__registration__admin__verify__1(
