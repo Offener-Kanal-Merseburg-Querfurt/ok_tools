@@ -213,7 +213,9 @@ class ProfileAdmin(ExportMixin, admin.ModelAdmin):
         if form and form.changed_data:
             initial = form.initial.get('verified')
             new = form.cleaned_data.get('verified')
-            if not (initial is None or new is None) and initial != new:
+            if (not (initial is None or new is None)
+                    and initial != new
+                    and new is True):
                 signal.send(sender=self, obj=obj, request=request)
 
         return super().save_model(request, obj, form, change)

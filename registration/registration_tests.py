@@ -299,7 +299,7 @@ def test__registration__templates__navbar__1(browser):
     assert 'first_name' in browser.contents
     assert 'privacy policy' in browser.contents
 
-    browser.getLink(settings.OK_NAME_SHORT).click()
+    browser.follow(id='home-link-id')
     assert 'You are not logged in' in browser.contents
 
 

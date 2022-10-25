@@ -1,0 +1,58 @@
+{% load i18n %}
+
+<style>
+    .link-dark{
+        text-decoration: underline;
+    }
+</style>
+
+<div class="card-deck">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{% translate 'Profile' %}</h5>
+        <p class="card-text">{% translate 'Edit all inormations concerning your profile.' %}</p>
+        <a class="link-dark" href="{% url 'registration:user_data' %}">
+            {%translate 'Edit user data'%}
+        </a>
+      </br>
+        <a class="link-dark" href="{% url 'password_reset'%}">
+            {%translate 'Change password'%}
+        </a>
+      </br>
+        <a class="link-dark" href="{% url 'registration:print_registration' %}">
+            {%translate 'Print Registration Form'%}
+        </a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{% translate 'Licenses' %}</h5>
+        <p class="card-text">{% translate 'Edit your Licenses.' %}</p>
+          <a class="link-dark" href="{% url 'licenses:licenses' %}">
+            {%translate 'Overview'%}
+          </a>
+      </br>
+          <a class="link-dark" href="{% url 'licenses:create'%}">
+            {%translate 'Create license'%}
+          </a>
+      </div>
+  </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{% translate 'Contributions' %}</h5>
+        <p class="card-text">{% translate 'Look at your Contributions.' %}</p>
+        <a class="link-dark" href="{% url 'contributions:contributions' %}">
+          {% translate 'Contributions' %}
+        </a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{% translate 'Website' %}</h5>
+        <p class="card-text">{% translate 'Visist the Website for more general informations.' %}</p>
+        <a class="link-dark" href="https://okmq.de/">
+          {% translate 'OKMQ-Website' %}
+        </a>
+      </div>
+    </div>
+</div>

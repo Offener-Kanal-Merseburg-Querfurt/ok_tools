@@ -1,7 +1,14 @@
 {% load i18n %} {% load static %}
+<style>
+  .navbar-brand{
+    margin-right: -7em;
+  }
+</style>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{% url 'home'%}">{{OK_NAME_SHORT}}</a>
+  <a class="navbar-brand" id="home-link-id" href="{% url 'home'%}">
+    <img width=50% height=50% src="{% static 'img/logo.png'%}" alt="{{OK_NAME_SHORT}}" />
+  </a>
   <button
     class="navbar-toggler"
     type="button"

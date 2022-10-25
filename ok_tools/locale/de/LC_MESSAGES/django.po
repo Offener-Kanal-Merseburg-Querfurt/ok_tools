@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-05 14:10+0200\n"
+"POT-Creation-Date: 2022-10-17 17:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,7 +70,7 @@ msgstr "Sendezeit"
 
 #: contributions/admin.py:172 contributions/admin.py:294 licenses/admin.py:34
 #: licenses/admin.py:244 licenses/models.py:128 registration/models.py:182
-#: registration/templates/navbar.html:30
+#: registration/templates/navbar.html:37 ok_tools/templates/dashboard.html:13
 msgid "Profile"
 msgstr "Profil"
 
@@ -141,7 +141,8 @@ msgid "\"%(obj)s\" successfully imported."
 msgstr "\"%(obj)s\" erfolgreich importiert."
 
 #: contributions/apps.py:10 contributions/models.py:52
-#: registration/templates/navbar.html:69
+#: registration/templates/navbar.html:76 ok_tools/templates/dashboard.html:44
+#: ok_tools/templates/dashboard.html:47
 msgid "Contributions"
 msgstr "Beiträge"
 
@@ -248,6 +249,11 @@ msgstr "Live"
 msgid "No contributions yet."
 msgstr "Es sind keine Beiträge vorhanden."
 
+#: htmlcov/d_bfd9e7db70bf35f3_forms_py.html:159
+#: registration/templates/registration/print_registration.html:29
+msgid "Print registration form"
+msgstr "Nutzer*innenantrag drucken"
+
 #: licenses/admin.py:35 licenses/models.py:72
 msgid "Further involved persons"
 msgstr "Weitere Personen"
@@ -334,7 +340,7 @@ msgstr ""
 "bestätigt werden, bis das Profil verifiziert ist."
 
 #: licenses/apps.py:10 licenses/models.py:208
-#: registration/templates/navbar.html:56
+#: registration/templates/navbar.html:63 ok_tools/templates/dashboard.html:30
 msgid "Licenses"
 msgstr "Freistellungen"
 
@@ -460,7 +466,7 @@ msgid "No licenses yet."
 msgstr "Bisher sind keine Freistellungen vorhanden."
 
 #: licenses/templates/licenses/list.html:59
-#: registration/templates/navbar.html:63
+#: registration/templates/navbar.html:70 ok_tools/templates/dashboard.html:36
 msgid "Create license"
 msgstr "Freistellung erstellen"
 
@@ -851,7 +857,7 @@ msgstr "I stimme zu"
 msgid "Birthday"
 msgstr "Geburtstag"
 
-#: registration/forms.py:128 registration/templates/navbar.html:86
+#: registration/forms.py:128 registration/templates/navbar.html:93
 #: registration/templates/registration/register.html:7
 msgid "Register"
 msgstr "Registrieren"
@@ -971,29 +977,31 @@ msgstr ""
 "\n"
 "Ihr Account für %(ok_name)s wurde verifiziert\n"
 
-#: registration/templates/navbar.html:34
+#: registration/templates/navbar.html:41
 #: registration/templates/registration/print_registration.html:32
+#: ok_tools/templates/dashboard.html:16
 msgid "Edit user data"
 msgstr "Profil bearbeiten"
 
-#: registration/templates/navbar.html:37
+#: registration/templates/navbar.html:44
 #: registration/templates/registration/password_reset_confirm.html:16
+#: ok_tools/templates/dashboard.html:19
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: registration/templates/navbar.html:42
+#: registration/templates/navbar.html:49 ok_tools/templates/dashboard.html:22
 msgid "Print Registration Form"
 msgstr "Nutzer*innenantrag drucken"
 
-#: registration/templates/navbar.html:60
+#: registration/templates/navbar.html:67 ok_tools/templates/dashboard.html:33
 msgid "Overview"
 msgstr "Übersicht"
 
-#: registration/templates/navbar.html:80
+#: registration/templates/navbar.html:87
 msgid "Logout"
 msgstr "Abmelden"
 
-#: registration/templates/navbar.html:92
+#: registration/templates/navbar.html:99
 msgid "Login"
 msgstr "Anmelden"
 
@@ -1158,10 +1166,6 @@ msgstr ""
 msgid "Welcome to the %(ok_name)s"
 msgstr "Wilkommen beim %(ok_name)s"
 
-#: registration/templates/registration/print_registration.html:29
-msgid "Print registration form"
-msgstr "Nutzer*innenantrag drucken"
-
 #: registration/templates/registration/print_registration.html:35
 msgid "Print template only"
 msgstr "Nur Vorlage drucken"
@@ -1201,6 +1205,30 @@ msgstr "Ihr Profil wurde erfolgreich aktualisiert."
 msgid "Administrationinterface"
 msgstr "Verwaltungsoberfläche"
 
+#: ok_tools/templates/dashboard.html:14
+msgid "Edit all inormations concerning your profile."
+msgstr "Bearbeiten Sie Ihr Profile und zugehörige Daten."
+
+#: ok_tools/templates/dashboard.html:31
+msgid "Edit your Licenses."
+msgstr "Bearbeiten Sie ihre Lizenzen."
+
+#: ok_tools/templates/dashboard.html:45
+msgid "Look at your Contributions."
+msgstr "Sehen Sie Ihre Beiträge ein."
+
+#: ok_tools/templates/dashboard.html:55
+msgid "Website"
+msgstr "Website"
+
+#: ok_tools/templates/dashboard.html:56
+msgid "Visist the Website for more general informations."
+msgstr "Besuchen sie die Website für weitere Informationen."
+
+#: ok_tools/templates/dashboard.html:58
+msgid "OKMQ-Website"
+msgstr "OKMQ-Website"
+
 #: ok_tools/templates/home.html:13
 msgid ""
 "\n"
@@ -1229,6 +1257,6 @@ msgstr ""
 "    Ihr Account ist verifiziert.\n"
 "    "
 
-#: ok_tools/templates/home.html:27
+#: ok_tools/templates/home.html:28
 msgid "You are not logged in"
 msgstr "Sie sind nicht angemeldet."
