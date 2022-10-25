@@ -5,6 +5,13 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+
+<style>
+  .link-primary{
+      text-decoration: underline;
+  }
+</style>
+
 {% if user.is_authenticated %}
   <p>Hi {{ user.profile.first_name }} {{ user.profile.last_name }}!</p>
 
@@ -14,7 +21,7 @@
     This account is not verified. Please print the application form, sign it and bring it with your personal ID back to us. The account will then be verified.
     {% endblocktranslate %}
   <p>
-    <a class="btn btn-outline-primary" href="{% url 'registration:print_registration' %}">
+    <a class="link-primary" href="{% url 'registration:print_registration' %}">
     {%translate 'Application form'%}</a>
   <p>
   </p>
@@ -23,6 +30,7 @@
     This account is verified.
     {% endblocktranslate %}
   {% endif %}
+  {% include 'dashboard.html' %}
 {% else %}
   <p>{% translate 'You are not logged in' %}</p>
 {% endif %}

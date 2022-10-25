@@ -156,7 +156,7 @@ def test__projects__admin__ProjectAdmin__1(browser, project):
     begin_date = project.begin_date
     assert browser.headers['Content-Type'] == 'text/calendar'
     assert project.title in str(browser.contents)
-    assert datetime.tzname(begin_date) in str(browser.contents)
+    assert str(begin_date.tzinfo) in str(browser.contents)
     assert _f_ics_date(begin_date) in str(browser.contents)
     assert project.topic in str(browser.contents)
 
