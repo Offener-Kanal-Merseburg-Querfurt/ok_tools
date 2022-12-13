@@ -284,6 +284,8 @@ class ProjectAdmin(ExportMixin, admin.ModelAdmin):
         YearFilter,
     )
 
+    readonly_fields = ('id',)
+
     fieldsets = (
         (_('Project data'), {
             'fields': (
@@ -306,7 +308,12 @@ class ProjectAdmin(ExportMixin, admin.ModelAdmin):
             'fields': (
                 'statistic',
             )
-        })
+        }),
+        (_('Project ID'), {
+            'fields': (
+                'id',
+            )
+        }),
     )
 
     formfield_overrides = {

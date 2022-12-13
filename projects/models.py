@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from registration.models import Gender
+import uuid
 
 
 MAX_STRING_LENGTH = 255
@@ -162,6 +163,12 @@ def default_target_group():
 
 class Project(models.Model):
     """Model for the project."""
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
 
     title = models.CharField(
         _('Project title'),

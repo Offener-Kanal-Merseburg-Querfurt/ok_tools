@@ -44,4 +44,5 @@ urlpatterns = [
         TemplateView.as_view(template_name='privacy_policy.html'),
         name='privacy_policy'
     ),
+    path('project/', include('projects.urls')),
 ]

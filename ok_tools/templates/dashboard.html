@@ -48,6 +48,15 @@
     </div>
     <div class="card">
       <div class="card-body">
+        <h5 class="card-title">{% translate 'Projects' %}</h5>
+        <p class="card-text">{% translate 'Sing in for projects.' %}</p>
+        <a class="link-dark" href="{% url 'projects:find' %}">
+          {% translate 'Porjects' %}
+        </a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
         <h5 class="card-title">{% translate 'Website' %}</h5>
         <p class="card-text">{% translate 'Visist the Website for more general informations.' %}</p>
         <a class="link-dark" href="https://okmq.de/">
