@@ -71,3 +71,11 @@ class SignInView(generic.FormView):
             return http.Http404()
 
         return super().get(request, *args, **kwargs)
+
+
+class QRCode(generic.View):
+    """View to deliver a QR-Code leading to the sign-in page."""
+
+    def get(self, request, id):
+        """Return a file response with the QR-Code later."""
+        return http.HttpResponse("Yheeaa!")

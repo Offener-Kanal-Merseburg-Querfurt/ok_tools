@@ -1,0 +1,18 @@
+{% extends 'admin/change_form.html' %}
+
+
+{% load i18n %}
+
+{% block after_field_sets %}
+<style>
+.qr-div{
+    margin-bottom: 2em;
+}
+</style>
+
+<div class='qr-div'>
+    <a target='_blank' href="{% url 'projects:qr' id=object_id%}" class="button">
+        {% translate "Sign-In QR-Code" %}
+    </a>
+</div>
+{% endblock %}

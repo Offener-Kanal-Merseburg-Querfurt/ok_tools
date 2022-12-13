@@ -253,6 +253,7 @@ class ProjectAdmin(ExportMixin, admin.ModelAdmin):
 
     resource_classes = [ProjectResource, ProjectParticipantsResource]
     change_list_template = 'admin/change_list_ics_export.html'
+    change_form_template = 'admin/project_change_form.html'
 
     list_display = (
         'title',
