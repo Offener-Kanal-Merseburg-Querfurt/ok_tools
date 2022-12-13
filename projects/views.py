@@ -1,4 +1,5 @@
 from . import forms
+from . import qr
 from .models import Project
 from .models import ProjectParticipant
 from django import http
@@ -76,6 +77,8 @@ class SignInView(generic.FormView):
 class QRCode(generic.View):
     """View to deliver a QR-Code leading to the sign-in page."""
 
-    def get(self, request, id):
-        """Return a file response with the QR-Code later."""
-        return http.HttpResponse("Yheeaa!")
+    def get(self, request, id) -> http.FileResponse:
+        """Return a file response with a QR-Code leading to the SignInView."""
+        url = (f'{request.scheme}://{request.get_host()}'
+               f'{reverse_lazy("projects:sign-in", args=(id,))}')
+        return qr.generate_qr_code(request, url)

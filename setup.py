@@ -43,6 +43,7 @@ setup(
         'django-revproxy>=0.10.0',
         'icalendar>=5.0.0',
         'openpyxl',
+        'qrcode',
         'reportlab',
         'tablib',
     ],

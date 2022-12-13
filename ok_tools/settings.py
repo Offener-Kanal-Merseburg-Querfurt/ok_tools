@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'icalendar',
     'import_export',
+    'qrcode',
     'rangefilter',
     'tablib',
 
