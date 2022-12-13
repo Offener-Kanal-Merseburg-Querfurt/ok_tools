@@ -77,6 +77,11 @@
         </a>
       </li>
       {% else %} {% endif %}
+      <li class="nav-item">
+      <a class="nav-link" href="{% url 'projects:find' %}">
+        {%translate 'Projects' %}
+      </a>
+      </li>
     </ul>
     <div class="d-flex justify-content-end">
       <ul class="navbar-nav mr-auto">

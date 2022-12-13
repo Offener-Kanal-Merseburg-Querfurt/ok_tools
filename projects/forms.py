@@ -1,4 +1,5 @@
 from .models import Project
+from .models import ProjectParticipant
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
@@ -38,3 +39,24 @@ class FindProjectForm(forms.Form):
             return False
 
         return True
+
+
+class AddParticipantForm(forms.ModelForm):
+    """Add a Participant to a given project."""
+
+    class Meta:
+        """Include all fields."""
+
+        model = ProjectParticipant
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        """Show fields as crispy form."""
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'name',
+            'age',
+            'gender',
+            Submit('save', _('Add')),
+        )
