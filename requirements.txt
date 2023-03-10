@@ -27,7 +27,7 @@ MarkupPy==1.14
 odfpy==1.4.1
 openpyxl==3.0.10
 packaging==21.3
-Pillow==9.2.0
+Pillow==9.3.0
 pluggy==1.0.0
 py==1.11.0
 pyparsing==3.0.9
