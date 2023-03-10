@@ -15,7 +15,8 @@ signal = Signal()
 def send_verification_mail(sender, obj=None, request=None, **kwargs):
     """Send the mail, if the profile was verified."""
     assert obj.verified
-    if not hasattr(obj.okuser, 'email'):
+    if obj.okuser is None:
+        # no email when the profile has no user
         return
 
     send_mail(

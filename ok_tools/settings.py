@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'admin_searchable_dropdown',
     'crispy_forms',
+    'crispy_bootstrap4',
     'admin_auto_filters',
     'django_admin_listfilter_dropdown',
     'django_extensions',
