@@ -199,7 +199,8 @@ class License(models.Model):
 
         # editing is allowed if only action was to unconfirm license
         if old.confirmed and update_fields != ['confirmed']:
-            logger.info(f'Not saved {self} because it is already confirmed.')
+            logger.warning(
+                f'Not saved {self} because it is already confirmed.')
             return
 
         return super().save(*args, **kwargs)

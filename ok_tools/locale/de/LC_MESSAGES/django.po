@@ -787,7 +787,7 @@ msgstr "Februar"
 
 #: registration/admin.py:121
 msgid "March"
-msgstr "Mai"
+msgstr "März"
 
 #: registration/admin.py:122
 msgid "April"

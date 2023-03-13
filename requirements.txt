@@ -7,7 +7,7 @@ coverage==6.4.4
 crispy-bootstrap4==2022.1
 defusedxml==0.7.1
 diff-match-patch==20200713
-Django==4.1
+Django==4.1.7
 django-admin-autocomplete-filter==0.7.1
 django-admin-list-filter-dropdown==1.0.3
 django-admin-rangefilter==0.8.8
