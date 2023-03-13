@@ -557,6 +557,11 @@ def test__contributions__admin__ProgramResource__1(
         2022, 9, 28, 10, 30, tzinfo=TZ)
     contr2 = create_contribution(license2, contribution_dict)
 
+    # gabs with one minute or less get ignored
+    contribution_dict['broadcast_date'] = datetime(
+        2022, 9, 28, 12, 1, tzinfo=TZ)
+    contr3 = create_contribution(license1, contribution_dict)
+
     browser.login_admin()
     browser.open(A_CON_URL)
 
@@ -576,6 +581,10 @@ def test__contributions__admin__ProgramResource__1(
     assert (str((contr2.broadcast_date + license2.duration).time())
             in str(browser.contents))
     assert license2.title in str(browser.contents)
+
+    assert str(contr3.broadcast_date.time()) in str(browser.contents)
+    assert (str((contr3.broadcast_date + license2.duration).time())
+            in str(browser.contents))
 
     assert str(time(hour=0, minute=0)) in str(browser.contents)
     assert 'Infoblock' in str(browser.contents)

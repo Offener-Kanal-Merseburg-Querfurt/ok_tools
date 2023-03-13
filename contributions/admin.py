@@ -3,6 +3,7 @@ from .models import Contribution
 from .models import ContributionManager
 from .models import DisaImport
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
+from datetime import datetime as dt
 from django import http
 from django.contrib import admin
 from django.contrib import messages
@@ -46,6 +47,9 @@ class ProgramResource(resources.ModelResource):
         """Export a program resource and add screen boards if necessary."""
         self.before_export(queryset, *args, **kwargs)
 
+        # only fill gaps with more than one minute waiting time
+        TOLERANCE = datetime.timedelta(minutes=1)
+
         if queryset is None:
             queryset = self.get_queryset()
 
@@ -59,13 +63,20 @@ class ProgramResource(resources.ModelResource):
             # create a screen board if there is a gap in the program
             if ((end_time := self._get_end_time(prev_contr))
                     != (start_time := self._get_start_time(obj))):
-                data.append(
-                    self._create_screen_board(
-                        obj.broadcast_date.date(),
-                        end_time,
-                        start_time
+
+                # we need a datetime object for subtraction
+                today = dt.today()
+                delta = (dt.combine(today, start_time) -
+                         dt.combine(today, end_time))
+
+                if delta > TOLERANCE:
+                    data.append(
+                        self._create_screen_board(
+                            obj.broadcast_date.date(),
+                            end_time,
+                            start_time
+                        )
                     )
-                )
 
             data.append(self.export_resource(obj))
             prev_contr = obj
