@@ -119,7 +119,7 @@ class RegistrationPlainFormFile(generic.View):
     def get(self, request):
         """Handle the get request and return the pdf file."""
         return http.FileResponse(
-            open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb'),
+            open('files/Nutzerkartei_Anmeldung_2022.pdf', 'rb'),
             filename=('registration_form.pdf')
         )
 

@@ -16,9 +16,7 @@ def generate_registration_form(user: User, profile: Profile) -> FileResponse:
     """
     Generate an registration form as pdf using the given user data.
 
-    As template the 'Nutzerkartei_Anmeldung_2017.pdf' from
-    https://www.okmq.de/images/Formulare/Nutzerkartei_Anmeldung_2017.pdf
-    is used.
+    As template the 'Nutzerkartei_Anmeldung_2022.pdf' is used.
     """
     pdf_buffer = io.BytesIO()
 
@@ -64,7 +62,7 @@ def generate_registration_form(user: User, profile: Profile) -> FileResponse:
     edit_pdf = PdfReader(pdf_buffer)
 
     # required until seek
-    with open('files/Nutzerkartei_Anmeldung_2017.pdf', 'rb') as fileobj:
+    with open('files/Nutzerkartei_Anmeldung_2022.pdf', 'rb') as fileobj:
         registration_template = PdfReader(fileobj)
 
         regstr_page = registration_template.pages[0]
