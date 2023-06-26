@@ -286,7 +286,8 @@ class Project(models.Model):
             self.tn_15_bis_18, self.tn_19_bis_34, self.tn_35_bis_50,
             self.tn_51_bis_65, self.tn_ueber_65])
         tn_gender_sum = sum([
-            self.tn_female, self.tn_male, self.tn_gender_not_given, self.tn_diverse])
+            self.tn_female, self.tn_male,
+            self.tn_gender_not_given, self.tn_diverse])
         if tn_age_sum != tn_gender_sum:
             raise forms.ValidationError(
                 _('The sum of participants by age (%(age)s) does not '
