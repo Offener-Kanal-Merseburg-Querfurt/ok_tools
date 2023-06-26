@@ -8,7 +8,7 @@ setup(
     description='Tools to manage Offene Kanäle',
     long_description=(
         'Some tools to help the organisation of Offene Kanäle in Germany,'
-        ' especially in Sachsen-Anhalt.'
+        ' especially in Saxony-Anhalt.'
     ),
     classifiers=[
         "Environment :: Web Environment",
