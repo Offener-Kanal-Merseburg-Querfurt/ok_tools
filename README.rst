@@ -11,7 +11,7 @@ Installation
     git clone https://github.com/gocept/ok-tools.git
     cd ok-tools
     python3.10 -m venv .
-    bin/pip install -r requirements.txt 
+    bin/pip install -r requirements.txt
 
 Tests
 =====
