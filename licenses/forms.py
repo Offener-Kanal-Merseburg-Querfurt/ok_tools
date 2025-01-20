@@ -39,8 +39,8 @@ class CreateLicenseForm(forms.ModelForm):
             youth_category = self.data.get('youth_protection_category')
             if youth_category == YouthProtectionCategory.NONE:
                 self.add_error('youth_protection_category',
-                    _('If youth protection is necessary, you have'
-                      ' to choose a youth protection category.'))
+                               _('If youth protection is necessary, you have'
+                                 ' to choose a youth protection category.'))
 
         duration = self.data.get('duration') or ""
         hh_mm_ss = r'\d{2}:\d{2}:\d{2}'

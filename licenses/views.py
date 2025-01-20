@@ -1,6 +1,7 @@
 from . import forms
 from .generate_file import generate_license_file
 from .models import License
+from .models import YouthProtectionCategory
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -13,7 +14,7 @@ from registration.views import _no_profile_error
 import datetime
 import django.http as http
 import logging
-from .models import YouthProtectionCategory
+
 
 User = get_user_model()
 logger = logging.getLogger('django')
@@ -131,7 +132,8 @@ class DetailsLicensesView(generic.detail.DetailView):
         """Add the LicenseForm to context."""
         context = super().get_context_data(**kwargs)
         context['form'] = forms.CreateLicenseForm(instance=self.object)
-        context['ypc_title'] = YouthProtectionCategory.verbose_name(self.object.youth_protection_category)
+        context['ypc_title'] = YouthProtectionCategory.verbose_name(
+            self.object.youth_protection_category)
         return context
 
 
