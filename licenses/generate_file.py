@@ -101,10 +101,7 @@ def generate_license_file(lr: License) -> FileResponse:
 
     Y_YOUTHCAT = 514
 
-
-
     Y_SIGN = 232
-
 
     pdf_edits.drawString(
         X_SIGN,
@@ -122,7 +119,6 @@ def generate_license_file(lr: License) -> FileResponse:
         else:
             return X_NO
 
-
     X_YPC = {
         YouthProtectionCategory.FROM_12: 76,
         YouthProtectionCategory.FROM_16: 184,
@@ -133,9 +129,9 @@ def generate_license_file(lr: License) -> FileResponse:
     pdf_edits.drawString(
         choose(lr.media_authority_exchange_allowed), Y_SHARE, 'x')
     pdf_edits.drawString(
-            choose(
-                lr.media_authority_exchange_allowed_other_states),
-                Y_SHARE_OTHERS, 'x')
+        choose(
+            lr.media_authority_exchange_allowed_other_states),
+        Y_SHARE_OTHERS, 'x')
     pdf_edits.drawString(choose(lr.store_in_ok_media_library), Y_STORE, 'x')
     pdf_edits.drawString(choose(lr.youth_protection_necessary), Y_YOUTH, 'x')
 
@@ -164,7 +160,6 @@ def generate_license_file(lr: License) -> FileResponse:
         page2.merge_page(edit_page2.pages[0])
 
         page3 = license_template.pages[2]
-
 
         license_file = PdfWriter()
         license_file.add_page(page1)
