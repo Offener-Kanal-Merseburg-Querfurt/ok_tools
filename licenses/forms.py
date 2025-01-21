@@ -34,7 +34,7 @@ class CreateLicenseForm(forms.ModelForm):
             # it's a screen board, we are fine
             return super().is_valid()
 
-        youth_protection = self.data.get('youth_protection_necessary')
+        youth_protection = self.data.get('youth_protection_necessary') in ['true', 'True', 'Ja', True]
         if youth_protection:
             youth_category = self.data.get('youth_protection_category')
             if youth_category == YouthProtectionCategory.NONE:
