@@ -8,8 +8,10 @@ from crispy_forms.layout import Submit
 from datetime import timedelta
 from django import forms
 from django.utils.translation import gettext_lazy as _
-import re
 import logging
+import re
+
+
 logger = logging.getLogger('django')
 
 
