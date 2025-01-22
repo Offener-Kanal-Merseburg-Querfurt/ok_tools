@@ -22,4 +22,31 @@
     {% crispy form %}
 {% endif %}
 
+<style>
+    #div_id_youth_protection_category {
+        display: none; /* Initially hide the row */
+    }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const youthProtectionField = document.getElementById("id_youth_protection_necessary");
+    const youthCategoryRow = document.getElementById("div_id_youth_protection_category");
+
+    function toggleYouthCategoryRow() {
+        if (youthProtectionField.value === "true") {
+            youthCategoryRow.style.display = "block";
+        } else {
+            youthCategoryRow.style.display = "none";
+        }
+    }
+
+    if (youthProtectionField) {
+        youthProtectionField.addEventListener("change", toggleYouthCategoryRow);
+        toggleYouthCategoryRow(); // Initialize visibility
+    }
+});
+
+</script>
+
 {% endblock content %}

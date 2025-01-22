@@ -8,7 +8,11 @@ from crispy_forms.layout import Submit
 from datetime import timedelta
 from django import forms
 from django.utils.translation import gettext_lazy as _
+import logging
 import re
+
+
+logger = logging.getLogger('django')
 
 
 class CreateLicenseForm(forms.ModelForm):
@@ -19,6 +23,10 @@ class CreateLicenseForm(forms.ModelForm):
 
         model = License
         exclude = ('profile', 'confirmed', 'number')
+        widgets = {
+            'youth_protection_necessary': forms.Select(attrs={'id': 'id_youth_protection'}),
+            'youth_protection_category': forms.Select(attrs={'id': 'id_youth_protection_category'}),
+        }
 
         # TODO better widgets
         widgets = {
@@ -34,14 +42,17 @@ class CreateLicenseForm(forms.ModelForm):
             # it's a screen board, we are fine
             return super().is_valid()
 
-        youth_protection = self.data.get('youth_protection_necessary')
-        if youth_protection:
+        # Convert youth_protection to boolean
+        youth_protection = self.data.get('youth_protection_necessary') in ['true', 'True', 'Ja', True]
+        if youth_protection:  # If youth protection is necessary
             youth_category = self.data.get('youth_protection_category')
             if youth_category == YouthProtectionCategory.NONE:
-                self.add_error('youth_protection_category',
-                    _('If youth protection is necessary, you have'
-                      ' to choose a youth protection category.'))
+                self.add_error(
+                    'youth_protection_category',
+                    _('If youth protection is necessary, you have to choose a youth protection category.')
+                )
 
+        # Validate duration format
         duration = self.data.get('duration') or ""
         hh_mm_ss = r'\d{2}:\d{2}:\d{2}'
         mm_ss = r'\d{2}:\d{2}'
@@ -65,15 +76,17 @@ class CreateLicenseForm(forms.ModelForm):
             assert re.fullmatch(mm_ss, duration)
             datetime = timedelta(
                 minutes=int(times[0]),
-                hours=int(times[1]),
+                seconds=int(times[1]),
             )
 
-        if (not datetime):
+        if not datetime:
             # the duration format is valid but duration is 0
             self.add_error('duration', _('The duration field is required.'))
             return super().is_valid and False  # to collect further errors
 
         return super().is_valid()
+
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

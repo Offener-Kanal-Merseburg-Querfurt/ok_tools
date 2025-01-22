@@ -20,6 +20,6 @@ default_from_email = your@email.de
 
 db_name = yourdbname
 db_user = theuser
-db_pw = yourpass 
+db_pw = yourpass
 db_host = dbhost
 db_port = 5432
