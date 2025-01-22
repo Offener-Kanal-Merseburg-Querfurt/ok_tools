@@ -89,9 +89,9 @@ def generate_license_file(lr: License) -> FileResponse:
     pdf_edits = canvas.Canvas(pdf_buffer)
     pdf_edits.setFontSize(TEXTSIZE)
 
-    X_YES = 458 + 8
-    X_NO = 492 + 8
-    X_SIGN = 220
+    X_YES = 459
+    X_NO = 491
+    X_SIGN = 125
 
     Y_REPEAT = 646
     Y_SHARE = 633
@@ -99,7 +99,7 @@ def generate_license_file(lr: License) -> FileResponse:
     Y_STORE = 596
     Y_YOUTH = 559
 
-    Y_YOUTHCAT = 514
+    Y_YOUTHCAT = 516
 
 
 
@@ -109,7 +109,7 @@ def generate_license_file(lr: License) -> FileResponse:
     pdf_edits.drawString(
         X_SIGN,
         Y_SIGN,
-        ', '+date.today().strftime(settings.DATE_INPUT_FORMATS),
+        f'{profile.city}, {date.today().strftime(settings.DATE_INPUT_FORMATS)}'
     )
 
     # Yes/No-Fields
@@ -124,9 +124,9 @@ def generate_license_file(lr: License) -> FileResponse:
 
 
     X_YPC = {
-        YouthProtectionCategory.FROM_12: 76,
-        YouthProtectionCategory.FROM_16: 184,
-        YouthProtectionCategory.FROM_18: 292,
+        YouthProtectionCategory.FROM_12: 65,
+        YouthProtectionCategory.FROM_16: 173,
+        YouthProtectionCategory.FROM_18: 279,
     }
 
     pdf_edits.drawString(choose(lr.repetitions_allowed), Y_REPEAT, 'x')
