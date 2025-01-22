@@ -41,6 +41,7 @@ setup(
         'django-extensions',
         'django-import-export',
         'django-revproxy',
+        'fdfgen',
         'icalendar',
         'openpyxl',
         'reportlab',
