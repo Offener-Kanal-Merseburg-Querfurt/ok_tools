@@ -14,7 +14,6 @@ logger = logging.getLogger('django')
 MAX_TITLE_LENGTH = 255
 
 
-
 class YouthProtectionCategory(models.TextChoices):
     """Youth protection categories."""
 
@@ -31,8 +30,6 @@ class YouthProtectionCategory(models.TextChoices):
                 return choice[1]  # verbose name
 
         return ''
-
-
 
 
 class Category(models.Model):

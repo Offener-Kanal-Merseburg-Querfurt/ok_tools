@@ -43,7 +43,8 @@ class CreateLicenseForm(forms.ModelForm):
             return super().is_valid()
 
         # Convert youth_protection to boolean
-        youth_protection = self.data.get('youth_protection_necessary') in ['true', 'True', 'Ja', True]
+        youth_protection = self.data.get('youth_protection_necessary') in [
+            'true', 'True', 'Ja', True]
         if youth_protection:  # If youth protection is necessary
             youth_category = self.data.get('youth_protection_category')
             if youth_category == YouthProtectionCategory.NONE:
@@ -85,8 +86,6 @@ class CreateLicenseForm(forms.ModelForm):
             return super().is_valid and False  # to collect further errors
 
         return super().is_valid()
-
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

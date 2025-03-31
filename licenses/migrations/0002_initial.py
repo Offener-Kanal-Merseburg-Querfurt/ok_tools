@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='license',
             name='profile',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='registration.profile', verbose_name='Profile'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    to='registration.profile', verbose_name='Profile'),
         ),
     ]

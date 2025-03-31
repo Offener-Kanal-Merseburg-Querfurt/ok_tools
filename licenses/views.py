@@ -132,7 +132,8 @@ class DetailsLicensesView(generic.detail.DetailView):
         """Add the LicenseForm to context."""
         context = super().get_context_data(**kwargs)
         context['form'] = forms.CreateLicenseForm(instance=self.object)
-        context['ypc_title'] = YouthProtectionCategory.verbose_name(self.object.youth_protection_category)
+        context['ypc_title'] = YouthProtectionCategory.verbose_name(
+            self.object.youth_protection_category)
         return context
 
 

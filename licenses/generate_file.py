@@ -32,10 +32,12 @@ def choose(value):
         return 'yes'
     return 'no'
 
+
 def val(value):
     if value:
         return value
     return ''
+
 
 def generate_license_file(lr: License) -> FileResponse:
     """
@@ -60,12 +62,15 @@ def generate_license_file(lr: License) -> FileResponse:
         ('subtitle', val(lr.subtitle)),
         ('length', val(lr.duration)),
         ('repetitions_allowed', choose(lr.repetitions_allowed)),
-        ('media_authority_exchange_allowed', choose(lr.media_authority_exchange_allowed)),
-        ('media_authority_exchange_allowed_other_states', choose(lr.media_authority_exchange_allowed_other_states)),
+        ('media_authority_exchange_allowed', choose(
+            lr.media_authority_exchange_allowed)),
+        ('media_authority_exchange_allowed_other_states', choose(
+            lr.media_authority_exchange_allowed_other_states)),
         ('store_in_ok_media_library', choose(lr.store_in_ok_media_library)),
         ('youth_protection_necessary', choose(lr.youth_protection_necessary)),
         ('youth_protection_category', str(lr.youth_protection_category)),
-        ('city_date_member', f'{val(profile.city)} {date.today().strftime(settings.DATE_INPUT_FORMATS)}')
+        ('city_date_member',
+         f'{val(profile.city)} {date.today().strftime(settings.DATE_INPUT_FORMATS)}')
     ]
 
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -74,11 +79,11 @@ def generate_license_file(lr: License) -> FileResponse:
             fdf_file.write(fdf)
         result = subprocess.run(
             [PDFTK,
-            'licenses/files/2017_Antrag_Einzelgenehmigung_ausfuellbar.pdf',
-            'fill_form',
-            os.path.join(tmpdirname, "data.fdf"),
-            'output',
-            os.path.join(tmpdirname, "output.pdf")])
+             'licenses/files/2017_Antrag_Einzelgenehmigung_ausfuellbar.pdf',
+             'fill_form',
+             os.path.join(tmpdirname, "data.fdf"),
+             'output',
+             os.path.join(tmpdirname, "output.pdf")])
         with open(os.path.join(tmpdirname, "output.pdf"), "rb") as output:
             result = output.read()
 

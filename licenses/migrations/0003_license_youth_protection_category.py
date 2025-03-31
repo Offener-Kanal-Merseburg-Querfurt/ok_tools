@@ -28,11 +28,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='license',
             name='media_authority_exchange_allowed_other_states',
-            field=models.BooleanField(null=True, verbose_name='Media Authority exchange allowed in other states than Saxony-Anhalt.'),
+            field=models.BooleanField(
+                null=True, verbose_name='Media Authority exchange allowed in other states than Saxony-Anhalt.'),
         ),
         migrations.AlterField(
             model_name='license',
             name='media_authority_exchange_allowed',
-            field=models.BooleanField(null=True, verbose_name='Media Authority exchange allowed in Saxony-Anhalt'),
+            field=models.BooleanField(
+                null=True, verbose_name='Media Authority exchange allowed in Saxony-Anhalt'),
         ),
     ]
