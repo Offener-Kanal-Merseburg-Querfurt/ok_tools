@@ -209,9 +209,8 @@ class InventoryImport(models.Model):
     file = models.FileField(
         verbose_name=_('Inventory file'),
         upload_to=timestamp_path,
-        validators=[
-            FileExtensionValidator(allowed_extensions=['xlsx', 'csv']),
-        ],
+        storage=tmp_import_storage,
+        validators=[FileExtensionValidator(["xlsx", "csv"])],
         blank=False,
         null=False,
     )
