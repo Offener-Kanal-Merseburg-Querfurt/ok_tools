@@ -10,10 +10,17 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from pathlib import Path
+from tempfile import gettempdir
+from django.core.files.storage import FileSystemStorage
+import os
 import logging
 
 
 logger = logging.getLogger('django')
+
+tmp_import_storage = FileSystemStorage(
+    location=os.path.join(gettempdir(), "inventory_import")
+)
 
 
 class Manufacturer(models.Model):
@@ -202,16 +209,15 @@ class InventoryImport(models.Model):
     def timestamp_path(instance, filename):
         """Create a path based on the current timestamp."""
         now = datetime.now()
-        path = Path(f"{now.year}/{now.month}/{now.day}")
         ext = Path(filename).suffix
-        return path / f"{now.hour}-{now.minute}-{now.second}-{now.microsecond}{ext}"
+        return f"{now.year}/{now.month}/{now.day}/" \
+            f"{now.hour}-{now.minute}-{now.second}-{now.microsecond}{ext}"
 
     file = models.FileField(
         verbose_name=_('Inventory file'),
         upload_to=timestamp_path,
-        validators=[
-            FileExtensionValidator(allowed_extensions=['xlsx', 'csv']),
-        ],
+        storage=tmp_import_storage, 
+        validators=[FileExtensionValidator(["xlsx", "csv"])],
         blank=False,
         null=False,
     )
