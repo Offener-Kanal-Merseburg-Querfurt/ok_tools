@@ -2,6 +2,7 @@ from .middleware import get_current_user
 from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.files.storage import FileSystemStorage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -11,9 +12,8 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from pathlib import Path
 from tempfile import gettempdir
-from django.core.files.storage import FileSystemStorage
-import os
 import logging
+import os
 
 
 logger = logging.getLogger('django')
@@ -216,7 +216,7 @@ class InventoryImport(models.Model):
     file = models.FileField(
         verbose_name=_('Inventory file'),
         upload_to=timestamp_path,
-        storage=tmp_import_storage, 
+        storage=tmp_import_storage,
         validators=[FileExtensionValidator(["xlsx", "csv"])],
         blank=False,
         null=False,
