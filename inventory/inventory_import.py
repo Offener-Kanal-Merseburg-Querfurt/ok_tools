@@ -65,7 +65,6 @@ def validate(file):
         9: 'inventory_number_owner',
         10: 'purchase_date',
         11: 'purchase_cost',
-        12: 'last_inspection'
     }
 
     # Check for all required columns
@@ -174,9 +173,6 @@ def inventory_import(request, file, import_obj):
                     except ValueError:
                         pass
 
-                # Handle last_inspection
-                last_inspection = str(row[12].value or '').strip() or None
-
                 # Create or get manufacturer
                 manufacturer = None
                 if manufacturer_name:
@@ -220,8 +216,7 @@ def inventory_import(request, file, import_obj):
                     owner=owner,
                     inventory_number_owner=inventory_number_owner,
                     purchase_date=purchase_date,
-                    purchase_cost=purchase_cost,
-                    last_inspection=last_inspection
+                    purchase_cost=purchase_cost
                 )
                 created_counter += 1
 

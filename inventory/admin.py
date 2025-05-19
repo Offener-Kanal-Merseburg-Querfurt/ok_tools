@@ -1,4 +1,7 @@
+from .forms import InspectionInlineForm
 from .models import AuditLog
+from .models import Inspection
+from .models import InspectionImport
 from .models import InventoryImport
 from .models import InventoryItem
 from .models import Manufacturer
@@ -34,10 +37,6 @@ class InventoryResource(ModelResource):
         column_name=_('Purchase Date'),
         widget=DateWidget(format='%Y-%m-%d')
     )
-    last_inspection = Field(
-        attribute='last_inspection',
-        column_name=_('E-Inspection')
-    )
 
     class Meta:
         """Meta options for InventoryResource."""
@@ -55,11 +54,20 @@ class InventoryResource(ModelResource):
             'owner',
             'inventory_number_owner',
             'purchase_date',
-            'purchase_cost',
-            'last_inspection'
+            'purchase_cost'
         )
 
 
+class InspectionInline(admin.TabularInline):
+    """Inline admin for Inspection model."""
+
+    model = Inspection
+    form = InspectionInlineForm
+    extra = 1
+    fields = ("inspection_number", "target_part", "inspection_date", "result")
+
+
+@admin.register(InventoryItem)
 class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     """Admin interface for InventoryItem."""
 
@@ -68,7 +76,7 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     readonly_fields = ('reserved_quantity', 'rented_quantity')
     list_display = (
         'inventory_number', 'description', 'serial_number', 'manufacturer', 'location', 'quantity',
-        'status', 'object_type', 'owner', 'inventory_number_owner', 'last_inspection', 'available_for_rent'
+        'status', 'object_type', 'owner', 'inventory_number_owner', 'available_for_rent'
     )
     search_fields = ['inventory_number', 'description', 'serial_number', 'manufacturer__name', 'owner__name', 'inventory_number_owner']
     list_filter = [
@@ -79,9 +87,10 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     ]
     fields = (
         'inventory_number', 'description', 'serial_number', 'manufacturer', 'location', 'quantity',
-        'status', 'object_type', 'owner', 'inventory_number_owner', 'purchase_date', 'purchase_cost', 'last_inspection',
+        'status', 'object_type', 'owner', 'inventory_number_owner', 'purchase_date', 'purchase_cost',
         'available_for_rent', 'reserved_quantity', 'rented_quantity'
     )
+    inlines = [InspectionInline]
 
     def get_readonly_fields(self, request, obj=None):
         """Return readonly fields depending on item status."""
@@ -231,4 +240,72 @@ class InventoryImportAdmin(admin.ModelAdmin):
                 self.message_user(request, f'Error importing {import_obj.file.name}: {str(e)}', level=messages.ERROR)
 
 
-admin.site.register(InventoryItem, InventoryItemAdmin)
+@admin.register(Inspection)
+class InspectionAdmin(admin.ModelAdmin):
+    """Admin interface for Inspection model."""
+
+    list_display = ("inspection_number", "inventory_item", "target_part", "inspection_date", "result")
+    search_fields = ("inspection_number", "inventory_item__inventory_number")
+    list_filter = ("target_part",)
+
+
+@admin.register(InspectionImport)
+class InspectionImportAdmin(admin.ModelAdmin):
+    """Admin interface for InspectionImport."""
+
+    change_form_template = 'admin/inspection_import_change_form.html'
+    list_display = ('__str__', 'import_status', 'items_created', 'items_skipped', 'import_date', 'completed_date')
+    readonly_fields = (
+        'import_status',
+        'items_created',
+        'items_skipped',
+        'get_error_log_display',
+        'import_date',
+        'completed_date'
+    )
+    exclude = ('error_log_file', 'error_log')
+    ordering = ['-import_date']
+    actions = ['import_files']
+
+    def get_import_status_display(self, obj):
+        """Return import status with icon."""
+        status_icons = {
+            'pending': '⏳',
+            'in_progress': '🔄',
+            'completed': '✅',
+            'completed_with_errors': '⚠️',
+            'failed': '❌'
+        }
+        return f"{status_icons.get(obj.import_status, '')} {obj.get_import_status_display()}"
+    get_import_status_display.short_description = _('Status')
+
+    def get_error_log_display(self, obj):
+        """Return error log as HTML list with download link."""
+        if not obj.error_log:
+            return _('-')
+        errors = obj.error_log.split('\n')
+        error_list = ''.join(f'<li>{error}</li>' for error in errors)
+        download_link = ''
+        if obj.error_log_file:
+            download_link = format_html(
+                '<div style="margin-top: 10px;"><a href="{}" class="button" target="_blank">{}</a></div>',
+                obj.error_log_file.url,
+                _('Download Error Log File')
+            )
+        return format_html(
+            '<div style="max-height: 300px; overflow-y: auto; '
+            'border: 1px solid #ccc; background: #fafafa; padding: 8px;">'
+            '<ul style="margin:0; padding-left:20px;">{}</ul></div>{}',
+            format_html(error_list),
+            download_link
+        )
+    get_error_log_display.short_description = _('Error Log')
+
+    @admin.action(description=_('Import selected inspection files'))
+    def import_files(self, request, queryset):
+        """Import selected inspection files."""
+        for import_obj in queryset:
+            try:
+                import_obj.import_data(request)
+            except Exception as e:
+                self.message_user(request, f'Error importing {import_obj.file.name}: {str(e)}', level=messages.ERROR)
