@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: oktools
+      POSTGRES_USER: okuser
+      POSTGRES_PASSWORD: okpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  oktools:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      - OKTOOLS_CONFIG_FILE=docker.cfg
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=okuser
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
