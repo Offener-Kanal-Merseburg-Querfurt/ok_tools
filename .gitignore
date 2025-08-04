@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
 
 # Django
 *.log
@@ -10,7 +11,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-# Static files (только собранные, не исходные)
+# Static files
 collected_static/
 /static/
 /staticfiles/
@@ -34,3 +35,7 @@ Thumbs.db
 error_logs/
 ok_tools.egg-info/
 *.mo
+
+# Docker
+docker*.yml
+docker*.cfg
