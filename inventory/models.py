@@ -482,7 +482,7 @@ class Inspection(models.Model):
     room         = models.CharField(max_length=255, blank=True, verbose_name=_("Room"))
 
     target_part = models.CharField(
-        max_length=20,
+        max_length=50,
         choices=TargetPart.choices,
         default=TargetPart.DEVICE,
         verbose_name=_("Target Part")
