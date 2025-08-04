@@ -126,6 +126,7 @@ class DetailsLicensesView(generic.detail.DetailView):
     form = form_class = forms.CreateLicenseForm
 
     def ypc_title(self, value):
+        """Return title for YPC license."""
         return YouthProtectionCategory.verbose_name(value)
 
     def get_context_data(self, **kwargs):

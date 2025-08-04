@@ -18,18 +18,20 @@ if not PDFTK:
     raise RuntimeError(f'pdftk not found in {PDFTK_CANDIDATES}')
 
 def val(value):
+    """Return the value if set, otherwise an empty string."""
     if value:
         return value
     return ''
 
 def _f_number(p):
-    """Returns a string representation of a number or a placeholder if the value is missing."""
+    """Return a string representation of a number or a placeholder if the value is missing."""
     return str(p) if p else '     -     '
 
 def generate_registration_form(user: User, profile: Profile) -> FileResponse:
-    """
-    Generates a registration form in PDF format using the template
-    'files/Nutzerkartei_Anmeldung_2022.pdf' and user data.
+    """Generate a registration form in PDF format.
+
+    This function uses the PDF template
+    'files/Nutzerkartei_Anmeldung_2022.pdf' and fills it with user data.
 
     It is assumed that the PDF template contains fields with the following names:
       - first_name
@@ -41,7 +43,8 @@ def generate_registration_form(user: User, profile: Profile) -> FileResponse:
       - mobile
       - email
 
-    Returns a FileResponse with the filled PDF.
+    Returns:
+        FileResponse: A response containing the filled-out PDF form.
     """
     # Path to the PDF template
     template_pdf = os.path.join(settings.BASE_DIR, 'files', 'Nutzerkartei_Anmeldung_2022_n.pdf')

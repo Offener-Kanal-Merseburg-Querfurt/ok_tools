@@ -26,27 +26,43 @@ if PDFTK is None:
 
 
 def choose(value):
+    """Convert boolean-like value into 'yes', 'no', or 'unbekannt'.
+
+    Args:
+        value: Any input value to evaluate.
+
+    Returns:
+        str: 'yes' if truthy, 'no' if falsy, 'unbekannt' if None.
+    """
     if value is None:
         return 'unbekannt'
     if value:
         return 'yes'
     return 'no'
 
+
 def val(value):
+    """Return the value if not empty, otherwise an empty string.
+
+    Args:
+        value: Any input value.
+
+    Returns:
+        str: The input value or an empty string.
+    """
     if value:
         return value
     return ''
 
+
 def generate_license_file(lr: License) -> FileResponse:
-    """
-    Generate a License as pdf file.
+    """Generate a License as pdf file.
 
     As template the '2017_Antrag_Einzelgenehmigung_ausfuellbar.pdf' from
     https://www.okmq.de/images/Formulare/2017_Antrag_Einzelgenehmigung_ausfuellbar.pdf
     is used.
     The function assumes that the License has a user with profile.
     """
-
     user = lr.profile.okuser
     profile = lr.profile
 
