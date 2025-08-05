@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Erklärung zur Barrierefreiheit - {{ OK_NAME_SHORT }}{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>Erklärung zur Barrierefreiheit</h1>
+        <p><time datetime="2025-01-05">Stand: 5. Januar 2025</time></p>
+    </header>
+
+    <section>
+        <h2>Bemühungen um Barrierefreiheit</h2>
+        <p>{{ OK_NAME }} ist bemüht, seine Website im Einklang mit dem Barrierefreiheitsstärkungsgesetz (BFSG) und der europäischen Norm EN 301 549 barrierefrei zugänglich zu machen.</p>
+    </section>
+
+    <section>
+        <h2>Stand der Vereinbarkeit mit den Anforderungen</h2>
+        <p>Diese Website ist <strong>teilweise barrierefrei</strong>. Die nachstehend aufgeführten Inhalte sind aus folgenden Gründen nicht barrierefrei:</p>
+
+        <h3>Nicht barrierefreie Inhalte</h3>
+        <ul>
+            <li>Einige PDF-Dokumente sind möglicherweise nicht vollständig barrierefrei</li>
+            <li>Bestimmte interaktive Elemente werden kontinuierlich verbessert</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Erstellung dieser Erklärung zur Barrierefreiheit</h2>
+        <p>Diese Erklärung wurde am <time datetime="2025-01-05">5. Januar 2025</time> erstellt.</p>
+        <p>Die Bewertung basiert auf einer Selbstbewertung nach den Richtlinien für barrierefreie Webinhalte (WCAG) 2.1.</p>
+    </section>
+
+    <section>
+        <h2>Hinweis zur verantwortlichen Stelle</h2>
+        <p>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
+
+        <div class="contact-info">
+            <h3>Verantwortliche Stelle</h3>
+            <address>
+                <strong>Offener Kanal Merseburg Querfurt e. V.</strong><br>
+                Diana Elsner<br>
+                Geusaer Straße 86 b<br>
+                06217 Merseburg<br><br>
+                Telefon: <a href="tel:+493461525222">+49 3461 525222</a><br>
+                E-Mail: <a href="mailto:info@okmq.de">info@okmq.de</a>
+            </address>
+        </div>
+    </section>
+
+    <section>
+        <h2>Feedback und Kontaktangaben</h2>
+        <p>Wenn Ihnen Mängel in Bezug auf die Barrierefreiheit auffallen, teilen Sie uns diese bitte mit:</p>
+
+        <div class="contact-info">
+            <h3>Barrierefreiheit melden</h3>
+            <address>
+                <strong>Offener Kanal Merseburg Querfurt e. V.</strong><br>
+                Diana Elsner<br>
+                Geusaer Straße 86 b<br>
+                06217 Merseburg<br><br>
+                Telefon: <a href="tel:+493461525222">+49 3461 525222</a><br>
+                E-Mail: <a href="mailto:info@okmq.de">info@okmq.de</a>
+            </address>
+        </div>
+
+        <p>Wir sind bemüht, innerhalb von <strong>2 Wochen</strong> auf Ihre Anfrage zu antworten.</p>
+    </section>
+
+    <section>
+        <h2>Durchsetzungsverfahren</h2>
+        <p>Falls Sie der Ansicht sind, dass wir nicht angemessen auf Ihre Anfrage reagiert haben, können Sie sich an die zuständige Durchsetzungsstelle wenden:</p>
+
+        <div class="enforcement-contact">
+            <h3>Durchsetzungsstelle</h3>
+            <address>
+                <strong>Bundesfachstelle Barrierefreiheit</strong><br>
+                E-Mail: <a href="mailto:info@bundesfachstelle-barrierefreiheit.de">info@bundesfachstelle-barrierefreiheit.de</a><br>
+                Website: <a href="https://www.bundesfachstelle-barrierefreiheit.de" target="_blank" rel="noopener">www.bundesfachstelle-barrierefreiheit.de</a>
+            </address>
+        </div>
+    </section>
+
+    <section>
+        <h2>Technische Spezifikationen</h2>
+        <p>Die Barrierefreiheit dieser Website stützt sich auf die folgenden Technologien:</p>
+        <ul>
+            <li>HTML5</li>
+            <li>CSS3</li>
+            <li>JavaScript</li>
+            <li>ARIA (Accessible Rich Internet Applications)</li>
+        </ul>
+    </section>
+</article>
+{% endblock %}

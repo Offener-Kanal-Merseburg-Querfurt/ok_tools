@@ -1,13 +1,46 @@
 {% load i18n %} {% load static %}
 <style>
-  .navbar-brand{
-    margin-right: -7em;
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    margin-right: 2rem;
+  }
+
+  .navbar-brand img {
+    margin-right: 0.75rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .navbar-brand:hover img {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .site-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212529;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .navbar-brand {
+      margin-right: 1rem;
+    }
+
+    .site-title {
+      font-size: 1rem;
+    }
   }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="navigation" role="navigation" aria-label="Hauptnavigation">
   <a class="navbar-brand" id="home-link-id" href="{% url 'home'%}">
-    <img width=50% height=50% src="{% static 'img/logo.png'%}" alt="{{OK_NAME_SHORT}}" />
+    <img width="100%" height="80" src="{% static 'img/logo.png'%}" alt="{{OK_NAME_SHORT}} Logo" />
+    <span class="site-title">{{ OK_NAME_SHORT }}</span>
   </a>
   <button
     class="navbar-toggler"
@@ -16,7 +49,7 @@
     data-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent"
     aria-expanded="false"
-    aria-label="Toggle navigation"
+    aria-label="Navigation umschalten"
   >
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -28,15 +61,16 @@
         <a
           class="nav-link dropdown-toggle"
           href="#"
-          id="navbarDropdown"
+          id="profileDropdown"
           role="button"
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
+          aria-label="Profil Menü"
         >
           {%translate 'Profile'%}
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu" aria-labelledby="profileDropdown">
           <a class="dropdown-item" href="{% url 'registration:user_data' %}"
             >{%translate 'Edit user data'%}</a
           >
@@ -59,15 +93,16 @@
         <a
           class="nav-link dropdown-toggle"
           href="#"
-          id="navbarDropdown"
+          id="licensesDropdown"
           role="button"
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
+          aria-label="Lizenzen Menü"
         >
           {%translate 'Licenses'%}
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <div class="dropdown-menu" aria-labelledby="licensesDropdown">
           <a class="dropdown-item" href="{% url 'licenses:licenses' %}"
             >{%translate 'Overview'%}</a
           >
@@ -87,8 +122,8 @@
       <ul class="navbar-nav mr-auto">
         {%if user.is_authenticated %}
         <li class="nav-item active">
-          <a class="nav-link" href="{% url 'logout' %}">
-            <img src="{% static 'img/box-arrow-left.svg'%}" alt="" />
+          <a class="nav-link" href="{% url 'logout' %}" aria-label="Abmelden">
+            <img src="{% static 'img/box-arrow-left.svg'%}" alt="" aria-hidden="true" />
             {%translate 'Logout' %}
           </a>
         </li>
@@ -99,8 +134,8 @@
         >
         </li>
         <li class="nav-item active">
-        <a class="nav-link" href="{% url 'login' %}">
-          <img src="{% static 'img/box-arrow-in-right.svg'%}" alt="" />
+        <a class="nav-link" href="{% url 'login' %}" aria-label="Anmelden">
+          <img src="{% static 'img/box-arrow-in-right.svg'%}" alt="" aria-hidden="true" />
           {%translate 'Login' %}
         </a>
         </li>

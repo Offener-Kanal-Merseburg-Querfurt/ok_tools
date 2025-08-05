@@ -23,9 +23,14 @@
     box-shadow: 0 6px 20px rgba(74, 95, 215, 0.4);
 }
 
+.accessibility-toggle:focus {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
 .accessibility-toggle svg {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     fill: white;
 }
 
@@ -62,6 +67,12 @@
     font-size: 20px;
     position: relative;
     border-radius: 8px 8px 0 0;
+}
+
+.menu-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .menu-header::after {
@@ -110,10 +121,16 @@
     transition: all 0.2s ease;
     border-bottom: 1px solid #f0f0f0;
     font-size: 16px;
+    outline: none;
 }
 
 .menu-item:hover {
     background: #f8f9ff;
+}
+
+.menu-item:focus {
+    background: #e8ebff;
+    border-left: 4px solid #4A5FD7;
 }
 
 .menu-item.active {
@@ -157,7 +174,24 @@
     fill: #4A5FD7;
 }
 
-/* Стили для различных режимов доступности */
+/* Skip link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 10000;
+    border-radius: 4px;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Stile für verschiedene Barrierefreiheitsmodi */
 body.large-text {
     font-size: 120%;
 }
@@ -217,4 +251,138 @@ body.readable-font {
 
 body.readable-font * {
     font-family: 'Arial', sans-serif !important;
+}
+
+body.focus-highlight *:focus {
+    outline: 3px solid #ff6b35 !important;
+    outline-offset: 2px !important;
+}
+
+body.reduce-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+/* Cursor-Hervorhebung - verwende visuelle Effekte statt Cursor-Änderung */
+body.cursor-highlight {
+    position: relative;
+}
+
+/* Animation für Cursor */
+
+@keyframes cursor-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+/* Element-Hervorhebung beim Hover - interaktive Elemente ausschließen */
+body.cursor-highlight div:hover,
+body.cursor-highlight p:hover,
+body.cursor-highlight span:hover,
+body.cursor-highlight h1:hover,
+body.cursor-highlight h2:hover,
+body.cursor-highlight h3:hover,
+body.cursor-highlight h4:hover,
+body.cursor-highlight h5:hover,
+body.cursor-highlight h6:hover {
+    outline: 2px solid #ff6b35 !important;
+    outline-offset: 2px !important;
+    background-color: rgba(255, 107, 53, 0.1) !important;
+}
+
+/* Spezielle Hervorhebung für interaktive Elemente */
+body.cursor-highlight button:hover,
+body.cursor-highlight a:hover,
+body.cursor-highlight [role="button"]:hover {
+    outline: 2px solid #ff6b35 !important;
+    outline-offset: 2px !important;
+    background-color: rgba(255, 107, 53, 0.1) !important;
+}
+
+/* Jegliche Hervorhebung für Eingabefelder DEAKTIVIEREN */
+body.cursor-highlight input,
+body.cursor-highlight input:hover,
+body.cursor-highlight input:focus,
+body.cursor-highlight textarea,
+body.cursor-highlight textarea:hover,
+body.cursor-highlight textarea:focus,
+body.cursor-highlight select,
+body.cursor-highlight select:hover,
+body.cursor-highlight select:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    border: 1px solid #ccc !important;
+}
+
+/* Normalen Fokus für Eingabefelder wiederherstellen */
+body.cursor-highlight input:focus,
+body.cursor-highlight textarea:focus,
+body.cursor-highlight select:focus {
+    outline: 2px solid #007bff !important;
+    outline-offset: 2px !important;
+    border-color: #007bff !important;
+}
+
+body.line-spacing {
+    line-height: 1.8 !important;
+}
+
+body.line-spacing p,
+body.line-spacing div {
+    line-height: 1.8 !important;
+}
+
+/* High contrast focus styles */
+body.high-contrast *:focus {
+    outline: 3px solid #fff !important;
+    outline-offset: 2px !important;
+}
+
+/* Ensure minimum contrast ratios */
+body.high-contrast {
+    color: #000 !important;
+    background: #fff !important;
+}
+
+body.high-contrast a {
+    color: #0000EE !important;
+}
+
+body.high-contrast a:visited {
+    color: #551A8B !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .accessibility-menu {
+        width: 90vw;
+        right: 5vw;
+        left: 5vw;
+    }
+
+    .accessibility-toggle {
+        width: 50px;
+        height: 50px;
+    }
+
+    .accessibility-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .accessibility-toggle,
+    .accessibility-menu {
+        display: none !important;
+    }
 }

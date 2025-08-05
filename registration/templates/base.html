@@ -1,9 +1,10 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="de">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/png" href={% static 'img/favicon.ico' %} />
     <title>{% block title %}{{OK_NAME_SHORT}}{% endblock %}</title>
     <link
@@ -40,19 +41,41 @@
     ></script>
     <!-- Accessibility Menu Styles -->
     <link rel="stylesheet" href="{% static 'css/accessibility.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accessibility-compliance.css' %}">
   </head>
   <body>
-    {% include 'navbar.html' %}
+    <!-- Skip Navigation -->
+    <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+    <a href="#navigation" class="skip-link">Zur Navigation springen</a>
+
+    <header role="banner">
+      {% include 'navbar.html' %}
+    </header>
+
     <div class="container">
-      <h1>{{ OK_NAME }}</h1>
+      <!-- Website-Titel wurde für bessere Semantik in den Header verschoben -->
       <div class="container">
         <br />
         <div class="col-10">
           {% include 'messages.html' %}
-          <main>{% block content %} {% endblock %}</main>
+          <main id="main-content" role="main" tabindex="-1">
+            {% block content %} {% endblock %}
+          </main>
         </div>
       </div>
     </div>
+
+    <footer role="contentinfo" class="accessibility-footer">
+      <div class="container">
+        <nav aria-label="Footer Navigation">
+          <ul class="footer-links">
+            <li><a href="{% url 'privacy_policy' %}">Datenschutz</a></li>
+            <li><a href="{% url 'accessibility_statement' %}">Erklärung zur Barrierefreiheit</a></li>
+            <li><a href="{% url 'accessibility_feedback' %}">Barriere melden</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
 
     <!-- Accessibility Menu Script -->
     <script src="{% static 'js/accessibility.js' %}"></script>

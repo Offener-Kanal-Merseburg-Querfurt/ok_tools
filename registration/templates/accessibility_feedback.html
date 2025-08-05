@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Barriere melden - {{ OK_NAME_SHORT }}{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>Barriere melden</h1>
+        <p>Helfen Sie uns, unsere Website barrierefreier zu gestalten.</p>
+    </header>
+
+    <form method="post" action="{% url 'accessibility_feedback' %}" novalidate>
+        {% csrf_token %}
+
+        <fieldset>
+            <legend>Ihre Nachricht</legend>
+
+            <div class="form-group">
+                <label for="id_name">Name (optional):</label>
+                <input type="text" id="id_name" name="name" class="form-control"
+                       aria-describedby="name-help">
+                <small id="name-help" class="form-text text-muted">
+                    Ihr Name wird nur für die Antwort verwendet.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">E-Mail-Adresse (optional):</label>
+                <input type="email" id="id_email" name="email" class="form-control"
+                       aria-describedby="email-help">
+                <small id="email-help" class="form-text text-muted">
+                    Nur erforderlich, wenn Sie eine Antwort wünschen.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="id_url">Betroffene Seite (URL):</label>
+                <input type="url" id="id_url" name="url" class="form-control" required
+                       aria-describedby="url-help url-error">
+                <small id="url-help" class="form-text text-muted">
+                    Die Webadresse der Seite mit dem Problem.
+                </small>
+                <div id="url-error" class="invalid-feedback" role="alert" aria-live="polite">
+                    Bitte geben Sie eine gültige URL ein.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_barrier_type">Art der Barriere:</label>
+                <select id="id_barrier_type" name="barrier_type" class="form-control" required
+                        aria-describedby="barrier-help barrier-error">
+                    <option value="">Bitte wählen...</option>
+                    <option value="keyboard">Tastaturnavigation</option>
+                    <option value="screenreader">Screenreader-Kompatibilität</option>
+                    <option value="contrast">Kontrast/Farben</option>
+                    <option value="text">Textgröße/Lesbarkeit</option>
+                    <option value="forms">Formulare</option>
+                    <option value="other">Sonstiges</option>
+                </select>
+                <small id="barrier-help" class="form-text text-muted">
+                    Wählen Sie die Art des Problems aus.
+                </small>
+                <div id="barrier-error" class="invalid-feedback" role="alert" aria-live="polite">
+                    Bitte wählen Sie eine Art der Barriere aus.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_description">Beschreibung des Problems:</label>
+                <textarea id="id_description" name="description" class="form-control"
+                         rows="5" required aria-describedby="description-help description-error"></textarea>
+                <small id="description-help" class="form-text text-muted">
+                    Beschreiben Sie das Problem so detailliert wie möglich.
+                </small>
+                <div id="description-error" class="invalid-feedback" role="alert" aria-live="polite">
+                    Bitte beschreiben Sie das Problem.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_assistive_tech">Verwendete Hilfstechnologie (optional):</label>
+                <input type="text" id="id_assistive_tech" name="assistive_tech" class="form-control"
+                       aria-describedby="tech-help">
+                <small id="tech-help" class="form-text text-muted">
+                    z.B. JAWS, NVDA, VoiceOver, Dragon NaturallySpeaking
+                </small>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                Nachricht senden
+            </button>
+            <button type="reset" class="btn btn-secondary">
+                Formular zurücksetzen
+            </button>
+        </div>
+    </form>
+
+    <section>
+        <h2>Alternative Kontaktmöglichkeiten</h2>
+        <p>Sie können uns auch direkt kontaktieren:</p>
+
+        <div class="contact-info">
+            <address>
+                <strong>Offener Kanal Merseburg Querfurt e. V.</strong><br>
+                Diana Elsner<br>
+                Geusaer Straße 86 b<br>
+                06217 Merseburg<br><br>
+                Telefon: <a href="tel:+493461525222">+49 3461 525222</a><br>
+                E-Mail: <a href="mailto:info@okmq.de">info@okmq.de</a>
+            </address>
+        </div>
+
+        <p><strong>Antwortzeit:</strong> Wir bemühen uns, innerhalb von 2 Wochen auf Ihre Anfrage zu antworten.</p>
+    </section>
+</article>
+{% endblock %}
