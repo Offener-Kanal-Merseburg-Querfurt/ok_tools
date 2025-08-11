@@ -1,4 +1,5 @@
 from .models import InventoryItem
+from .models import Location
 from .models import Manufacturer
 from .models import Organization
 from datetime import datetime
@@ -60,7 +61,7 @@ def validate(file):
         4: 'location',
         5: 'quantity',
         6: 'status',
-        7: 'object_type',
+         # 7: 'object_type',  # removed
         8: 'owner',
         9: 'inventory_number_owner',
         10: 'purchase_date',
@@ -112,19 +113,32 @@ def inventory_import(request, file, import_obj):
                 description = str(row[1].value or '').strip() or None
                 serial_number = str(row[2].value or '').strip() or None
                 manufacturer_name = str(row[3].value or '').strip() or None
-                location = str(row[4].value or '').strip() or _('Unknown Location')
+                location_str = str(row[4].value or '').strip()
 
-                # Check required fields
-                if not location:
-                    logger.warning(
-                        _('Location is missing in row %(row)s. Skipping...') %
-                        {'row': row[0].row}
-                    )
-                    messages.warning(
-                        request,
-                        _('Location is missing in row %(row)s. Skipping...') %
-                        {'row': row[0].row}
-                    )
+                # Resolve location by path in dictionary; do not create new ones here
+                def _resolve_location(path_str: str):
+                    if not path_str:
+                        return None
+                    raw = str(path_str).replace('/', '->')
+                    parts = [p.strip() for p in raw.split('->') if p and p.strip()]
+                    if not parts:
+                        return None
+                    parent = None
+                    for name in parts:
+                        try:
+                            node = Location.objects.get(parent=parent, name=name)
+                        except Location.DoesNotExist:
+                            return None
+                        parent = node
+                    return parent
+
+                loc_obj = _resolve_location(location_str)
+                if not loc_obj:
+                    error_msg = _('Location "%(location)s" not found in dictionary') % {
+                        'location': location_str
+                    }
+                    error_logs.append(f'Row {row[0].row}: {error_msg}')
+                    error_details.append([row[0].row, error_msg] + row_data)
                     skipped_counter += 1
                     continue
 
@@ -146,10 +160,7 @@ def inventory_import(request, file, import_obj):
                 status = status_map.get(raw_status, 'in_stock')
 
                 # Determine object type
-                object_type = str(row[7].value or '').strip()
-                if not object_type:
-                    # If object type is not specified, use location value
-                    object_type = location
+                # object_type removed
 
                 owner_name = str(row[8].value or '').strip() or None
                 inventory_number_owner = str(row[9].value or '').strip() or None
@@ -209,10 +220,10 @@ def inventory_import(request, file, import_obj):
                     description=description,
                     serial_number=serial_number,
                     manufacturer=manufacturer,
-                    location=location,
+                    location=loc_obj,
                     quantity=quantity,
                     status=status,
-                    object_type=object_type,
+                    # object_type removed
                     owner=owner,
                     inventory_number_owner=inventory_number_owner,
                     purchase_date=purchase_date,

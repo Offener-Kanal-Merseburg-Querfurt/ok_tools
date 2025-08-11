@@ -203,7 +203,6 @@ def inspection_import(
 
                 defaults = {
                     "inventory_item": item,
-                    "device_name": row_data.get("device_name", "").strip(),
                     "manufacturer": row_data.get("manufacturer", "").strip(),
                     "device_type": row_data.get("device_type", "").strip(),
                     "room": row_data.get("room", "").strip(),

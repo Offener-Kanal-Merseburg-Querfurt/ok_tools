@@ -57,6 +57,84 @@ class Organization(models.Model):
         return self.name
 
 
+class LocationManager(models.Manager):
+    """Manager for hierarchical Location with helpers to work with paths."""
+
+    def _split_parts(self, path_str: str) -> list:
+        raw = str(path_str or "").replace("/", "->")
+        return [p.strip() for p in raw.split("->") if p and p.strip()]
+
+    def get_by_path(self, path_str: str):
+        """Return existing Location by hierarchical path without creating it.
+
+        Path segments can be separated by '->' or '/'. Returns None if any
+        segment is missing.
+        """
+        parts = self._split_parts(path_str)
+        if not parts:
+            return None
+        parent = None
+        for name in parts:
+            try:
+                node = self.get(parent=parent, name=name)
+            except self.model.DoesNotExist:
+                return None
+            parent = node
+        return parent
+
+    def create_by_path(self, path_str: str):
+        """Create (or fetch) Location chain for the given hierarchical path.
+
+        Ensures every segment exists and returns the deepest Location node.
+        """
+        parts = self._split_parts(path_str)
+        if not parts:
+            raise ValueError("Empty location path")
+        parent = None
+        for name in parts:
+            node, _ = self.get_or_create(parent=parent, name=name)
+            parent = node
+        return parent
+
+
+class Location(models.Model):
+    """Hierarchical location (e.g., Room -> Cabinet)."""
+
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        related_name="children",
+        on_delete=models.PROTECT,
+        verbose_name=_("Parent"),
+    )
+
+    objects = LocationManager()
+
+    class Meta:
+        """Meta options for Location."""
+
+        verbose_name = _("Location")
+        verbose_name_plural = _("Locations")
+        unique_together = (("parent", "name"),)
+        ordering = ["parent__id", "name"]
+
+    def __str__(self) -> str:
+        """Return human readable full path of the location."""
+        return self.full_path
+
+    @property
+    def full_path(self) -> str:
+        """Compute full path from root to this node as 'A -> B -> C'."""
+        parts = []
+        node = self
+        while node is not None:
+            parts.append(node.name)
+            node = node.parent
+        return " -> ".join(reversed(parts))
+
+
 class InventoryItem(models.Model):
     """Model representing an inventory item."""
 
@@ -92,10 +170,12 @@ class InventoryItem(models.Model):
         Manufacturer,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         verbose_name=_("Manufacturer")
     )
-    location = models.CharField(
-        max_length=255,
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.PROTECT,
         verbose_name=_("Location")
     )
     quantity = models.PositiveIntegerField(
@@ -107,10 +187,7 @@ class InventoryItem(models.Model):
         default=STATUS_IN_STOCK,
         verbose_name=_("Status")
     )
-    object_type = models.CharField(
-        max_length=255,
-        verbose_name=_("Object Type")
-    )
+    # Removed: object_type field (was redundant with Location)
     owner = models.ForeignKey(
         Organization,
         on_delete=models.SET_NULL,
@@ -177,10 +254,7 @@ class InventoryItem(models.Model):
         """Check if the item is in stock."""
         return self.status == self.STATUS_IN_STOCK
 
-    def object_type_display(self):
-        """Return object type for display."""
-        return self.object_type
-    object_type_display.short_description = _('Object Type')
+    # Removed: object_type_display helper
 
     @property
     def formatted_purchase_date(self) -> str:
@@ -384,7 +458,7 @@ class AuditLog(models.Model):
             'quantity': _('Quantity'),
             'status': _('Status'),
             'location': _('Location'),
-            'object_type': _('Object Type'),
+            # 'object_type': _('Object Type'),
             # Add other fields if needed
         }
         for field, change in self.changes.items():
@@ -476,7 +550,6 @@ class Inspection(models.Model):
         verbose_name=_("Inventory Item")
     )
 
-    device_name  = models.CharField(max_length=255, blank=True, verbose_name=_("Device"))
     manufacturer = models.CharField(max_length=255, blank=True, verbose_name=_("Manufacturer"))
     device_type  = models.CharField(max_length=255, blank=True, verbose_name=_("Device Type"))
     room         = models.CharField(max_length=255, blank=True, verbose_name=_("Room"))

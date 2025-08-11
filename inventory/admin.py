@@ -4,6 +4,7 @@ from .models import Inspection
 from .models import InspectionImport
 from .models import InventoryImport
 from .models import InventoryItem
+from .models import Location
 from .models import Manufacturer
 from .models import Organization
 from admin_searchable_dropdown.filters import AutocompleteFilterFactory
@@ -28,7 +29,6 @@ class InventoryResource(ModelResource):
     location = Field(attribute='location', column_name=_('Location'))
     quantity = Field(attribute='quantity', column_name=_('Quantity'))
     status = Field(attribute='status', column_name=_('Status'))
-    object_type = Field(attribute='object_type', column_name=_('Object Type'))
     owner = Field(attribute='owner__name', column_name=_('Owner'))
     inventory_number_owner = Field(attribute='inventory_number_owner', column_name=_('Inventory Number Owner'))
 
@@ -50,7 +50,7 @@ class InventoryResource(ModelResource):
             'location',
             'quantity',
             'status',
-            'object_type',
+            # 'object_type',
             'owner',
             'inventory_number_owner',
             'purchase_date',
@@ -67,6 +67,16 @@ class InspectionInline(admin.TabularInline):
     fields = ("inspection_number", "target_part", "inspection_date", "result")
 
 
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    """Admin interface for Location (hierarchical)."""
+
+    list_display = ("full_path", "parent")
+    search_fields = ("name",)
+    autocomplete_fields = ("parent",)
+    ordering = ("parent__id", "name")
+
+
 @admin.register(InventoryItem)
 class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     """Admin interface for InventoryItem."""
@@ -76,20 +86,26 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     readonly_fields = ('reserved_quantity', 'rented_quantity')
     list_display = (
         'inventory_number', 'description', 'serial_number', 'manufacturer', 'location', 'quantity',
-        'status', 'object_type', 'owner', 'inventory_number_owner', 'available_for_rent'
+        'status', 'owner', 'inventory_number_owner', 'available_for_rent'
     )
-    search_fields = ['inventory_number', 'description', 'serial_number', 'manufacturer__name', 'owner__name', 'inventory_number_owner']
+    search_fields = [
+        'inventory_number', 'description', 'serial_number',
+        'manufacturer__name', 'owner__name', 'inventory_number_owner',
+        'location__name',
+    ]
     list_filter = [
         AutocompleteFilterFactory(_('Manufacturer'), 'manufacturer'),
         AutocompleteFilterFactory(_('Owner'), 'owner'),
+        AutocompleteFilterFactory(_('Location'), 'location'),
         ('purchase_date', admin.DateFieldListFilter),
-        'status', 'location', 'object_type', 'available_for_rent',
+        'status', 'available_for_rent',
     ]
     fields = (
         'inventory_number', 'description', 'serial_number', 'manufacturer', 'location', 'quantity',
-        'status', 'object_type', 'owner', 'inventory_number_owner', 'purchase_date', 'purchase_cost',
+        'status', 'owner', 'inventory_number_owner', 'purchase_date', 'purchase_cost',
         'available_for_rent', 'reserved_quantity', 'rented_quantity'
     )
+    autocomplete_fields = ('manufacturer', 'owner', 'location')
     inlines = [InspectionInline]
 
     def get_readonly_fields(self, request, obj=None):
