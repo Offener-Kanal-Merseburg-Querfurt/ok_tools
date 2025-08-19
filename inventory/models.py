@@ -188,7 +188,7 @@ class InventoryItem(models.Model):
         blank=True,
         verbose_name=_("Manufacturer")
     )
-    
+
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
