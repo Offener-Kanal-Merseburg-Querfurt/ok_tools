@@ -56,7 +56,6 @@ class Organization(models.Model):
         """Return organization name as string."""
         return self.name
 
-
 class Category(models.Model):
     """Model representing a category of inventory items."""
 
@@ -72,7 +71,6 @@ class Category(models.Model):
     def __str__(self):
         """Return category name as string."""
         return self.name
-
 
 class LocationManager(models.Manager):
     """Manager for hierarchical Location with helpers to work with paths."""
@@ -190,6 +188,7 @@ class InventoryItem(models.Model):
         blank=True,
         verbose_name=_("Manufacturer")
     )
+    
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -197,6 +196,7 @@ class InventoryItem(models.Model):
         blank=True,
         verbose_name=_("Category")
     )
+
     location = models.ForeignKey(
         Location,
         on_delete=models.PROTECT,

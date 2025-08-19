@@ -52,6 +52,7 @@ msgstr "Untertitel"
 #: rental/templates/rental/rental_stats.html:226
 #: rental/templates/rental/rental_stats.html:274
 #: rental/templates/rental/rental_stats.html:381
+
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -97,8 +98,7 @@ msgstr "Profil-ID"
 
 #: contributions/admin.py:198
 #: contributions/templates/contributions/list.html:14 licenses/admin.py:39
-#: licenses/models.py:98 planung/admin.py:195 projects/admin.py:69
-#: projects/models.py:155
+#: licenses/models.py:98 projects/admin.py:69 projects/models.py:155
 msgid "Duration"
 msgstr "Dauer"
 
@@ -236,7 +236,7 @@ msgid "Successfully created %d contributions."
 msgstr "Erfolgreich %d Beiträge erstellt."
 
 #: contributions/models.py:65 licenses/models.py:254
-#: licenses/templates/licenses/list.html:12 planung/admin.py:194
+#: licenses/templates/licenses/list.html:12
 msgid "License"
 msgstr "Freistellung"
 
@@ -251,6 +251,7 @@ msgstr "Beitrag"
 #: contributions/models.py:115
 msgid "DISA export file"
 msgstr "DISA-Export-Datei"
+
 
 #: contributions/models.py:125 inventory/models.py:326 inventory/models.py:644
 msgid "Imported"
@@ -293,7 +294,7 @@ msgstr "Bestätigen"
 msgid "Your contributions"
 msgstr "Ihre Beiträge"
 
-#: contributions/templates/contributions/list.html:13 planung/admin.py:193
+#: contributions/templates/contributions/list.html:13
 #: planung/templates/admin/planung/calendar_weeks.html:102
 msgid "Start"
 msgstr "Start"
@@ -436,8 +437,6 @@ msgstr ""
 "YYYY, YYYY/MM/DD"
 
 #: inventory/inspection_import.py:154
-#, fuzzy
-#| msgid "No file provided."
 msgid "No file provided for import."
 msgstr "Keine Datei bereitgestellt."
 
@@ -535,6 +534,11 @@ msgstr "Name für %(model)s fehlt in Zeile %(row)s. Wird übersprungen..."
 msgid "Column %(col)s should be named \"%(expected)s\", but got \"%(actual)s\""
 msgstr "Spalte %(col)s sollte \"%(expected)s\" heißen, ist aber \"%(actual)s\""
 
+#: inventory/inventory_import.py:106
+#, python-brace-format
+msgid "Invalid inventory number \"{inventory_number}\""
+msgstr "Ungültige Inventarnummer \"{inventory_number}\""
+
 #: inventory/inventory_import.py:137
 #, python-format
 msgid "Location \"%(location)s\" not found in dictionary"
@@ -580,6 +584,7 @@ msgstr "Keine Fehler"
 #: inventory/models.py:120 rental/models.py:251
 #: rental/templates/rental/rental_stats.html:273
 #: rental/templates/rental/rental_stats.html:377
+
 msgid "Name"
 msgstr "Name"
 
@@ -1169,10 +1174,6 @@ msgstr "Geplante Beiträge"
 #: planung/admin.py:160
 msgid "Comment"
 msgstr "Kommentar"
-
-#: planung/admin.py:180
-msgid "not found"
-msgstr "Freistellung nicht gefunden."
 
 #: planung/admin.py:187
 msgid "min"

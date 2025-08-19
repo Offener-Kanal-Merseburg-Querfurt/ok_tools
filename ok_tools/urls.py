@@ -54,6 +54,7 @@ urlpatterns = [
         include("planung.urls"),
     ),
     path('inventory/', include('inventory.urls', namespace='inventory')),
+
     path('rental/', include('rental.urls', namespace='rental')),
     # JavaScript translations
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
