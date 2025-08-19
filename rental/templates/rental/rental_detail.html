@@ -1,0 +1,389 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Rental Details" %} - OK Tools</title>
+    <link href="{% static 'admin/css/base.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .rental-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .item-card { border: 1px solid #dee2e6; border-radius: 8px; transition: all 0.3s ease; }
+        .item-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .status-badge { font-size: 0.85rem; }
+        .condition-excellent { background: #28a745; }
+        .condition-good { background: #17a2b8; }
+        .condition-fair { background: #ffc107; color: #212529; }
+        .condition-poor { background: #dc3545; }
+        .issue-minor { border-left: 4px solid #ffc107; }
+        .issue-major { border-left: 4px solid #fd7e14; }
+        .issue-critical { border-left: 4px solid #dc3545; }
+        .return-info { background: #f8f9fa; border: 1px solid #e9ecef; }
+        .overdue-highlight { background: #fff5f5; border: 1px solid #fed7d7; }
+        .ontime-highlight { background: #f0fff4; border: 1px solid #9ae6b4; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="{% url 'rental:admin_rental_process' %}">
+                <i class="fas fa-arrow-left me-2"></i>{% trans "Back to Rental Process" %}
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="{% url 'admin:index' %}">
+                    <i class="fas fa-cog me-1"></i>{% trans "Administration" %}
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+            </div>
+        {% elif rental %}
+            <!-- Rental Header -->
+            <div class="rental-header p-4 rounded mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-1">{{ rental.project_name }}</h2>
+                        <p class="mb-2">{{ rental.purpose }}</p>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <span><i class="fas fa-user me-1"></i>{% if rental.user.profile %}{{ rental.user.profile.first_name }} {{ rental.user.profile.last_name }}{% else %}{{ rental.user.email }}{% endif %}</span>
+                            <span><i class="fas fa-envelope me-1"></i>{{ rental.user.email }}</span>
+                            <span><i class="fas fa-calendar me-1"></i>{{ rental.requested_start_date|date:"d.m.Y H:i" }} - {{ rental.requested_end_date|date:"d.m.Y H:i" }}</span>
+                            {% if rental.actual_end_date and rental.status == 'returned' %}
+                            <span><i class="fas fa-calendar-check me-1"></i>{% trans "Returned" %}: {{ rental.actual_end_date|date:"d.m.Y H:i" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge {% if rental.status == 'reserved' %}bg-info{% elif rental.status == 'issued' %}bg-primary{% elif rental.status == 'returned' %}bg-success{% else %}bg-secondary{% endif %} status-badge fs-5 mb-2">
+                            {% if rental.status == 'reserved' %}{% trans "Reserved" %}
+                            {% elif rental.status == 'issued' %}{% trans "Issued" %}
+                            {% elif rental.status == 'returned' %}{% trans "Returned" %}
+                            {% elif rental.status == 'cancelled' %}{% trans "Cancelled" %}
+                            {% else %}{{ rental.status }}{% endif %}
+                        </span>
+                        <div>
+                            <small class="text-light">ID: {{ rental.id }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            {% if can_return or can_extend %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-tools me-2"></i>{% trans "Actions" %}</h5>
+                            <div class="btn-group" role="group">
+                                {% if can_extend %}
+                                <button class="btn btn-outline-primary" id="extendBtn">
+                                    <i class="fas fa-calendar-plus me-1"></i>{% trans "Extend" %}
+                                </button>
+                                {% endif %}
+                                {% if can_return %}
+                                <button class="btn btn-outline-success" id="returnBtn">
+                                    <i class="fas fa-undo me-1"></i>{% trans "Edit Return" %}
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-outline-danger" id="cancelBtn">
+                                    <i class="fas fa-times me-1"></i>{% trans "Cancel" %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Items List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>{% trans "Equipment" %} ({{ rental.items.count }} {% trans "items" %})</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="itemsList">
+                                {% for item in rental.items.all %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="item-card p-3" data-item-id="{{ item.id }}">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-1">{{ item.inventory_item.description|default:item.inventory_item.inventory_number }}</h6>
+                                            <span class="badge bg-secondary">{{ item.inventory_item.inventory_number }}</span>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-map-marker-alt me-1"></i>{{ item.inventory_item.location.full_path }}
+                                                {% if item.inventory_item.category %}
+                                                <br><i class="fas fa-tag me-1"></i>{{ item.inventory_item.category.name }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+
+                                        <div class="row text-center mb-2">
+                                            <div class="col-4">
+                                                <strong>{{ item.quantity_requested }}</strong>
+                                                <br><small class="text-muted">{% trans "Requested" %}</small>
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>{{ item.quantity_issued|default:0 }}</strong>
+                                                <br><small class="text-muted">{% trans "Issued" %}</small>
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>{{ item.quantity_returned|default:0 }}</strong>
+                                                <br><small class="text-muted">{% trans "Returned" %}</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Return Date Information -->
+                                        {% if item.actual_return_date or item.quantity_returned > 0 %}
+                                        <div class="mb-2 p-2 rounded {% if item.actual_return_date %}{% if item.is_overdue %}overdue-highlight{% else %}ontime-highlight{% endif %}{% else %}return-info{% endif %}">
+                                            <div class="row text-center">
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-calendar-alt me-1"></i>{% trans "Planned until" %}:
+                                                    </small>
+                                                    <strong class="text-info">{{ rental.requested_end_date|date:"d.m.Y H:i" }}</strong>
+                                                </div>
+                                                <div class="col-6">
+                                                    {% if item.actual_return_date %}
+                                                        <small class="text-muted d-block">
+                                                            <i class="fas fa-calendar-check me-1"></i>{% trans "Actually returned" %}:
+                                                        </small>
+                                                        <strong class="{% if item.is_overdue %}text-danger{% else %}text-success{% endif %}">
+                                                            {{ item.actual_return_date|date:"d.m.Y H:i" }}
+                                                        </strong>
+                                                        {% if item.is_overdue and item.days_overdue > 0 %}
+                                                            <br><small class="text-danger fw-bold">
+                                                                <i class="fas fa-exclamation-triangle me-1"></i>{{ item.days_overdue }} {% trans "day" %}{{ item.days_overdue|pluralize:"s" }} {% trans "overdue" %}
+                                                            </small>
+                                                        {% elif not item.is_overdue %}
+                                                            <br><small class="text-success fw-bold">
+                                                                <i class="fas fa-check me-1"></i>{% trans "Returned on time" %}
+                                                            </small>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <small class="text-muted d-block">
+                                                            <i class="fas fa-hourglass-half me-1"></i>{% trans "Not yet returned" %}
+                                                        </small>
+                                                        {% if item.outstanding_to_return > 0 %}
+                                                            {% now "Y-m-d H:i" as current_time %}
+                                                            {% if rental.requested_end_date|date:"Y-m-d H:i" < current_time %}
+                                                                <strong class="text-warning">
+                                                                    <i class="fas fa-clock me-1"></i>{% trans "Overdue" %}
+                                                                </strong>
+                                                            {% else %}
+                                                                <strong class="text-info">
+                                                                    <i class="fas fa-hourglass-half me-1"></i>{% trans "Pending" %}
+                                                                </strong>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% with outstanding=item.quantity_issued|default:0|add:item.quantity_returned|default:0 %}
+                                        {% if outstanding > 0 %}
+                                        <div class="text-center mb-2">
+                                            <span class="badge bg-warning">{{ outstanding }} {% trans "outstanding" %}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% endwith %}
+
+                                        <!-- Return Form for this item (hidden initially) -->
+                                        <div class="return-form d-none mt-3 p-2 bg-light rounded" data-item-id="{{ item.id }}">
+                                            <h6>{% trans "Return" %}</h6>
+                                            <div class="mb-2">
+                                                <label class="form-label form-label-sm">{% trans "Quantity" %}:</label>
+                                                <input type="number" class="form-control form-control-sm return-quantity"
+                                                       min="1" max="{{ item.quantity_issued|default:0|add:item.quantity_returned|default:0 }}"
+                                                       value="{{ item.quantity_issued|default:0|add:item.quantity_returned|default:0 }}">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label form-label-sm">{% trans "Condition" %}:</label>
+                                                <select class="form-select form-select-sm return-condition">
+                                                    <option value="excellent">{% trans "Excellent" %}</option>
+                                                    <option value="good" selected>{% trans "Good" %}</option>
+                                                    <option value="fair">{% trans "Fair" %}</option>
+                                                    <option value="poor">{% trans "Poor" %}</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label form-label-sm">{% trans "Notes" %}:</label>
+                                                <textarea class="form-control form-control-sm return-notes" rows="2"></textarea>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label form-label-sm">{% trans "Issues" %}:</label>
+                                                <div class="issues-container">
+                                                    <button type="button" class="btn btn-sm btn-outline-warning add-issue-btn">
+                                                        <i class="fas fa-plus me-1"></i>{% trans "Add Issue" %}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Issues Display -->
+                                        {% if item.issues.all %}
+                                        <div class="mt-2">
+                                            <h6 class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>{% trans "Issues" %}:</h6>
+                                            {% for issue in item.issues.all %}
+                                            <div class="alert alert-sm p-2 mb-1 issue-{{ issue.severity }}">
+                                                <strong>{{ issue.get_issue_type_display }}:</strong> {{ issue.description }}
+                                                <br><small class="text-muted">{{ issue.reported_at|date:"d.m.Y H:i" }} {% trans "by" %} {{ issue.reported_by.email }}</small>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rooms List -->
+            {% if rental.room_rentals.all %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-building me-2"></i>{% trans "Rooms" %} ({{ rental.room_rentals.count }} {% trans "rooms" %})</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="roomsList">
+                                {% for room_rental in rental.room_rentals.all %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="item-card p-3" data-room-id="{{ room_rental.id }}">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-1">{{ room_rental.room.name }}</h6>
+                                            <span class="badge bg-success">{{ room_rental.room.inventory_number|default:room_rental.room.name }}</span>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-users me-1"></i>{{ room_rental.people_count }} {% trans "people" %}
+                                                {% if room_rental.room.location %}
+                                                <br><i class="fas fa-map-marker-alt me-1"></i>{{ room_rental.room.location }}
+                                                {% endif %}
+                                                {% if room_rental.room.description %}
+                                                <br><i class="fas fa-info-circle me-1"></i>{{ room_rental.room.description }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+
+                                        <div class="row text-center mb-2">
+                                            <div class="col-6">
+                                                <strong>{{ room_rental.room.capacity }}</strong>
+                                                <br><small class="text-muted">{% trans "Capacity" %}</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>{{ room_rental.people_count }}</strong>
+                                                <br><small class="text-muted">{% trans "Booked" %}</small>
+                                            </div>
+                                        </div>
+
+                                        {% if room_rental.notes %}
+                                        <div class="mb-2 p-2 bg-light rounded">
+                                            <small class="text-muted">
+                                                <i class="fas fa-sticky-note me-1"></i>{{ room_rental.notes }}
+                                            </small>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Return Date Information for Rooms -->
+                                        <div class="mb-2 p-2 rounded return-info">
+                                            <div class="row text-center">
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-calendar-alt me-1"></i>{% trans "Planned until" %}:
+                                                    </small>
+                                                    <strong class="text-info">{{ rental.requested_end_date|date:"d.m.Y H:i" }}</strong>
+                                                </div>
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-clock me-1"></i>{% trans "Status" %}:
+                                                    </small>
+                                                    <strong class="text-primary">
+                                                        {% if rental.status == 'returned' %}{% trans "Returned" %}
+                                                        {% elif rental.status == 'issued' %}{% trans "Issued" %}
+                                                        {% elif rental.status == 'reserved' %}{% trans "Reserved" %}
+                                                        {% else %}{{ rental.status }}{% endif %}
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Extend Modal -->
+            <div class="modal fade" id="extendModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{% trans "Extend Rental" %}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">{% trans "Current End Date" %}:</label>
+                                <div class="border rounded p-2 bg-light" id="currentEndDateDisplay">
+                                    <!-- Current end date will be displayed here -->
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{% trans "New End Date" %}:</label>
+                                <input type="datetime-local" class="form-control" id="newEndDate"
+                                       min="{{ rental.requested_end_date|date:'Y-m-d\TH:i' }}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <button type="button" class="btn btn-primary" id="confirmExtend">{% trans "Extend" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript translations -->
+    <script src="{% url 'javascript-catalog' %}"></script>
+
+    <!-- Data attributes for JavaScript -->
+    <div id="rental-data"
+         data-rental-id="{{ rental.id|default:0 }}"
+         data-current-end-date="{{ rental.requested_end_date|date:'Y-m-d\TH:i' }}"
+         data-csrf-token="{{ csrf_token }}"
+         data-extend-url="{% url 'rental:api_extend_rental' %}"
+         data-return-url="{% url 'rental:api_return_rental_items' %}"
+         data-cancel-url="{% url 'rental:api_cancel_rental' %}"
+         style="display: none;">
+    </div>
+
+    <script src="{% static 'rental/js/rental_detail.js' %}"></script>
+</body>
+</html>

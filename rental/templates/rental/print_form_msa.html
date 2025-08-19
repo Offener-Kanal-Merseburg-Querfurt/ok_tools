@@ -1,0 +1,404 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technik - Leihschein MSA</title>
+    <style>
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+            .equipment-left {
+                min-height: auto;
+                page-break-inside: avoid;
+            }
+            .equipment-item {
+                page-break-inside: avoid;
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: white;
+            color: black;
+            font-size: 12px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .organization {
+            font-size: 11px;
+            margin-bottom: 20px;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .form-container {
+            border: 2px solid black;
+            padding: 0;
+        }
+
+        .form-row {
+            display: flex;
+            border-bottom: 1px solid black;
+            min-height: 30px;
+        }
+
+        .form-row:last-child {
+            border-bottom: none;
+        }
+
+        .form-field {
+            padding: 8px;
+            border-right: 1px solid black;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-field:last-child {
+            border-right: none;
+        }
+
+        .form-field-narrow {
+            width: 200px;
+            flex: none;
+        }
+
+        .form-field-wide {
+            flex: 2;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .input-line {
+            border-bottom: 1px solid black;
+            min-width: 100px;
+            height: 18px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .filled-value {
+            font-weight: normal;
+            text-decoration: underline;
+            min-width: 100px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .equipment-section {
+            min-height: 150px;
+        }
+
+        .equipment-header {
+            background-color: #f0f0f0;
+            padding: 8px;
+            border-bottom: 1px solid black;
+            font-weight: bold;
+        }
+
+        .equipment-table {
+            display: flex;
+            min-height: auto;
+        }
+
+        .equipment-left {
+            width: 40%;
+            border-right: 1px solid black;
+            padding: 8px;
+        }
+
+        .equipment-item {
+            margin-bottom: 8px;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .equipment-controls {
+            display: flex;
+            flex: 1;
+        }
+
+        .control-column {
+            flex: 1;
+            border-right: 1px solid black;
+            text-align: center;
+            padding: 8px;
+            font-size: 10px;
+        }
+
+        .control-column:last-child {
+            border-right: none;
+        }
+
+        .accessories-section {
+            min-height: 100px;
+        }
+
+        .specification-section {
+            min-height: 60px;
+        }
+
+        .processing-section {
+            min-height: 80px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .signature-field {
+            text-align: center;
+            border-bottom: 1px dotted black;
+            width: 200px;
+            padding-bottom: 5px;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">
+        <i class="fas fa-print"></i> Drucken
+    </button>
+
+    <div class="header">
+        <div class="organization">Offener Kanal Merseburg- Querfurt e.V.</div>
+    </div>
+
+    <div class="title-section">
+        <div class="title">Technik - Leihschein <span style="margin-left: 50px;">Nr. {{ rental_request.id }}</span></div>
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="OK Logo">
+        </div>
+    </div>
+
+    <div class="form-container">
+        <!-- Name Row -->
+        <div class="form-row">
+            <div class="form-field">
+                <span class="filled-value">
+                    {% if rental_request.user.profile %}
+                        {{ rental_request.user.profile.first_name }} {{ rental_request.user.profile.last_name }}
+                    {% else %}
+                        {{ rental_request.user.email }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="form-field form-field-narrow">
+                <span class="label">Nutzer-Nr:</span>
+                <span class="filled-value">{{ rental_request.user.id }}</span>
+            </div>
+        </div>
+
+        <!-- Phone Row -->
+        <div class="form-row">
+            <div class="form-field">
+                <span class="label">Telefon:</span>
+                <span class="filled-value">
+                    {% if rental_request.user.profile and rental_request.user.profile.phone %}
+                        {{ rental_request.user.profile.phone }}
+                    {% else %}
+                        {{ rental_request.user.email }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="form-field">
+                <span class="label">Tel. dienstl.:</span>
+                <span class="input-line" style="width: 120px;"></span>
+            </div>
+        </div>
+
+        <!-- Dates Row -->
+        <div class="form-row">
+            <div class="form-field">
+                <span class="label">Ausgabetermin:</span>
+                <span class="filled-value">{{ rental_request.requested_start_date|date:"d.m.Y H:i" }}</span>
+            </div>
+            <div class="form-field">
+                <span class="label">Rückgabetermin:</span>
+                <span class="filled-value">{{ rental_request.requested_end_date|date:"d.m.Y H:i" }}</span>
+            </div>
+        </div>
+
+        <!-- Title Row -->
+        <div class="form-row">
+            <div class="form-field">
+                <span class="label">Titel der Produktion:</span>
+                <span class="filled-value">{{ rental_request.project_name }}</span>
+            </div>
+        </div>
+
+        <!-- Camera Section -->
+        <div class="form-row equipment-section">
+            <div style="width: 100%;">
+                <div class="equipment-header">Kamera:</div>
+                <div class="equipment-table">
+                    <div class="equipment-left">
+                        {% for item in msa_items %}
+                        <div class="equipment-item">
+                            <strong>{{ item.inventory_item.inventory_number }}</strong><br>
+                            {{ item.inventory_item.description }}<br>
+                            <small>Menge: {{ item.quantity_requested }}{% if item.quantity_issued %} (ausgegeben: {{ item.quantity_issued }}){% endif %}</small>
+                            {% if item.inventory_item.serial_number %}
+                            <br><small>S/N: {{ item.inventory_item.serial_number }}</small>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="equipment-item">Keine MSA-Geräte in dieser Ausleihe</div>
+                        {% endfor %}
+                    </div>
+                    <div class="equipment-controls">
+                        <div class="control-column">
+                            <div style="font-weight: bold; margin-bottom: 10px;">Ausgabe-<br>kontrolle</div>
+                        </div>
+                        <div class="control-column">
+                            <div style="font-weight: bold; margin-bottom: 10px;">Rücknahme-<br>kontrolle</div>
+                        </div>
+                        <div class="control-column">
+                            <div style="font-weight: bold; margin-bottom: 10px;">Ausgabe-<br>kontrolle</div>
+                        </div>
+                        <div class="control-column">
+                            <div style="font-weight: bold; margin-bottom: 10px;">Rücknahme-<br>kontrolle</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessories Section -->
+        <div class="form-row accessories-section">
+            <div class="form-field" style="width: 40%; border-right: 1px solid black;">
+                <span class="label" style="vertical-align: top;">Zubehör:</span>
+            </div>
+            <div style="flex: 1; padding: 8px;">
+                <div style="margin-bottom: 10px;"><span class="label">Anzahl Akkus:</span></div>
+                <div style="margin-bottom: 10px;"><span class="label">Anzahl DV-Mini:</span></div>
+                <div style="margin-bottom: 10px;"><span class="label">SD-Karten:</span> 16 GB:</div>
+                <div style="margin-bottom: 10px; margin-left: 60px;">32 GB:</div>
+                <div style="margin-bottom: 10px; margin-left: 60px;">64 GB:</div>
+            </div>
+        </div>
+
+        <!-- Camera States Section -->
+        <div class="form-row">
+            <div class="form-field form-field-narrow">
+                <span class="label">Anzahl Kamerastative:</span>
+            </div>
+            <div class="form-field"></div>
+        </div>
+
+        <!-- Other Section -->
+        <div class="form-row specification-section">
+            <div class="form-field">
+                <span class="label" style="vertical-align: top;">Sonstiges:</span>
+                <div style="margin-left: 10px;">
+                    {% if rental_request.notes %}
+                        {{ rental_request.notes }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Section -->
+        <div class="form-row processing-section">
+            <div class="form-field">
+                <span class="label" style="vertical-align: top;">Bearbeitungsvermerk:</span>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <div style="margin-bottom: 5px;">
+                    <span class="label">ausgehändigt durch:</span>
+                    <span class="filled-value">
+                        {% if rental_request.created_by.profile %}
+                            {{ rental_request.created_by.profile.first_name }} {{ rental_request.created_by.profile.last_name }}
+                        {% else %}
+                            {{ rental_request.created_by.username }}
+                        {% endif %}
+                    </span>
+                </div>
+                <p></p>
+                <br>
+                <div>
+                    <span class="label">Rücknahme durch:</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Hiermit bestätige ich, daß ich die oben gekennzeichneten Ausrüstungsteile ausgehändigt bekommen habe.<br>
+        Ich erkläre hiermit mein Einverständnis mit der Nutzungsordnung der Offenen Kanals Merseburg- Querfurt e.V.
+    </div>
+
+    <div class="signature-section">
+        <div>
+            <div>Merseburg, {{ "now"|date:"d.m.Y" }}</div>
+        </div>
+        <div class="signature-field">
+            Unterschrift Nutzer
+        </div>
+    </div>
+
+    <script>
+        // Auto-print when page loads (optional)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>

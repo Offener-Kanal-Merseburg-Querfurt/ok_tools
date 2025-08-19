@@ -1,0 +1,9 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <li>
+    <a href="/rental/admin/rental-process/" class="viewsitelink">{% trans "Open rental process" %}</a>
+  </li>
+{% endblock %}

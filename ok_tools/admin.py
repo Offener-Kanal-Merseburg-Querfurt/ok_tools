@@ -19,6 +19,16 @@ ADMIN_MODEL_ORDER: Dict[str, List[str]] = {
         "Organization",
         "AuditLog",
     ],
+    "rental": [
+        "RentalProcessProxy",  # This will be the first item - our custom rental process link
+        "Room",
+        "EquipmentSet",
+        "RentalIssue",
+        "RentalItem",
+        "RentalRequest",
+        "RoomRental",
+        "RentalTransaction",
+    ],
 }
 
 

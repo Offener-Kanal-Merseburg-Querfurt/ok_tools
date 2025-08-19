@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import TemplateView
+from django.views.i18n import JavaScriptCatalog
 from registration.views import PasswordResetConfirmView
 from registration.views import PasswordResetView
 
@@ -53,6 +54,9 @@ urlpatterns = [
         include("planung.urls"),
     ),
     path('inventory/', include('inventory.urls', namespace='inventory')),
+    path('rental/', include('rental.urls', namespace='rental')),
+    # JavaScript translations
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     # Accessibility URLs
     path('accessibility-statement/', accessibility_views.accessibility_statement, name='accessibility_statement'),
     path('accessibility-feedback/', accessibility_views.accessibility_feedback, name='accessibility_feedback'),

@@ -60,8 +60,11 @@ INSTALLED_APPS = [
     "icalendar",
     "import_export",
     "rangefilter",
+    "rest_framework",
+    "django_filters",
     "tablib",
     "inventory",
+    "rental",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -194,6 +197,23 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "registration.OKUser"
 AUTHENTICATION_BACKENDS = ["registration.backends.EmailBackend"]
 
+# Django REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+}
+
 # TODO config?
 # Phone Number Validation
 PHONENUMBER_DEFAULT_REGION = "DE"
@@ -229,6 +249,7 @@ OK_NAME_SHORT = "OK Merseburg"
 SCREEN_BOARD_DURATION = 20
 
 # Which site should be seen after log in and log out
+LOGIN_URL = "login"  # This points to /profile/login/ via django.contrib.auth.urls
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 

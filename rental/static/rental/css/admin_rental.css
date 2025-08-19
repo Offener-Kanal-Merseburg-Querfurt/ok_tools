@@ -1,0 +1,1125 @@
+/* Rental Process Admin CSS */
+.workflow-step {
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.workflow-step:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.workflow-step.active {
+    border-left-color: #198754;
+    background: #d1e7dd;
+}
+
+.workflow-step.completed {
+    border-left-color: #6c757d;
+    background: #e9ecef;
+}
+
+.item-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+/* Compact info rows inside item cards */
+.item-card .small { line-height: 1.2; }
+.item-card .location-path { margin-top: 2px; }
+
+.item-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.item-card.selected {
+    border-color: #0d6efd;
+    background: #e7f3ff;
+}
+
+.quick-filters {
+    background: #fff;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.search-input {
+    border-radius: 2rem;
+}
+
+.inventory-grid {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Inventory overlay asking to select dates */
+.inventory-grid {
+  position: relative;
+  min-height: 200px;
+}
+
+.inventory-grid.overlay-active #inventoryGrid {
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.inventory-grid .overlay-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: 2;
+  font-weight: 600;
+}
+
+/* Equal-height cards in inventory grid */
+.inventory-grid .col-md-6.col-lg-4 { display: flex; }
+.inventory-grid .item-card { display: flex; flex-direction: column; }
+.inventory-grid .item-card .mt-auto { margin-top: auto; }
+
+.location-path {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Inventory schedule calendar styles - using same styles as room calendar */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    gap: 1px;
+    background-color: #dee2e6;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.calendar-header {
+    display: contents;
+}
+
+.calendar-row {
+    display: contents;
+}
+
+.calendar-cell {
+    background-color: white;
+    padding: 8px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.calendar-cell.header {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    min-height: 60px;
+    flex-direction: column;
+}
+
+.calendar-cell.time-slot {
+    background-color: #e9ecef;
+    font-weight: 500;
+    justify-content: flex-start;
+    padding-left: 12px;
+}
+
+.calendar-cell.available {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.calendar-cell.occupied {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    position: relative;
+}
+
+.calendar-cell.today {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+}
+
+.calendar-cell.weekend {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.slot-info {
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.day-name {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+.day-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.quantity-controls {
+    min-width: 120px;
+}
+
+.sidebar {
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    min-height: calc(100vh - 60px);
+}
+
+.main-content {
+    background: #fff;
+}
+
+.action-buttons {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+    margin: -1rem;
+    margin-top: 2rem;
+}
+
+.user-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Noticeable background for search results */
+.user-result-card {
+  background: linear-gradient(180deg, #e6f4ff 0%, #ffffff 60%);
+  border: 1px solid #b6e0fe;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.user-result-card:hover {
+  background: linear-gradient(180deg, #d7edff 0%, #ffffff 60%);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.15);
+}
+
+.return-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.workflow-step{background:#f8f9fa;border-left:4px solid #0d6efd;margin-bottom:1rem;transition:all .3s ease}
+.workflow-step:hover{box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.workflow-step.active{border-left-color:#198754;background:#d1e7dd}
+.workflow-step.completed{border-left-color:#6c757d;background:#e9ecef}
+.item-card{border:1px solid #dee2e6;border-radius:.375rem;transition:all .3s ease}
+.item-card:hover{box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.item-card.selected{border-color:#0d6efd;background:#e7f3ff}
+.quick-filters{background:#fff;border-radius:.375rem;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.status-badge{font-size:.75rem;padding:.25rem .5rem}
+.search-input{border-radius:2rem}
+.inventory-grid{max-height:400px;overflow-y:auto}
+.location-path{font-size:.85rem;color:#6c757d}
+.quantity-controls{min-width:120px}
+.sidebar{background:#f8f9fa;border-right:1px solid #dee2e6;min-height:calc(100vh - 60px)}
+.main-content{background:#fff}
+.action-buttons{position:sticky;bottom:0;background:#fff;border-top:1px solid #dee2e6;padding:1rem;margin:-1rem;margin-top:2rem}
+.time-select {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #3498db !important;
+    padding: 8px 12px !important;
+    min-height: 45px !important;
+}
+
+.time-select option {
+    font-weight: 700 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    padding: 8px 12px !important;
+}
+
+.time-select option:hover {
+    background-color: #3498db !important;
+    color: #ffffff !important;
+}
+
+.time-select option:checked {
+    background-color: #3498db !important;
+    color: #ffffff !important;
+}
+
+.time-select:focus {
+    border-color: #2980b9 !important;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+    color: #000000 !important;
+}
+.date-input {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #3498db !important;
+    padding: 8px 12px !important;
+    min-height: 45px !important;
+}
+
+.date-input:focus {
+    border-color: #2980b9 !important;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+    color: #000000 !important;
+}
+.room-time-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+/* Улучшение видимости времени в модальном окне */
+.room-time-section .form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.room-time-section .form-select,
+.room-time-section .form-control {
+    font-weight: 700 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #3498db !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+    min-height: 45px !important;
+}
+
+.room-time-section .form-select:focus,
+.room-time-section .form-control:focus {
+    border-color: #2980b9 !important;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+    outline: none !important;
+    color: #000000 !important;
+}
+
+/* Стили для опций в выпадающих списках */
+.room-time-section .form-select option {
+    font-weight: 700 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    padding: 10px 12px !important;
+}
+
+.room-time-section .form-select option:hover {
+    background-color: #3498db !important;
+    color: #ffffff !important;
+}
+
+.room-time-section .form-select option:checked {
+    background-color: #3498db !important;
+    color: #ffffff !important;
+}
+
+/* Дополнительные стили для гарантии видимости времени */
+.room-time-section select[id*="Time"] {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+}
+
+.room-time-section select[id*="Time"] option {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.room-time-section select[id*="Time"] option:checked {
+    color: #ffffff !important;
+    background-color: #3498db !important;
+}
+
+/* Принудительная видимость для всех select элементов времени */
+.room-time-section .form-select[id*="StartTime"],
+.room-time-section .form-select[id*="EndTime"] {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    text-shadow: none !important;
+}
+
+/* Styles for selected items */
+.selected-items-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.selected-item {
+    transition: all 0.2s ease;
+}
+
+.selected-item:hover {
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+}
+
+.selected-item .btn-outline-danger {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.selected-item:hover .btn-outline-danger {
+    opacity: 1;
+}
+
+/* Calendar and Timeline Styles */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  gap: 1px;
+  background-color: #dee2e6;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: contents;
+}
+
+.calendar-row {
+  display: contents;
+}
+
+.calendar-cell {
+  background-color: white;
+  padding: 8px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.calendar-cell.header {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  min-height: 60px;
+  flex-direction: column;
+}
+
+.calendar-cell.time-slot {
+  background-color: #e9ecef;
+  font-weight: 500;
+  justify-content: flex-start;
+  padding-left: 12px;
+}
+
+.calendar-cell.available {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.calendar-cell.occupied {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  position: relative;
+}
+
+.calendar-cell.today {
+  background-color: #fff3cd;
+  border: 2px solid #ffc107;
+}
+
+.calendar-cell.weekend {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.slot-info {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.day-name {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+}
+
+.day-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Timeline Styles */
+.timeline-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.timeline-room {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.timeline-slots {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 2px;
+  margin-top: 1rem;
+}
+
+.timeline-slot {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 0.25rem;
+  padding: 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.timeline-slot.occupied {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.slot-time {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 4px;
+}
+
+.slot-details {
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 2px;
+}
+
+.project-name {
+  color: #6c757d;
+  margin-bottom: 2px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.reserved {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.issued {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .calendar-grid {
+    grid-template-columns: 60px repeat(7, 1fr);
+    font-size: 0.75rem;
+  }
+
+  .calendar-cell {
+    padding: 4px;
+    min-height: 30px;
+  }
+
+  .calendar-cell.header {
+    min-height: 50px;
+  }
+
+  .timeline-slots {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Улучшение читаемости таблицы аренд */
+.rentals-table {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rentals-table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 12px 8px;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.rentals-table td {
+  padding: 16px 8px;
+  vertical-align: top;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.rentals-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+/* Улучшение колонок */
+.rentals-table .col-id {
+  width: 60px;
+  text-align: center;
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.rentals-table .col-project {
+  width: 200px;
+  min-width: 200px;
+}
+
+.rentals-table .col-user {
+  width: 180px;
+  min-width: 180px;
+}
+
+.rentals-table .col-status {
+  width: 120px;
+  text-align: center;
+}
+
+.rentals-table .col-created {
+  width: 140px;
+  white-space: nowrap;
+}
+
+.rentals-table .col-period {
+  width: 160px;
+  min-width: 160px;
+}
+
+.rentals-table .col-return {
+  width: 150px;
+  min-width: 150px;
+}
+
+.rentals-table .col-items {
+  width: 200px;
+  min-width: 200px;
+}
+
+/* Улучшение отображения данных */
+.rentals-table .project-name {
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 4px;
+}
+
+.rentals-table .project-meta {
+  font-size: 12px;
+  color: #6c757d;
+  line-height: 1.3;
+}
+
+.rentals-table .user-name {
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 2px;
+}
+
+.rentals-table .user-email {
+  font-size: 12px;
+  color: #6c757d;
+  word-break: break-all;
+}
+
+.rentals-table .status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rentals-table .status-reserved {
+  background-color: #cce5ff;
+  color: #004085;
+  border: 1px solid #b3d7ff;
+}
+
+.rentals-table .status-issued {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.rentals-table .status-returned {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.rentals-table .status-cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.rentals-table .status-draft {
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.rentals-table .date-info {
+  font-weight: 500;
+  color: #495057;
+}
+
+.rentals-table .time-info {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.rentals-table .return-status {
+  font-weight: 500;
+}
+
+.rentals-table .return-overdue {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.rentals-table .return-on-time {
+  color: #28a745;
+}
+
+.rentals-table .items-count {
+  display: inline-block;
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.rentals-table .items-details {
+  font-size: 12px;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 1200px) {
+  .rentals-table {
+    font-size: 13px;
+  }
+
+  .rentals-table th,
+  .rentals-table td {
+    padding: 12px 6px;
+  }
+
+  .rentals-table .col-project,
+  .rentals-table .col-items {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .rentals-table {
+    font-size: 12px;
+  }
+
+  .rentals-table th,
+  .rentals-table td {
+    padding: 8px 4px;
+  }
+
+  .rentals-table .project-meta,
+  .rentals-table .user-email,
+  .rentals-table .time-info {
+    font-size: 11px;
+  }
+}
+
+/* Дополнительные улучшения для таблицы */
+.rentals-table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rentals-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.rentals-table thead th {
+  border: none;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  padding: 16px 12px;
+}
+
+.rentals-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.rentals-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rentals-table tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+.rentals-table tbody tr:nth-child(even):hover {
+  background-color: #f0f2f5;
+}
+
+/* Улучшение ссылок */
+.rentals-table a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.rentals-table a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Улучшение статусов */
+.rentals-table .status-badge {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.rentals-table .status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Улучшение счетчиков */
+.rentals-table .items-count {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.rentals-table .items-count:hover {
+  transform: scale(1.05);
+}
+
+/* Анимации для загрузки */
+.rentals-table tbody tr {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Улучшение пагинации */
+.pagination .page-link {
+  border-radius: 6px;
+  margin: 0 2px;
+  border: 1px solid #dee2e6;
+  color: #007bff;
+  transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+  background-color: #e9ecef;
+  border-color: #007bff;
+  transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+  box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+}
+
+/* Улучшение фильтров */
+.form-select, .form-control {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  transition: all 0.2s ease;
+}
+
+.form-select:focus, .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+  transform: translateY(-1px);
+}
+
+/* Улучшение кнопок */
+.btn {
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Улучшение карточек */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Улучшение скроллбара */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Увеличение размера табов меню */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 24px;
+  margin-right: 8px;
+  border: 2px solid transparent;
+  border-radius: 12px 12px 0 0;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  top: 2px;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #495057;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.nav-tabs .nav-link.active {
+  color: #fff;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border-color: #007bff;
+  border-bottom-color: #fff;
+  box-shadow: 0 4px 16px rgba(0,123,255,0.3);
+  transform: translateY(-2px);
+}
+
+.nav-tabs .nav-link.active:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+}
+
+/* Увеличение иконок в табах */
+.nav-tabs .nav-link i {
+  font-size: 20px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Анимация для активного таба */
+.nav-tabs .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+/* Hover эффекты для неактивных табов */
+.nav-tabs .nav-link:not(.active):hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  color: #495057;
+  border-color: #adb5bd;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .nav-tabs .nav-link {
+    font-size: 14px;
+    padding: 12px 16px;
+    min-width: 120px;
+    gap: 8px;
+  }
+
+  .nav-tabs .nav-link i {
+    font-size: 18px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .nav-tabs {
+    flex-direction: column;
+    border-bottom: none;
+    border-right: 2px solid #dee2e6;
+    margin-bottom: 0;
+    margin-right: 20px;
+  }
+
+  .nav-tabs .nav-link {
+    border-radius: 12px 0 0 12px;
+    margin-right: 0;
+    margin-bottom: 8px;
+    min-width: 100px;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .nav-tabs .nav-link.active {
+    border-right-color: #fff;
+    border-bottom-color: #007bff;
+  }
+
+  .nav-tabs .nav-link.active::after {
+    bottom: 0;
+    right: -2px;
+    left: auto;
+    width: 2px;
+    height: 100%;
+  }
+}
+
+/* Улучшение контейнера табов */
+.nav-tabs-container {
+  background: #fff;
+  padding: 20px 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+/* Анимация появления табов */
+.nav-tabs .nav-link {
+  animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Улучшение текста в табах */
+.nav-tabs .nav-link span {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+/* Эффект нажатия */
+.nav-tabs .nav-link:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}

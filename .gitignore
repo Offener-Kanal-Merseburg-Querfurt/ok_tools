@@ -36,6 +36,16 @@ error_logs/
 ok_tools.egg-info/
 *.mo
 
+# Local-only automation/scripts and environment (do not commit)
+scripts/expire_rooms_docker.sh
+scripts/expire_rooms_simple.py
+docker-expire-rooms.service
+docker-expire-rooms.timer
+pyvenv.cfg
+bin/
+lib/
+
 # Docker
 docker*.yml
 docker*.cfg
+Dockerfile

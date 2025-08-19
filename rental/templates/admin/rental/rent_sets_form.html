@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% trans "Create rental from equipment sets" %}</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div>
+      {{ form.as_p }}
+    </div>
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% trans "Create" %}">
+    </div>
+  </form>
+{% endblock %}

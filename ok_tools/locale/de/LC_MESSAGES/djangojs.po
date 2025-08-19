@@ -1,0 +1,1368 @@
+# German Translation for Rental System JavaScript
+# Copyright (C) 2025 Rental System
+# This file is distributed under the same license as the Rental System package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Rental System 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-19 14:08+0200\n"
+"PO-Revision-Date: 2025-08-17 23:00+0200\n"
+"Last-Translator: Translator <translator@example.com>\n"
+"Language-Team: German <de@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: rental/static/rental/js/admin_rental.js:141
+msgid "No users found"
+msgstr "Keine Benutzer gefunden"
+
+#: rental/static/rental/js/admin_rental.js:152
+#: rental/static/rental/js/admin_rental.js:198
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: rental/static/rental/js/admin_rental.js:154
+msgid "authorized"
+msgstr "berechtigt"
+
+#: rental/static/rental/js/admin_rental.js:157
+#: rental/static/rental/js/admin_rental.js:199
+#: rental/static/rental/js/admin_rental.js:2134
+#: rental/static/rental/js/admin_rental.js:2777
+msgid "User"
+msgstr "Benutzer"
+
+#: rental/static/rental/js/admin_rental.js:199
+#: rental/static/rental/js/admin_rental.js:1159
+#: rental/static/rental/js/rental_stats.js:760
+msgid "Status"
+msgstr "Status"
+
+#: rental/static/rental/js/admin_rental.js:199
+msgid "Authorized"
+msgstr "Berechtigt"
+
+#: rental/static/rental/js/admin_rental.js:229
+msgid "Please select start and end dates to see accurate availability"
+msgstr "Bitte wählen Sie Start- und Enddatum aus, um die genaue Verfügbarkeit zu sehen"
+
+#: rental/static/rental/js/admin_rental.js:270
+msgid "All owners"
+msgstr "Alle Eigentümer"
+
+#: rental/static/rental/js/admin_rental.js:282
+msgid "All categories"
+msgstr "Alle Kategorien"
+
+#: rental/static/rental/js/admin_rental.js:294
+msgid "All locations"
+msgstr "Alle Standorte"
+
+#: rental/static/rental/js/admin_rental.js:370
+msgid "No available inventory for this user"
+msgstr "Kein verfügbares Inventar für diesen Benutzer"
+
+#: rental/static/rental/js/admin_rental.js:381
+#: rental/static/rental/js/admin_rental.js:1095
+#: rental/static/rental/js/admin_rental.js:1158
+#: rental/static/rental/js/admin_rental.js:1704
+#: rental/static/rental/js/admin_rental.js:1744
+#: rental/static/rental/js/rental_stats.js:643
+msgid "Available"
+msgstr "Verfügbar"
+
+#: rental/static/rental/js/admin_rental.js:385
+#: rental/static/rental/js/admin_rental.js:445
+#: rental/static/rental/js/admin_rental.js:479
+msgid "No category"
+msgstr "Keine Kategorie"
+
+#: rental/static/rental/js/admin_rental.js:391
+msgid "Owner"
+msgstr "Eigentümer"
+
+#: rental/static/rental/js/admin_rental.js:444
+#: rental/static/rental/js/admin_rental.js:478
+#: rental/static/rental/js/admin_rental.js:1760
+#: rental/static/rental/js/admin_rental.js:2259
+msgid "Location not specified"
+msgstr "Standort nicht angegeben"
+
+#: rental/static/rental/js/admin_rental.js:463
+msgid "No items selected"
+msgstr "Keine Artikel ausgewählt"
+
+#: rental/static/rental/js/admin_rental.js:469
+#: rental/static/rental/js/admin_rental.js:580
+msgid "items selected"
+msgstr "Artikel ausgewählt"
+
+#: rental/static/rental/js/admin_rental.js:476
+#: rental/static/rental/js/admin_rental.js:2216
+#: rental/static/rental/js/admin_rental.js:2412
+msgid "Unknown item"
+msgstr "Unbekannter Artikel"
+
+#: rental/static/rental/js/admin_rental.js:477
+msgid "No number"
+msgstr "Keine Nummer"
+
+#: rental/static/rental/js/admin_rental.js:588
+msgid "rooms selected"
+msgstr "Räume ausgewählt"
+
+#: rental/static/rental/js/admin_rental.js:613
+msgid "No items or rooms selected"
+msgstr "Keine Artikel oder Räume ausgewählt"
+
+#: rental/static/rental/js/admin_rental.js:646
+#: rental/static/rental/js/rental_stats.js:726
+#: rental/static/rental/js/rental_stats.js:760
+msgid "Active"
+msgstr "Aktiv"
+
+#: rental/static/rental/js/admin_rental.js:654
+#: rental/static/rental/js/admin_rental.js:2193
+#: rental/static/rental/js/admin_rental.js:2206
+#: rental/static/rental/js/admin_rental.js:2832
+#: rental/static/rental/js/admin_rental.js:2865
+#: rental/static/rental/js/rental_stats.js:422
+#: rental/static/rental/js/rental_stats.js:537
+#: rental/static/rental/js/rental_stats.js:583
+#: rental/static/rental/js/rental_stats.js:591
+msgid "Returned"
+msgstr "Zurückgegeben"
+
+#: rental/static/rental/js/admin_rental.js:662
+#: rental/static/rental/js/rental_stats.js:604
+msgid "Overdue"
+msgstr "Überfällig"
+
+#: rental/static/rental/js/admin_rental.js:683
+msgid "Error loading statistics:"
+msgstr "Fehler beim Laden der Statistiken:"
+
+#: rental/static/rental/js/admin_rental.js:722
+#: rental/static/rental/js/admin_rental.js:726
+msgid "Return"
+msgstr "Zurückgeben"
+
+#: rental/static/rental/js/admin_rental.js:722
+msgid "No active rentals"
+msgstr "Keine aktiven Ausleihen"
+
+#: rental/static/rental/js/admin_rental.js:733
+msgid "Outstanding:"
+msgstr "Ausstehend:"
+
+#: rental/static/rental/js/admin_rental.js:737
+msgid "Quick"
+msgstr "Schnell"
+
+#: rental/static/rental/js/admin_rental.js:742
+msgid "Detailed return with condition assessment"
+msgstr "Detaillierte Rückgabe mit Zustandsbewertung"
+
+#: rental/static/rental/js/admin_rental.js:743
+msgid "Detailed"
+msgstr "Detailliert"
+
+#: rental/static/rental/js/admin_rental.js:775
+#: rental/static/rental/js/admin_rental.js:2555
+#: rental/static/rental/js/rental_detail.js:197
+msgid "No items to return selected"
+msgstr "Keine Artikel zur Rückgabe ausgewählt"
+
+#: rental/static/rental/js/admin_rental.js:779
+msgid "How many items to return?"
+msgstr "Wie viele Artikel zurückgeben?"
+
+#: rental/static/rental/js/admin_rental.js:782
+msgid "Invalid quantity"
+msgstr "Ungültige Menge"
+
+#: rental/static/rental/js/admin_rental.js:795
+msgid "Return successful"
+msgstr "Rückgabe erfolgreich"
+
+#: rental/static/rental/js/admin_rental.js:799
+msgid "Return error"
+msgstr "Rückgabefehler"
+
+#: rental/static/rental/js/admin_rental.js:803
+#: rental/static/rental/js/admin_rental.js:2589
+#: rental/static/rental/js/admin_rental.js:2716
+#: rental/static/rental/js/rental_detail.js:146
+#: rental/static/rental/js/rental_detail.js:227
+#: rental/static/rental/js/rental_detail.js:322
+#: rental/static/rental/js/rental_stats.js:689
+#: rental/static/rental/js/rental_stats.js:954
+#: rental/static/rental/js/rental_stats.js:984
+msgid "Network error"
+msgstr "Netzwerkfehler"
+
+#: rental/static/rental/js/admin_rental.js:811
+#: rental/static/rental/js/admin_rental.js:2380
+#: rental/static/rental/js/admin_rental.js:2596
+msgid "Please select a user first"
+msgstr "Bitte wählen Sie zuerst einen Benutzer aus"
+
+#: rental/static/rental/js/admin_rental.js:820
+msgid "Please enter a project name"
+msgstr "Bitte geben Sie einen Projektnamen ein"
+
+#: rental/static/rental/js/admin_rental.js:831
+msgid "Please select start and end dates"
+msgstr "Bitte wählen Sie Start- und Enddatum aus"
+
+#: rental/static/rental/js/admin_rental.js:848
+msgid "End date must be after start date"
+msgstr "Enddatum muss nach Startdatum liegen"
+
+#: rental/static/rental/js/admin_rental.js:855
+msgid "Please select at least one item or room"
+msgstr "Bitte wählen Sie mindestens einen Artikel oder Raum aus"
+
+#: rental/static/rental/js/admin_rental.js:887
+msgid "issued"
+msgstr "ausgegeben"
+
+#: rental/static/rental/js/admin_rental.js:897
+msgid "Error creating rental"
+msgstr "Fehler beim Erstellen der Ausleihe"
+
+#: rental/static/rental/js/admin_rental.js:992
+msgid "Do you really want to reset the entire form?"
+msgstr "Möchten Sie wirklich das gesamte Formular zurücksetzen?"
+
+#: rental/static/rental/js/admin_rental.js:1008
+msgid "Select user"
+msgstr "Benutzer auswählen"
+
+#: rental/static/rental/js/admin_rental.js:1065
+msgid "Error loading equipment sets"
+msgstr "Fehler beim Laden der Ausrüstungssets"
+
+#: rental/static/rental/js/admin_rental.js:1078
+msgid "No sets available"
+msgstr "Keine Sets verfügbar"
+
+#: rental/static/rental/js/admin_rental.js:1091
+#: rental/static/rental/js/admin_rental.js:1147
+#: rental/static/rental/js/admin_rental.js:1755
+#: rental/static/rental/js/admin_rental.js:1804
+#: rental/static/rental/js/rental_stats.js:759
+msgid "No description"
+msgstr "Keine Beschreibung"
+
+#: rental/static/rental/js/admin_rental.js:1092
+#: rental/static/rental/js/admin_rental.js:2198
+#: rental/static/rental/js/rental_stats.js:163
+#: rental/static/rental/js/rental_stats.js:171
+#: rental/static/rental/js/rental_stats.js:503
+#: rental/static/rental/js/rental_stats.js:511
+msgid "items"
+msgstr "Artikel"
+
+#: rental/static/rental/js/admin_rental.js:1156
+#: rental/static/rental/js/admin_rental.js:2203
+msgid "Item"
+msgstr "Artikel"
+
+#: rental/static/rental/js/admin_rental.js:1157
+msgid "Needed"
+msgstr "Benötigt"
+
+#: rental/static/rental/js/admin_rental.js:1160
+#: rental/static/rental/js/admin_rental.js:1811
+msgid "Location"
+msgstr "Standort"
+
+#: rental/static/rental/js/admin_rental.js:1177
+msgid "OK"
+msgstr "OK"
+
+#: rental/static/rental/js/admin_rental.js:1177
+#: rental/static/rental/js/admin_rental.js:2486
+#: rental/static/rental/js/rental_detail.js:262
+msgid "Missing"
+msgstr "Fehlt"
+
+#: rental/static/rental/js/admin_rental.js:1195
+msgid "items in set"
+msgstr "Artikel im Set"
+
+#: rental/static/rental/js/admin_rental.js:1198
+msgid "Detailed information is loading..."
+msgstr "Detaillierte Informationen werden geladen..."
+
+#: rental/static/rental/js/admin_rental.js:1207
+msgid "Please select a user and a set first"
+msgstr "Bitte wählen Sie zuerst einen Benutzer und ein Set aus"
+
+#: rental/static/rental/js/admin_rental.js:1251
+msgid "Error: Detailed information about the set is not available"
+msgstr "Fehler: Detaillierte Informationen über das Set sind nicht verfügbar"
+
+#: rental/static/rental/js/admin_rental.js:1336
+#: rental/static/rental/js/admin_rental.js:1428
+#: rental/static/rental/js/admin_rental.js:1496
+#: rental/static/rental/js/admin_rental.js:2732
+#: rental/static/rental/js/rental_stats.js:1064
+msgid "Unknown error"
+msgstr "Unbekannter Fehler"
+
+#: rental/static/rental/js/admin_rental.js:1340
+msgid "Error loading rooms"
+msgstr "Fehler beim Laden der Räume"
+
+#: rental/static/rental/js/admin_rental.js:1350
+#: rental/static/rental/js/admin_rental.js:1360
+msgid "All rooms"
+msgstr "Alle Räume"
+
+#: rental/static/rental/js/admin_rental.js:1401
+#: rental/static/rental/js/rental_stats.js:335
+msgid "Loading calendar..."
+msgstr "Lade Kalender..."
+
+#: rental/static/rental/js/admin_rental.js:1438
+msgid "Error loading calendar"
+msgstr "Fehler beim Laden des Kalenders"
+
+#: rental/static/rental/js/admin_rental.js:1441
+#: rental/static/rental/js/admin_rental.js:1509
+msgid "Retry"
+msgstr "Wiederholen"
+
+#: rental/static/rental/js/admin_rental.js:1471
+msgid "Loading timeline..."
+msgstr "Lade Zeitachse..."
+
+#: rental/static/rental/js/admin_rental.js:1506
+msgid "Error loading timeline"
+msgstr "Fehler beim Laden der Zeitachse"
+
+#: rental/static/rental/js/admin_rental.js:1528
+#: rental/static/rental/js/admin_rental.js:1639
+#: rental/static/rental/js/admin_rental.js:1735
+msgid "No rooms available"
+msgstr "Keine Räume verfügbar"
+
+#: rental/static/rental/js/admin_rental.js:1535
+#: rental/static/rental/js/rental_stats.js:431
+msgid "No schedule available"
+msgstr "Kein Zeitplan verfügbar"
+
+#: rental/static/rental/js/admin_rental.js:1567
+#: rental/static/rental/js/rental_stats.js:440
+msgid "Time"
+msgstr "Zeit"
+
+#: rental/static/rental/js/admin_rental.js:1605
+#: rental/static/rental/js/admin_rental.js:1720
+#: rental/static/rental/js/admin_rental.js:1757
+#: rental/static/rental/js/admin_rental.js:1808
+#: rental/static/rental/js/admin_rental.js:2261
+#: rental/static/rental/js/admin_rental.js:2262
+#: rental/static/rental/js/rental_stats.js:152
+#: rental/static/rental/js/rental_stats.js:495
+msgid "people"
+msgstr "Personen"
+
+#: rental/static/rental/js/admin_rental.js:1707
+msgid "Unknown user"
+msgstr "Unbekannter Benutzer"
+
+#: rental/static/rental/js/admin_rental.js:1708
+msgid "No project"
+msgstr "Kein Projekt"
+
+#: rental/static/rental/js/admin_rental.js:1724
+msgid "Occupied"
+msgstr "Belegt"
+
+#: rental/static/rental/js/admin_rental.js:1744
+msgid "Not available"
+msgstr "Nicht verfügbar"
+
+#: rental/static/rental/js/admin_rental.js:1785
+msgid "This room is not available for the selected period."
+msgstr "Dieser Raum ist für den gewählten Zeitraum nicht verfügbar."
+
+#: rental/static/rental/js/admin_rental.js:1807
+#: rental/static/rental/js/admin_rental.js:2247
+msgid "Capacity"
+msgstr "Kapazität"
+
+#: rental/static/rental/js/admin_rental.js:1812
+msgid "Not specified"
+msgstr "Nicht angegeben"
+
+#: rental/static/rental/js/admin_rental.js:1818
+msgid "Start date"
+msgstr "Startdatum"
+
+#: rental/static/rental/js/admin_rental.js:1824
+msgid "Start time"
+msgstr "Startzeit"
+
+#: rental/static/rental/js/admin_rental.js:1846
+msgid "End date"
+msgstr "Enddatum"
+
+#: rental/static/rental/js/admin_rental.js:1846
+msgid "optional"
+msgstr "optional"
+
+#: rental/static/rental/js/admin_rental.js:1850
+msgid "Select different end date"
+msgstr "Anderes Enddatum wählen"
+
+#: rental/static/rental/js/admin_rental.js:1858
+msgid "End time"
+msgstr "Endzeit"
+
+#: rental/static/rental/js/admin_rental.js:1880
+msgid "Working hours"
+msgstr "Arbeitszeiten"
+
+#: rental/static/rental/js/admin_rental.js:1880
+msgid "Mo-Fr, 10:00-18:00"
+msgstr "Mo-Fr, 10:00-18:00"
+
+#: rental/static/rental/js/admin_rental.js:1880
+msgid "(except for holidays)"
+msgstr "(außer an Feiertagen)"
+
+#: rental/static/rental/js/admin_rental.js:1951
+msgid "Please select a user and a room first"
+msgstr "Bitte wählen Sie zuerst einen Benutzer und einen Raum aus"
+
+#: rental/static/rental/js/admin_rental.js:1963
+msgid "Please select start date and time"
+msgstr "Bitte wählen Sie Startdatum und -zeit aus"
+
+#: rental/static/rental/js/admin_rental.js:1971
+msgid "Please select end date"
+msgstr "Bitte wählen Sie Enddatum aus"
+
+#: rental/static/rental/js/admin_rental.js:1982
+msgid "Please select time between 10:00 and 18:00"
+msgstr "Bitte wählen Sie eine Zeit zwischen 10:00 und 18:00 aus"
+
+#: rental/static/rental/js/admin_rental.js:1991
+msgid "End time must be after start time"
+msgstr "Endzeit muss nach Startzeit liegen"
+
+#: rental/static/rental/js/admin_rental.js:2052
+msgid "Warning: The selected time is in the past. Please select a future time."
+msgstr ""
+"Warnung: Die gewählte Zeit liegt in der Vergangenheit. Bitte wählen Sie eine "
+"zukünftige Zeit."
+
+#: rental/static/rental/js/admin_rental.js:2110
+msgid "Error loading rental details"
+msgstr "Fehler beim Laden der Ausleihdetails"
+
+#: rental/static/rental/js/admin_rental.js:2126
+#: rental/static/rental/js/admin_rental.js:2127
+msgid "No"
+msgstr "Keine"
+
+#: rental/static/rental/js/admin_rental.js:2126
+msgid "found"
+msgstr "gefunden"
+
+#: rental/static/rental/js/admin_rental.js:2127
+msgid "found for"
+msgstr "gefunden für"
+
+#: rental/static/rental/js/admin_rental.js:2172
+msgid "days overdue"
+msgstr "Tage überfällig"
+
+#: rental/static/rental/js/admin_rental.js:2172
+msgid "expected"
+msgstr "erwartet"
+
+#: rental/static/rental/js/admin_rental.js:2174
+msgid "Show details"
+msgstr "Details anzeigen"
+
+#: rental/static/rental/js/admin_rental.js:2182
+msgid "Purpose"
+msgstr "Zweck"
+
+#: rental/static/rental/js/admin_rental.js:2183
+msgid "Planned from"
+msgstr "Geplant von"
+
+#: rental/static/rental/js/admin_rental.js:2186
+#: rental/static/rental/js/rental_stats.js:184
+#: rental/static/rental/js/rental_stats.js:762
+msgid "Created by"
+msgstr "Erstellt von"
+
+#: rental/static/rental/js/admin_rental.js:2187
+msgid "Planned until"
+msgstr "Geplant bis"
+
+#: rental/static/rental/js/admin_rental.js:2198
+#: rental/static/rental/js/rental_stats.js:648
+msgid "Equipment"
+msgstr "Ausrüstung"
+
+#: rental/static/rental/js/admin_rental.js:2204
+msgid "Requested"
+msgstr "Angefordert"
+
+#: rental/static/rental/js/admin_rental.js:2205
+#: rental/static/rental/js/admin_rental.js:2831
+#: rental/static/rental/js/admin_rental.js:2864
+#: rental/static/rental/js/rental_stats.js:421
+#: rental/static/rental/js/rental_stats.js:536
+msgid "Issued"
+msgstr "Ausgegeben"
+
+#: rental/static/rental/js/admin_rental.js:2207
+#: rental/static/rental/js/admin_rental.js:2419
+msgid "Outstanding"
+msgstr "Ausstehend"
+
+#: rental/static/rental/js/admin_rental.js:2217
+#: rental/static/rental/js/admin_rental.js:2413
+msgid "N/A"
+msgstr "N/A"
+
+#: rental/static/rental/js/admin_rental.js:2241
+#: rental/static/rental/js/rental_stats.js:167
+#: rental/static/rental/js/rental_stats.js:507
+#: rental/static/rental/js/rental_stats.js:649
+msgid "Rooms"
+msgstr "Räume"
+
+#: rental/static/rental/js/admin_rental.js:2241
+#: rental/static/rental/js/rental_stats.js:164
+#: rental/static/rental/js/rental_stats.js:175
+#: rental/static/rental/js/rental_stats.js:504
+#: rental/static/rental/js/rental_stats.js:515
+msgid "rooms"
+msgstr "Räume"
+
+#: rental/static/rental/js/admin_rental.js:2246
+msgid "Room"
+msgstr "Raum"
+
+#: rental/static/rental/js/admin_rental.js:2248
+msgid "Booked people"
+msgstr "Gebuchte Personen"
+
+#: rental/static/rental/js/admin_rental.js:2249
+#: rental/static/rental/js/admin_rental.js:2437
+msgid "Notes"
+msgstr "Notizen"
+
+#: rental/static/rental/js/admin_rental.js:2313
+msgid "Print rental"
+msgstr "Ausleihe drucken"
+
+#: rental/static/rental/js/admin_rental.js:2323
+msgid "Extend rental"
+msgstr "Ausleihe verlängern"
+
+#: rental/static/rental/js/admin_rental.js:2333
+msgid "Cancel rental"
+msgstr "Ausleihe stornieren"
+
+#: rental/static/rental/js/admin_rental.js:2342
+msgid ""
+"Are you sure you want to cancel this rental? This action cannot be undone."
+msgstr "Sind Sie sicher, dass Sie diese Ausleihe stornieren möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: rental/static/rental/js/admin_rental.js:2359
+msgid "Rental was successfully cancelled"
+msgstr "Ausleihe wurde erfolgreich storniert"
+
+#: rental/static/rental/js/admin_rental.js:2369
+#: rental/static/rental/js/rental_detail.js:318
+msgid "Error cancelling rental"
+msgstr "Fehler beim Stornieren der Ausleihe"
+
+#: rental/static/rental/js/admin_rental.js:2373
+msgid "Network error cancelling rental"
+msgstr "Netzwerkfehler beim Stornieren der Ausleihe"
+
+#: rental/static/rental/js/admin_rental.js:2395
+#: rental/static/rental/js/admin_rental.js:2611
+msgid "Rental not found"
+msgstr "Ausleihe nicht gefunden"
+
+#: rental/static/rental/js/admin_rental.js:2423
+msgid "Quantity"
+msgstr "Menge"
+
+#: rental/static/rental/js/admin_rental.js:2428
+msgid "Condition"
+msgstr "Zustand"
+
+#: rental/static/rental/js/admin_rental.js:2430
+msgid "Excellent"
+msgstr "Ausgezeichnet"
+
+#: rental/static/rental/js/admin_rental.js:2431
+msgid "Good"
+msgstr "Gut"
+
+#: rental/static/rental/js/admin_rental.js:2432
+msgid "Fair"
+msgstr "Befriedigend"
+
+#: rental/static/rental/js/admin_rental.js:2433
+msgid "Poor"
+msgstr "Schlecht"
+
+#: rental/static/rental/js/admin_rental.js:2439
+msgid "Notes about the condition..."
+msgstr "Notizen zum Zustand..."
+
+#: rental/static/rental/js/admin_rental.js:2446
+msgid "Add problem"
+msgstr "Problem hinzufügen"
+
+#: rental/static/rental/js/admin_rental.js:2472
+msgid "Error loading return modal"
+msgstr "Fehler beim Laden des Rückgabe-Dialogs"
+
+#: rental/static/rental/js/admin_rental.js:2484
+#: rental/static/rental/js/rental_detail.js:260
+msgid "Select problem"
+msgstr "Problem auswählen"
+
+#: rental/static/rental/js/admin_rental.js:2485
+#: rental/static/rental/js/rental_detail.js:261
+msgid "Damaged"
+msgstr "Beschädigt"
+
+#: rental/static/rental/js/admin_rental.js:2487
+#: rental/static/rental/js/rental_detail.js:263
+msgid "Late return"
+msgstr "Verspätete Rückgabe"
+
+#: rental/static/rental/js/admin_rental.js:2488
+#: rental/static/rental/js/rental_detail.js:264
+msgid "Other"
+msgstr "Sonstiges"
+
+#: rental/static/rental/js/admin_rental.js:2493
+#: rental/static/rental/js/rental_detail.js:269
+msgid "Minor"
+msgstr "Geringfügig"
+
+#: rental/static/rental/js/admin_rental.js:2494
+#: rental/static/rental/js/rental_detail.js:270
+msgid "Major"
+msgstr "Schwerwiegend"
+
+#: rental/static/rental/js/admin_rental.js:2495
+#: rental/static/rental/js/rental_detail.js:271
+msgid "Critical"
+msgstr "Kritisch"
+
+#: rental/static/rental/js/admin_rental.js:2506
+#: rental/static/rental/js/rental_detail.js:282
+msgid "Description of the problem"
+msgstr "Beschreibung des Problems"
+
+#: rental/static/rental/js/admin_rental.js:2577
+#: rental/static/rental/js/rental_detail.js:219
+msgid "All items were returned. The rental is completed."
+msgstr "Alle Artikel wurden zurückgegeben. Die Ausleihe ist abgeschlossen."
+
+#: rental/static/rental/js/admin_rental.js:2585
+#: rental/static/rental/js/rental_detail.js:223
+msgid "Error returning items"
+msgstr "Fehler beim Zurückgeben der Artikel"
+
+#: rental/static/rental/js/admin_rental.js:2665
+msgid "Error loading extension modal"
+msgstr "Fehler beim Laden des Verlängerungs-Dialogs"
+
+#: rental/static/rental/js/admin_rental.js:2674
+#: rental/static/rental/js/rental_detail.js:88
+msgid "Please select a new end date"
+msgstr "Bitte wählen Sie ein neues Enddatum aus"
+
+#: rental/static/rental/js/admin_rental.js:2682
+#: rental/static/rental/js/rental_detail.js:116
+msgid "Invalid date format"
+msgstr "Ungültiges Datumsformat"
+
+#: rental/static/rental/js/admin_rental.js:2712
+#: rental/static/rental/js/rental_detail.js:142
+msgid "Error extending rental"
+msgstr "Fehler beim Verlängern der Ausleihe"
+
+#: rental/static/rental/js/admin_rental.js:2732
+msgid "Error loading print information: "
+msgstr "Fehler beim Laden der Druckinformationen: "
+
+#: rental/static/rental/js/admin_rental.js:2760
+msgid "No printable items in this rental found."
+msgstr "Keine druckbaren Artikel in dieser Ausleihe gefunden."
+
+#: rental/static/rental/js/admin_rental.js:2770
+msgid "Print rental forms"
+msgstr "Ausleihformulare drucken"
+
+#: rental/static/rental/js/admin_rental.js:2784
+msgid ""
+"Rental forms will be opened in separate windows. Use the print function of "
+"the browser (Ctrl+P)."
+msgstr ""
+"Ausleihformulare werden in separaten Fenstern geöffnet. Verwenden Sie die "
+"Druckfunktion des Browsers (Strg+P)."
+
+#: rental/static/rental/js/admin_rental.js:2788
+msgid "Close"
+msgstr "Schließen"
+
+#: rental/static/rental/js/admin_rental.js:2814
+msgid "Error loading print options"
+msgstr "Fehler beim Laden der Druckoptionen"
+
+#: rental/static/rental/js/admin_rental.js:2820
+msgid "Active rentals"
+msgstr "Aktive Ausleihen"
+
+#: rental/static/rental/js/admin_rental.js:2821
+msgid "Returned rentals"
+msgstr "Zurückgegebene Ausleihen"
+
+#: rental/static/rental/js/admin_rental.js:2822
+msgid "Overdue rentals"
+msgstr "Überfällige Ausleihen"
+
+#: rental/static/rental/js/admin_rental.js:2823
+#: rental/static/rental/js/rental_stats.js:1051
+msgid "Rentals"
+msgstr "Ausleihen"
+
+#: rental/static/rental/js/admin_rental.js:2829
+#: rental/static/rental/js/admin_rental.js:2862
+msgid "Draft"
+msgstr "Entwurf"
+
+#: rental/static/rental/js/admin_rental.js:2830
+#: rental/static/rental/js/admin_rental.js:2863
+#: rental/static/rental/js/rental_stats.js:420
+#: rental/static/rental/js/rental_stats.js:535
+#: rental/static/rental/js/rental_stats.js:619
+#: rental/static/rental/js/rental_stats.js:642
+msgid "Reserved"
+msgstr "Reserviert"
+
+#: rental/static/rental/js/admin_rental.js:2833
+#: rental/static/rental/js/admin_rental.js:2866
+#: rental/static/rental/js/rental_stats.js:423
+#: rental/static/rental/js/rental_stats.js:538
+#: rental/static/rental/js/rental_stats.js:626
+msgid "Cancelled"
+msgstr "Storniert"
+
+#: rental/static/rental/js/rental_detail.js:165
+msgid "Edit return"
+msgstr "Rückgabe bearbeiten"
+
+#: rental/static/rental/js/rental_detail.js:168
+msgid "Save return"
+msgstr "Rückgabe speichern"
+
+#: rental/static/rental/js/rental_detail.js:296
+msgid "Are you sure you want to cancel this rental?"
+msgstr "Sind Sie sicher, dass Sie diese Ausleihe stornieren möchten?"
+
+#: rental/static/rental/js/rental_stats.js:108
+#: rental/static/rental/js/rental_stats.js:258
+msgid "Loading data..."
+msgstr "Lade Daten..."
+
+#: rental/static/rental/js/rental_stats.js:129
+#: rental/static/rental/js/rental_stats.js:130
+#: rental/static/rental/js/rental_stats.js:277
+#: rental/static/rental/js/rental_stats.js:278
+#: rental/static/rental/js/rental_stats.js:399
+#: rental/static/rental/js/rental_stats.js:711
+msgid "Error loading"
+msgstr "Fehler beim Laden"
+
+#: rental/static/rental/js/rental_stats.js:138
+msgid "No rentals found"
+msgstr "Keine Ausleihen gefunden"
+
+#: rental/static/rental/js/rental_stats.js:148
+#: rental/static/rental/js/rental_stats.js:154
+#: rental/static/rental/js/rental_stats.js:491
+#: rental/static/rental/js/rental_stats.js:497
+msgid "and"
+msgstr "und"
+
+#: rental/static/rental/js/rental_stats.js:148
+#: rental/static/rental/js/rental_stats.js:154
+#: rental/static/rental/js/rental_stats.js:491
+#: rental/static/rental/js/rental_stats.js:497
+msgid "more"
+msgstr "weitere"
+
+#: rental/static/rental/js/rental_stats.js:166
+#: rental/static/rental/js/rental_stats.js:506
+#: rental/static/rental/js/rental_stats.js:764
+msgid "Items"
+msgstr "Artikel"
+
+#: rental/static/rental/js/rental_stats.js:185
+msgid "Type"
+msgstr "Typ"
+
+#: rental/static/rental/js/rental_stats.js:199
+msgid "until"
+msgstr "bis"
+
+#: rental/static/rental/js/rental_stats.js:215
+msgid "rentals total"
+msgstr "Ausleihen gesamt"
+
+#: rental/static/rental/js/rental_stats.js:230
+msgid "Previous"
+msgstr "Vorherige"
+
+#: rental/static/rental/js/rental_stats.js:241
+msgid "Next"
+msgstr "Nächste"
+
+#: rental/static/rental/js/rental_stats.js:273
+msgid "items found"
+msgstr "Artikel gefunden"
+
+#: rental/static/rental/js/rental_stats.js:286
+#: rental/static/rental/js/rental_stats.js:831
+msgid "No items found"
+msgstr "Keine Artikel gefunden"
+
+#: rental/static/rental/js/rental_stats.js:585
+#: rental/static/rental/js/rental_stats.js:605
+msgid "days"
+msgstr "Tage"
+
+#: rental/static/rental/js/rental_stats.js:585
+#: rental/static/rental/js/rental_stats.js:605
+msgid "day"
+msgstr "Tag"
+
+#: rental/static/rental/js/rental_stats.js:585
+msgid "overdue"
+msgstr "überfällig"
+
+#: rental/static/rental/js/rental_stats.js:593
+msgid "On time"
+msgstr "Pünktlich"
+
+#: rental/static/rental/js/rental_stats.js:611
+msgid "Pending"
+msgstr "Ausstehend"
+
+#: rental/static/rental/js/rental_stats.js:612
+#: rental/static/rental/js/rental_stats.js:620
+msgid "Until"
+msgstr "Bis"
+
+#: rental/static/rental/js/rental_stats.js:641
+msgid "Rented"
+msgstr "Verliehen"
+
+#: rental/static/rental/js/rental_stats.js:650
+msgid "Mixed"
+msgstr "Gemischt"
+
+#: rental/static/rental/js/rental_stats.js:659
+msgid "Wrong confirmation code"
+msgstr "Falscher Bestätigungscode"
+
+#: rental/static/rental/js/rental_stats.js:685
+msgid "Error executing action"
+msgstr "Fehler beim Ausführen der Aktion"
+
+#: rental/static/rental/js/rental_stats.js:698
+msgid "Loading sets..."
+msgstr "Lade Sets..."
+
+#: rental/static/rental/js/rental_stats.js:719
+msgid "No equipment sets found"
+msgstr "Keine Ausrüstungssets gefunden"
+
+#: rental/static/rental/js/rental_stats.js:727
+#: rental/static/rental/js/rental_stats.js:760
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: rental/static/rental/js/rental_stats.js:761
+msgid "Created"
+msgstr "Erstellt"
+
+#: rental/static/rental/js/rental_stats.js:785
+msgid "Create Equipment Set"
+msgstr "Ausrüstungsset erstellen"
+
+#: rental/static/rental/js/rental_stats.js:796
+msgid "Enter a search term..."
+msgstr "Suchbegriff eingeben..."
+
+#: rental/static/rental/js/rental_stats.js:807
+msgid "Enter at least 2 characters..."
+msgstr "Mindestens 2 Zeichen eingeben..."
+
+#: rental/static/rental/js/rental_stats.js:823
+msgid "Search error"
+msgstr "Suchfehler"
+
+#: rental/static/rental/js/rental_stats.js:854
+msgid "This item is already in the set"
+msgstr "Dieser Artikel ist bereits im Set enthalten"
+
+#: rental/static/rental/js/rental_stats.js:876
+msgid "No items added"
+msgstr "Keine Artikel hinzugefügt"
+
+#: rental/static/rental/js/rental_stats.js:918
+msgid "Name is required"
+msgstr "Name ist erforderlich"
+
+#: rental/static/rental/js/rental_stats.js:923
+msgid "At least one item must be added"
+msgstr "Mindestens ein Artikel muss hinzugefügt werden"
+
+#: rental/static/rental/js/rental_stats.js:949
+msgid "Error saving"
+msgstr "Fehler beim Speichern"
+
+#: rental/static/rental/js/rental_stats.js:959
+msgid "Are you sure you want to delete the set"
+msgstr "Sind Sie sicher, dass Sie das Set löschen möchten"
+
+#: rental/static/rental/js/rental_stats.js:977
+msgid "Select a set to see details"
+msgstr "Wählen Sie ein Set aus, um Details zu sehen"
+
+#: rental/static/rental/js/rental_stats.js:979
+msgid "Error deleting"
+msgstr "Fehler beim Löschen"
+
+#: rental/static/rental/js/rental_stats.js:991
+msgid ""
+"Are you sure you want to automatically expire all expired room reservations "
+"and rentals?"
+msgstr ""
+"Sind Sie sicher, dass Sie alle abgelaufenen Raumreservierungen und "
+"-ausleihen automatisch ablaufen lassen möchten?"
+
+#: rental/static/rental/js/rental_stats.js:1021
+msgid "Processing..."
+msgstr "Verarbeitung..."
+
+#: rental/static/rental/js/rental_stats.js:1047
+msgid "Successfully expired"
+msgstr "Erfolgreich abgelaufen"
+
+#: rental/static/rental/js/rental_stats.js:1049
+msgid "Total"
+msgstr "Gesamt"
+
+#: rental/static/rental/js/rental_stats.js:1050
+msgid "Reservations"
+msgstr "Reservierungen"
+
+#: rental/static/rental/js/rental_stats.js:1074
+msgid "Error"
+msgstr "Fehler"
+
+#: rental/static/rental/js/rental_stats.js:1083
+msgid "Expire rooms"
+msgstr "Räume ablaufen lassen"
+
+#: rental/static/rental/js/rental_stats.js:1097
+msgid ""
+"All inventory quantities (reserved/rented) will be set to 0. This action "
+"cannot be undone."
+msgstr ""
+"Alle Inventarmengen (reserviert/verliehen) werden auf 0 gesetzt. Diese "
+"Aktion kann nicht rückgängig gemacht werden."
+
+#: rental/static/rental/js/rental_stats.js:1100
+msgid ""
+"All active rentals will be cancelled and inventory quantities reset. This "
+"action cannot be undone."
+msgstr ""
+"Alle aktiven Ausleihen werden storniert und Inventarmengen zurückgesetzt. "
+"Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: rental/static/rental/js/rental_stats.js:1103
+msgid ""
+"ALL rental data will be deleted and inventory reset. This action CANNOT be "
+"undone!"
+msgstr ""
+"ALLE Ausleihdaten werden gelöscht und das Inventar zurückgesetzt. Diese "
+"Aktion kann NICHT rückgängig gemacht werden!"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:38
+#: static/admin/js/SelectFilter2.js:38
+#, javascript-format
+msgid "Available %s"
+msgstr "Verfügbare %s"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:44
+#: static/admin/js/SelectFilter2.js:44
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+"Dies ist die Liste der verfügbaren %s. Sie können einige auswählen, indem "
+"Sie sie in der unteren Box markieren und dann auf den \"Auswählen\"-Pfeil "
+"zwischen den beiden Boxen klicken."
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:60
+#: static/admin/js/SelectFilter2.js:60
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr "Tippen Sie in dieses Feld, um die Liste der verfügbaren %s zu filtern."
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:65
+#: static/admin/js/SelectFilter2.js:65
+msgid "Filter"
+msgstr "Filter"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:69
+#: static/admin/js/SelectFilter2.js:69
+msgid "Choose all"
+msgstr "Alle auswählen"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:69
+#: static/admin/js/SelectFilter2.js:69
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr "Klicken Sie, um alle %s auf einmal auszuwählen."
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:75
+#: static/admin/js/SelectFilter2.js:75
+msgid "Choose"
+msgstr "Auswählen"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:77
+#: static/admin/js/SelectFilter2.js:77
+msgid "Remove"
+msgstr "Entfernen"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:83
+#: static/admin/js/SelectFilter2.js:83
+#, javascript-format
+msgid "Chosen %s"
+msgstr "Ausgewählte %s"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:89
+#: static/admin/js/SelectFilter2.js:89
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+"Dies ist die Liste der ausgewählten %s. Sie können einige entfernen, indem "
+"Sie sie in der unteren Box markieren und dann auf den \"Entfernen\"-Pfeil "
+"zwischen den beiden Boxen klicken."
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:99
+#: static/admin/js/SelectFilter2.js:99
+msgid "Remove all"
+msgstr "Alle entfernen"
+
+#: static/admin/js/SelectFilter2.3f53e33c88d6.js:99
+#: static/admin/js/SelectFilter2.js:99
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr "Klicken Sie, um alle ausgewählten %s auf einmal zu entfernen."
+
+#: static/admin/js/actions.eac7e3441574.js:67 static/admin/js/actions.js:67
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] "%(sel)s von %(cnt)s ausgewählt"
+msgstr[1] "%(sel)s von %(cnt)s ausgewählt"
+
+#: static/admin/js/actions.eac7e3441574.js:161 static/admin/js/actions.js:161
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+"Sie haben nicht gespeicherte Änderungen in einzelnen bearbeitbaren Feldern. "
+"Wenn Sie eine Aktion ausführen, gehen Ihre nicht gespeicherten Änderungen "
+"verloren."
+
+#: static/admin/js/actions.eac7e3441574.js:174 static/admin/js/actions.js:174
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+"Sie haben eine Aktion ausgewählt, aber Ihre Änderungen an einzelnen Feldern "
+"noch nicht gespeichert. Bitte klicken Sie auf OK zum Speichern. Sie müssen "
+"die Aktion anschließend erneut ausführen."
+
+#: static/admin/js/actions.eac7e3441574.js:175 static/admin/js/actions.js:175
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+"Sie haben eine Aktion ausgewählt und keine Änderungen an einzelnen Feldern "
+"vorgenommen. Sie suchen wahrscheinlich die Schaltfläche \"Los\" statt der "
+"Schaltfläche \"Speichern\"."
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:13
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:111
+#: static/admin/js/admin/DateTimeShortcuts.js:13
+#: static/admin/js/admin/DateTimeShortcuts.js:111
+msgid "Now"
+msgstr "Jetzt"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:14
+#: static/admin/js/admin/DateTimeShortcuts.js:14
+msgid "Midnight"
+msgstr "Mitternacht"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:15
+#: static/admin/js/admin/DateTimeShortcuts.js:15
+msgid "6 a.m."
+msgstr "6 Uhr"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:16
+#: static/admin/js/admin/DateTimeShortcuts.js:16
+msgid "Noon"
+msgstr "Mittag"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:17
+#: static/admin/js/admin/DateTimeShortcuts.js:17
+msgid "6 p.m."
+msgstr "18 Uhr"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:78
+#: static/admin/js/admin/DateTimeShortcuts.js:78
+#, javascript-format
+msgid "Note: You are %s hour ahead of server time."
+msgid_plural "Note: You are %s hours ahead of server time."
+msgstr[0] "Hinweis: Sie sind %s Stunde vor der Serverzeit."
+msgstr[1] "Hinweis: Sie sind %s Stunden vor der Serverzeit."
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:86
+#: static/admin/js/admin/DateTimeShortcuts.js:86
+#, javascript-format
+msgid "Note: You are %s hour behind server time."
+msgid_plural "Note: You are %s hours behind server time."
+msgstr[0] "Hinweis: Sie sind %s Stunde hinter der Serverzeit."
+msgstr[1] "Hinweis: Sie sind %s Stunden hinter der Serverzeit."
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:129
+#: static/admin/js/admin/DateTimeShortcuts.js:129
+msgid "Choose a Time"
+msgstr "Zeit auswählen"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:159
+#: static/admin/js/admin/DateTimeShortcuts.js:159
+msgid "Choose a time"
+msgstr "Zeit auswählen"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:176
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:334
+#: static/admin/js/admin/DateTimeShortcuts.js:176
+#: static/admin/js/admin/DateTimeShortcuts.js:334
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:239
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:319
+#: static/admin/js/admin/DateTimeShortcuts.js:239
+#: static/admin/js/admin/DateTimeShortcuts.js:319
+msgid "Today"
+msgstr "Heute"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:256
+#: static/admin/js/admin/DateTimeShortcuts.js:256
+msgid "Choose a Date"
+msgstr "Datum auswählen"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:313
+#: static/admin/js/admin/DateTimeShortcuts.js:313
+msgid "Yesterday"
+msgstr "Gestern"
+
+#: static/admin/js/admin/DateTimeShortcuts.300591891b2b.js:325
+#: static/admin/js/admin/DateTimeShortcuts.js:325
+msgid "Tomorrow"
+msgstr "Morgen"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:11 static/admin/js/calendar.js:11
+msgid "January"
+msgstr "Januar"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:12 static/admin/js/calendar.js:12
+msgid "February"
+msgstr "Februar"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:13 static/admin/js/calendar.js:13
+msgid "March"
+msgstr "März"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:14 static/admin/js/calendar.js:14
+msgid "April"
+msgstr "April"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:15 static/admin/js/calendar.js:15
+msgid "May"
+msgstr "Mai"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:16 static/admin/js/calendar.js:16
+msgid "June"
+msgstr "Juni"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:17 static/admin/js/calendar.js:17
+msgid "July"
+msgstr "Juli"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:18 static/admin/js/calendar.js:18
+msgid "August"
+msgstr "August"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:19 static/admin/js/calendar.js:19
+msgid "September"
+msgstr "September"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:20 static/admin/js/calendar.js:20
+msgid "October"
+msgstr "Oktober"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:21 static/admin/js/calendar.js:21
+msgid "November"
+msgstr "November"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:22 static/admin/js/calendar.js:22
+msgid "December"
+msgstr "Dezember"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:25 static/admin/js/calendar.js:25
+msgctxt "abbrev. month January"
+msgid "Jan"
+msgstr "Jan"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:26 static/admin/js/calendar.js:26
+msgctxt "abbrev. month February"
+msgid "Feb"
+msgstr "Feb"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:27 static/admin/js/calendar.js:27
+msgctxt "abbrev. month March"
+msgid "Mar"
+msgstr "Mär"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:28 static/admin/js/calendar.js:28
+msgctxt "abbrev. month April"
+msgid "Apr"
+msgstr "Apr"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:29 static/admin/js/calendar.js:29
+msgctxt "abbrev. month May"
+msgid "May"
+msgstr "Mai"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:30 static/admin/js/calendar.js:30
+msgctxt "abbrev. month June"
+msgid "Jun"
+msgstr "Jun"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:31 static/admin/js/calendar.js:31
+msgctxt "abbrev. month July"
+msgid "Jul"
+msgstr "Jul"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:32 static/admin/js/calendar.js:32
+msgctxt "abbrev. month August"
+msgid "Aug"
+msgstr "Aug"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:33 static/admin/js/calendar.js:33
+msgctxt "abbrev. month September"
+msgid "Sep"
+msgstr "Sep"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:34 static/admin/js/calendar.js:34
+msgctxt "abbrev. month October"
+msgid "Oct"
+msgstr "Okt"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:35 static/admin/js/calendar.js:35
+msgctxt "abbrev. month November"
+msgid "Nov"
+msgstr "Nov"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:36 static/admin/js/calendar.js:36
+msgctxt "abbrev. month December"
+msgid "Dec"
+msgstr "Dez"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:39 static/admin/js/calendar.js:39
+msgctxt "one letter Sunday"
+msgid "S"
+msgstr "S"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:40 static/admin/js/calendar.js:40
+msgctxt "one letter Monday"
+msgid "M"
+msgstr "M"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:41 static/admin/js/calendar.js:41
+msgctxt "one letter Tuesday"
+msgid "T"
+msgstr "D"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:42 static/admin/js/calendar.js:42
+msgctxt "one letter Wednesday"
+msgid "W"
+msgstr "M"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:43 static/admin/js/calendar.js:43
+msgctxt "one letter Thursday"
+msgid "T"
+msgstr "D"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:44 static/admin/js/calendar.js:44
+msgctxt "one letter Friday"
+msgid "F"
+msgstr "F"
+
+#: static/admin/js/calendar.f8a5d055eb33.js:45 static/admin/js/calendar.js:45
+msgctxt "one letter Saturday"
+msgid "S"
+msgstr "S"
+
+#: static/admin/js/collapse.f84e7410290f.js:16
+#: static/admin/js/collapse.f84e7410290f.js:34 static/admin/js/collapse.js:16
+#: static/admin/js/collapse.js:34
+msgid "Show"
+msgstr "Anzeigen"
+
+#: static/admin/js/collapse.f84e7410290f.js:30 static/admin/js/collapse.js:30
+msgid "Hide"
+msgstr "Verbergen"
+
+#~ msgid "Please enter the purpose of use"
+#~ msgstr "Bitte geben Sie den Verwendungszweck ein"

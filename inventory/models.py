@@ -57,6 +57,23 @@ class Organization(models.Model):
         return self.name
 
 
+class Category(models.Model):
+    """Model representing a category of inventory items."""
+
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
+
+    class Meta:
+        """Meta options for Category."""
+
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
+
+    def __str__(self):
+        """Return category name as string."""
+        return self.name
+
+
 class LocationManager(models.Manager):
     """Manager for hierarchical Location with helpers to work with paths."""
 
@@ -173,6 +190,13 @@ class InventoryItem(models.Model):
         blank=True,
         verbose_name=_("Manufacturer")
     )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Category")
+    )
     location = models.ForeignKey(
         Location,
         on_delete=models.PROTECT,
@@ -247,7 +271,9 @@ class InventoryItem(models.Model):
         ordering = ['inventory_number']
 
     def __str__(self):
-        """Return inventory number as string."""
+        """Return human readable label: description and inventory number."""
+        if self.description:
+            return f"{self.description} [{self.inventory_number}]"
         return self.inventory_number
 
     def is_in_stock(self) -> bool:
