@@ -9,7 +9,11 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from licenses.models import License
+from datetime import timedelta
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @staff_member_required
@@ -42,6 +46,8 @@ def save_day_plan(request):
         if not date:
             return JsonResponse({"error": "Invalid date"}, status=400)
 
+
+
         plan_data = {
             "items": data.get("items", []),
             "draft": data.get("draft", False),
@@ -68,6 +74,7 @@ def save_day_plan(request):
         plan, created = TagesPlan.objects.update_or_create(
             datum=date, defaults={"json_plan": plan_data, "kommentar": kommentar}
         )
+        
         return JsonResponse({"status": "ok", "created": created})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
@@ -89,11 +96,12 @@ def day_plan_detail(request, iso_date):
     if request.method == "GET":
         try:
             plan = TagesPlan.objects.get(datum=date_obj)
+            
         except TagesPlan.DoesNotExist:
             raise Http404("No plan for this day")
         return JsonResponse(
             {
-                "date": iso_date,
+                "date": str(plan.datum),  # ✅ Возвращаем реальную дату из БД
                 "items": plan.json_plan.get("items", []),
                 "draft": plan.json_plan.get("draft", False),
                 "planned": plan.json_plan.get("planned", False),

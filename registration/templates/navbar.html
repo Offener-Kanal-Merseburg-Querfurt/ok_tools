@@ -45,8 +45,8 @@
   <button
     class="navbar-toggler"
     type="button"
-    data-toggle="collapse"
-    data-target="#navbarSupportedContent"
+    data-bs-toggle="collapse"
+    data-bs-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent"
     aria-expanded="false"
     aria-label="Navigation umschalten"
@@ -55,7 +55,7 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
+    <ul class="navbar-nav me-auto">
       {% if user.is_authenticated%}
       <li class="nav-item dropdown">
         <a
@@ -63,8 +63,7 @@
           href="#"
           id="profileDropdown"
           role="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
+          data-bs-toggle="dropdown"
           aria-expanded="false"
           aria-label="Profil Menü"
         >
@@ -95,8 +94,7 @@
           href="#"
           id="licensesDropdown"
           role="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
+          data-bs-toggle="dropdown"
           aria-expanded="false"
           aria-label="Lizenzen Menü"
         >
@@ -119,7 +117,7 @@
       {% else %} {% endif %}
     </ul>
     <div class="d-flex justify-content-end">
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav me-auto">
         {%if user.is_authenticated %}
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'logout' %}" aria-label="Abmelden">

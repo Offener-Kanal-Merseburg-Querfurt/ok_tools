@@ -5,14 +5,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/favicon.ico' %}">
     <title>{% trans "Rental Details" %} - OK Tools</title>
     <link href="{% static 'admin/css/base.css' %}" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         .rental-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
         .item-card { border: 1px solid #dee2e6; border-radius: 8px; transition: all 0.3s ease; }
         .item-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* Return selection styles */
+        .item-card.selected-for-return {
+            border: 2px solid #28a745;
+            background-color: #f8fff9;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+        
+        .item-card.selected-for-return .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .item-card:not(.selected-for-return) .return-form {
+            display: none !important;
+        }
         .status-badge { font-size: 0.85rem; }
         .condition-excellent { background: #28a745; }
         .condition-good { background: #17a2b8; }
@@ -24,10 +44,157 @@
         .return-info { background: #f8f9fa; border: 1px solid #e9ecef; }
         .overdue-highlight { background: #fff5f5; border: 1px solid #fed7d7; }
         .ontime-highlight { background: #f0fff4; border: 1px solid #9ae6b4; }
+        
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid #007bff;
+            border-radius: 12px 12px 0 0;
+            padding: 1.5rem;
+        }
+        
+        .modal-title {
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 12px 12px;
+            padding: 1.5rem;
+        }
+        
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+            transform: translateY(-1px);
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* Rental Cards */
+        .rental-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .rental-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .rental-card .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid #007bff;
+            padding: 1.5rem;
+        }
+        
+        .rental-card .card-header h5 {
+            color: #495057;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        
+        .rental-card .card-body {
+            padding: 2rem;
+        }
+        
+        /* Item Cards */
+        .item-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Return Forms */
+        .return-form {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        /* Issues */
+        .issue-form {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+        
+        .issue-form:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .rental-header .d-flex {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .rental-header .d-flex span {
+                text-align: center;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .rental-card .card-body {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #417690 !important;">
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="{% url 'rental:admin_rental_process' %}">
                 <i class="fas fa-arrow-left me-2"></i>{% trans "Back to Rental Process" %}
@@ -47,7 +214,7 @@
             </div>
         {% elif rental %}
             <!-- Rental Header -->
-            <div class="rental-header p-4 rounded mb-4">
+            <div class="rental-details-header p-4 rounded mb-4">
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h2 class="mb-1">{{ rental.project_name }}</h2>
@@ -84,6 +251,11 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-tools me-2"></i>{% trans "Actions" %}</h5>
                             <div class="btn-group" role="group">
+                                {% if rental.status == 'reserved' and rental.items.all %}
+                                <button class="btn btn-outline-warning" id="issueFromReservationBtn">
+                                    <i class="fas fa-box-open me-1"></i>{% trans "Issue Equipment from Reservation" %}
+                                </button>
+                                {% endif %}
                                 {% if can_extend %}
                                 <button class="btn btn-outline-primary" id="extendBtn">
                                     <i class="fas fa-calendar-plus me-1"></i>{% trans "Extend" %}
@@ -91,7 +263,7 @@
                                 {% endif %}
                                 {% if can_return %}
                                 <button class="btn btn-outline-success" id="returnBtn">
-                                    <i class="fas fa-undo me-1"></i>{% trans "Edit Return" %}
+                                    <i class="fas fa-save me-1"></i>{% trans "Save return" %}
                                 </button>
                                 {% endif %}
                                 <button class="btn btn-outline-danger" id="cancelBtn">
@@ -107,7 +279,7 @@
             <!-- Items List -->
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="rental-card">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>{% trans "Equipment" %} ({{ rental.items.count }} {% trans "items" %})</h5>
                         </div>
@@ -116,6 +288,19 @@
                                 {% for item in rental.items.all %}
                                 <div class="col-md-6 col-lg-4 mb-3">
                                     <div class="item-card p-3" data-item-id="{{ item.id }}">
+                                        <!-- Return Selection Checkbox -->
+                                        <div class="mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input item-return-checkbox" type="checkbox" 
+                                                       id="item-checkbox-{{ item.id }}" 
+                                                       data-item-id="{{ item.id }}"
+                                                       {% if item.quantity_issued|default:0|add:item.quantity_returned|default:0 > 0 %}checked{% endif %}>
+                                                <label class="form-check-label" for="item-checkbox-{{ item.id }}">
+                                                    <strong>{% trans "Select for return" %}</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <h6 class="mb-1">{{ item.inventory_item.description|default:item.inventory_item.inventory_number }}</h6>
                                             <span class="badge bg-secondary">{{ item.inventory_item.inventory_number }}</span>
@@ -259,7 +444,7 @@
             {% if rental.room_rentals.all %}
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="rental-card">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-building me-2"></i>{% trans "Rooms" %} ({{ rental.room_rentals.count }} {% trans "rooms" %})</h5>
                         </div>
@@ -365,10 +550,153 @@
                 </div>
             </div>
 
+            <!-- Issue from Reservation Modal -->
+            {% if rental.status == 'reserved' %}
+            <div class="modal fade" id="issueFromReservationModal" tabindex="-1" aria-labelledby="issueFromReservationModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="issueFromReservationModalLabel">
+                                <i class="fas fa-box-open me-2"></i>{% trans "Issue Equipment from Reservation" %}
+                                <small class="d-block text-muted mt-1">{% trans "Rooms remain reserved and are not issued" %}</small>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-boxes me-2"></i>{% trans "Equipment Items" %}</h6>
+                                    <div id="issueItemsList" class="mb-3">
+                                        <!-- Items will be rendered here -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-building me-2"></i>{% trans "Rooms (Reserved Only)" %}</h6>
+                                    <div id="issueRoomsList" class="mb-3">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>{% trans "Note:" %}</strong> {% trans "Rooms cannot be issued - they remain reserved and are automatically available after the scheduled time." %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="issueStartDate" class="form-label">{% trans "Start Date" %}</label>
+                                        <input type="date" class="form-control" id="issueStartDate" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="issueEndDate" class="form-label">{% trans "End Date" %}</label>
+                                        <input type="date" class="form-control" id="issueEndDate" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="issueStartTime" class="form-label">{% trans "Start Time" %}</label>
+                                        <select class="form-select" id="issueStartTime" required>
+                                            <option value="">{% trans "Select time" %}</option>
+                                            <option value="08:00">08:00</option>
+                                            <option value="08:30">08:30</option>
+                                            <option value="09:00">09:00</option>
+                                            <option value="09:30">09:30</option>
+                                            <option value="10:00">10:00</option>
+                                            <option value="10:30">10:30</option>
+                                            <option value="11:00">11:00</option>
+                                            <option value="11:30">11:30</option>
+                                            <option value="12:00">12:00</option>
+                                            <option value="12:30">12:30</option>
+                                            <option value="13:00">13:00</option>
+                                            <option value="13:30">13:30</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="14:30">14:30</option>
+                                            <option value="15:00">15:00</option>
+                                            <option value="15:30">15:30</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="16:30">16:30</option>
+                                            <option value="17:00">17:00</option>
+                                            <option value="17:30">17:30</option>
+                                            <option value="18:00">18:00</option>
+                                            <option value="18:30">18:30</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="19:30">19:30</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="issueEndTime" class="form-label">{% trans "End Time" %}</label>
+                                        <select class="form-select" id="issueEndTime" required>
+                                            <option value="">{% trans "Select time" %}</option>
+                                            <option value="08:00">08:00</option>
+                                            <option value="08:30">08:30</option>
+                                            <option value="09:00">09:00</option>
+                                            <option value="09:30">09:30</option>
+                                            <option value="10:00">10:00</option>
+                                            <option value="10:30">10:30</option>
+                                            <option value="11:00">11:00</option>
+                                            <option value="11:30">11:30</option>
+                                            <option value="12:00">12:00</option>
+                                            <option value="12:30">12:30</option>
+                                            <option value="13:00">13:00</option>
+                                            <option value="13:30">13:30</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="14:30">14:30</option>
+                                            <option value="15:00">15:00</option>
+                                            <option value="15:30">15:30</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="16:30">16:30</option>
+                                            <option value="17:00">17:00</option>
+                                            <option value="17:30">17:30</option>
+                                            <option value="18:00">18:00</option>
+                                            <option value="18:30">18:30</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="19:30">19:30</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="issueCreatedBy" class="form-label">{% trans "Created by" %}</label>
+                                        <select class="form-select" id="issueCreatedBy" required>
+                                            <option value="">{% trans "Select staff member" %}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="issueNotes" class="form-label">{% trans "Notes" %}</label>
+                                        <textarea class="form-control" id="issueNotes" rows="2" placeholder="{% trans 'Optional notes' %}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <button type="button" class="btn btn-primary" id="processIssueFromReservationBtn">
+                                <i class="fas fa-check me-2"></i>{% trans "Issue Equipment" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
         {% endif %}
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
     <!-- JavaScript translations -->
     <script src="{% url 'javascript-catalog' %}"></script>
@@ -376,11 +704,16 @@
     <!-- Data attributes for JavaScript -->
     <div id="rental-data"
          data-rental-id="{{ rental.id|default:0 }}"
-         data-current-end-date="{{ rental.requested_end_date|date:'Y-m-d\TH:i' }}"
+         data-start-date="{{ rental.requested_start_date|date:'Y-m-d' }}"
+         data-end-date="{{ rental.requested_end_date|date:'Y-m-d' }}"
+         data-start-time="{{ rental.requested_start_date|time:'H:i' }}"
+         data-end-time="{{ rental.requested_end_date|time:'H:i' }}"
          data-csrf-token="{{ csrf_token }}"
          data-extend-url="{% url 'rental:api_extend_rental' %}"
          data-return-url="{% url 'rental:api_return_rental_items' %}"
          data-cancel-url="{% url 'rental:api_cancel_rental' %}"
+         data-issue-from-reservation-url="{% url 'rental:api_issue_from_reservation' %}"
+         data-get-staff-users-url="{% url 'rental:api_get_staff_users' %}"
          style="display: none;">
     </div>
 

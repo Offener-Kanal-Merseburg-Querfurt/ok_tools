@@ -83,12 +83,20 @@ class TagesPlanAdmin(admin.ModelAdmin):
                     },
                 )
 
-                if info.get("planned"):
+                if info.get("planned") and info.get("comment"):
+                    cell_cls, icon = "bg-success text-white", "✔🗨️"
+                elif info.get("planned"):
                     cell_cls, icon = "bg-success text-white", "✔"
+                elif info["minutes"] >= 105 and not info["draft"] and info.get("comment"):
+                    cell_cls, icon = "bg-success text-white", "✔🗨️"
                 elif info["minutes"] >= 105 and not info["draft"]:
                     cell_cls, icon = "bg-success text-white", "✔"
+                elif info["minutes"] >= 105 and info.get("comment"):
+                    cell_cls, icon = "bg-info text-white", "📝🗨️"
                 elif info["minutes"] >= 105:
                     cell_cls, icon = "bg-info text-white", "📝"
+                elif info["minutes"] > 0 and info.get("comment"):
+                    cell_cls, icon = "bg-warning", "🕒🗨️"
                 elif info["minutes"] > 0:
                     cell_cls, icon = "bg-warning", "🕒"
                 elif info.get("comment"):

@@ -1,11 +1,343 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% load i18n %}
-{% load crispy_forms_tags %}
 
-{% block content%}
-<h1>{%translate 'User data for '%} {{ user.profile }}</h1>
+{% block title %}Profil bearbeiten - OK Tools{% endblock %}
+{% block page_title %}Profil bearbeiten{% endblock %}
 
-{% crispy form %}
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h4 class="text-muted">Verwalten Sie Ihre persönlichen Daten</h4>
+        {% if user.profile.verified %}
+        <div class="alert alert-info">
+            <i class="bi bi-shield-check me-2"></i>
+            Ihr Profil ist bereits verifiziert. Zur Änderung weiterer Daten wenden Sie sich bitte an einen Mitarbeiter.
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'registration:print_registration' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-2"></i>Registrierungsformular drucken
+        </a>
+    </div>
+</div>
 
-{% endblock content%}
+<!-- Profile Form -->
+<form method="post" id="profile-form">
+    {% csrf_token %}
+    
+    <!-- Personal Information Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-person text-primary me-2"></i>
+                Persönliche Informationen
+            </h5>
+            <p class="card-subtitle">Grundlegende Informationen über Sie</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        <i class="bi bi-envelope me-1"></i>{{ form.email.label }}
+                        {% if form.email.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.email.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.gender.id_for_label }}" class="form-label">
+                        <i class="bi bi-person-badge me-1"></i>{{ form.gender.label }}
+                        {% if form.gender.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.gender }}
+                    {% if form.gender.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.gender.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                        <i class="bi bi-person me-1"></i>{{ form.first_name.label }}
+                        {% if form.first_name.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                        <i class="bi bi-person me-1"></i>{{ form.last_name.label }}
+                        {% if form.last_name.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.birthday.id_for_label }}" class="form-label">
+                        <i class="bi bi-calendar-date me-1"></i>{{ form.birthday.label }}
+                        {% if form.birthday.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.birthday }}
+                    {% if form.birthday.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.birthday.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-telephone text-success me-2"></i>
+                Kontaktinformationen
+            </h5>
+            <p class="card-subtitle">Telefonnummern für die Kontaktaufnahme</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">
+                        <i class="bi bi-telephone me-1"></i>{{ form.phone_number.label }}
+                        {% if form.phone_number.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.phone_number.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">Festnetznummer</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.mobile_number.id_for_label }}" class="form-label">
+                        <i class="bi bi-phone me-1"></i>{{ form.mobile_number.label }}
+                        {% if form.mobile_number.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.mobile_number }}
+                    {% if form.mobile_number.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.mobile_number.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">Handynummer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Information Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-geo-alt text-info me-2"></i>
+                Adressinformationen
+            </h5>
+            <p class="card-subtitle">Ihre Wohnadresse</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label for="{{ form.street.id_for_label }}" class="form-label">
+                        <i class="bi bi-signpost me-1"></i>{{ form.street.label }}
+                        {% if form.street.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.street }}
+                    {% if form.street.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.street.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.house_number.id_for_label }}" class="form-label">
+                        <i class="bi bi-hash me-1"></i>{{ form.house_number.label }}
+                        {% if form.house_number.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.house_number }}
+                    {% if form.house_number.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.house_number.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.zipcode.id_for_label }}" class="form-label">
+                        <i class="bi bi-mailbox me-1"></i>{{ form.zipcode.label }}
+                        {% if form.zipcode.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.zipcode }}
+                    {% if form.zipcode.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.zipcode.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8 mb-3">
+                    <label for="{{ form.city.id_for_label }}" class="form-label">
+                        <i class="bi bi-building me-1"></i>{{ form.city.label }}
+                        {% if form.city.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.city.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Zurück zum Dashboard
+                </a>
+                <div>
+                    <button type="button" class="btn btn-outline-warning me-2" onclick="resetForm()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Zurücksetzen
+                    </button>
+                    <button type="submit" name="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-2"></i>Änderungen bestätigen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-control:disabled {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #6c757d;
+}
+
+.form-control:disabled:focus {
+    box-shadow: none;
+    border-color: #e9ecef;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-label .text-danger {
+    font-size: 1.1em;
+}
+
+.card-subtitle {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.alert-info {
+    border-left: 4px solid #0dcaf0;
+    background-color: #cff4fc;
+    border-color: #b8daff;
+}
+
+#profile-form .form-control {
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+#profile-form .form-control:focus {
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+
+#profile-form .form-select {
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+}
+
+#profile-form .form-select:focus {
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function resetForm() {
+    if (confirm('Sind Sie sicher, dass Sie alle Änderungen zurücksetzen möchten?')) {
+        document.getElementById('profile-form').reset();
+    }
+}
+
+// Auto-format phone numbers
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInputs = document.querySelectorAll('input[type="text"][name*="phone"], input[type="text"][name*="mobile"]');
+    
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            // Remove all non-digit characters
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Format German phone number
+            if (value.length > 0) {
+                if (value.startsWith('49')) {
+                    // International format
+                    value = '+' + value.substring(0, 2) + ' ' + value.substring(2);
+                } else if (value.startsWith('0')) {
+                    // National format
+                    if (value.length > 4) {
+                        value = value.substring(0, 4) + ' ' + value.substring(4);
+                    }
+                    if (value.length > 8) {
+                        value = value.substring(0, 8) + ' ' + value.substring(8);
+                    }
+                }
+            }
+            
+            e.target.value = value;
+        });
+    });
+});
+</script>
+{% endblock %}

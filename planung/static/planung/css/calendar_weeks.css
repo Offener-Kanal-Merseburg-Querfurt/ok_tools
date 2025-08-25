@@ -1,0 +1,338 @@
+/* =========================
+   ПАЛИТРА (пастельные полутона)
+   ========================= */
+   :root {
+    --adm-bg: #f6f7f9;
+    --adm-muted: #6b7280;          /* серый (подписи) */
+    --adm-border: #e5e7eb;         /* светлая рамка */
+    --adm-ring: rgba(15, 23, 42, .15);
+  
+    /* Django-green в мягком виде + родственные */
+    --adm-primary: #0c4b33;
+    --adm-primary-50: #edf6f2;
+    --adm-primary-100: #d9eee6;
+  
+    --adm-info: #2563eb;
+    --adm-info-50: #eef3ff;
+    --adm-info-100: #dfe8ff;
+  
+    --adm-warn: #c08400;
+    --adm-warn-50: #fff7e6;
+    --adm-warn-100: #fdebc4;
+  
+    --adm-success: #0f766e;
+    --adm-danger: #b91c1c;
+  }
+  
+  /* Общий фон страницы */
+  body {
+    background-color: #f8f9fa !important;
+  }
+  
+  /* Фон сетки календаря */
+  .table-responsive {
+    background: #e9ecef !important;
+    border-radius: .5rem;
+    padding: .25rem;
+  }
+  
+  /* Фон самой таблицы календаря */
+  .table-responsive table {
+    background: #f1f3f4 !important;
+  }
+  
+  /* Фон заголовков дней недели */
+  .table-responsive th {
+    background: #e9ecef !important;
+  }
+  
+  /* Фон номеров недель */
+  .table-responsive .kw-cell {
+    background: #e9ecef !important;
+  }
+  
+  /* Основной контейнер страницы */
+  .content {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  /* =========================
+     КАРТОЧКИ СТАТИСТИКИ
+     ========================= */
+  .card {
+    border: 1px solid var(--adm-border) !important;
+    border-radius: .5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(2, 6, 23, .04);
+    transition: transform .15s ease, box-shadow .15s ease;
+    width: 300px;
+    height: 180px;
+    display: inline-block;
+    margin: 0 10px;
+    vertical-align: top;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(2, 6, 23, .08);
+  }
+  
+  /* заголовки с мягким градиентом */
+  .border-primary > .card-header {
+    background: linear-gradient(180deg, var(--adm-primary-50), #ffffff) !important;
+    color: var(--adm-primary) !important;
+    border-bottom: 1px solid var(--adm-border);
+  }
+  .border-info > .card-header {
+    background: linear-gradient(180deg, var(--adm-info-50), #ffffff) !important;
+    color: #1e3a8a !important;
+    border-bottom: 1px solid var(--adm-border);
+  }
+  .border-warning > .card-header {
+    background: linear-gradient(180deg, var(--adm-warn-50), #ffffff) !important;
+    color: #92400e !important;
+    border-bottom: 1px solid var(--adm-border);
+  }
+  
+  /* Контейнер для центрирования карточек */
+  .stats-container {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .card-header h6 {
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin: 0;
+  }
+  .card-body {
+    padding: .9rem .95rem;
+    font-size: .9rem;
+  }
+  
+  /* =========================
+     ТАБЛИЦА КАЛЕНДАРЯ
+     ========================= */
+  table.table {
+    border-color: var(--adm-border) !important;
+  }
+  table.table thead th {
+    position: sticky; top: 0; z-index: 1;
+    background: #fff;
+    border-bottom: 1px solid var(--adm-border) !important;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  /* ячейки: воздух и контраст */
+  table.table td, table.table th {
+    border-color: var(--adm-border) !important;
+    padding: .5rem .4rem;
+    vertical-align: middle;
+    line-height: 1.2;
+  }
+  
+  /* Фон незапланированных ячеек - газетная бумага */
+  table.table td {
+    background-color: #f8f6f0 !important;
+  }
+  
+  /* номер недели */
+  .kw-cell {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    background: #fff;
+    border-right: 1px solid var(--adm-border);
+  }
+  
+  /* =========================
+     КНОПКИ ДАТ (ячейки)
+     ========================= */
+  .date-cell {
+    font-size: 15px;
+    letter-spacing: .2px;
+    border-radius: .6rem;
+    border: 1px solid var(--adm-border);
+    background: linear-gradient(180deg, #fefefe, #f8f6f0);
+    box-shadow: 0 1px 0 rgba(2, 6, 23, .03);
+    padding: .35rem .55rem;
+    color: inherit; /* не менять цвет текста внутри цветных строк */
+  }
+  .date-cell .icon { 
+    margin-left: 4px; 
+    font-size: 14px;
+    line-height: 1;
+  }
+  
+  /* безопасный hover (не выбеляет текст) */
+  .date-cell:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #cbd5e1;
+    color: inherit; /* сохраняем исходный цвет текста */
+  }
+  
+  /* Hover для незапланированных ячеек (белых) */
+  .date-cell:not(.bg-success):not(.bg-warning):not(.bg-info):hover {
+    background: #e0f2fe !important; /* светло-бирюзовый */
+    border-color: #7dd3fc;
+  }
+  .date-cell:focus,
+  .date-cell:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--adm-ring);
+  }
+  
+  /* =========================
+     МЯГКИЕ ФОНА СОСТОЯНИЙ СТРОК
+     (перекрывают «яркие» bg-* фоны)
+     ========================= */
+  
+  /* завершено (зелёный) */
+  .bg-success,
+  .table .bg-success {
+    background: #cfe9dc !important;  /* пастельная мята */
+    color: #0c4b33 !important;        /* контрастный тёмно-зелёный текст */
+  }
+  .bg-success .date-cell {
+    background: rgba(255, 255, 255, .88);
+    border-color: rgba(12, 75, 51, .22);
+  }
+  
+  /* план/заявка (жёлтый) */
+  .bg-warning,
+  .table .bg-warning {
+    background: #fde6b5 !important;  /* мягкий песочный */
+    color: #7a3b0a !important;
+  }
+  .bg-warning .date-cell {
+    background: rgba(255, 255, 255, .88);
+    border-color: rgba(122, 59, 10, .22);
+  }
+  
+  /* особые/обсуждение (синий/циан) */
+  .bg-info,
+  .table .bg-info {
+    background: #d9eafc !important;  /* нежно-голубой */
+    color: #1e3a8a !important;
+  }
+  .bg-info .date-cell {
+    background: rgba(255, 255, 255, .88);
+    border-color: rgba(37, 99, 235, .22);
+  }
+  
+  /* лёгкое затемнение при hover у цветных строк */
+  .bg-success:hover,
+  .bg-warning:hover,
+  .bg-info:hover {
+    filter: brightness(.98);
+  }
+  
+  /* =========================
+     ТЕКУЩАЯ НЕДЕЛЯ
+     ========================= */
+  .current-week td {
+    border-top: 4px solid #14b8a6 !important;
+    border-bottom: 4px solid #14b8a6 !important;
+    position: relative;
+  }
+  .current-week td::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #14b8a6, #0891b2, #14b8a6);
+    box-shadow: 0 2px 4px rgba(20, 184, 166, 0.3);
+  }
+  .current-week td::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #14b8a6, #0891b2, #14b8a6);
+    box-shadow: 0 -2px 4px rgba(20, 184, 166, 0.3);
+  }
+  
+  /* =========================
+     МОДАЛЬНОЕ ОКНО
+     ========================= */
+  .modal-content {
+    border-radius: .8rem;
+    border: 1px solid var(--adm-border);
+    box-shadow: 0 20px 40px rgba(2, 6, 23, .18);
+  }
+  .modal-header {
+    background: linear-gradient(180deg, var(--adm-primary-100), #fff);
+    border-bottom: 1px solid var(--adm-border);
+  }
+  .modal .btn-close-custom {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #111827;
+    opacity: .45;
+  }
+  .modal .btn-close-custom:hover { opacity: .75; }
+  
+  /* =========================
+     ТАБЛИЦА ЛИЦЕНЗИЙ (в модалке)
+     ========================= */
+  #licenseTable td, #licenseTable th {
+    font-size: 14px;
+    vertical-align: middle;
+    border-color: var(--adm-border);
+  }
+  #licenseTable td input[type="time"] {
+    font-size: 14px;
+    height: 32px;
+  }
+  
+  /* строка времени и статуса */
+  #timeStatus { color: var(--adm-success); }
+  
+  /* =========================
+     КНОПКИ (гармонизировать с Django)
+     ========================= */
+  .btn { border-radius: .6rem; }
+  .btn-primary {
+    background-color: var(--adm-primary);
+    border-color: var(--adm-primary);
+  }
+  .btn-primary:hover { filter: brightness(1.05); }
+  .btn-secondary { 
+    background-color: #6b7280; 
+    border-color: #6b7280; 
+  }
+  .btn-secondary:hover { 
+    background-color: #4b5563; 
+    border-color: #4b5563; 
+  }
+  .btn-danger { 
+    background-color: #dc2626; 
+    border-color: #dc2626; 
+  }
+  .btn-danger:hover { 
+    background-color: #b91c1c; 
+    border-color: #b91c1c; 
+  }
+  .btn-success { 
+    background-color: #059669; 
+    border-color: #059669; 
+  }
+  .btn-success:hover { 
+    background-color: #047857; 
+    border-color: #047857; 
+  }
+  
+  /* компактная форма ввода номера лицензии */
+  #licenseNumberInput { width: 270px !important; min-width: 270px; }
+  

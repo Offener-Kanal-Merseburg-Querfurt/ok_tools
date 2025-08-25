@@ -1,49 +1,114 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n static %}
 
-{# 1.  CSS Bootstrap‑3 — в extrahead (этот блок точно есть) #}
 {% block extrahead %}
   {{ block.super }}
   <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
-        <style>
-          #licenseTable td,
-          #licenseTable th {
-            font-size: 14px;
-            vertical-align: middle;
-          }
-
-          #licenseTable td input[type="time"] {
-            font-size: 14px;
-            height: 30px;
-          }
-
-          /* KW number: larger and darker */
-          .kw-cell {
-            font-size: 17px;
-            font-weight: 600;
-            color: #333;
-            white-space: nowrap;
-          }
-
-          /* date button: larger, icon with left margin */
-          .date-cell {
-            font-size: 15px;
-            letter-spacing: 0.5px;
-          }
-          .date-cell .icon {
-            margin-left: 4px;   /* space between number and icon */
-          }
-
-          /* underline current week */
-          .current-week {
-            background: #dfe9ff !important;   /* more saturated blue */
-          }
-        </style>
-
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'planung/css/calendar_weeks.css' %}">
 {% endblock %}
 
 {% block content %}
+
+<!-- Weekly Statistics -->
+<div class="stats-container">
+  <div class="card border-primary">
+    <div class="card-header bg-primary text-white">
+      <h6 class="mb-0">{% trans "Current Week" %} (KW {{ current_week }})</h6>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Planned days" %}:</span>
+        <strong id="currentWeekPlanned">0</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Total time" %}:</span>
+        <strong id="currentWeekTime">0/735 min</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Fill rate" %}:</span>
+        <strong id="currentWeekFill">0%</strong>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span>{% trans "Licenses" %}:</span>
+        <strong id="currentWeekFreistellungen">0</strong>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card border-info">
+    <div class="card-header bg-info text-white">
+      <h6 class="mb-0">{% trans "Next Week" %} (KW {{ current_week|add:1 }})</h6>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Planned days" %}:</span>
+        <strong id="nextWeekPlanned">0</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Total time" %}:</span>
+        <strong id="nextWeekTime">0/735 min</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Fill rate" %}:</span>
+        <strong id="nextWeekFill">0%</strong>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span>{% trans "Freistellungen" %}:</span>
+        <strong id="nextWeekFreistellungen">0</strong>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card border-warning">
+    <div class="card-header bg-warning text-white">
+      <h6 class="mb-0">{% trans "Week After Next" %} (KW {{ current_week|add:2 }})</h6>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Planned days" %}:</span>
+        <strong id="afterNextWeekPlanned">0</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Total time" %}:</span>
+        <strong id="afterNextWeekTime">0/735 min</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Fill rate" %}:</span>
+        <strong id="afterNextWeekFill">0%</strong>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span>{% trans "Freistellungen" %}:</span>
+        <strong id="afterNextWeekFreistellungen">0</strong>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card border-secondary">
+    <div class="card-header bg-secondary text-white">
+      <h6 class="mb-0">{% trans "3 Weeks Ahead" %} (KW {{ current_week|add:3 }})</h6>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Planned days" %}:</span>
+        <strong id="threeWeeksAheadPlanned">0</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Total time" %}:</span>
+        <strong id="threeWeeksAheadTime">0/735 min</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% trans "Fill rate" %}:</span>
+        <strong id="threeWeeksAheadFill">0%</strong>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span>{% trans "Freistellungen" %}:</span>
+        <strong id="threeWeeksAheadFreistellungen">0</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="table-responsive">
   <table class="table table-bordered text-center">
     <thead>
@@ -81,19 +146,22 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="dayPlanLabel">
+        <h5 class="modal-title" id="dayPlanLabel">
           <span id="modalDateDisplay"></span> – <span id="modalWeekday"></span>
-        </h4>
+        </h5>
+        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}">&times;</button>
       </div>
 
       <div class="modal-body">
-        <p><strong>{% trans "Broadcast block" %}:</strong> 18:00 – 19:45 ({% trans "105 Min" %}) •
-        <span id="remainingTime" class="text-success">{% trans "Full available" %}</span></p>
+        <div class="time-status text-success" id="timeStatus">
+          <strong>{% trans "Broadcast block" %}:</strong> 18:00 – 19:45 ({% trans "105 Min" %}) •
+          <span id="remainingTime">{% trans "Full available" %}</span>
+          <br><small>{% trans "Gaps >5 min count as used time" %}</small>
+        </div>
 
-        <div class="form-inline" style="margin-bottom: 15px;">
-          <input type="number" id="licenseNumberInput" class="form-control" placeholder="{% trans 'Enter license number...' %}">
-          <button id="addLicenseBtn" class="btn btn-default">{% trans "Add" %}</button>
+        <div class="d-flex gap-2 mb-3">
+          <input type="number" id="licenseNumberInput" class="form-control" placeholder="{% trans 'Enter license number...' %}" style="width: 270px;">
+          <button id="addLicenseBtn" class="btn btn-primary">{% trans "Add" %}</button>
         </div>
 
         <table class="table table-bordered table-condensed" id="licenseTable">
@@ -118,11 +186,11 @@
       </div>
 
       <div class="modal-footer">
-        <button id="sortByTimeBtn" class="btn btn-default" style="margin-right: 8px;" type="button" title="{% trans 'Sort by time' %}">⏱️ {% trans 'Sort by time' %}</button>
+        <button id="sortByTimeBtn" class="btn btn-secondary me-2" type="button" title="{% trans 'Sort by time' %}">⏱️ {% trans 'Sort by time' %}</button>
         <button class="btn btn-danger">{% trans "Delete" %}</button>
-        <button class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-        <button class="btn btn-primary">{% trans "Save" %}</button>
-        <button class="btn btn-success">{% trans "Plan!" %}</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+        <button id="savePlanBtn" class="btn btn-primary">{% trans "Save" %}</button>
+        <button id="planPlanBtn" class="btn btn-success">{% trans "Plan!" %}</button>
       </div>
 
     </div>
@@ -136,7 +204,7 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
@@ -147,312 +215,11 @@
       overPlanned: "{% trans 'Overplanned by %(minutes)s min!' %}",
       licenseNotFound: "{% trans 'License not found or not confirmed' %}",
     };
+    const CURRENT_WEEK = parseInt('{{ current_week }}', 10);
   </script>
-
-<script>
-  (function ($) {
-    $(function () {
-      var $modal = $('#dayPlanModal');
-      var plannedItems = [];
-      const blockStart = 18 * 60;
-      const blockEnd = 19 * 60 + 45;
-      const maxBlockMinutes = blockEnd - blockStart;
-
-      $('.date-cell').on('click', function () {
-            const iso = $(this).data('date');
-            // Creating date from ISO format with UTC parsing to prevent timezone issues
-            const jsDate = new Date(iso + 'T00:00:00Z');
-
-            $('#modalDateDisplay').text(jsDate.toLocaleDateString('de-DE'));
-            $('#modalWeekday').text(
-                jsDate.toLocaleDateString('de-DE', { weekday: 'long' })
-            );
-            $('#dayPlanModal').data('isoDate', iso);
-
-            // clear old data
-            plannedItems = [];
-            $('#licenseTable tbody').empty();
-            $('#noteText').val('');
-            updateRemainingTime();
-
-            // --- load saved TagesPlan if exists ---
-            $.get(`/api/day-plan/${iso}/`)
-              .done(function (data) {
-                  // restore rows
-                  data.items.forEach(function (item) {
-                      const row = `
-                        <tr>
-                          <td><input type="time" class="form-control input-sm start-time-input" value="${item.start}"></td>
-                          <td>${item.number}</td>
-                          <td>${item.title || ''}${item.subtitle ? ' – ' + item.subtitle : ''}</td>
-                          <td>${item.duration}</td>
-                          <td><span class="drag-handle" style="cursor:move;font-size:18px;margin-right:6px;">&#9776;</span><button class="btn btn-xs btn-danger remove-row">&times;</button></td>
-                        </tr>`;
-                      $('#licenseTable tbody').append(row);
-                      plannedItems.push({
-                        number: item.number,
-                        duration: item.duration,
-                        title: item.title,
-                        subtitle: item.subtitle,
-                        start: item.start
-                      });
-                  });
-
-                  $('#noteText').val(data.comment || '');
-                  updateRemainingTime();
-              })
-              .fail(function () {
-                  // 404 - means no plan exists yet, leave modal empty
-              });
-
-            $('#dayPlanModal').modal('show');
-        });
-
-      function updateRemainingTime() {
-        // Find the maximum end time
-        let maxEnd = blockStart;
-        $('#licenseTable tbody tr').each(function () {
-          const $row = $(this);
-          const startStr = $row.find('input[type="time"]').val();
-          const duration = parseInt($row.find('td').eq(3).text(), 10);
-          if (startStr && duration) {
-            const [h, m] = startStr.split(":").map(Number);
-            const startMin = h * 60 + m;
-            const endMin = startMin + duration;
-            if (endMin > maxEnd) maxEnd = endMin;
-          }
-        });
-        const remaining = blockEnd - maxEnd;
-        const $remaining = $('#remainingTime');
-
-        if (remaining < 0) {
-          $remaining.removeClass('text-success').addClass('text-danger')
-            .text(TEXTS.overPlanned.replace('%(minutes)s', -remaining));
-        } else {
-          $remaining.removeClass('text-danger').addClass('text-success')
-            .text(TEXTS.stillFree.replace('%(minutes)s', remaining));
-        }
-      }
-
-      $('#addLicenseBtn').on('click', function () {
-        const number = $('#licenseNumberInput').val().trim();
-        if (!number) return;
-
-        $.get(`/api/license/${number}/`, function (data) {
-          // calculate start time as maximum end time
-          let lastEnd = blockStart;
-          plannedItems.forEach(function(item) {
-            // convert start to minutes
-            let startMin = 0;
-            if (item.start && /^\d{2}:\d{2}$/.test(item.start)) {
-              const [h, m] = item.start.split(":").map(Number);
-              startMin = h * 60 + m;
-            }
-            lastEnd = Math.max(lastEnd, startMin + (item.duration || 0));
-          });
-          const startTime = Math.floor(lastEnd / 60).toString().padStart(2, '0') + ':' +
-                            (lastEnd % 60).toString().padStart(2, '0');
-
-          const row = `
-            <tr>
-              <td><input type="time" class="form-control input-sm start-time-input" value="${startTime}"></td>
-              <td>${data.number}</td>
-              <td>${data.title}${data.subtitle ? ' – ' + data.subtitle : ''}</td>
-              <td>${data.duration_min}</td>
-              <td><span class="drag-handle" style="cursor:move;font-size:18px;margin-right:6px;">&#9776;</span><button class="btn btn-xs btn-danger remove-row">&times;</button></td>
-            </tr>
-          `;
-
-          $('#licenseTable tbody').append(row);
-          plannedItems.push({
-            number: data.number,
-            duration: data.duration_min,
-            title: data.title,
-            subtitle: data.subtitle,
-            start: startTime
-          });
-          updateRemainingTime();
-          $('#licenseNumberInput').val('');
-        }).fail(function () {
-          alert(TEXTS.licenseNotFound);
-        });
-      });
-
-      // Synchronize start time when input changes
-      $('#licenseTable').on('change input', '.start-time-input', function () {
-        const $row = $(this).closest('tr');
-        const index = $row.index();
-        const newStart = $(this).val();
-        if (plannedItems[index]) {
-          plannedItems[index].start = newStart;
-        }
-        updateRemainingTime();
-      });
-
-      $('#licenseTable').on('click', '.remove-row', function () {
-        const row = $(this).closest('tr');
-        const index = row.index();
-        plannedItems.splice(index, 1);
-        row.remove();
-        updateRemainingTime();
-      });
-
-      function collectPlanData () {
-        const isoDate = $('#dayPlanModal').data('isoDate');   // yyyy‑MM‑dd
-        if (!isoDate) {
-            alert("{% trans '⚠️ Date is missing.' %}");
-            return null;
-        }
-
-        const items = [];
-        $('#licenseTable tbody tr').each(function () {
-            const $row = $(this);
-            const titleCell = $row.find('td').eq(2).text();
-            let title = titleCell;
-            let subtitle = "";
-            if (titleCell.includes(' – ')) {
-              [title, subtitle] = titleCell.split(' – ', 2);
-            }
-            items.push({
-                number:    parseInt($row.find('td').eq(1).text(), 10),
-                start:     $row.find('input[type="time"]').val(),
-                duration:  parseInt($row.find('td').eq(3).text(), 10),
-                title:     title,
-                subtitle:  subtitle
-            });
-        });
-
-        return {
-            date: isoDate,
-            items: items,
-            comment: $('#noteText').val()
-        };
-      }
+  <script src="{% static 'planung/js/calendar_weeks.js' %}"></script>
 
 
-      $('#dayPlanModal .btn-primary').on('click', function () {
-        const data = collectPlanData();
-        if (!data) return;        // invalid date
-        data.draft = true;
-
-        $.ajax({
-          url: '/api/day-plan/',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          success: function () {
-            alert("{% trans 'Draft saved successfully.' %}");
-            location.reload(); // refresh calendar
-          },
-          error: function () {
-            alert("{% trans 'Error saving the draft.' %}");
-          }
-        });
-      });
-
-      $('#dayPlanModal .btn-success').on('click', function () {
-        const data = collectPlanData(); // no draft
-        if (!data) return;        // invalid date
-
-        data.planned = true;
-
-        $.ajax({
-          url: '/api/day-plan/',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          success: function () {
-            alert("{% trans 'Plan saved successfully!' %}");
-            $('#dayPlanModal').modal('hide');
-            location.reload(); // refresh calendar
-          },
-          error: function () {
-            alert("{% trans 'Error saving the plan. Please try again.' %}");
-          }
-        });
-      });
-
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-      }
-      const csrftoken = getCookie('csrftoken');
-
-      $('#dayPlanModal .btn-danger').on('click', function () {
-        const isoDate = $('#dayPlanModal').data('isoDate');
-        if (!isoDate) {
-            alert("{% trans '⚠️ Date is missing.' %}");
-            return;
-        }
-        if (!confirm("{% trans 'Delete plan for this day?' %}")) return;
-
-        $.ajax({
-          url: '/api/day-plan/' + isoDate + '/',
-          method: 'DELETE',
-          beforeSend: function(xhr) {
-            xhr.setRequestHeader('X-CSRFToken', csrftoken);
-          },
-          success: function () {
-            alert("{% trans 'Plan deleted!' %}");
-            $('#dayPlanModal').modal('hide');
-            location.reload(); // refresh calendar
-          },
-          error: function () {
-            alert("{% trans 'Error deleting the plan.' %}");
-          }
-        });
-      });
-
-      // Drag-and-drop rows
-      $('#licenseTable tbody').sortable({
-        handle: '.drag-handle',
-        update: function () {
-          syncPlannedItemsFromTable();
-          updateRemainingTime();
-        }
-      });
-
-      // Time sort button
-      $('#sortByTimeBtn').on('click', function () {
-        let rows = $('#licenseTable tbody tr').get();
-        rows.sort(function(a, b) {
-          let aTime = $(a).find('input[type="time"]').val();
-          let bTime = $(b).find('input[type="time"]').val();
-          return aTime.localeCompare(bTime);
-        });
-        $.each(rows, function(idx, row) {
-          $('#licenseTable tbody').append(row);
-        });
-        syncPlannedItemsFromTable();
-        updateRemainingTime();
-      });
-
-      // Synchronize plannedItems with the table
-      function syncPlannedItemsFromTable() {
-        plannedItems = [];
-        $('#licenseTable tbody tr').each(function () {
-          const $row = $(this);
-          const start = $row.find('input[type="time"]').val();
-          const number = $row.find('td').eq(1).text();
-          const titleCell = $row.find('td').eq(2).text();
-          let [title, subtitle] = titleCell.split(' – ', 2);
-          const duration = parseInt($row.find('td').eq(3).text(), 10);
-          plannedItems.push({ start, number, title, subtitle, duration });
-        });
-      }
-
-    });
-  })(jQuery);
-</script>
 
 {% endblock %}
+ 

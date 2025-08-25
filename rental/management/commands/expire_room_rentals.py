@@ -74,12 +74,12 @@ class Command(BaseCommand):
 
         if reserved_expired:
             self.stdout.write(
-                f'🔴 {len(reserved_expired)} expired room reservations'
+                f'🔴 {len(reserved_expired)} expired room reservations (will be auto-returned)'
             )
 
         if issued_expired:
             self.stdout.write(
-                f'🟡 {len(issued_expired)} expired room rentals'
+                f'🟡 {len(issued_expired)} expired room rentals (will be returned)'
             )
 
         if verbose:
@@ -108,22 +108,23 @@ class Command(BaseCommand):
                     rental_request = room_rental.rental_request
 
                     if rental_request.status == 'reserved':
-                        # For reservations: create cancellation transaction
+                        # For room reservations: create return transaction (auto-return)
                         RentalTransaction.objects.create(
                             room=room_rental.room,
-                            transaction_type='cancel',
+                            transaction_type='return',
                             quantity=1,  # Room = 1 unit
-                            notes=_('Automatic cancellation of expired room reservation: {}').format(room_rental.room.name),
+                            notes=_('Automatic return of expired room reservation: {}').format(room_rental.room.name),
                             performed_by=OKUser.objects.filter(is_superuser=True).first()
                         )
 
-                        # Update request status
-                        rental_request.status = 'cancelled'
+                        # Update request status to returned (not cancelled)
+                        rental_request.status = 'returned'
+                        rental_request.actual_end_date = now
                         rental_request.save()
 
                         if verbose:
                             self.stdout.write(
-                                f'  ✅ Cancelled reservation: {room_rental.room.name}'
+                                f'  ✅ Auto-returned room reservation: {room_rental.room.name}'
                             )
 
                     elif rental_request.status == 'issued':
@@ -156,8 +157,8 @@ class Command(BaseCommand):
                 logger.info(
                     _('Automatic expiration of expired room rentals: '
                       'processed {} rentals, '
-                      'reservations: {}, '
-                      'rentals: {}').format(
+                      'auto-returned reservations: {}, '
+                      'returned rentals: {}').format(
                         processed_count,
                         len(reserved_expired),
                         len(issued_expired)

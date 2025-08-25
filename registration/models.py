@@ -207,3 +207,116 @@ class Profile(models.Model):
 
         verbose_name = _('Profile')
         verbose_name_plural = _('Profiles')
+
+
+class Notification(models.Model):
+    """
+    Model for system notifications that can be displayed to users.
+    """
+    
+    NOTIFICATION_TYPES = [
+        ('info', _('Information')),
+        ('success', _('Success')),
+        ('warning', _('Warning')),
+        ('danger', _('Danger')),
+    ]
+    
+    ICON_CHOICES = [
+        ('info-circle', _('Info Circle')),
+        ('check-circle', _('Check Circle')),
+        ('exclamation-triangle', _('Exclamation Triangle')),
+        ('exclamation-circle', _('Exclamation Circle')),
+        ('clock', _('Clock')),
+        ('bell', _('Bell')),
+        ('broadcast', _('Broadcast')),
+        ('star', _('Star')),
+        ('gear', _('Gear')),
+        ('shield-check', _('Shield Check')),
+    ]
+    
+    title = models.CharField(
+        _('Title'),
+        max_length=200,
+        help_text=_('Short title for the notification')
+    )
+    
+    message = models.TextField(
+        _('Message'),
+        help_text=_('Main notification text')
+    )
+    
+    notification_type = models.CharField(
+        _('Type'),
+        max_length=10,
+        choices=NOTIFICATION_TYPES,
+        default='info',
+        help_text=_('Notification type determines color and style')
+    )
+    
+    icon = models.CharField(
+        _('Icon'),
+        max_length=20,
+        choices=ICON_CHOICES,
+        default='info-circle',
+        help_text=_('Bootstrap Icons icon name')
+    )
+    
+    is_active = models.BooleanField(
+        _('Active'),
+        default=True,
+        help_text=_('Only active notifications are displayed to users')
+    )
+    
+    priority = models.IntegerField(
+        _('Priority'),
+        default=1,
+        help_text=_('Higher priority notifications appear first (1-10)')
+    )
+    
+    start_date = models.DateTimeField(
+        _('Start Date'),
+        default=timezone.now,
+        help_text=_('When to start showing this notification')
+    )
+    
+    end_date = models.DateTimeField(
+        _('End Date'),
+        null=True,
+        blank=True,
+        help_text=_('When to stop showing this notification (optional)')
+    )
+    
+    created_at = models.DateTimeField(
+        _('Created At'),
+        auto_now_add=True
+    )
+    
+    created_by = models.ForeignKey(
+        OKUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_('Created By'),
+        help_text=_('Admin who created this notification (auto-filled)')
+    )
+    
+    def __str__(self):
+        """Represent Notification by title."""
+        return f"{self.title} ({self.get_notification_type_display()})"
+    
+    class Meta:
+        """Define the message IDs."""
+        verbose_name = _('Notification')
+        verbose_name_plural = _('Notifications')
+        ordering = ['-priority', '-created_at']
+    
+    def is_currently_active(self):
+        """Check if notification should be displayed now."""
+        now = timezone.now()
+        if not self.is_active:
+            return False
+        if now < self.start_date:
+            return False
+        if self.end_date and now > self.end_date:
+            return False
+        return True
