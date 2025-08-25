@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.loadRentalsData();
             });
 
+            document.getElementById('typeFilter').addEventListener('change', () => {
+                this.currentPage = 1;
+                this.loadRentalsData();
+            });
+
             document.getElementById('userFilter').addEventListener('input',
                 this.debounce(() => {
                     this.currentPage = 1;
@@ -110,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const params = new URLSearchParams({
                     page: this.currentPage,
                     status: document.getElementById('statusFilter').value,
+                    type: document.getElementById('typeFilter').value,
                     user: document.getElementById('userFilter').value
                 });
 
@@ -189,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="user-email">${rental.user_email}</div>
                         </td>
                         <td class="col-status text-center">
-                            <span class="status-badge ${statusClass}">${this.getStatusLabel(rental.status)}</span>
+                            <span class="status-badge ${statusClass}">${this.getStatusLabelForRental(rental)}</span>
                         </td>
                         <td class="col-created">
                             <div class="date-info">${this.formatDisplayDate(rental.created_at)}</div>
@@ -538,6 +544,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 case 'cancelled': return gettext('Cancelled');
                 default: return status;
             }
+        }
+
+        getStatusLabelForRental(rental) {
+            // For rooms, show special status if they have room_rentals
+            if (rental.room_rentals && rental.room_rentals.length > 0) {
+                if (rental.status === 'reserved') {
+                    return gettext('Reserved (Auto-return)');
+                } else if (rental.status === 'returned') {
+                    return gettext('Returned (Auto)');
+                }
+            }
+            return this.getStatusLabel(rental.status);
         }
 
         formatDisplayDate(dateString) {
@@ -1047,8 +1065,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>${gettext('Successfully expired')}:</strong><br>
                         <small>
                             ${gettext('Total')}: ${data.statistics.total_expired}<br>
-                            ${gettext('Reservations')}: ${data.statistics.reserved_expired}<br>
-                            ${gettext('Rentals')}: ${data.statistics.issued_expired}
+                            ${gettext('Auto-returned reservations')}: ${data.statistics.reserved_expired}<br>
+                            ${gettext('Returned rentals')}: ${data.statistics.issued_expired}
                         </small>
                     </div>
                 `;

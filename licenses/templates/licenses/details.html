@@ -3,9 +3,12 @@
 {% load i18n %}
 {% load static %}
 
+{% block title %}{% trans 'License Details' %} - OK Tools{% endblock %}
+{% block page_title %}{% trans 'License Details' %}{% endblock %}
+
 {% block content %}
 
-<h1> {% translate 'Details for '%}{{object}} </h1>
+<h1>{% trans 'Details for' %} {{ object }}</h1>
 
 <form method="post">
 {% csrf_token %}
@@ -13,8 +16,8 @@
     <tbody>
         {% for field in form %}
         <tr>
-        {% translate 'Category' as category %}
-        {% translate 'Youth protection category' as youthprotection %}
+        {% trans 'Category' as category %}
+        {% trans 'Youth protection category' as youthprotection %}
         <td>{{ field.label }}:</td>
         <td>{% if field.value == None %}
                 ----
@@ -24,10 +27,10 @@
                 {{ ypc_title }}
             {% elif field.value == True %}
                 <img src="{% static 'admin/img/icon-yes.svg' %}"
-                        alt="{% translate 'Yes'%}">
+                        alt="{% trans 'Yes' %}">
             {% elif field.value == False %}
                 <img src="{% static 'admin/img/icon-no.svg' %}"
-                        alt="{% translate 'No'%}">
+                        alt="{% trans 'No' %}">
             {% else %}
                 {{ field.value }}
             {% endif %}
@@ -39,11 +42,11 @@
 <div>
 {% if not object.confirmed %}
 <a class="btn btn-primary" id="id_edit_LR" href="{% url 'licenses:update' object.id %}">
-    {%translate 'Edit'%}
+    {% trans 'Edit' %}
 </a>
 {% endif %}
 <a class="btn btn-primary" id="id_print_LR" href="{% url 'licenses:print' object.id %}" target="_blank">
-    {%translate 'Print'%}
+    {% trans 'Print' %}
 </a>
 </div>
 {% endblock content %}

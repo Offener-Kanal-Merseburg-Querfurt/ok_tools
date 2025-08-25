@@ -1,62 +1,264 @@
 {% extends 'base.html' %}
-
-{% load i18n %}
 {% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Licenses' %} - OK Tools{% endblock %}
+{% block page_title %}{% trans 'Licenses' %}{% endblock %}
 
 {% block content %}
-<h1> {% translate 'Your licenses' %}</h1>
+<!-- Header Actions -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h5 class="text-muted">{% trans 'Manage your licenses and permissions' %}</h5>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'licenses:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>{% trans 'Create License' %}
+        </a>
+    </div>
+</div>
 
-<table class=table>
-    <thead>
-        <tr>
-            <th scope="col">{% translate 'License' %}</th>
-            <th scope="col">{% translate 'Confirmed' %}</th>
-            <th scope="col">{% translate 'Actions' %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for license in object_list %}
-            <tr>
-                <td>
-                    <a href="{% url 'licenses:details' license.id %}" class="link-dark"> {{license}} </a>
-                </td>
-                <td>
-                {% if license.confirmed %}
-                    <img src="{% static 'admin/img/icon-yes.svg' %}"
-                         alt="{% translate 'Yes'%}">
-                {% else %}
-                    <img src="{% static 'admin/img/icon-no.svg' %}"
-                         alt="{% translate 'No'%}">
-                {% endif %}
-                </td>
-                <td>
-                    <div>
-                    {% if not license.confirmed%}
-                    <a class="btn btn-outline-dark"
-                       id="id_edit_{{license.id}}"
-                       href="{% url 'licenses:update' license.id %}"
-                       title="{%translate 'Edit license'%}">
-                       <img src="{% static 'img/pencil.svg' %}" alt="{% translate 'edit' %}">
-                    </a>
-                    {% endif %}
-                    <a class="btn btn-outline-dark"
-                       id="id_print_{{license.id}}"
-                       href="{% url 'licenses:print' license.id %}"
-                       target="_blank"
-                       title="{% translate 'Print official document'%}">
-                       <img src="{% static 'img/printer.svg' %}" alt="{% translate 'print' %}">
-                    </a>
-                    </div>
-                </td>
-            </tr>
-        {% empty %}
-            <td>{% translate 'No licenses yet.' %}</td>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Filter -->
+<div class="dashboard-card mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="statusFilter" class="form-label">{% trans 'Status' %}</label>
+            <select class="form-select" id="statusFilter">
+                <option value="">{% trans 'All Status' %}</option>
+                <option value="confirmed">{% trans 'Confirmed' %}</option>
+                <option value="pending">{% trans 'Pending' %}</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="categoryFilter" class="form-label">{% trans 'Category' %}</label>
+            <select class="form-select" id="categoryFilter">
+                <option value="">Alle Kategorien</option>
+                <option value="Familie und Freizeit">Familie und Freizeit</option>
+                <option value="Kulturelles und soziales Engagement">Kulturelles und soziales Engagement</option>
+                <option value="Heimatdoku">Heimatdoku</option>
+                <option value="Experimentierfeld \"Video\"">Experimentierfeld "Video"</option>
+                <option value="Politisch orientiertes Bürgerfernsehen">Politisch orientiertes Bürgerfernsehen</option>
+                <option value="Gastbeitrag">Gastbeitrag</option>
+                <option value="Kurzfilm">Kurzfilm</option>
+                <option value="Trailer">Trailer</option>
+                <option value="Medienpädagogische Produktionen">Medienpädagogische Produktionen</option>
+                <option value="Orientierungshilfen">Orientierungshilfen</option>
+                <option value="Sonstiges">Sonstiges</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="searchInput" class="form-label">{% trans 'Search' %}</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="{% trans 'Search licenses...' %}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">&nbsp;</label>
+            <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                <i class="bi bi-arrow-clockwise me-2"></i>{% trans 'Clear Filters' %}
+            </button>
+        </div>
+    </div>
+</div>
 
-<a class="btn btn-primary" href="{%url 'licenses:create' %}">
-    {% translate 'Create license' %}
-</a>
+<!-- Lizenzen Tabelle -->
+<div class="dashboard-card table-card">
+    <div class="table-responsive">
+        <table class="table table-hover" id="licensesTable">
+            <thead>
+                <tr>
+                    <th>{% trans 'Title' %}</th>
+                    <th>{% trans 'Category' %}</th>
+                    <th>{% trans 'Status' %}</th>
+                    <th>{% trans 'Suggested Date' %}</th>
+                    <th>{% trans 'Created' %}</th>
+                    <th>{% trans 'Actions' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for license in licenses %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="license-icon me-3">
+                                <i class="bi bi-file-earmark-text text-primary"></i>
+                            </div>
+                            <div>
+                                <strong>{{ license.title }}</strong>
+                                {% if license.description %}
+                                <br><small class="text-muted">{{ license.description|truncatechars:50 }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">{{ license.category|default:"General" }}</span>
+                    </td>
+                    <td>
+                        {% if license.confirmed %}
+                            <span class="badge bg-success">{% trans 'Confirmed' %}</span>
+                        {% else %}
+                            <span class="badge bg-warning">{% trans 'Pending' %}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if license.suggested_date %}
+                            <span class="text-info">
+                                {{ license.suggested_date|date:"d.m.Y" }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">{% trans 'No Date' %}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ license.created_at|date:"d.m.Y" }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'licenses:details' license.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'licenses:update' license.id %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteLicense({{ license.id }})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">{% trans 'No licenses found' %}</p>
+                            <a href="{% url 'licenses:create' %}" class="btn btn-primary">{% trans 'Create your first license' %}</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-{% endblock content %}
+<!-- Seitenzahlen -->
+{% if is_paginated %}
+<nav aria-label="{% trans 'License pagination' %}" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+                    <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo; {% trans 'First' %}</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans 'Previous' %}</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                {% trans 'Page' %} {{ page_obj.number }} {% trans 'of' %} {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans 'Next' %}</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% trans 'Last' %} &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const searchInput = document.getElementById('searchInput');
+    
+    [statusFilter, categoryFilter, searchInput].forEach(filter => {
+        filter.addEventListener('change', filterLicenses);
+        if (filter === searchInput) {
+            filter.addEventListener('input', filterLicenses);
+        }
+    });
+});
+
+function filterLicenses() {
+    const status = document.getElementById('statusFilter').value;
+    const category = document.getElementById('categoryFilter').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#licensesTable tbody tr');
+    
+    rows.forEach(row => {
+        let show = true;
+        
+        // Status filter
+        if (status) {
+            const statusText = row.querySelector('td:nth-child(3)').textContent.trim();
+            if (status === 'confirmed' && !statusText.includes('{% trans "Confirmed" %}')) {
+                show = false;
+            } else if (status === 'pending' && !statusText.includes('{% trans "Pending" %}')) {
+                show = false;
+            }
+        }
+        
+        // Category filter
+        if (category) {
+            const categoryText = row.querySelector('td:nth-child(2)').textContent.trim();
+            if (category === 'Familie und Freizeit' && !categoryText.includes('Familie und Freizeit')) {
+                show = false;
+            } else if (category === 'Kulturelles und soziales Engagement' && !categoryText.includes('Kulturelles und soziales Engagement')) {
+                show = false;
+            } else if (category === 'Heimatdoku' && !categoryText.includes('Heimatdoku')) {
+                show = false;
+            } else if (category === 'Experimentierfeld \"Video\"' && !categoryText.includes('Experimentierfeld \"Video\"')) {
+                show = false;
+            } else if (category === 'Politisch orientiertes Bürgerfernsehen' && !categoryText.includes('Politisch orientiertes Bürgerfernsehen')) {
+                show = false;
+            } else if (category === 'Gastbeitrag' && !categoryText.includes('Gastbeitrag')) {
+                show = false;
+            } else if (category === 'Kurzfilm' && !categoryText.includes('Kurzfilm')) {
+                show = false;
+            } else if (category === 'Trailer' && !categoryText.includes('Trailer')) {
+                show = false;
+            } else if (category === 'Medienpädagogische Produktionen' && !categoryText.includes('Medienpädagogische Produktionen')) {
+                show = false;
+            } else if (category === 'Orientierungshilfen' && !categoryText.includes('Orientierungshilfen')) {
+                show = false;
+            } else if (category === 'Sonstiges' && !categoryText.includes('Sonstiges')) {
+                show = false;
+            }
+        }
+        
+        // Search filter
+        if (search) {
+            const text = row.textContent.toLowerCase();
+            if (!text.includes(search)) {
+                show = false;
+            }
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function clearFilters() {
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('categoryFilter').value = '';
+    document.getElementById('searchInput').value = '';
+    filterLicenses();
+}
+
+function deleteLicense(licenseId) {
+    if (confirm('{% trans "Are you sure you want to delete this license?" %}')) {
+        // Add delete functionality here
+        console.log('Deleting license:', licenseId);
+    }
+}
+</script>
+{% endblock %}

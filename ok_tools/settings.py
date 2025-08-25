@@ -103,6 +103,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "registration.context_processors.context",
+                "ok_tools.context_processors.user_display_name",
             ],
         },
     },
@@ -175,6 +176,9 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "ok_tools", "static"),
+    os.path.join(BASE_DIR, "planung", "static"),
+    os.path.join(BASE_DIR, "licenses", "static"),
+    os.path.join(BASE_DIR, "rental", "static"),
 ]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -196,6 +200,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # authenticatable users
 AUTH_USER_MODEL = "registration.OKUser"
 AUTHENTICATION_BACKENDS = ["registration.backends.EmailBackend"]
+
+
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -308,3 +314,5 @@ LOGGING = {
         },
     },
 }
+
+

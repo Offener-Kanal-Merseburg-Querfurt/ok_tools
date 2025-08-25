@@ -1,0 +1,453 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Rental" %} - OK Tools{% endblock %}
+{% block page_title %}{% trans "Equipment and Studio Rooms Booking" %}{% endblock %}
+
+{% block content %}
+
+<!-- Rental Process -->
+<div class="row">
+    <!-- Left Sidebar - Workflow Steps -->
+    <div class="col-lg-3">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-list-check text-primary me-2"></i>
+                    {% trans "Booking Process" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Step 1: User Info -->
+                <div class="workflow-step active p-3 rounded mb-3" data-user-id="{{ user_id }}">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-person-circle text-primary me-2"></i>
+                        <strong>{% trans "1. Your Information" %}</strong>
+                    </div>
+                    <div class="user-info">
+                        <div class="alert alert-info py-2 mb-0">
+                            <small>
+                                <i class="bi bi-info-circle me-1"></i>
+                                {% if user_display_name %}
+                                    {{ user_display_name }}
+                                {% elif user.first_name and user.last_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                {% elif user.first_name %}
+                                    {{ user.first_name }}
+                                {% elif user.last_name %}
+                                    {{ user.last_name }}
+                                {% elif user.username %}
+                                    {{ user.username }}
+                                {% else %}
+                                    {% trans "User" %}
+                                {% endif %}
+                                {% if user.email %}
+                                    <br><span class="text-muted">{{ user.email }}</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact Statistics -->
+                <div class="workflow-step p-3 rounded mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-bar-chart text-info me-2"></i>
+                        <strong>{% trans "Statistics" %}</strong>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <div class="stats-card stats-card-primary" data-type="active">
+                                <div class="stats-number">{{ active_rentals|default:0 }}</div>
+                                <div class="stats-label">{% trans "Current" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stats-card stats-card-success" data-type="returned">
+                                <div class="stats-number">{{ returned_rentals|default:0 }}</div>
+                                <div class="stats-label">{% trans "Returned" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stats-card stats-card-warning" data-type="overdue">
+                                <div class="stats-number">{{ overdue_rentals|default:0 }}</div>
+                                <div class="stats-label">{% trans "Expired" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Project Info -->
+                <div class="workflow-step p-3 rounded mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-project-diagram text-secondary me-2"></i>
+                        <strong>{% trans "2. Project Information" %}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <input type="text" name="project_name" class="form-control form-control-sm" placeholder="{% trans 'Project Name' %}" required>
+                    </div>
+                    <div class="mb-2">
+                        <textarea name="purpose" class="form-control form-control-sm" placeholder="{% trans 'Purpose of Use' %}" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3: Time Period -->
+                <div class="workflow-step p-3 rounded mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-calendar-check text-secondary me-2"></i>
+                        <strong>{% trans "3. Time Period" %}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label form-label-sm">{% trans "From:" %}</label>
+                        <input name="start_date" type="datetime-local" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label form-label-sm">{% trans "To:" %}</label>
+                        <input name="end_date" type="datetime-local" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+
+                <!-- Step 4: Selection -->
+                <div class="workflow-step p-3 rounded mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-boxes text-secondary me-2"></i>
+                        <strong>{% trans "4. Selection" %}</strong>
+                    </div>
+                    <div class="selected-items" id="selectedItems">
+                        <small class="text-muted">{% trans "Nothing selected" %}</small>
+                    </div>
+                </div>
+
+                <!-- Step 5: Action -->
+                <div class="workflow-step p-3 rounded mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-play text-secondary me-2"></i>
+                        <strong>{% trans "5. Action" %}</strong>
+                    </div>
+                    <div class="btn-group-vertical w-100" role="group">
+                        <button class="btn btn-outline-primary btn-sm" id="reserveBtn" disabled>
+                            <i class="bi bi-bookmark me-1"></i>{% trans "Reserve" %}
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>{% trans "Rooms are automatically returned after scheduled time" %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9">
+        <!-- Quick Filters -->
+        <div class="dashboard-card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-funnel text-info me-2"></i>
+                    {% trans "Filters" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-group search-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="{% trans 'Search inventory...' %}" id="inventorySearch">
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-2">
+                        <select class="form-select filter-select" id="ownerFilter">
+                            <option value="all">{% trans "All Owners" %}</option>
+                        </select>
+                    </div> -->
+                    <div class="col-md-2">
+                        <select class="form-select filter-select" id="categoryFilter">
+                            <option value="all">{% trans "All Categories" %}</option>
+                        </select>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select filter-select" id="locationFilter">
+                            <option value="all">{% trans "All Locations" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-success w-100 mb-2" id="roomsFilterBtn">
+                            <i class="bi bi-building me-1"></i>{% trans "Rooms" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Selection Panel -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-boxes text-success me-2"></i>
+                    {% trans "Available Inventory" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="inventory-grid">
+                    <div class="row" id="inventoryGrid">
+                        <div class="col-12">
+                            <div class="text-center p-5">
+                                <i class="bi bi-calendar-event text-muted" style="font-size: 3rem;"></i>
+                                <p class="mt-3 text-muted">{% trans "Select dates to view availability" %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button class="btn btn-outline-secondary me-2" id="clearFormBtn">
+                            <i class="bi bi-eraser me-1"></i>{% trans "Reset" %}
+                        </button>
+                        <button class="btn btn-outline-info" id="groupByLocationBtn">
+                            <i class="bi bi-sitemap me-1"></i>{% trans "Group by Location" %}
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-warning me-2" id="showSetsBtn">
+                            <i class="bi bi-layer-group me-1"></i>{% trans "Show Sets" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Equipment Sets Modal -->
+<div class="modal fade" id="equipmentSetsModal" tabindex="-1" aria-labelledby="equipmentSetsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="equipmentSetsModalLabel">
+                    <i class="bi bi-layer-group text-primary me-2"></i>{% trans "Equipment Sets" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>{% trans "Available Sets" %}</h6>
+                        <div class="list-group" id="equipmentSetsList" style="max-height: 400px; overflow-y: auto;">
+                            <div class="text-center p-3">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <small class="ms-2">{% trans "Loading sets..." %}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>{% trans "Set Contents" %}</h6>
+                        <div id="setDetailsPanel" class="border rounded p-3" style="min-height: 200px;">
+                            <small class="text-muted">{% trans "Select a set to view contents" %}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                <button type="button" class="btn btn-primary" id="addSetToRentalBtn" disabled>{% trans "Add Set" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rooms Modal -->
+<div class="modal fade" id="roomsModal" tabindex="-1" aria-labelledby="roomsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roomsModalLabel">
+                    <i class="bi bi-building text-success me-2"></i>{% trans "Available Rooms" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Navigation tabs -->
+                <ul class="nav nav-tabs mb-3" id="roomsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="rooms-list-tab" data-bs-toggle="tab" data-bs-target="#rooms-list" type="button" role="tab">
+                            <i class="bi bi-list me-1"></i>{% trans "List" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="rooms-calendar-tab" data-bs-toggle="tab" data-bs-target="#rooms-calendar" type="button" role="tab">
+                            <i class="bi bi-calendar me-1"></i>{% trans "Calendar" %}
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab content -->
+                <div class="tab-content" id="roomsTabContent">
+                    <!-- Rooms List Tab -->
+                    <div class="tab-pane fade show active" id="rooms-list" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>{% trans "Available Rooms" %}</h6>
+                                <div class="list-group" id="roomsList" style="max-height: 400px; overflow-y: auto;">
+                                    <div class="text-center p-3">
+                                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                                        <small class="ms-2">{% trans "Loading rooms..." %}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>{% trans "Booking" %}</h6>
+                                <div id="roomDetailsPanel" class="border rounded p-3" style="min-height: 200px;">
+                                    <small class="text-muted">{% trans "Select a room to book time" %}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Tab -->
+                    <div class="tab-pane fade" id="rooms-calendar" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{% trans "Select room:" %}</label>
+                                <select class="form-select" id="calendarRoomSelect">
+                                    <option value="">{% trans "All Rooms" %}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">{% trans "From:" %}</label>
+                                <input type="date" class="form-control" id="calendarStartDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">{% trans "To:" %}</label>
+                                <input type="date" class="form-control" id="calendarEndDate">
+                            </div>
+                        </div>
+                        <div id="calendarContainer" class="border rounded p-3" style="min-height: 500px;">
+                            <div class="text-center p-5">
+                                <div class="spinner-border" role="status"></div>
+                                <p class="mt-2">{% trans "Loading calendar..." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-start me-auto">
+                    <small class="text-info">
+                        <i class="bi bi-info-circle me-1"></i>{% trans "Rooms are automatically returned after scheduled time" %}
+                    </small>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                <button type="button" class="btn btn-success" id="addRoomToRentalBtn" disabled>{% trans "Add Room" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Rentals Modal -->
+<div class="modal fade" id="activeRentalsModal" tabindex="-1" aria-labelledby="activeRentalsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="activeRentalsModalLabel">
+                    <i class="bi bi-clock text-primary me-2"></i>{% trans "CURRENT RENTALS" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="activeRentalsContent">
+                    <div class="text-center p-4">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-2">{% trans "Loading current rentals..." %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Returned Rentals Modal -->
+<div class="modal fade" id="returnedRentalsModal" tabindex="-1" aria-labelledby="returnedRentalsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnedRentalsModalLabel">
+                    <i class="bi bi-check-circle text-success me-2"></i>{% trans "RETURNED RENTALS" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="returnedRentalsContent">
+                    <div class="text-center p-4">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-2">{% trans "Loading returned rentals..." %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overdue Rentals Modal -->
+<div class="modal fade" id="overdueRentalsModal" tabindex="-1" aria-labelledby="overdueRentalsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="overdueRentalsModalLabel">
+                    <i class="bi bi-exclamation-triangle text-warning me-2"></i>{% trans "EXPIRED RENTALS" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="overdueRentalsContent">
+                    <div class="text-center p-4">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-2">{% trans "Loading expired rentals..." %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- JavaScript translations -->
+<script src="{% url 'javascript-catalog' %}"></script>
+
+<script>
+    // API URLs
+    const URLS = {
+        filterOptions: "{% url 'rental:api_filter_options_user' %}",
+        equipmentSets: "{% url 'rental:api_equipment_sets_user' %}",
+        equipmentSetDetails: "{% url 'rental:api_equipment_set_details' set_id=0 %}".replace('0','{setId}'),
+        rooms: "{% url 'rental:api_rooms_user' %}",
+        roomSchedule: "{% url 'rental:api_room_schedule_user' %}",
+        createRental: "{% url 'rental:api_create_rental_user' %}",
+        userRentalDetails: "{% url 'rental:api_user_rental_details' %}",
+        checkRoomAvailability: "{% url 'rental:api_check_room_availability' %}"
+    };
+    const CSRF_TOKEN = "{{ csrf_token }}";
+    const USER_ID = "{{ user_id }}";
+</script>
+
+<script src="{% static 'js/rental_dashboard.js' %}"></script>
+{% endblock %}

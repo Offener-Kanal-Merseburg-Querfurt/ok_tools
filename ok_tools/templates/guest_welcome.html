@@ -1,0 +1,184 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Guest Welcome Content -->
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Welcome Header -->
+        <div class="text-center mb-5">
+            <div class="welcome-icon mb-4">
+                <i class="bi bi-tools text-primary" style="font-size: 4rem;"></i>
+            </div>
+            <h1 class="display-4 text-primary mb-3">{% trans "Welcome to OK Tools" %}</h1>
+            <p class="lead text-muted">{% trans "OK Tools is the official platform for users of Offener Kanal Merseburg-Querfurt (OKMQ). Here you can register as a user, submit your videos for broadcasting, check the broadcast history, and book equipment or studio rooms for your productions." %}</p>
+            <div class="alert alert-info mt-3" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>{% trans "Available after registration:" %}</strong> {% trans "All features below become accessible once you create an account and log in." %}
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="dashboard-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-person-plus text-primary" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>{% trans "User Registration" %}</h5>
+                    <p class="text-muted">{% trans "Create your personal OKMQ account to get access to our media services, facilities, and broadcasting options." %}</p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary">{% trans "First Step" %}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="dashboard-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-camera-video text-success" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>{% trans "Video Contribution" %}</h5>
+                    <p class="text-muted">{% trans "Submit your own productions for broadcasting on TV, in our livestream, and in the public Mediathek. Keep track of when your videos have been shown." %}</p>
+                    <div class="mt-3">
+                        <span class="badge bg-success">{% trans "After Login" %}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="dashboard-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-building text-info" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>{% trans "Studios & Editing Rooms" %}</h5>
+                    <p class="text-muted">{% trans "Book professional editing suites or our TV studio to realize your projects with full technical support." %}</p>
+                    <div class="mt-3">
+                        <span class="badge bg-info">{% trans "After Login" %}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="dashboard-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-tools text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>{% trans "Equipment Rental" %}</h5>
+                    <p class="text-muted">{% trans "Borrow professional video, audio, and lighting equipment for free as part of your OKMQ membership." %}</p>
+                    <div class="mt-3">
+                        <span class="badge bg-warning">{% trans "After Login" %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="dashboard-card text-center" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border: 2px solid #dee2e6;">
+            <div class="card-body py-5">
+                <h3 class="mb-4 text-primary">{% trans "Ready to get started?" %}</h3>
+                <p class="text-muted mb-4">{% trans "Sign up now and become part of the OKMQ community – create, broadcast, and share your own video productions." %}</p>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Login" %}
+                    </a>
+                    <a href="{% url 'registration:register' %}" class="btn btn-success btn-lg px-5">
+                        <i class="bi bi-person-plus me-2"></i>{% trans "Register" %}
+                    </a>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">{% trans "Choose one of the options above to begin" %}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Organization Info -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <h5 class="card-title">
+                                    <i class="bi bi-info-circle text-info me-2"></i>{% trans "About OKMQ" %}
+                                </h5>
+                                <p class="card-text">{% trans "Offener Kanal Merseburg-Querfurt (OKMQ) is a community media organization that provides access to professional media production facilities and broadcasting opportunities for local communities." %}</p>
+                            </div>
+                            
+                            <div class="col-lg-7 position-relative">
+                                <h5 class="card-title">
+                                    <i class="bi bi-geo-alt text-success me-2"></i>{% trans "Contact Information" %}
+                                </h5>
+                                <div class="contact-info">
+                                    <p class="fw-bold mb-2">{% trans "OFFENER KANAL Merseburg-Querfurt e.V." %}</p>
+                                    <p class="text-muted mb-3">{% trans "Community Media Center" %}</p>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="address mb-3">
+                                                <p class="mb-1">
+                                                    Geusaer Straße 86b<br>
+                                                    06217 Merseburg<br>
+                                                    Germany
+                                                </p>
+                                            </div>
+
+                                            <div class="contact-details mb-3">
+                                                <p class="mb-1">
+                                                    <i class="bi bi-telephone me-2"></i>{% trans "Phone:" %} +49 (0)3461 52 52 22<br>
+                                                    <i class="bi bi-printer me-2"></i>{% trans "Fax:" %} +49 (0)3461 52 52 24<br>
+                                                    <i class="bi bi-envelope me-2"></i>{% trans "E-mail:" %} <a href="mailto:info@okmq.de" class="text-decoration-none">info@okmq.de</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-sm-6">
+                                            <div class="website mb-3">
+                                                <p class="mb-1">
+                                                    <i class="bi bi-globe me-2"></i>{% trans "Website:" %} <a href="https://okmq.de" target="_blank" class="text-decoration-none">okmq.de</a>
+                                                </p>
+                                            </div>
+
+                                            <div class="opening-hours">
+                                                <p class="text-muted small mb-1">
+                                                    <i class="bi bi-clock me-2"></i>{% trans "Opening hours:" %}<br>
+                                                    {% trans "Mon:" %} 13:00 – 16:00<br>
+                                                    {% trans "Tue – Thu:" %} 10:00 – 18:00<br>
+                                                    {% trans "Fri:" %} 10:00 – 16:00<br>
+                                                    <em>{% trans "(or by arrangement)" %}</em>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legal Links -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="dashboard-card legal-links">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-center gap-4 flex-wrap">
+                            <a href="{% url 'privacy_policy' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-shield-check me-2"></i>{% trans "Datenschutzerklärung" %}
+                            </a>
+                            <a href="https://okmq.de/impressum/" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-file-text me-2"></i>{% trans "Impressum" %}
+                            </a>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                {% trans "© 2025 OFFENER KANAL Merseburg-Querfurt e.V. All rights reserved." %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Guest Welcome Content -->

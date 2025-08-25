@@ -10,6 +10,12 @@
   .link-primary{
       text-decoration: underline;
   }
+  
+  /* Bootstrap 5 compatibility */
+  .link-primary:hover {
+      text-decoration: underline;
+      opacity: 0.8;
+  }
 </style>
 
 {% if user.is_authenticated %}
@@ -32,6 +38,6 @@
   {% endif %}
   {% include 'dashboard.html' %}
 {% else %}
-  <p>{% translate 'You are not logged in' %}</p>
+  {% include 'guest_welcome.html' %}
 {% endif %}
 {% endblock %}

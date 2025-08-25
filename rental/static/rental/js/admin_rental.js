@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.selectedRoom = null;
       this.equipmentSets = [];
       this.rooms = [];
+      this.groupByLocation = false;
 
       // Bind events
       this.bindEvents();
@@ -26,14 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
       // Load filter options for owners, categories and locations
       this.loadFilterOptions();
 
-      console.log('RentalProcess initialized');
     }
 
     bindEvents() {
       const userSearch = document.getElementById('userSearch');
       if (userSearch) {
         userSearch.addEventListener('input', this.debounce(this.searchUsers.bind(this), 300));
-        console.log('User search bound');
       }
 
       const nextBtn = document.getElementById('nextStepBtn');
@@ -91,6 +90,10 @@ document.addEventListener('DOMContentLoaded', function() {
       const addSetToRentalBtn = document.getElementById('addSetToRentalBtn');
       if (addSetToRentalBtn) addSetToRentalBtn.addEventListener('click', this.addSetToRental.bind(this));
 
+      // Group by location button
+      const groupByLocationBtn = document.getElementById('groupByLocationBtn');
+      if (groupByLocationBtn) groupByLocationBtn.addEventListener('click', this.toggleLocationGrouping.bind(this));
+
       // Modal buttons for return and extend
       const processReturnBtn = document.getElementById('processReturnBtn');
       if (processReturnBtn) processReturnBtn.addEventListener('click', this.processDetailedReturn.bind(this));
@@ -109,18 +112,19 @@ document.addEventListener('DOMContentLoaded', function() {
       // Room modal buttons
       const addRoomToRentalBtn = document.getElementById('addRoomToRentalBtn');
       if (addRoomToRentalBtn) addRoomToRentalBtn.addEventListener('click', this.addRoomToRental.bind(this));
+
+      // Issue from Reservation modal button
+      const processIssueFromReservationBtn = document.getElementById('processIssueFromReservationBtn');
+      if (processIssueFromReservationBtn) processIssueFromReservationBtn.addEventListener('click', this.processIssueFromReservation.bind(this));
     }
 
     async searchUsers(e) {
       const q = e.target.value;
-      console.log('Searching for:', q);
       if (!q || q.length < 2) return;
 
       try {
         const resp = await fetch(`${URLS.searchUsers}?q=${encodeURIComponent(q)}`);
-        console.log('Search response status:', resp.status);
         const data = await resp.json();
-        console.log('Search data:', data);
         this.renderUsers(data.users || []);
       } catch (error) {
         console.error('Search error:', error);
@@ -134,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      console.log('Rendering users:', users.length);
       container.innerHTML = '';
 
       if (users.length === 0) {
@@ -166,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async selectUser(u) {
-      console.log('Selected user:', u);
       this.selectedUser = u;
       // Enable step 3 (Period) so dates can be selected manually
       this.enableStep(3);
@@ -185,6 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
         this.loadUserInventory(u.id);
         // Check if overlay is removed when period is selected
         this.loadInventoryIfPeriodSelected();
+        
+        // Update action buttons
+        this.updateActionButtons();
       } catch (error) {
         console.error('Error loading user data:', error);
       }
@@ -198,6 +203,87 @@ document.addEventListener('DOMContentLoaded', function() {
           <strong>${u.name || gettext('Unknown')}</strong><br>
           <small>${gettext('Status')}: ${u.member_status || gettext('User')} | ${gettext('Authorized')}: ${u.permissions || 'MSA'}</small>
         </div>`;
+      
+      // Update right panel to show only selected user
+      this.updateUserSelectionPanel(u);
+    }
+
+    updateUserSelectionPanel(u) {
+      const container = document.getElementById('userResults');
+      if (!container) return;
+      
+      // Clear the container and show only selected user
+      container.innerHTML = `
+        <div class="list-group-item list-group-item-success">
+          <div class="d-flex w-100 justify-content-between">
+            <div>
+              <h6 class="mb-1">${u.name || gettext('Unknown')}</h6>
+              <p class="mb-1">${u.email || ''}</p>
+              <small class="text-muted">${gettext('Selected user')} | ${u.permissions || ''} ${gettext('authorized')}</small>
+            </div>
+            <div class="text-end">
+              <span class="badge ${u.is_member ? 'bg-success':'bg-secondary'}">${u.member_status || gettext('User')}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-outline-secondary btn-sm w-100" id="changeUserBtn">
+            <i class="fas fa-edit me-1"></i>${gettext('Change User')}
+          </button>
+        </div>
+      `;
+      
+      // Add event listener for change user button
+      const changeUserBtn = container.querySelector('#changeUserBtn');
+      if (changeUserBtn) {
+        changeUserBtn.addEventListener('click', () => {
+          this.resetUserSelection();
+        });
+      }
+    }
+
+    resetUserSelection() {
+      // Clear selected user
+      this.selectedUser = null;
+      
+      // Reset left panel
+      const selectedUserBox = document.getElementById('selectedUser');
+      if (selectedUserBox) {
+        selectedUserBox.innerHTML = `
+          <div class="alert alert-info py-2 mb-0">
+            <small><i class="fas fa-info-circle me-1"></i>${gettext('Select user')}</small>
+          </div>`;
+      }
+      
+      // Reset right panel to show search
+      const container = document.getElementById('userResults');
+      if (container) {
+        container.innerHTML = `
+          <div class="list-group-item">
+            <small class="text-muted">
+              <i class="fas fa-search me-1"></i>${gettext('Start typing in the search field above to find users')}
+            </small>
+          </div>
+        `;
+      }
+      
+      // Disable steps that require user selection
+      this.disableStep(3);
+      this.disableStep(4);
+      this.disableStep(5);
+      
+      // Clear inventory panel
+      const inventoryPanel = document.querySelector('.inventory-selection-panel');
+      if (inventoryPanel) {
+        inventoryPanel.classList.add('d-none');
+      }
+      
+      // Clear selected items
+      this.selectedItems = [];
+      this.updateSelectedItemsUI();
+      
+      // Update action buttons
+      this.updateActionButtons();
     }
 
     // Clear period fields — user must select period manually
@@ -255,7 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         const resp = await fetch(URLS.filterOptions);
         const data = await resp.json();
-        console.log('Filter options:', data);
         this.filterOptions = data;
         this.populateFilterDropdowns(data);
       } catch (error) {
@@ -288,16 +373,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
 
-      // Populate location filter
+      // Populate location filter with hierarchical structure
       const locationSelect = document.getElementById('locationFilter');
       if (locationSelect && options.locations) {
-        locationSelect.innerHTML = '<option value="all">' + gettext('All locations') + '</option>';
-        options.locations.forEach(location => {
-          const option = document.createElement('option');
-          option.value = location.name;
-          option.textContent = location.name;
-          locationSelect.appendChild(option);
-        });
+        locationSelect.innerHTML = '<option value="all">' + gettext('All Locations') + '</option>';
+        
+        // Recursive function to add location options with proper indentation
+        const addLocationOptions = (locations, level = 0) => {
+          locations.forEach(location => {
+            const option = document.createElement('option');
+            option.value = location.full_path;
+            
+            // Create indentation based on level
+            const indent = '&nbsp;'.repeat(level * 4);
+            option.innerHTML = indent + location.name;
+            option.dataset.level = level;
+            option.dataset.fullPath = location.full_path;
+            
+            locationSelect.appendChild(option);
+            
+            // Add children recursively
+            if (location.children && location.children.length > 0) {
+              addLocationOptions(location.children, level + 1);
+            }
+          });
+        };
+        
+        addLocationOptions(options.locations);
       }
     }
 
@@ -315,11 +417,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (endDate) params.append('end_date', endDate);
 
         const finalUrl = params.toString() ? `${url}?${params.toString()}` : url;
-        console.log('Loading inventory from:', finalUrl);
 
         const resp = await fetch(finalUrl);
         const data = await resp.json();
-        console.log('Inventory data:', data);
         this.renderInventory(data.inventory || []);
         const panel = document.querySelector('.inventory-selection-panel');
         if (panel) panel.classList.remove('d-none');
@@ -352,18 +452,51 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = URLS.getUserInventory.replace('{userId}', this.selectedUser.id);
         const resp = await fetch(`${url}?${params.toString()}`);
         const data = await resp.json();
-        console.log('Filtered inventory data:', data);
         this.renderInventory(data.inventory || []);
       } catch (error) {
         console.error('Error applying filters:', error);
       }
     }
 
+    formatLocationPath(path) {
+      if (!path) return '';
+      
+      // Split path by ' -> ' and format with visual hierarchy
+      const parts = path.split(' -> ');
+      if (parts.length === 1) return parts[0];
+      
+      return parts.map((part, index) => {
+        const indent = '&nbsp;'.repeat(index * 2);
+        const separator = index < parts.length - 1 ? ' → ' : '';
+        return `${indent}${part}${separator}`;
+      }).join('');
+    }
+
+    toggleLocationGrouping() {
+      this.groupByLocation = !this.groupByLocation;
+      const btn = document.getElementById('groupByLocationBtn');
+      if (btn) {
+        if (this.groupByLocation) {
+          btn.classList.remove('btn-outline-info');
+          btn.classList.add('btn-info');
+          btn.innerHTML = '<i class="fas fa-sitemap me-1"></i>' + gettext('Ungroup');
+        } else {
+          btn.classList.remove('btn-info');
+          btn.classList.add('btn-outline-info');
+          btn.innerHTML = '<i class="fas fa-sitemap me-1"></i>' + gettext('Group by Location');
+        }
+      }
+      
+      // Re-render inventory if we have items
+      if (this.selectedUser) {
+        this.loadUserInventory(this.selectedUser.id);
+      }
+    }
+
     renderInventory(items) {
       const grid = document.getElementById('inventoryGrid');
       if (!grid) return;
-
-      console.log('Rendering inventory:', items.length);
+    
       grid.innerHTML = '';
 
       if (items.length === 0) {
@@ -371,56 +504,147 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
+      if (this.groupByLocation) {
+        this.renderInventoryGrouped(items, grid);
+      } else {
+        this.renderInventoryFlat(items, grid);
+      }
+    }
+
+    renderInventoryFlat(items, grid) {
       items.forEach(it => {
         const col = document.createElement('div');
         col.className = 'col-md-6 col-lg-4 mb-3 d-flex';
-        col.innerHTML = `
-          <div class="item-card p-3 w-100 h-100 d-flex flex-column" data-item-id="${it.id}">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <h6 class="mb-1">${it.description || it.inventory_number}</h6>
-              <span class="badge bg-success status-badge">${gettext('Available')}</span>
-            </div>
-            <div class="d-flex align-items-center text-muted small mb-1">
-              <span class="me-3"><i class="fas fa-barcode me-1"></i>${it.inventory_number}</span>
-              <span><i class="fas fa-tag me-1"></i>${it.category || gettext('No category')}</span>
-            </div>
-            <div class="location-path mb-2">
-              <i class="fas fa-map-marker-alt me-1"></i>${it.location_path || ''}
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <small class="text-muted">${gettext('Owner')}: ${it.owner || '-'}</small>
-              <div class="quantity-controls">
-                <div class="input-group input-group-sm">
-                  <button class="btn btn-outline-secondary qty-minus" type="button">-</button>
-                  <input type="number" class="form-control text-center qty-input" value="1" min="1" max="${it.available_quantity}">
-                  <button class="btn btn-outline-secondary qty-plus" type="button">+</button>
-                </div>
-              </div>
-            </div>
-          </div>`;
-
+        
+        // Create item card with location path
+        const cardHTML = this.createItemCardHTML(it);
+        const locationPathHTML = `
+          <div class="location-path mb-2">
+            <i class="fas fa-map-marker-alt me-1"></i>
+            <span class="location-hierarchy">${this.formatLocationPath(it.location_path || '')}</span>
+          </div>
+        `;
+        
+        // Insert location path after the category line
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = cardHTML;
+        const categoryLine = tempDiv.querySelector('.d-flex.align-items-center.text-muted.small.mb-1');
+        if (categoryLine) {
+          categoryLine.insertAdjacentHTML('afterend', locationPathHTML);
+        }
+        
+        col.innerHTML = tempDiv.innerHTML;
+        
         const card = col.querySelector('.item-card');
-        card.addEventListener('click', (e) => {
-          if (!e.target.closest('.quantity-controls')) {
-            this.toggleItem(it);
-          }
-        });
-
-        // Quantity controls
-        col.querySelector('.qty-minus').addEventListener('click', (e) => {
-          e.stopPropagation();
-          const input = col.querySelector('.qty-input');
-          if (input.value > 1) input.value = parseInt(input.value) - 1;
-        });
-
-        col.querySelector('.qty-plus').addEventListener('click', (e) => {
-          e.stopPropagation();
-          const input = col.querySelector('.qty-input');
-          if (input.value < it.available_quantity) input.value = parseInt(input.value) + 1;
-        });
-
+        this.bindItemCardEvents(card, it);
+        
         grid.appendChild(col);
       });
+    }
+
+    renderInventoryGrouped(items, grid) {
+      // Group items by location
+      const locationGroups = {};
+      
+      items.forEach(item => {
+        const locationPath = item.location_path || gettext('Unknown Location');
+        if (!locationGroups[locationPath]) {
+          locationGroups[locationPath] = [];
+        }
+        locationGroups[locationPath].push(item);
+      });
+
+      // Sort locations by path
+      const sortedLocations = Object.keys(locationGroups).sort();
+
+      sortedLocations.forEach(locationPath => {
+        const itemsInLocation = locationGroups[locationPath];
+        
+        // Create location header
+        const locationHeader = document.createElement('div');
+        locationHeader.className = 'col-12 mb-3';
+        locationHeader.innerHTML = `
+          <div class="location-group-header p-3 bg-light border rounded">
+            <h6 class="mb-2">
+              <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+              <span class="location-hierarchy">${this.formatLocationPath(locationPath)}</span>
+            </h6>
+            <small class="text-muted">${itemsInLocation.length} ${gettext('items')}</small>
+          </div>
+        `;
+        grid.appendChild(locationHeader);
+
+        // Create items in this location
+        const itemsRow = document.createElement('div');
+        itemsRow.className = 'col-12 mb-3';
+        const itemsContainer = document.createElement('div');
+        itemsContainer.className = 'row';
+        
+        itemsInLocation.forEach(item => {
+          const col = document.createElement('div');
+          col.className = 'col-md-6 col-lg-4 mb-3 d-flex';
+          col.innerHTML = this.createItemCardHTML(item);
+          
+          const card = col.querySelector('.item-card');
+          this.bindItemCardEvents(card, item);
+          
+          itemsContainer.appendChild(col);
+        });
+        
+        itemsRow.appendChild(itemsContainer);
+        grid.appendChild(itemsRow);
+      });
+    }
+
+    createItemCardHTML(item) {
+      return `
+        <div class="item-card p-3 w-100 h-100 d-flex flex-column" data-item-id="${item.id}">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h6 class="mb-1">${item.description || item.inventory_number}</h6>
+            <span class="badge bg-success status-badge">${gettext('Available')}</span>
+          </div>
+          <div class="d-flex align-items-center text-muted small mb-1">
+            <span class="me-3"><i class="fas fa-barcode me-1"></i>${item.inventory_number}</span>
+            <span><i class="fas fa-tag me-1"></i>${item.category || gettext('No category')}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <small class="text-muted">${gettext('Owner')}: ${item.owner || '-'}</small>
+            <div class="quantity-controls">
+              <div class="input-group input-group-sm">
+                <button class="btn btn-outline-secondary qty-minus" type="button">-</button>
+                <input type="number" class="form-control text-center qty-input" value="1" min="1" max="${item.available_quantity}">
+                <button class="btn btn-outline-secondary qty-plus" type="button">+</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    bindItemCardEvents(card, item) {
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.quantity-controls')) {
+          this.toggleItem(item);
+        }
+      });
+
+      // Quantity controls
+      const qtyMinus = card.querySelector('.qty-minus');
+      const qtyPlus = card.querySelector('.qty-plus');
+      const qtyInput = card.querySelector('.qty-input');
+
+      if (qtyMinus) {
+        qtyMinus.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (qtyInput.value > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+        });
+      }
+
+      if (qtyPlus) {
+        qtyPlus.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (qtyInput.value < item.available_quantity) qtyInput.value = parseInt(qtyInput.value) + 1;
+        });
+      }
     }
 
     toggleItem(it) {
@@ -453,6 +677,9 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         this.enableStep(4);
       }
+      
+      // Update action buttons based on selection
+      this.updateActionButtons();
     }
 
     updateSelectedItemsUI() {
@@ -503,6 +730,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Add event listeners to remove buttons
       this.bindRemoveItemEvents();
+
+      // Update action buttons based on selection
+      this.updateActionButtons();
     }
 
     bindRemoveItemEvents() {
@@ -512,7 +742,6 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', (e) => {
           e.preventDefault();
           const index = parseInt(button.dataset.itemIndex);
-          console.log('Remove button clicked for index:', index);
           this.removeSelectedItem(index);
         });
       });
@@ -525,43 +754,40 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', (e) => {
           e.preventDefault();
           const index = parseInt(button.dataset.roomIndex);
-          console.log('Remove room button clicked for index:', index);
           this.removeSelectedRoom(index);
         });
       });
     }
 
     removeSelectedItem(index) {
-      console.log('removeSelectedItem called with index:', index);
-      console.log('Current selectedItems:', this.selectedItems);
-
       if (index >= 0 && index < this.selectedItems.length) {
         const removedItem = this.selectedItems.splice(index, 1)[0];
-        console.log(`Removed item: ${removedItem.description || removedItem.inventory_number}`);
         this.updateSelectedItemsUI();
 
         // If no items left, disable step 5
         if (this.selectedItems.length === 0) {
           this.disableStep(5);
         }
+        
+        // Update action buttons based on selection
+        this.updateActionButtons();
       } else {
         console.error('Invalid index for removeSelectedItem:', index);
       }
     }
 
     removeSelectedRoom(index) {
-      console.log('removeSelectedRoom called with index:', index);
-      console.log('Current selectedRooms:', this.selectedRooms);
-
       if (index >= 0 && index < this.selectedRooms.length) {
         const removedRoom = this.selectedRooms.splice(index, 1)[0];
-        console.log(`Removed room: ${removedRoom.room_name}`);
         this.updateSelectedRoomsUI();
 
         // If no items and no rooms left, disable step 5
         if (this.selectedItems.length === 0 && this.selectedRooms.length === 0) {
           this.disableStep(5);
         }
+        
+        // Update action buttons based on selection
+        this.updateActionButtons();
       } else {
         console.error('Invalid index for removeSelectedRoom:', index);
       }
@@ -597,6 +823,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div>
                   <strong>${room.room_name}</strong>
                   <br><small class="text-muted">${room.start_date} ${room.start_time} - ${room.end_date} ${room.end_time}</small>
+                  <br><small class="text-info"><i class="fas fa-info-circle me-1"></i>${gettext('Auto-return after scheduled time')}</small>
                 </div>
                 <div class="text-end">
                   <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-room-btn" data-room-index="${index}">
@@ -618,12 +845,37 @@ document.addEventListener('DOMContentLoaded', function() {
       // Add event listeners to remove buttons
       this.bindRemoveItemEvents();
       this.bindRemoveRoomEvents();
+
+      // Update action buttons based on selection
+      this.updateActionButtons();
+    }
+
+    updateActionButtons() {
+      const reserveBtn = document.getElementById('reserveBtn');
+      const issueBtn = document.getElementById('issueBtn');
+      
+      if (!reserveBtn || !issueBtn) return;
+
+      // If only rooms are selected, disable issue button
+      if (this.selectedRooms.length > 0 && this.selectedItems.length === 0) {
+        issueBtn.disabled = true;
+        issueBtn.title = gettext('Rooms can only be reserved, not issued');
+        issueBtn.classList.add('btn-secondary');
+        issueBtn.classList.remove('btn-outline-success');
+      } else {
+        issueBtn.disabled = false;
+        issueBtn.title = gettext('Issue Immediately');
+        issueBtn.classList.remove('btn-secondary');
+        issueBtn.classList.add('btn-outline-success');
+      }
+
+      // Always enable reserve button
+      reserveBtn.disabled = false;
     }
 
     async loadUserStats(uid) {
       try {
         const url = URLS.getUserStats.replace('{userId}', uid);
-        console.log('Loading user stats from:', url);
 
         const resp = await fetch(url);
 
@@ -632,7 +884,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const d = await resp.json();
-        console.log('User stats:', d);
 
         const stats = document.getElementById('userStats');
         if (!stats) return;
@@ -689,7 +940,6 @@ document.addEventListener('DOMContentLoaded', function() {
     async loadActiveItems(uid) {
       try {
         const url = URLS.getUserActiveItems.replace('{userId}', uid);
-        console.log('Loading active items from:', url);
 
         const resp = await fetch(url);
 
@@ -698,7 +948,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const data = await resp.json();
-        console.log('Active items for return:', data.items);
         this.activeItems = data.items || [];
         this.renderReturnSection();
       } catch (error) {
@@ -856,6 +1105,15 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
 
+        // For rooms, always use 'reserved' status since they auto-return
+        let finalAction = action;
+        if (this.selectedRooms && this.selectedRooms.length > 0) {
+          finalAction = 'reserved';
+          if (action === 'issued') {
+            alert(gettext('Rooms can only be reserved, not issued. They will automatically return after the scheduled time.'));
+          }
+        }
+
         // Prepare rental data
         const rentalData = {
           user_id: this.selectedUser.id,
@@ -863,13 +1121,12 @@ document.addEventListener('DOMContentLoaded', function() {
           purpose: purpose,
           start_date: startDate,
           end_date: endDate,
-          action: action,
+          action: finalAction,
           items: this.selectedItems || [],
           rooms: this.selectedRooms || [],
           rental_type: this.getRentalType()
         };
 
-        console.log('Creating rental:', rentalData);
 
         // Send request
         const response = await fetch(URLS.createRental, {
@@ -884,7 +1141,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const result = await response.json();
 
         if (result.success) {
-          alert(gettext(`Rental successfully ${action === 'issued' ? 'issued' : 'reserved'}! ID: ${result.rental_id}`));
+          const actionText = finalAction === 'issued' ? 'issued' : 'reserved';
+          const roomNote = this.selectedRooms && this.selectedRooms.length > 0 ? 
+            gettext(' Rooms will automatically return after the scheduled time.') : '';
+          alert(gettext(`Rental successfully ${actionText}! ID: ${result.rental_id}${roomNote}`));
           this.resetForm();
           if (this.selectedUser && this.selectedUser.id) {
             this.loadUserStats(this.selectedUser.id);
@@ -910,7 +1170,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     resetForm() {
-      console.log('Resetting form...');
 
       // Clear selected items, rooms, and sets
       this.selectedItems = [];
@@ -922,6 +1181,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update UI for all sections
       this.updateSelectedItemsUI();
       this.updateSelectedRoomsUI();
+      
+      // Update action buttons
+      this.updateActionButtons();
 
       // Clear form fields
       document.querySelector('[name="project_name"]').value = '';
@@ -952,7 +1214,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Reset to step 4 (equipment selection)
       this.enableStep(4);
 
-      console.log('Form reset completed');
     }
 
     nextStep() {
@@ -988,9 +1249,26 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
+    disableStep(n) {
+      const steps = document.querySelectorAll('.workflow-step');
+      
+      // Disable step n and all future steps
+      for (let i = n-1; i < steps.length; i++) {
+        if (steps[i]) {
+          steps[i].classList.remove('active', 'completed');
+          steps[i].querySelectorAll('input,textarea,button').forEach(el => el.disabled = true);
+        }
+      }
+      
+      // Mark step n-1 as active if it exists
+      if (n > 1 && steps[n-2]) {
+        steps[n-2].classList.remove('completed');
+        steps[n-2].classList.add('active');
+      }
+    }
+
     clearForm() {
       if (confirm(gettext('Do you really want to reset the entire form?'))) {
-        console.log('Clearing entire form...');
 
         this.selectedUser = null;
         this.selectedItems = [];
@@ -1003,10 +1281,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update UI for all sections
         this.updateSelectedItemsUI();
         this.updateSelectedRoomsUI();
+        
+        // Update action buttons
+        this.updateActionButtons();
 
         // Clear user selection
-        document.getElementById('selectedUser').innerHTML = '<div class="alert alert-info py-2 mb-0"><small><i class="fas fa-info-circle me-1"></i>' + gettext('Select user') + '</small></div>';
-        document.getElementById('userResults').innerHTML = '';
+        this.resetUserSelection();
         document.getElementById('userStats').innerHTML = '';
 
         // Clear form fields
@@ -1017,7 +1297,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear inventory
         document.getElementById('inventoryGrid').innerHTML = '';
-        document.querySelector('.inventory-selection-panel')?.classList.add('d-none');
+        const inventoryPanel = document.querySelector('.inventory-selection-panel');
+        if (inventoryPanel) {
+          inventoryPanel.classList.add('d-none');
+        }
 
         // Close any open modals
         const equipmentSetsModal = bootstrap.Modal.getInstance(document.getElementById('equipmentSetsModal'));
@@ -1036,20 +1319,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear search
         document.getElementById('userSearch').value = '';
 
-        console.log('Entire form cleared');
       }
     }
 
     async showEquipmentSets() {
       try {
-        console.log('Loading equipment sets from:', URLS.equipmentSets);
         const resp = await fetch(URLS.equipmentSets);
         const data = await resp.json();
-        console.log('Equipment sets response:', data);
 
         if (data.success) {
           this.equipmentSets = data.equipment_sets || [];
-          console.log('Loaded equipment sets:', this.equipmentSets);
         } else {
           console.error('API error:', data.error);
           this.equipmentSets = [];
@@ -1071,8 +1350,6 @@ document.addEventListener('DOMContentLoaded', function() {
     renderEquipmentSets() {
       const container = document.getElementById('equipmentSetsList');
       if (!container) return;
-
-      console.log('Rendering equipment sets:', this.equipmentSets);
 
       if (this.equipmentSets.length === 0) {
         container.innerHTML = '<div class="text-center p-3"><small class="text-muted">' + gettext('No sets available') + '</small></div>';
@@ -1114,13 +1391,11 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         // Load detailed information about the set
         const url = URLS.equipmentSetDetails.replace('{setId}', set.id);
-        console.log('Loading set details from:', url);
 
         const resp = await fetch(url);
         const data = await resp.json();
 
         if (data.success) {
-          console.log('Set details loaded:', data.equipment_set);
           this.selectedSetDetails = data.equipment_set;
           this.renderSetDetails(data.equipment_set);
         } else {
@@ -1139,8 +1414,6 @@ document.addEventListener('DOMContentLoaded', function() {
     renderSetDetails(set) {
       const panel = document.getElementById('setDetailsPanel');
       if (!panel) return;
-
-      console.log('Rendering set details for:', set);
 
       let html = `
         <h6>${set.name}</h6>
@@ -1208,11 +1481,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      console.log('Adding set to rental:', this.selectedSet);
-
       // Check if we have detailed information about the set
       if (this.selectedSetDetails && this.selectedSetDetails.items) {
-        console.log('Adding set items to rental:', this.selectedSetDetails.items);
 
         // Add all available items from the set to selected items
         this.selectedSetDetails.items.forEach(setItem => {
@@ -1227,7 +1497,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (existingIndex >= 0) {
               // Update existing item quantity
               this.selectedItems[existingIndex].quantity += quantityToAdd;
-              console.log(`Updated existing item ${setItem.description}, new quantity: ${this.selectedItems[existingIndex].quantity}`);
             } else {
               // Add new item
               this.selectedItems.push({
@@ -1238,14 +1507,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 location: setItem.location,
                 category: setItem.category
               });
-              console.log(`Added new item ${setItem.description} with quantity: ${quantityToAdd}`);
             }
           } else {
             console.log(`Skipping unavailable item: ${setItem.description} (available: ${setItem.quantity_available})`);
           }
         });
 
-        console.log('Updated selectedItems:', this.selectedItems);
       } else {
         console.warn('No detailed set information available, cannot add items');
         alert(gettext('Error: Detailed information about the set is not available'));
@@ -1255,6 +1522,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update UI
       this.updateSelectedItemsUI();
       this.enableStep(5);
+      
+      // Update action buttons based on selection
+      this.updateActionButtons();
 
       // Refresh inventory display to show selection
       if (this.selectedUser) {
@@ -1265,26 +1535,22 @@ document.addEventListener('DOMContentLoaded', function() {
       const modal = bootstrap.Modal.getInstance(document.getElementById('equipmentSetsModal'));
       if (modal) modal.hide();
 
-              alert(gettext(`Set "${this.selectedSet.name}" was added to the rental`));
+      alert(gettext(`Set "${this.selectedSet.name}" was added to the rental`));
     }
 
     async showRooms() {
       try {
-        console.log('Loading rooms...');
 
         // Get selected dates for availability check
         const startDateInput = document.querySelector('[name="start_date"]');
         const endDateInput = document.querySelector('[name="end_date"]');
 
         if (!startDateInput || !endDateInput) {
-          console.log('Date inputs not found');
           return;
         }
 
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
-
-        console.log('Start date:', startDate, 'End date:', endDate);
 
         // Form URL with time parameters
         let url = URLS.rooms;
@@ -1295,7 +1561,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const endDateObj = new Date(endDate);
 
             if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-              console.log('Invalid date format, loading rooms without date filter');
             } else {
               // Create dates for filtering (10:00 - 18:00)
               const startDateTime = new Date(startDate + 'T10:00:00');
@@ -1303,16 +1568,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
               if (!isNaN(startDateTime.getTime()) && !isNaN(endDateTime.getTime())) {
                 url += `?start_date=${encodeURIComponent(startDateTime.toISOString())}&end_date=${encodeURIComponent(endDateTime.toISOString())}`;
-                console.log('Added date filter to URL:', url);
               }
             }
           } catch (dateError) {
-            console.log('Error creating date filter:', dateError);
             // Continue without date filter
           }
         }
 
-        console.log('Fetching rooms from:', url);
         const resp = await fetch(url);
 
         if (!resp.ok) {
@@ -1323,7 +1585,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (data.success) {
           this.rooms = data.rooms || [];
-          console.log('Loaded rooms:', this.rooms.length);
           this.renderRooms();
 
           // Populate selects for calendar and timeline
@@ -1388,7 +1649,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const endDate = document.getElementById('calendarEndDate')?.value || '';
 
         if (!startDate || !endDate) {
-          console.log('No dates for calendar');
           return;
         }
 
@@ -1413,7 +1673,6 @@ document.addEventListener('DOMContentLoaded', function() {
           url += '?' + params.toString();
         }
 
-        console.log('Loading room schedule from:', url);
         const resp = await fetch(url);
 
         if (!resp.ok) {
@@ -1458,7 +1717,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const date = document.getElementById('timelineDate')?.value || '';
 
         if (!date) {
-          console.log('No date for timeline');
           return;
         }
 
@@ -1481,7 +1739,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         url += '?' + params.toString();
 
-        console.log('Loading room timeline from:', url);
         const resp = await fetch(url);
 
         if (!resp.ok) {
@@ -1535,9 +1792,6 @@ document.addEventListener('DOMContentLoaded', function() {
         container.innerHTML = '<div class="text-center p-3"><p class="text-muted">' + gettext('No schedule available') + '</p></div>';
         return;
       }
-
-      console.log('Rendering calendar for rooms:', rooms.length);
-      console.log('First room schedule days:', firstRoom.schedule.length);
 
       // If "All rooms" mode is selected, aggregate occupancy for all rooms
       const isAllRooms = rooms.length > 1;
@@ -1628,7 +1882,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       html += '</div>';
       container.innerHTML = html;
-      console.log('Calendar rendered successfully');
     }
 
     renderTimeline(rooms, date) {
@@ -1640,24 +1893,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      console.log('Rendering timeline for rooms:', rooms.length, 'date:', date);
-
       let html = '<div class="timeline-container">';
 
       rooms.forEach(room => {
         if (!room.schedule) {
-          console.log('Room has no schedule:', room.name);
           return;
         }
 
         const daySchedule = room.schedule.find(day => day.date === date);
         if (!daySchedule) {
-          console.log('No schedule found for date:', date, 'in room:', room.name);
           return;
         }
 
         if (!daySchedule.slots) {
-          console.log('Day schedule has no slots for room:', room.name);
           return;
         }
 
@@ -1666,26 +1914,43 @@ document.addEventListener('DOMContentLoaded', function() {
         // 16 half-hour slots + right marker 18:00 = 17 columns in one row
         html += `<div class="timeline-slots" style="grid-template-columns: repeat(17, 1fr);">`;
 
-        daySchedule.slots.forEach(slot => {
-          const slotClass = slot.status === 'occupied' ? 'occupied' : 'available';
-          html += `<div class="timeline-slot ${slotClass}" title="${this.getSlotTooltip(slot)}">`;
-          html += `<div class="slot-time">${slot.time}</div>`;
-          if (slot.status === 'occupied' && slot.info) {
+        // Group consecutive occupied slots for the same user
+        const groupedSlots = this.groupConsecutiveSlots(daySchedule.slots);
+        
+        groupedSlots.forEach(group => {
+          if (group.type === 'occupied') {
+            // Render grouped occupied slots
+            const gridColumn = group.startIndex + 1; // +1 because grid starts from 1
+            const gridSpan = group.slots.length;
+            
+            html += `<div class="timeline-slot occupied grouped" style="grid-column: ${gridColumn} / span ${gridSpan};" title="${this.getGroupedSlotTooltip(group)}">`;
             html += `<div class="slot-details">`;
-            const userName = slot.info.user_name || 'Unknown user';
-            const project = slot.info.project || 'No project';
-            const status = slot.info.status || 'unknown';
-            const peopleCount = slot.info.people_count || 1;
+            const userName = group.userName || gettext('Unknown user');
+            const project = group.project || gettext('No project');
+            const status = group.status || 'unknown';
+            const peopleCount = group.peopleCount || 1;
+            const startTime = group.startTime || '';
+            const endTime = group.endTime || '';
 
             html += `<div class="user-name">${userName}</div>`;
             html += `<div class="project-name">${project}</div>`;
             html += `<div class="status-badge ${status}">${this.getStatusText(status)}</div>`;
             if (peopleCount > 1) {
-              html += `<div class="people-count"><i class="fas fa-users me-1"></i>${peopleCount} people</div>`;
+              html += `<div class="people-count"><i class="fas fa-users me-1"></i>${peopleCount} ${gettext('people')}</div>`;
+            }
+            if (startTime && endTime) {
+              html += `<div class="time-range"><i class="fas fa-clock me-1"></i>${startTime}-${endTime}</div>`;
             }
             html += `</div>`;
+            html += '</div>';
+          } else {
+            // Render individual available slots
+            group.slots.forEach(slot => {
+              html += `<div class="timeline-slot available" title="${gettext('Available')}">`;
+              html += `<div class="slot-time">${slot.time}</div>`;
+              html += '</div>';
+            });
           }
-          html += '</div>';
         });
 
         // Add right marker 18:00 in the same row
@@ -1696,7 +1961,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
       html += '</div>';
       container.innerHTML = html;
-      console.log('Timeline rendered successfully');
+    }
+
+    groupConsecutiveSlots(slots) {
+      if (!slots || slots.length === 0) return [];
+      
+      const groups = [];
+      let currentGroup = null;
+      
+      slots.forEach((slot, index) => {
+        if (slot.status === 'occupied' && slot.info) {
+          // Check if this slot can be grouped with the current group
+          if (currentGroup && 
+              currentGroup.type === 'occupied' && 
+              currentGroup.userName === slot.info.user_name &&
+              currentGroup.project === slot.info.project &&
+              currentGroup.status === slot.info.status) {
+            // Add to current group
+            currentGroup.slots.push(slot);
+            currentGroup.endTime = slot.info.end_time;
+          } else {
+            // Start new group
+            if (currentGroup) {
+              groups.push(currentGroup);
+            }
+            currentGroup = {
+              type: 'occupied',
+              startIndex: index,
+              slots: [slot],
+              userName: slot.info.user_name,
+              project: slot.info.project,
+              status: slot.info.status,
+              peopleCount: slot.info.people_count,
+              startTime: slot.info.start_time,
+              endTime: slot.info.end_time
+            };
+          }
+        } else {
+          // Available slot
+          if (currentGroup) {
+            groups.push(currentGroup);
+            currentGroup = null;
+          }
+          // Group consecutive available slots
+          if (groups.length > 0 && groups[groups.length - 1].type === 'available') {
+            groups[groups.length - 1].slots.push(slot);
+          } else {
+            groups.push({
+              type: 'available',
+              startIndex: index,
+              slots: [slot]
+            });
+          }
+        }
+      });
+      
+      // Add the last group if exists
+      if (currentGroup) {
+        groups.push(currentGroup);
+      }
+      
+      return groups;
+    }
+
+    getGroupedSlotTooltip(group) {
+      if (group.type === 'available') {
+        return gettext('Available');
+      }
+      
+      const userName = group.userName || gettext('Unknown user');
+      const project = group.project || gettext('No project');
+      const status = group.status || 'unknown';
+      const peopleCount = group.peopleCount || 1;
+      const startTime = group.startTime || '';
+      const endTime = group.endTime || '';
+
+      let tooltip = `${userName} - ${project}`;
+      if (startTime && endTime) {
+        tooltip += ` (${startTime}-${endTime})`;
+      }
+      tooltip += ` - ${this.getStatusText(status)}`;
+      if (peopleCount > 1) {
+        tooltip += ` - ${peopleCount} ${gettext('people')}`;
+      }
+      return tooltip;
     }
 
     getSlotTooltip(slot) {
@@ -1752,7 +2100,6 @@ document.addEventListener('DOMContentLoaded', function() {
                   ${room.name}
                   <i class="fas ${availabilityIcon} ms-2" title="${availabilityText}"></i>
                 </h6>
-                <small class="text-muted">${room.description || gettext('No description')}</small>
               </div>
               <span class="badge bg-primary">${room.capacity} ${gettext('people')}</span>
             </div>
@@ -1791,13 +2138,42 @@ document.addEventListener('DOMContentLoaded', function() {
       this.selectedRoom = this.rooms.find(room => room.id == roomId);
       if (this.selectedRoom) {
         this.renderRoomDetails(this.selectedRoom);
-        document.getElementById('addRoomToRentalBtn').disabled = false;
+        // Button will be enabled/disabled based on availability check
+        const addRoomBtn = document.getElementById('addRoomToRentalBtn');
+        if (addRoomBtn) {
+          addRoomBtn.disabled = true;
+          addRoomBtn.classList.remove('btn-success');
+          addRoomBtn.classList.add('btn-secondary');
+        }
       }
     }
 
         renderRoomDetails(room) {
       const panel = document.getElementById('roomDetailsPanel');
       if (!panel) return;
+
+      // Smart date calculation function
+      const getSmartStartDate = () => {
+        const now = new Date();
+        const currentHour = now.getHours();
+        
+        // If current time is after 18:00, suggest next day
+        if (currentHour >= 18) {
+          const tomorrow = new Date(now);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          return tomorrow.getFullYear() + '-' + 
+                 String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + 
+                 String(tomorrow.getDate()).padStart(2, '0');
+        }
+        
+        // If it's during working hours, use today
+        return now.getFullYear() + '-' + 
+               String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+               String(now.getDate()).padStart(2, '0');
+      };
+
+      const smartStartDate = getSmartStartDate();
+      const minDate = new Date().toISOString().split('T')[0];
 
       let html = `
         <h6>${room.name}</h6>
@@ -1817,8 +2193,8 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="mb-3">
             <label class="form-label"><strong>📅 ${gettext('Start date')}:</strong></label>
             <input type="date" class="form-control date-input" id="roomStartDate"
-                   min="${new Date().toISOString().split('T')[0]}"
-                   value="${new Date().toISOString().split('T')[0]}">
+                   min="${minDate}"
+                   value="${smartStartDate}">
           </div>
           <div class="mb-3">
             <label class="form-label"><strong>🕐 ${gettext('Start time')}:</strong></label>
@@ -1851,8 +2227,8 @@ document.addEventListener('DOMContentLoaded', function() {
               </label>
             </div>
             <input type="date" class="form-control date-input" id="roomEndDate"
-                   min="${new Date().toISOString().split('T')[0]}"
-                   value="${new Date().toISOString().split('T')[0]}" disabled>
+                   min="${minDate}"
+                   value="${smartStartDate}" disabled>
           </div>
           <div class="mb-3">
             <label class="form-label"><strong>🕐 ${gettext('End time')}:</strong></label>
@@ -1878,7 +2254,8 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="alert alert-info p-2">
             <small><i class="fas fa-info-circle me-1"></i>${gettext('Working hours')}: ${gettext('Mo-Fr, 10:00-18:00')} ${gettext('(except for holidays)')}</small>
-        </div>`;
+        </div>
+        <div id="roomAvailabilityStatus" class="mt-3"></div>`;
 
       panel.innerHTML = html;
 
@@ -1888,21 +2265,144 @@ document.addEventListener('DOMContentLoaded', function() {
         const endTimeSelect = document.getElementById('roomEndTime');
         const differentEndDateCheckbox = document.getElementById('differentEndDate');
         const endDateInput = document.getElementById('roomEndDate');
+        const startDateInput = document.getElementById('roomStartDate');
+        const availabilityStatus = document.getElementById('roomAvailabilityStatus');
+
+        // Smart time calculation function
+        const getSmartStartTime = (date) => {
+          const now = new Date();
+          const today = now.getFullYear() + '-' + 
+                       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(now.getDate()).padStart(2, '0');
+          
+          if (date === today) {
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            // If current time is after 18:00, suggest tomorrow
+            if (currentHour >= 18) {
+              return null; // Will be handled by date logic
+            }
+            
+            // Round up to next 30-minute slot
+            let suggestedHour = currentHour;
+            let suggestedMinute = currentMinute <= 30 ? 30 : 0;
+            
+            if (suggestedMinute === 0) {
+              suggestedHour += 1;
+            }
+            
+            // Ensure time is within working hours (10:00-18:00)
+            if (suggestedHour < 10) {
+              suggestedHour = 10;
+              suggestedMinute = 0;
+            } else if (suggestedHour >= 18) {
+              return null; // Will be handled by date logic
+            }
+            
+            const suggestedTime = `${suggestedHour.toString().padStart(2, '0')}:${suggestedMinute.toString().padStart(2, '0')}`;
+            return suggestedTime;
+          }
+          
+          return '10:00'; // Default for future dates
+        };
+
+
 
         if (startTimeSelect && endTimeSelect) {
-          console.log('Setting up time selectors for room modal...');
 
-          // Force set initial values
-          startTimeSelect.value = '10:00';
-          endTimeSelect.value = '10:30';
+          // Set smart initial values (use already calculated date)
+          const smartStartTime = getSmartStartTime(smartStartDate);
+          
+          if (startDateInput) {
+            startDateInput.value = smartStartDate;
+          }
+          
+          if (smartStartTime) {
+            startTimeSelect.value = smartStartTime;
+          } else {
+            startTimeSelect.value = '10:00';
+          }
+          
+          // Calculate and set end time
+          const startTime = startTimeSelect.value;
+          const startHour = parseInt(startTime.split(':')[0]);
+          const startMinute = parseInt(startTime.split(':')[1]);
+          
+          let endHour = startHour;
+          let endMinute = startMinute + 30;
+          
+          if (endMinute >= 60) {
+            endMinute = 0;
+            endHour += 1;
+          }
+          
+          if (endHour > 18) {
+            endHour = 18;
+            endMinute = 0;
+          }
+          
+          const initialEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+          endTimeSelect.value = initialEndTime;
+          
+                  // Also update end date to match start date initially
+        if (endDateInput && !differentEndDateCheckbox?.checked) {
+          endDateInput.value = smartStartDate;
+        }
+        
+        // Add change event listener for end date
+        if (endDateInput) {
+          endDateInput.addEventListener('change', () => {
+            // Check availability after end date change
+            setTimeout(() => {
+              this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, endDateInput.value, endTimeSelect.value, availabilityStatus);
+            }, 300);
+          });
+        }
 
-          console.log('Initial start time set to:', startTimeSelect.value);
-          console.log('Initial end time set to:', endTimeSelect.value);
+          // Add change event listener for start date
+          if (startDateInput) {
+            startDateInput.addEventListener('change', () => {
+              // Auto-update end date to match start date
+              if (endDateInput && !differentEndDateCheckbox?.checked) {
+                endDateInput.value = startDateInput.value;
+              }
+              
+              // Update start time based on new date
+              const smartStartTime = getSmartStartTime(startDateInput.value);
+              if (smartStartTime && smartStartTime !== startTimeSelect.value) {
+                startTimeSelect.value = smartStartTime;
+                
+                // Recalculate end time
+                const startHour = parseInt(smartStartTime.split(':')[0]);
+                const startMinute = parseInt(smartStartTime.split(':')[1]);
+                
+                let endHour = startHour;
+                let endMinute = startMinute + 30;
+                
+                if (endMinute >= 60) {
+                  endMinute = 0;
+                  endHour += 1;
+                }
+                
+                if (endHour > 18) {
+                  endHour = 18;
+                  endMinute = 0;
+                }
+                
+                const newEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+                endTimeSelect.value = newEndTime;
+              }
+              
+              // Check availability after date change
+              setTimeout(() => {
+                this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
+              }, 300);
+            });
+          }
 
           // Add change event listener for start time
           startTimeSelect.addEventListener('change', () => {
-            console.log('Start time changed to:', startTimeSelect.value);
-
             const startTime = startTimeSelect.value;
             const startHour = parseInt(startTime.split(':')[0]);
             const startMinute = parseInt(startTime.split(':')[1]);
@@ -1924,14 +2424,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const newEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
             endTimeSelect.value = newEndTime;
-
-            console.log('End time automatically set to:', newEndTime);
+            
+            // Check availability after time change
+            setTimeout(() => {
+              this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, newEndTime, availabilityStatus);
+            }, 300);
           });
 
-          // Add change event listener for end time
-          endTimeSelect.addEventListener('change', () => {
-            console.log('End time manually changed to:', endTimeSelect.value);
-          });
+                  // Add change event listener for end time
+        endTimeSelect.addEventListener('change', () => {
+          
+          // Check availability after end time change
+          setTimeout(() => {
+            this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
+          }, 300);
+        });
         }
 
         // Handle different end date checkbox
@@ -1941,8 +2448,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!differentEndDateCheckbox.checked) {
               endDateInput.value = document.getElementById('roomStartDate').value;
             }
+            
+            // Check availability after checkbox change
+            setTimeout(() => {
+              this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
+            }, 300);
           });
         }
+        
+        // Initial availability check
+        setTimeout(() => {
+          this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
+        }, 300);
       }, 100); // 100ms delay to ensure DOM is ready
     }
 
@@ -1959,18 +2476,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const endTime = document.getElementById('roomEndTime')?.value;
       const differentEndDate = document.getElementById('differentEndDate')?.checked;
 
-              if (!startDate || !startTime || !endTime) {
-          alert(gettext('Please select start date and time'));
-          return;
-        }
+      if (!startDate || !startTime || !endTime) {
+        alert(gettext('Please select start date and time'));
+        return;
+      }
 
       // Use start date for end date if different end date is not checked
       const finalEndDate = differentEndDate ? endDate : startDate;
 
-              if (!finalEndDate) {
-          alert(gettext('Please select end date'));
-          return;
-        }
+      if (!finalEndDate) {
+        alert(gettext('Please select end date'));
+        return;
+      }
 
       // Validate time range
       const startHour = parseInt(startTime.split(':')[0]);
@@ -1978,37 +2495,39 @@ document.addEventListener('DOMContentLoaded', function() {
       const endHour = parseInt(endTime.split(':')[0]);
       const endMinute = parseInt(endTime.split(':')[1]);
 
-              if (startHour < 10 || startHour > 18 || endHour < 10 || endHour > 18) {
-          alert(gettext('Please select time between 10:00 and 18:00'));
-          return;
-        }
+      if (startHour < 10 || startHour > 18 || endHour < 10 || endHour > 18) {
+        alert(gettext('Please select time between 10:00 and 18:00'));
+        return;
+      }
 
       // Convert to minutes for easier comparison
       const startTotalMinutes = startHour * 60 + startMinute;
       const endTotalMinutes = endHour * 60 + endMinute;
 
-              if (endTotalMinutes <= startTotalMinutes) {
-          alert(gettext('End time must be after start time'));
-          return;
-        }
+      if (endTotalMinutes <= startTotalMinutes) {
+        alert(gettext('End time must be after start time'));
+        return;
+      }
 
       // Check if time is in the past
       const startDateTime = new Date(`${startDate}T${startTime}`);
       const endDateTime = new Date(`${finalEndDate}T${endTime}`);
       const now = new Date();
 
-              if (startDateTime < now) {
-          alert(gettext(`Start time cannot be in the past. Selected time: ${startDateTime.toLocaleString('en-US')}, Current time: ${now.toLocaleString('en-US')}`));
-          return;
-        }
+      if (startDateTime < now) {
+        alert(gettext(`Start time cannot be in the past. Selected time: ${startDateTime.toLocaleString('en-US')}, Current time: ${now.toLocaleString('en-US')}`));
+        return;
+      }
 
-              if (endDateTime < now) {
-          alert(gettext(`End time cannot be in the past. Selected time: ${endDateTime.toLocaleString('en-US')}, Current time: ${now.toLocaleString('en-US')}`));
-          return;
-        }
+      if (endDateTime < now) {
+        alert(gettext(`End time cannot be in the past. Selected time: ${endDateTime.toLocaleString('en-US')}, Current time: ${now.toLocaleString('en-US')}`));
+        return;
+      }
 
-      // Check if room is already selected
-      const existingIndex = this.selectedRooms.findIndex(room => room.room_id === this.selectedRoom.id);
+      // Final availability check before adding room
+      this.finalRoomAvailabilityCheck(this.selectedRoom.id, startDate, startTime, finalEndDate, endTime, () => {
+        // Check if room is already selected
+        const existingIndex = this.selectedRooms.findIndex(room => room.room_id === this.selectedRoom.id);
 
       if (existingIndex >= 0) {
         // Update existing room
@@ -2034,12 +2553,16 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update UI
       this.updateSelectedRoomsUI();
       this.enableStep(5);
+      
+      // Update action buttons based on selection
+      this.updateActionButtons();
 
       // Close modal
       const modal = bootstrap.Modal.getInstance(document.getElementById('roomsModal'));
       if (modal) modal.hide();
 
-              alert(gettext(`Room "${this.selectedRoom.name}" was added to the rental`));
+      alert(gettext(`Room "${this.selectedRoom.name}" was added to the rental. Note: Rooms are automatically reserved and will return after the scheduled time.`));
+      });
     }
 
     autoFillZeitraum(startDate, startTime, endDate, endTime) {
@@ -2075,10 +2598,14 @@ document.addEventListener('DOMContentLoaded', function() {
     async showRentalDetails(userId, type) {
       try {
         const url = URLS.userRentalDetails.replace('{userId}', userId);
+        
         const resp = await fetch(`${url}?type=${type}`);
+        
+        if (!resp.ok) {
+          throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+        }
+        
         const data = await resp.json();
-
-        console.log('Rental details:', data);
 
         // Show appropriate modal based on type
         let modalId, contentId;
@@ -2107,7 +2634,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
       } catch (error) {
         console.error('Error loading rental details:', error);
-        alert(gettext('Error loading rental details'));
+        
+        // Show error in the appropriate modal content
+        let contentId;
+        switch (type) {
+          case 'active':
+            contentId = 'activeRentalsContent';
+            break;
+          case 'returned':
+            contentId = 'returnedRentalsContent';
+            break;
+          case 'overdue':
+            contentId = 'overdueRentalsContent';
+            break;
+          default:
+            return;
+        }
+        
+        const container = document.getElementById(contentId);
+        if (container) {
+          container.innerHTML = `
+            <div class="text-center p-4">
+              <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+              <h6>${gettext('Error loading data')}</h6>
+              <p class="text-danger">${error.message}</p>
+              <button class="btn btn-primary btn-sm" onclick="location.reload()">
+                <i class="fas fa-sync-alt me-1"></i>${gettext('Retry')}
+              </button>
+            </div>`;
+        }
+        
+        // Still show the modal to display the error
+        let modalId;
+        switch (type) {
+          case 'active':
+            modalId = 'activeRentalsModal';
+            break;
+          case 'returned':
+            modalId = 'returnedRentalsModal';
+            break;
+          case 'overdue':
+            modalId = 'overdueRentalsModal';
+            break;
+          default:
+            return;
+        }
+        
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
       }
     }
 
@@ -2115,159 +2689,267 @@ document.addEventListener('DOMContentLoaded', function() {
       const container = document.getElementById(contentId);
       if (!container) return;
 
+      // Check if data is valid
+      if (!data || typeof data !== 'object') {
+        container.innerHTML = `
+          <div class="text-center p-4">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <h6>${gettext('Invalid data received')}</h6>
+            <p class="text-danger">${gettext('The server returned invalid data. Please try again.')}</p>
+          </div>`;
+        return;
+      }
+
       const rentals = data.rentals || [];
       const user = data.user || {};
       const type = data.type || 'active';
 
       if (rentals.length === 0) {
         container.innerHTML = `
-          <div class="text-center p-4">
-            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-            <h6>${gettext('No')} ${this.getTypeLabel(type)} ${gettext('found')}</h6>
-            <p class="text-muted">${gettext('No')} ${this.getTypeLabel(type).toLowerCase()} ${gettext('found for')} ${user.name || user.email}.</p>
+          <div class="rental-details-header">
+            <h5>${this.getTypeLabel(type)}</h5>
+            <div class="user-info">
+              <strong>${gettext('User')}:</strong> ${user.name || user.email}
+            </div>
+          </div>
+          <div class="rental-details-content">
+            <div class="text-center p-4">
+              <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+              <h6>${gettext('No')} ${this.getTypeLabel(type)} ${gettext('found')}</h6>
+              <p class="text-muted">${gettext('No')} ${this.getTypeLabel(type).toLowerCase()} ${gettext('found for')} ${user.name || user.email}.</p>
+            </div>
           </div>`;
         return;
       }
 
       let html = `
-        <div class="mb-3">
-          <strong>${gettext('User')}:</strong> ${user.name} (${user.email})
-        </div>`;
+        <div class="rental-details-header">
+          <h5>${this.getTypeLabel(type)}</h5>
+          <div class="user-info">
+            <strong>${gettext('User')}:</strong> ${user.name} (${user.email})
+          </div>
+        </div>
+        <div class="rental-details-content">`;
 
       rentals.forEach(rental => {
         // Debug: log rental object to see what fields are available
-        console.log('Rental object:', rental);
 
-        const startDate = rental.requested_start_date ? new Date(rental.requested_start_date).toLocaleString('de-DE', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }) : 'N/A';
-        const endDate = rental.requested_end_date ? new Date(rental.requested_end_date).toLocaleString('de-DE', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }) : 'N/A';
-        const actualEndDate = rental.actual_end_date ? new Date(rental.actual_end_date).toLocaleString('de-DE', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }) : 'N/A';
+        // Safe date parsing with fallbacks
+        let startDate = 'N/A';
+        let endDate = 'N/A';
+        let actualEndDate = 'N/A';
+
+        try {
+          if (rental.requested_start_date) {
+            const startDateObj = new Date(rental.requested_start_date);
+            if (!isNaN(startDateObj.getTime())) {
+              startDate = startDateObj.toLocaleString('de-DE', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing start date:', e);
+        }
+
+        try {
+          if (rental.requested_end_date) {
+            const endDateObj = new Date(rental.requested_end_date);
+            if (!isNaN(endDateObj.getTime())) {
+              endDate = endDateObj.toLocaleString('de-DE', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing end date:', e);
+        }
+
+        try {
+          if (rental.actual_end_date) {
+            const actualEndDateObj = new Date(rental.actual_end_date);
+            if (!isNaN(actualEndDateObj.getTime())) {
+              actualEndDate = actualEndDateObj.toLocaleString('de-DE', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing actual end date:', e);
+        }
+
+        // Safe field access with fallbacks
+        const projectName = rental.project_name || rental.id || gettext('Unnamed rental');
+        const rentalId = rental.id || 'N/A';
+        const purpose = rental.purpose && rental.purpose.trim() ? rental.purpose : (rental.project_name || gettext('No purpose specified'));
+        const createdBy = rental.created_by || gettext('Not specified');
+        const daysOverdue = rental.days_overdue || 0;
 
         html += `
-          <div class="card mb-3">
+          <div class="rental-card">
             <div class="card-header d-flex justify-content-between align-items-center">
               <div>
-                <h6 class="mb-0">${rental.project_name}</h6>
-                <small class="text-muted">ID: ${rental.id}</small>
+                <h6 class="mb-0">${projectName}</h6>
+                <small class="text-muted">ID: ${rentalId}</small>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <span class="badge ${this.getStatusBadgeClass(rental.status)}">${this.getStatusLabel(rental.status)}</span>
-                ${type === 'overdue' && rental.days_overdue > 0 ? `<span class="badge bg-danger ms-1">${rental.days_overdue} ${gettext('days overdue')} (${gettext('expected')} ${rental.requested_end_date})</span>` : ''}
+                <span class="badge ${this.getStatusBadgeClass(rental.status)}">${this.getStatusLabelForRental(rental)}</span>
+                ${type === 'overdue' && daysOverdue > 0 ? `<span class="badge bg-danger ms-1">${daysOverdue} ${gettext('days overdue')} (${gettext('expected')} ${endDate})</span>` : ''}
                 ${this.getRentalActionButtons(rental, type)}
-                <a href="/rental/rental/${rental.id}/" class="btn btn-sm btn-outline-primary ms-1" title="${gettext('Show details')}">
+                <a href="/rental/rental/${rentalId}/" class="btn btn-sm btn-outline-primary ms-1" title="${gettext('Show details')}">
                   <i class="fas fa-eye"></i>
                 </a>
               </div>
             </div>
             <div class="card-body">
-              <div class="row mb-2">
-                <div class="col-md-6">
-                  <strong>${gettext('Purpose')}:</strong> ${rental.purpose && rental.purpose.trim() ? rental.purpose : (rental.project_name || 'N/A')}<br>
-                  <strong>${gettext('Planned from')}:</strong> ${startDate}
+              <div class="rental-info-row">
+                <div class="rental-info-item">
+                  <strong>${gettext('Purpose')}:</strong> 
+                  <span>${purpose}</span>
                 </div>
-                <div class="col-md-6">
-                  <strong>${gettext('Created by')}:</strong> ${rental.created_by || 'N/A'}<br>
-                  <strong>${gettext('Planned until')}:</strong> ${endDate}
+                <div class="rental-info-item">
+                  <strong>${gettext('Created by')}:</strong> 
+                  <span>${createdBy}</span>
+                </div>
+              </div>
+              <div class="rental-info-row">
+                <div class="rental-info-item">
+                  <strong>${gettext('Planned from')}:</strong> 
+                  <span>${startDate}</span>
+                </div>
+                <div class="rental-info-item">
+                  <strong>${gettext('Planned until')}:</strong> 
+                  <span>${endDate}</span>
                 </div>
               </div>
               ${type === 'returned' ? `
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <strong>${gettext('Returned')}:</strong> ${actualEndDate}
+              <div class="rental-info-row">
+                <div class="rental-info-item">
+                  <strong>${gettext('Returned')}:</strong> 
+                  <span>${actualEndDate}</span>
                 </div>
               </div>` : ''}
 
               ${rental.items && rental.items.length > 0 ? `
-              <h6>${gettext('Equipment')} (${rental.items.length} ${gettext('items')}):</h6>
-              <div class="table-responsive">
-                <table class="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>${gettext('Item')}</th>
-                      <th>${gettext('Requested')}</th>
-                      <th>${gettext('Issued')}</th>
-                      <th>${gettext('Returned')}</th>
-                      ${type === 'active' ? `<th>${gettext('Outstanding')}</th>` : ''}
-                    </tr>
-                  </thead>
-                  <tbody>` : ''}`;
+              <div class="rental-section">
+                <h6><i class="fas fa-boxes"></i>${gettext('Equipment')} (${rental.items.length} ${gettext('items')})</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>${gettext('Item')}</th>
+                        <th>${gettext('Requested')}</th>
+                        <th>${gettext('Issued')}</th>
+                        <th>${gettext('Returned')}</th>
+                        ${type === 'active' ? `<th>${gettext('Outstanding')}</th>` : ''}
+                      </tr>
+                    </thead>
+                    <tbody>` : ''}`;
 
-        if (rental.items && rental.items.length > 0) {
+        if (rental.items && Array.isArray(rental.items) && rental.items.length > 0) {
           rental.items.forEach(item => {
-            // Handle both old and new data structure for inventory item info
-            const itemInfo = item.inventory_item || item;
-            const description = itemInfo.description || itemInfo.inventory_number || gettext('Unknown item');
-            const inventoryNumber = itemInfo.inventory_number || gettext('N/A');
+            try {
+              // Handle both old and new data structure for inventory item info
+              const itemInfo = item.inventory_item || item;
+              const description = itemInfo.description || itemInfo.inventory_number || gettext('Unknown item');
+              const inventoryNumber = itemInfo.inventory_number || gettext('N/A');
+              const quantityRequested = item.quantity_requested || 0;
+              const quantityIssued = item.quantity_issued || 0;
+              const quantityReturned = item.quantity_returned || 0;
+              const outstanding = item.outstanding || 0;
 
-            html += `
-              <tr>
-                <td>
-                  <strong>${description}</strong><br>
-                  <small class="text-muted">[${inventoryNumber}]</small>
-                </td>
-                <td>${item.quantity_requested}</td>
-                <td>${item.quantity_issued || 0}</td>
-                <td>${item.quantity_returned || 0}</td>
-                ${type === 'active' ? `<td><span class="badge ${item.outstanding > 0 ? 'bg-warning' : 'bg-success'}">${item.outstanding}</span></td>` : ''}
-              </tr>`;
+              html += `
+                <tr>
+                  <td>
+                    <strong>${description}</strong><br>
+                    <small class="text-muted">[${inventoryNumber}]</small>
+                  </td>
+                  <td>${quantityRequested}</td>
+                  <td>${quantityIssued}</td>
+                  <td>${quantityReturned}</td>
+                  ${type === 'active' ? `<td><span class="badge ${outstanding > 0 ? 'bg-warning' : 'bg-success'}">${outstanding}</span></td>` : ''}
+                </tr>`;
+            } catch (e) {
+              console.warn('Error rendering item:', e, item);
+              html += `
+                <tr class="table-warning">
+                  <td colspan="${type === 'active' ? '5' : '4'}">
+                    <small class="text-muted">${gettext('Error rendering item')}</small>
+                  </td>
+                </tr>`;
+            }
           });
 
           html += `
                   </tbody>
                 </table>
-              </div>`;
+              </div>
+            </div>`;
         }
 
         // Add rooms section if there are rooms
-        if (rental.room_rentals && rental.room_rentals.length > 0) {
+        if (rental.room_rentals && Array.isArray(rental.room_rentals) && rental.room_rentals.length > 0) {
           html += `
-            <h6 class="mt-3">${gettext('Rooms')} (${rental.room_rentals.length} ${gettext('rooms')}):</h6>
-            <div class="table-responsive">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>${gettext('Room')}</th>
-                    <th>${gettext('Capacity')}</th>
-                    <th>${gettext('Booked people')}</th>
-                    <th>${gettext('Notes')}</th>
-                  </tr>
-                </thead>
-                <tbody>`;
+            <div class="rental-section">
+              <h6><i class="fas fa-building"></i>${gettext('Rooms')} (${rental.room_rentals.length} ${gettext('rooms')})</h6>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>${gettext('Room')}</th>
+                      <th>${gettext('Capacity')}</th>
+                      <th>${gettext('Booked people')}</th>
+                      <th>${gettext('Notes')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
 
           rental.room_rentals.forEach(roomRental => {
-            html += `
-              <tr>
-                <td>
-                  <strong>${roomRental.room.name}</strong><br>
-                  <small class="text-muted">[${roomRental.room.location || gettext('Location not specified')}]</small>
-                </td>
-                <td>${roomRental.room.capacity} ${gettext('people')}</td>
-                <td>${roomRental.people_count} ${gettext('people')}</td>
-                <td>${roomRental.notes || '-'}</td>
-              </tr>`;
+            try {
+              const roomName = roomRental.room && roomRental.room.name ? roomRental.room.name : gettext('Unknown room');
+              const roomLocation = roomRental.room && roomRental.room.location ? roomRental.room.location : gettext('Location not specified');
+              const roomCapacity = roomRental.room && roomRental.room.capacity ? roomRental.room.capacity : gettext('Unknown');
+              const peopleCount = roomRental.people_count || 0;
+              const notes = roomRental.notes || '-';
+
+              html += `
+                <tr>
+                  <td>
+                    <strong>${roomName}</strong><br>
+                    <small class="text-muted">[${roomLocation}]</small>
+                  </td>
+                  <td>${roomCapacity} ${gettext('people')}</td>
+                  <td>${peopleCount} ${gettext('people')}</td>
+                  <td>${notes}</td>
+                </tr>`;
+            } catch (e) {
+              console.warn('Error rendering room rental:', e, roomRental);
+              html += `
+                <tr class="table-warning">
+                  <td colspan="4">
+                    <small class="text-muted">${gettext('Error rendering room')}</small>
+                  </td>
+                </tr>`;
+            }
           });
 
           html += `
                 </tbody>
               </table>
-            </div>`;
+            </div>
+          </div>`;
         }
 
         html += `
@@ -2275,6 +2957,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>`;
       });
 
+      html += `</div>`;
       container.innerHTML = html;
 
       // Bind action button events
@@ -2298,12 +2981,29 @@ document.addEventListener('DOMContentLoaded', function() {
           this.showPrintModal(rentalId);
         });
       });
+
+      container.querySelectorAll('.issue-from-reservation-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const rentalId = e.currentTarget.dataset.rentalId;
+          this.showIssueFromReservationModal(rentalId);
+        });
+      });
     }
 
-        getRentalActionButtons(rental, type) {
+    getRentalActionButtons(rental, type) {
       if (type !== 'active') return '';
 
       let buttons = '';
+
+      // Issue from Reservation button for reserved rentals with equipment
+      if (rental.status === 'reserved' && rental.items && rental.items.length > 0) {
+        buttons += `
+          <button class="btn btn-sm btn-outline-warning issue-from-reservation-btn me-1"
+                  data-rental-id="${rental.id}"
+                  title="${gettext('Issue Equipment from Reservation')}">
+              <i class="fas fa-box-open"></i>
+          </button>`;
+      }
 
       // Print button for issued rentals
       if (rental.status === 'issued') {
@@ -2315,27 +3015,27 @@ document.addEventListener('DOMContentLoaded', function() {
           </button>`;
       }
 
-              // Extend button for reserved or issued rentals
-        if (rental.status === 'reserved' || rental.status === 'issued') {
-            buttons += `
-                <button class="btn btn-sm btn-outline-info extend-rental-btn me-1"
-                        data-rental-id="${rental.id}"
-                        title="${gettext('Extend rental')}">
-                    <i class="fas fa-calendar-plus"></i>
-                </button>`;
-        }
+      // Extend button for reserved or issued rentals
+      if (rental.status === 'reserved' || rental.status === 'issued') {
+        buttons += `
+          <button class="btn btn-sm btn-outline-info extend-rental-btn me-1"
+                  data-rental-id="${rental.id}"
+                  title="${gettext('Extend rental')}">
+              <i class="fas fa-calendar-plus"></i>
+          </button>`;
+      }
 
-        // Cancel button for reserved or issued rentals
-        if (rental.status === 'reserved' || rental.status === 'issued') {
-            buttons += `
-                <button class="btn btn-sm btn-outline-danger cancel-rental-btn"
-                        data-rental-id="${rental.id}"
-                        title="${gettext('Cancel rental')}">
-                    <i class="fas fa-times"></i>
-                </button>`;
-        }
+      // Cancel button for reserved or issued rentals
+      if (rental.status === 'reserved' || rental.status === 'issued') {
+        buttons += `
+          <button class="btn btn-sm btn-outline-danger cancel-rental-btn"
+                  data-rental-id="${rental.id}"
+                  title="${gettext('Cancel rental')}">
+              <i class="fas fa-times"></i>
+          </button>`;
+      }
 
-        return buttons;
+      return buttons;
     }
 
     async cancelRental(rentalId, contentId) {
@@ -2388,7 +3088,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const data = await resp.json();
-        console.log('Rental details data:', data);
 
         const rental = data.rentals && data.rentals.find(r => r.id == rentalId);
         if (!rental) {
@@ -2604,7 +3303,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const data = await resp.json();
-        console.log('Extend rental data:', data);
 
         const rental = data.rentals && data.rentals.find(r => r.id == rentalId);
         if (!rental) {
@@ -2622,8 +3320,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Fill current end date in readable format
         const currentEndDate = new Date(rental.requested_end_date);
-        console.log('Current end date:', rental.requested_end_date);
-        console.log('Parsed date:', currentEndDate);
 
         const formattedCurrentDate = currentEndDate.toLocaleString('de-DE', {
           year: 'numeric',
@@ -2632,14 +3328,11 @@ document.addEventListener('DOMContentLoaded', function() {
           hour: '2-digit',
           minute: '2-digit'
         });
-        console.log('Formatted date:', formattedCurrentDate);
 
         const currentEndDateElement = document.getElementById('extendCurrentEndDate');
-        console.log('Current end date element:', currentEndDateElement);
 
         if (currentEndDateElement) {
           currentEndDateElement.innerHTML = `<strong>${formattedCurrentDate}</strong>`;
-          console.log('Date set successfully');
         } else {
           console.error('extendCurrentEndDate element not found!');
         }
@@ -2684,7 +3377,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const isoDate = dateObj.toISOString();
 
-        console.log('Extending rental:', this.currentExtendRentalId, 'to:', isoDate);
 
         const resp = await fetch(URLS.extendRental, {
           method: 'POST',
@@ -2726,7 +3418,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const data = await resp.json();
-        console.log('Print info:', data);
 
         if (!data.success) {
           alert(gettext('Error loading print information: ') + (data.error || gettext('Unknown error')));
@@ -2835,6 +3526,18 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
+    getStatusLabelForRental(rental) {
+      // For rooms, show special status if they have room_rentals
+      if (rental.room_rentals && rental.room_rentals.length > 0) {
+        if (rental.status === 'reserved') {
+          return gettext('Reserved (Auto-return)');
+        } else if (rental.status === 'returned') {
+          return gettext('Returned (Auto)');
+        }
+      }
+      return this.getStatusLabel(rental.status);
+    }
+
     getStatusBadgeClass(status) {
       switch (status) {
         case 'draft': return 'bg-secondary';
@@ -2919,13 +3622,348 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
     }
+
+    async checkRoomAvailability(roomId, startDate, startTime, endDate, endTime, statusElement) {
+        try {
+            const url = `${URLS.checkRoomAvailability}?room_id=${roomId}&start_date=${startDate}&start_time=${startTime}&end_date=${endDate}&end_time=${endTime}`;
+            
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            if (data.success) {
+                const addRoomBtn = document.getElementById('addRoomToRentalBtn');
+                
+                if (data.is_available) {
+                    statusElement.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            ${gettext('Room is available for the selected period.')}
+                        </div>
+                    `;
+                    // Enable Add Room button
+                    if (addRoomBtn) {
+                        addRoomBtn.disabled = false;
+                        addRoomBtn.classList.remove('btn-secondary');
+                        addRoomBtn.classList.add('btn-success');
+                    }
+                } else {
+                    statusElement.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i>
+                            ${gettext('Room is not available for the selected period.')}
+                            ${data.conflicts && data.conflicts.length > 0 ? 
+                                `<br><small class="mt-2"><strong>${gettext('Conflicts:')}</strong><br>${data.conflicts.join('<br>')}</small>` : ''}
+                        </div>
+                    `;
+                    // Disable Add Room button
+                    if (addRoomBtn) {
+                        addRoomBtn.disabled = true;
+                        addRoomBtn.classList.remove('btn-success');
+                        addRoomBtn.classList.add('btn-secondary');
+                    }
+                }
+            } else {
+                statusElement.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${gettext('Error checking room availability:')} ${data.error}
+                    </div>
+                `;
+                // Disable Add Room button on error
+                const addRoomBtn = document.getElementById('addRoomToRentalBtn');
+                if (addRoomBtn) {
+                    addRoomBtn.disabled = true;
+                    addRoomBtn.classList.remove('btn-success');
+                    addRoomBtn.classList.add('btn-secondary');
+                }
+            }
+        } catch (error) {
+            statusElement.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${gettext('Error checking room availability:')} ${error.message}
+                </div>
+            `;
+            // Disable Add Room button on error
+            const addRoomBtn = document.getElementById('addRoomToRentalBtn');
+            if (addRoomBtn) {
+                addRoomBtn.disabled = true;
+                addRoomBtn.classList.remove('btn-success');
+                addRoomBtn.classList.add('btn-secondary');
+            }
+        }
+    }
+
+    async finalRoomAvailabilityCheck(roomId, startDate, startTime, endDate, endTime, onSuccess) {
+        try {
+            const url = `${URLS.checkRoomAvailability}?room_id=${roomId}&start_date=${startDate}&start_time=${startTime}&end_date=${endDate}&end_time=${endTime}`;
+            
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            if (data.success && data.is_available) {
+                // Room is available, execute success callback
+                onSuccess();
+            } else {
+                // Room is not available, show error
+                const conflicts = data.conflicts && data.conflicts.length > 0 ? 
+                    `<br><small class="mt-2"><strong>${gettext('Conflicts:')}</strong><br>${data.conflicts.join('<br>')}</small>` : '';
+                
+                alert(gettext('Room is not available for the selected period.') + conflicts);
+            }
+        } catch (error) {
+            console.error('Error checking room availability:', error);
+            alert(gettext('Error checking room availability. Please try again.'));
+        }
+    }
+
+    // Issue from Reservation functionality
+    async showIssueFromReservationModal(rentalId) {
+        try {
+            if (!this.selectedUser) {
+                alert(gettext('Please select a user first'));
+                return;
+            }
+
+            // Get rental details for the modal
+            const resp = await fetch(URLS.userRentalDetails.replace('{userId}', this.selectedUser.id) + `?type=active&rental_id=${rentalId}`);
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            const rental = data.rentals && data.rentals.find(r => r.id == rentalId);
+            
+            if (!rental) {
+                alert(gettext('Rental not found'));
+                return;
+            }
+
+            // Store rental data for processing
+            this.currentIssueRental = rental;
+
+            // Check if rental has equipment items
+            if (!rental.items || rental.items.length === 0) {
+                alert(gettext('This rental has no equipment items. Only equipment can be issued from reservation.'));
+                return;
+            }
+
+            // Load staff users for dropdown
+            await this.loadStaffUsers();
+
+            // Render items in the modal
+            this.renderIssueItems(rental);
+
+            // Set default dates and times
+            const startDate = new Date(rental.requested_start_date);
+            const endDate = new Date(rental.requested_end_date);
+            
+            document.getElementById('issueStartDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('issueEndDate').value = endDate.toISOString().split('T')[0];
+            document.getElementById('issueStartTime').value = '10:00';
+            document.getElementById('issueEndTime').value = '18:00';
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('issueFromReservationModal'));
+            modal.show();
+
+        } catch (error) {
+            console.error('Error showing issue from reservation modal:', error);
+            alert(gettext('Error loading rental details'));
+        }
+    }
+
+    async loadStaffUsers() {
+        try {
+            const resp = await fetch(URLS.getStaffUsers);
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load staff users');
+            }
+
+            const select = document.getElementById('issueCreatedBy');
+            if (!select) return;
+
+            // Clear existing options except the first one
+            select.innerHTML = '<option value="">' + gettext('Select staff member') + '</option>';
+
+            // Add staff users
+            data.users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = `${user.name} (${user.email})`;
+                select.appendChild(option);
+            });
+
+        } catch (error) {
+            console.error('Error loading staff users:', error);
+        }
+    }
+
+    renderIssueItems(rental) {
+        const container = document.getElementById('issueItemsList');
+        if (!container) return;
+
+        if (!rental.items || rental.items.length === 0) {
+            container.innerHTML = '<p class="text-muted">No equipment items in this rental.</p>';
+            return;
+        }
+
+        let html = '';
+        rental.items.forEach(item => {
+            const itemInfo = item.inventory_item || item;
+            const description = itemInfo.description || itemInfo.inventory_number || gettext('Unknown item');
+            const inventoryNumber = itemInfo.inventory_number || gettext('N/A');
+            const quantityRequested = item.quantity_requested || 0;
+            const quantityIssued = item.quantity_issued || 0;
+
+            html += `
+                <div class="card mb-2">
+                    <div class="card-body p-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <strong>${description}</strong><br>
+                                <small class="text-muted">[${inventoryNumber}]</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label form-label-sm">${gettext('Requested')}:</label>
+                                <input type="number" class="form-control form-control-sm issue-quantity" 
+                                       data-item-id="${item.id}" data-requested="${quantityRequested}"
+                                       value="${quantityIssued || quantityRequested}" min="0" max="${quantityRequested}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label form-label-sm">${gettext('Issued')}:</label>
+                                <span class="badge ${quantityIssued > 0 ? 'bg-success' : 'bg-warning'}">${quantityIssued || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    renderIssueRooms(rental) {
+        const container = document.getElementById('issueRoomsList');
+        if (!container) return;
+
+        if (!rental.room_rentals || rental.room_rentals.length === 0) {
+            container.innerHTML = '<p class="text-muted">No rooms in this rental.</p>';
+            return;
+        }
+
+        let html = '';
+        rental.room_rentals.forEach(roomRental => {
+            const room = roomRental.room || roomRental;
+            const roomName = room.name || room.description || gettext('Unknown room');
+            const roomNumber = room.room_number || gettext('N/A');
+
+            html += `
+                <div class="card mb-2">
+                    <div class="card-body p-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <strong>${roomName}</strong><br>
+                                <small class="text-muted">[${roomNumber}]</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label form-label-sm">${gettext('Status')}:</label>
+                                <span class="badge bg-info">${gettext('Reserved')}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    async processIssueFromReservation() {
+        try {
+            if (!this.currentIssueRental) {
+                alert(gettext('No rental selected for processing'));
+                return;
+            }
+
+            // Collect form data
+            const startDate = document.getElementById('issueStartDate').value;
+            const endDate = document.getElementById('issueEndDate').value;
+            const startTime = document.getElementById('issueStartTime').value;
+            const endTime = document.getElementById('issueEndTime').value;
+            const createdBy = document.getElementById('issueCreatedBy').value;
+            const notes = document.getElementById('issueNotes').value;
+
+            if (!startDate || !endDate || !startTime || !endTime || !createdBy) {
+                alert(gettext('Please fill in all required fields'));
+                return;
+            }
+
+            // Collect item quantities
+            const itemQuantities = {};
+            const quantityInputs = document.querySelectorAll('.issue-quantity');
+            quantityInputs.forEach(input => {
+                const itemId = input.dataset.itemId;
+                const quantity = parseInt(input.value) || 0;
+                itemQuantities[itemId] = quantity;
+            });
+
+            // Prepare data for API
+            const issueData = {
+                rental_id: this.currentIssueRental.id,
+                start_date: `${startDate}T${startTime}`,
+                end_date: `${endDate}T${endTime}`,
+                created_by: createdBy,
+                notes: notes,
+                item_quantities: itemQuantities
+            };
+
+            // Send request to API
+            const resp = await fetch(URLS.issueFromReservation, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': CSRF_TOKEN,
+                },
+                body: JSON.stringify(issueData)
+            });
+
+            const data = await resp.json();
+
+            if (data.success) {
+                alert(gettext('Rental successfully issued from reservation'));
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('issueFromReservationModal'));
+                modal.hide();
+
+                // Refresh rental details
+                if (this.selectedUser) {
+                    this.showRentalDetails(this.selectedUser.id, 'active');
+                    this.loadUserStats(this.selectedUser.id);
+                    this.loadActiveItems(this.selectedUser.id);
+                }
+
+                // Clear current rental
+                this.currentIssueRental = null;
+            } else {
+                alert(data.error || gettext('Error issuing rental from reservation'));
+            }
+        } catch (error) {
+            console.error('Error processing issue from reservation:', error);
+            alert(gettext('Network error processing issue from reservation'));
+        }
+    }
   }
 
   // Check if URLS are defined
   if (typeof URLS === 'undefined') {
     console.error('URLS not defined - check template');
   } else {
-    console.log('URLS available:', URLS);
+    console.log('URLS available:', URLS); // TODO: remove
   }
 
   new RentalProcess();

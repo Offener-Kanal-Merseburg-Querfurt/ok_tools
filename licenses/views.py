@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
+from registration.models import Profile
 from registration.views import _no_profile_error
 import datetime
 import django.http as http
@@ -37,15 +38,18 @@ class ListLicensesView(generic.list.ListView):
 
     template_name = 'licenses/list.html'
     model = License
+    context_object_name = 'licenses'
 
     def get_queryset(self):
         """List only the licenses of the logged in user."""
         try:
-            profile = self.request.user.profile
-        except User.profile.RelatedObjectDoesNotExist:
-            return
+            # Get profile through OKUser -> Profile relationship
+            profile = Profile.objects.get(okuser=self.request.user)
+        except Profile.DoesNotExist:
+            return self.model.objects.none()
 
-        return self.model.objects.filter(profile=profile)
+        # Get all licenses for the user
+        return self.model.objects.filter(profile=profile).order_by('-created_at')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -70,14 +74,29 @@ class CreateLicenseView(generic.CreateView):
     def get_form(self, form_class=None):
         """User of created License is current user."""
         form = super().get_form(form_class)
-        form.instance.profile = self.request.user.profile
+        
+        # Add Bootstrap classes to form fields
+        for field_name, field in form.fields.items():
+            if hasattr(field.widget, 'attrs'):
+                if hasattr(field.widget, 'input_type') and field.widget.input_type == 'checkbox':
+                    field.widget.attrs.update({'class': 'form-check-input'})
+                elif hasattr(field.widget, 'choices') or 'Select' in str(type(field.widget)):
+                    field.widget.attrs.update({'class': 'form-select'})
+                else:
+                    field.widget.attrs.update({'class': 'form-control'})
+        
+        try:
+            profile = Profile.objects.get(okuser=self.request.user)
+            form.instance.profile = profile
+        except Profile.DoesNotExist:
+            pass
         return form
 
     def get(self, request, *args, **kwargs) -> http.HttpResponse:
         """Get handler to create a LR."""
         try:
-            self.request.user.profile
-        except User.profile.RelatedObjectDoesNotExist:
+            Profile.objects.get(okuser=self.request.user)
+        except Profile.DoesNotExist:
             return _no_profile_error(request)
         return super().get(request, *args, **kwargs)
 

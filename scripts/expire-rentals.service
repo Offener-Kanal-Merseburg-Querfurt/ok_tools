@@ -1,0 +1,16 @@
+[Unit]
+Description=OK Tools Expire Rentals Cron Service
+After=network.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/ok_tools_new
+Environment=DJANGO_SETTINGS_MODULE=ok_tools.settings
+ExecStart=/usr/bin/python3 manage.py expire_room_rentals
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

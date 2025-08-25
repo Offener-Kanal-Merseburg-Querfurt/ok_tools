@@ -258,10 +258,14 @@ class InventoryItem(models.Model):
     def __init__(self, *args, **kwargs):
         """Initialize InventoryItem and store original state."""
         super().__init__(*args, **kwargs)
-        self._original_state = type('OriginalState', (), {
-            field.name: getattr(self, field.name)
-            for field in self._meta.fields
-        })
+
+        if self.pk:
+            self._original_state = type('OriginalState', (), {
+                field.name: getattr(self, field.name, None)
+                for field in self._meta.fields
+            })
+        else:
+            self._original_state = None
 
     class Meta:
         """Meta options for InventoryItem."""
@@ -286,6 +290,16 @@ class InventoryItem(models.Model):
     def formatted_purchase_date(self) -> str:
         """Return purchase date in a readable format."""
         return self.purchase_date.strftime("%Y-%m-%d") if self.purchase_date else _("Not specified")
+
+    def save(self, *args, **kwargs):
+        """Save the model and update original state for tracking changes."""
+        # If the object already exists, save the current state
+        if self.pk and not hasattr(self, '_original_state'):
+            self._original_state = type('OriginalState', (), {
+                field.name: getattr(self, field.name, None)
+                for field in self._meta.fields
+            })
+        super().save(*args, **kwargs)
 
 
 class InventoryImport(models.Model):
@@ -511,8 +525,8 @@ def inventory_item_save_handler(sender, instance, created, **kwargs):
         changes = None
     else:
         action = "updated"
-        if hasattr(instance, '_original_state'):
-            changes = {}
+        changes = {}
+        if hasattr(instance, '_original_state') and instance._original_state:
             for field in instance._meta.fields:
                 old_value = getattr(instance._original_state, field.name, None)
                 new_value = getattr(instance, field.name, None)
@@ -529,6 +543,9 @@ def inventory_item_save_handler(sender, instance, created, **kwargs):
                         'old': old_value,
                         'new': new_value
                     }
+        if not changes:
+            changes = None
+    
     AuditLog.objects.create(
         model_name="InventoryItem",
         object_id=str(instance.pk),

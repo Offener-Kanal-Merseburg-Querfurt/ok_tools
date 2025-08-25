@@ -1,4 +1,6 @@
 /* Rental Process Admin CSS */
+
+
 .workflow-step {
     background: #f8f9fa;
     border-left: 4px solid #0d6efd;
@@ -18,6 +20,142 @@
 .workflow-step.completed {
     border-left-color: #6c757d;
     background: #e9ecef;
+}
+
+/* Rental Details Modal Styles */
+.rental-details-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 1.5rem;
+    margin-bottom: 0;
+    border-bottom: 2px solid #007bff;
+}
+
+.rental-details-header h5 {
+    color: var(--dark-color);
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.rental-details-header .user-info {
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+/* Rental Detail Page Styles */
+.rental-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.rental-header h2 {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.rental-header p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.rental-header .d-flex span {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.rental-header .badge {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: 600;
+}
+
+.rental-details-content {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0 0 0.5rem 0.5rem;
+    padding: 1.5rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.rental-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.rental-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.rental-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 1rem 1.5rem;
+}
+
+.rental-card .card-body {
+    padding: 1.5rem;
+}
+
+.rental-info-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.rental-info-item {
+    flex: 1;
+    min-width: 200px;
+}
+
+.rental-info-item strong {
+    color: #495057;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.rental-info-item span {
+    color: #6c757d;
+}
+
+.rental-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.rental-section h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rental-section h6 i {
+    color: #007bff;
 }
 
 .item-card {
@@ -1123,3 +1261,216 @@
   transform: translateY(0);
   transition: transform 0.1s ease;
 }
+
+        /* Increase only the height of quick filter selects (not the search input) */
+        .quick-filters .filter-select {
+          height: 46px;
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+      }
+
+      /* Match the search input height to selects inside quick filters */
+      .quick-filters .search-group .form-control {
+          height: 46px;
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+      }
+      .quick-filters .search-group .input-group-text {
+          height: 46px;
+          display: flex;
+          align-items: center;
+      }
+
+      /* Hierarchical location filter styles */
+      #locationFilter option {
+          font-family: 'Courier New', monospace;
+          padding: 4px 8px;
+      }
+      
+      #locationFilter option[data-level="0"] {
+          font-weight: bold;
+          background-color: #f8f9fa;
+      }
+      
+      #locationFilter option[data-level="1"] {
+          background-color: #ffffff;
+      }
+      
+      #locationFilter option[data-level="2"] {
+          background-color: #f8f9fa;
+      }
+      
+      #locationFilter option[data-level="3"] {
+          background-color: #ffffff;
+      }
+      
+      /* Hover effect for better readability */
+      #locationFilter option:hover {
+          background-color: #e9ecef;
+      }
+
+      /* Location hierarchy in inventory cards */
+      .location-hierarchy {
+          font-family: 'Courier New', monospace;
+          font-size: 0.9em;
+          line-height: 1.4;
+      }
+      
+      .location-path {
+          background-color: #f8f9fa;
+          border-radius: 4px;
+          padding: 6px 8px;
+          border-left: 3px solid #007bff;
+      }
+      
+      .location-path i {
+          color: #007bff;
+      }
+
+      /* Location group headers */
+      .location-group-header {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-left: 4px solid #007bff !important;
+      }
+      
+      .location-group-header h6 {
+          color: #495057;
+          margin-bottom: 0.5rem;
+      }
+      
+      .location-group-header .location-hierarchy {
+          font-weight: 600;
+      }
+
+      /* Timeline grouped slots styles - use same styles as occupied slots */
+      .timeline-slot.occupied.grouped {
+          background-color: #f8d7da;
+          border-color: #f5c6cb;
+          color: #495057;
+          grid-column: span 1; /* Will be overridden by inline styles */
+      }
+      
+      .timeline-slot.occupied.grouped .slot-details {
+          text-align: center;
+      }
+      
+      .timeline-slot.occupied.grouped .user-name {
+          font-weight: 600;
+          color: #495057;
+          margin-bottom: 2px;
+      }
+      
+      .timeline-slot.occupied.grouped .project-name {
+          color: #6c757d;
+          margin-bottom: 2px;
+      }
+      
+      .timeline-slot.occupied.grouped .status-badge {
+          display: inline-block;
+          padding: 2px 6px;
+          border-radius: 0.25rem;
+          font-size: 0.65rem;
+          font-weight: 600;
+          text-transform: uppercase;
+      }
+      
+      .timeline-slot.occupied.grouped .people-count,
+      .timeline-slot.occupied.grouped .time-range {
+          font-size: 0.7rem;
+          line-height: 1.2;
+          margin-top: 2px;
+      }
+      
+      /* Timeline grid adjustments for grouped slots */
+      .timeline-slots {
+          grid-template-columns: repeat(17, 1fr) !important; /* Override existing styles */
+      }
+      
+      /* End marker styling */
+      .timeline-slot.end-marker {
+          background-color: #e9ecef !important;
+          border-color: #adb5bd !important;
+          color: #6c757d;
+          font-weight: 600;
+      }
+
+      /* Issue from Reservation Modal Styles */
+      .issue-from-reservation-btn {
+          background-color: #ffc107;
+          border-color: #ffc107;
+          color: #212529;
+      }
+
+      .issue-from-reservation-btn:hover {
+          background-color: #e0a800;
+          border-color: #d39e00;
+          color: #212529;
+      }
+
+      #issueItemsList .card,
+      #issueRoomsList .card {
+          border: 1px solid #e9ecef;
+          border-radius: 0.5rem;
+          transition: all 0.2s ease;
+      }
+
+      #issueItemsList .card:hover,
+      #issueRoomsList .card:hover {
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          transform: translateY(-1px);
+      }
+
+      .issue-quantity {
+          width: 100%;
+          text-align: center;
+      }
+
+      .issue-quantity:focus {
+          border-color: #007bff;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      #issueFromReservationModal .form-label {
+          font-weight: 600;
+          color: #495057;
+          margin-bottom: 0.5rem;
+      }
+
+      #issueFromReservationModal .form-control,
+      #issueFromReservationModal .form-select {
+          border-radius: 0.5rem;
+          border: 1px solid #ced4da;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      #issueFromReservationModal .form-control:focus,
+      #issueFromReservationModal .form-select:focus {
+          border-color: #007bff;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      #issueFromReservationModal .modal-header {
+          background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+          color: #212529;
+          border-bottom: 2px solid #d39e00;
+      }
+
+      #issueFromReservationModal .modal-title {
+          font-weight: 700;
+      }
+
+      #issueFromReservationModal .modal-footer {
+          border-top: 1px solid #dee2e6;
+          background-color: #f8f9fa;
+      }
+
+      #issueFromReservationModal .btn-primary {
+          background-color: #007bff;
+          border-color: #007bff;
+          font-weight: 600;
+      }
+
+      #issueFromReservationModal .btn-primary:hover {
+          background-color: #0056b3;
+          border-color: #0056b3;
+      }

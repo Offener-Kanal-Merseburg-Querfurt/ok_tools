@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 from . import accessibility_views
+from . import views
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
@@ -27,7 +28,9 @@ from registration.views import PasswordResetView
 # Keep default admin site; ordering handled elsewhere
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    path("", views.home, name="home"),
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("rental/", views.RentalDashboardView.as_view(), name="rental_dashboard"),
     path(
         "profile/reset/<uidb64>/<token>/",
         PasswordResetConfirmView.as_view(),

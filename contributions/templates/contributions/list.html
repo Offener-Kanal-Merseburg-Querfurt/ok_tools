@@ -1,44 +1,278 @@
 {% extends 'base.html' %}
-
-{% load i18n %}
 {% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Your Contributions' %} - OK Tools{% endblock %}
+{% block page_title %}{% trans 'Your Contributions' %}{% endblock %}
 
 {% block content %}
-<h1> {% translate 'Your contributions' %}</h1>
+<!-- Header Actions -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h5 class="text-muted">{% trans 'Manage your broadcast contributions and airings' %}</h5>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-outline-secondary" onclick="toggleView()">
+                <i class="bi bi-grid-3x3-gap me-2"></i>{% trans 'Switch view' %}
+            </button>
+            <a href="{% url 'licenses:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>{% trans 'New License' %}
+            </a>
+        </div>
+    </div>
+</div>
 
-<table class=table>
-    <thead>
-        <tr>
-            <th scope="col">{% translate 'Title' %}</th>
-            <th scope="col">{% translate 'Start' %}</th>
-            <th scope="col">{% translate 'Duration' %}</th>
-            <th scope="col">{% translate 'Category' %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for contribution in object_list %}
-            <tr>
-                <td>
-                    <a href="{% url 'licenses:details' contribution.license.id %}" class="link-dark"> {{contribution.license}} </a>
-                </td>
-                <td>
-                    {{ contribution.broadcast_date }}
-                </td>
-                <td>
-                    {{ contribution.license.duration }}
-                </td>
-                <td>
-                    <span class="badge rounded-pill text-bg-secondary">{{ contribution.license.category }} </span>
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon primary">
+                <i class="bi bi-broadcast"></i>
+            </div>
+            <div class="stats-number">{{ stats.total_licenses }}</div>
+            <div class="stats-label">{% trans 'Active Licenses' %}</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon success">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+            <div class="stats-number">{{ stats.total_contributions }}</div>
+            <div class="stats-label">{% trans 'Total Broadcasts' %}</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon info">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stats-number">{{ stats.live_count }}</div>
+            <div class="stats-label">{% trans 'Live Broadcasts' %}</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon warning">
+                <i class="bi bi-collection-play"></i>
+            </div>
+            <div class="stats-number">{{ stats.recorded_count }}</div>
+            <div class="stats-label">{% trans 'Recordings' %}</div>
+        </div>
+    </div>
+</div>
 
-                    {% if contribution.live %}
-                        <span class="badge rounded-pill text-bg-danger"> {% translate 'Live' %}</span>
+<!-- Grouped Contributions -->
+<div id="groupedView">
+    {% for license, contributions in grouped_contributions.items %}
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="card-title mb-1">
+                        <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                        {{ license.title }}
+                    </h5>
+                    {% if license.subtitle %}
+                    <p class="card-subtitle text-muted mb-0">{{ license.subtitle }}</p>
                     {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-            <td>{% translate 'No contributions yet.' %}</td>
-        {% endfor %}
-    </tbody>
-</table>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge bg-secondary">{{ license.category|default:"General" }}</span>
+                        <span class="badge bg-info">{{ contributions|length }} {% trans 'Broadcasts' %}</span>
+                        <a href="{% url 'licenses:details' license.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for contribution in contributions %}
+                <div class="col-xl-4 col-md-6 mb-3">
+                    <div class="contribution-card">
+                        <div class="contribution-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="contribution-date">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ contribution.broadcast_date|date:"d.m.Y" }}
+                                </div>
+                                <div class="contribution-badges">
+                                    {% if contribution.live %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-broadcast me-1"></i>{% trans 'Live' %}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-collection-play me-1"></i>{% trans 'Recording' %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contribution-content">
+                            <div class="contribution-time">
+                                <strong>{{ contribution.broadcast_date|date:"H:i" }}</strong>
+                            </div>
+                            <div class="contribution-duration">
+                                <i class="bi bi-stopwatch me-1"></i>
+                                {{ license.duration }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="dashboard-card">
+        <div class="card-body text-center py-5">
+            <div class="text-muted">
+                <i class="bi bi-broadcast" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">{% trans 'No contributions found' %}</h4>
+                <p>{% trans 'You have no broadcast contributions yet. Create a license first.' %}</p>
+                <a href="{% url 'licenses:create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>{% trans 'Create first license' %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
-{% endblock content %}
+<!-- Table View (initially hidden) -->
+<div id="tableView" style="display: none;">
+    <div class="dashboard-card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans 'Title' %}</th>
+                        <th>{% trans 'Broadcast Date' %}</th>
+                        <th>{% trans 'Duration' %}</th>
+                        <th>{% trans 'Category' %}</th>
+                        <th>{% trans 'Status' %}</th>
+                        <th>{% trans 'Actions' %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for license, contributions in grouped_contributions.items %}
+                        {% for contribution in contributions %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                                    <div>
+                                        <strong>{{ license.title }}</strong>
+                                        {% if license.subtitle %}
+                                        <br><small class="text-muted">{{ license.subtitle }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ contribution.broadcast_date|date:"d.m.Y H:i" }}</td>
+                            <td>{{ license.duration }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ license.category|default:"General" }}</span>
+                            </td>
+                            <td>
+                                {% if contribution.live %}
+                                    <span class="badge bg-danger">{% trans 'Live' %}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{% trans 'Recording' %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'licenses:details' license.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.contribution-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 100%;
+    transition: all 0.2s ease;
+}
+
+.contribution-card:hover {
+    border-color: #5e72e4;
+    box-shadow: 0 4px 12px rgba(94, 114, 228, 0.15);
+}
+
+.contribution-header {
+    margin-bottom: 0.75rem;
+}
+
+.contribution-date {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.contribution-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contribution-time {
+    font-size: 1.25rem;
+    color: #495057;
+}
+
+.contribution-duration {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.stats-card {
+    transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentView = 'grouped';
+
+function toggleView() {
+    const groupedView = document.getElementById('groupedView');
+    const tableView = document.getElementById('tableView');
+    const toggleButton = document.querySelector('button[onclick="toggleView()"]');
+    
+    if (currentView === 'grouped') {
+        groupedView.style.display = 'none';
+        tableView.style.display = 'block';
+        toggleButton.innerHTML = '<i class="bi bi-grid-3x3-gap me-2"></i>{% trans "Card view" %}';
+        currentView = 'table';
+    } else {
+        groupedView.style.display = 'block';
+        tableView.style.display = 'none';
+        toggleButton.innerHTML = '<i class="bi bi-table me-2"></i>{% trans "Table view" %}';
+        currentView = 'grouped';
+    }
+}
+</script>
+{% endblock %}
