@@ -1,62 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
 {% load i18n %}
 
-<style>
-    .link-dark{
-        text-decoration: underline;
-    }
-</style>
+{% block title %}{% trans "Dashboard - OK Tools" %}{% endblock %}
+{% block page_title %}{% trans "My Dashboard" %}{% endblock %}
 
-<div class="card-deck">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">{% translate 'Profile' %}</h5>
-        <p class="card-text">{% translate 'Edit all inormations concerning your profile.' %}</p>
-        <a class="link-dark" href="{% url 'registration:user_data' %}">
-            {%translate 'Edit user data'%}
-        </a>
-      </br>
-        <a class="link-dark" href="{% url 'password_reset'%}">
-            {%translate 'Change password'%}
-        </a>
-      </br>
-        <a class="link-dark" href="{% url 'registration:print_registration' %}">
-            {%translate 'Print Registration Form'%}
-        </a>
-      </br>
-        <a class="link-dark" href="{% url 'privacy_policy' %}">
-            {%translate 'Privacy Policy'%}
-        </a>
-      </div>
+{% block content %}
+<div class="row">
+    <!-- Stats Cards -->
+    <div class="col-xl-4 col-md-4 mb-4">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon primary">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="stats-number">{{ license_count|default:0 }}</div>
+            <div class="stats-label">{% trans "Your Licenses" %}</div>
+        </div>
     </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">{% translate 'Licenses' %}</h5>
-        <p class="card-text">{% translate 'Edit your Licenses.' %}</p>
-          <a class="link-dark" href="{% url 'licenses:licenses' %}">
-            {%translate 'Overview'%}
-          </a>
-      </br>
-          <a class="link-dark" href="{% url 'licenses:create'%}">
-            {%translate 'Create license'%}
-          </a>
-      </div>
-  </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">{% translate 'Contributions' %}</h5>
-        <p class="card-text">{% translate 'Look at your Contributions.' %}</p>
-        <a class="link-dark" href="{% url 'contributions:contributions' %}">
-          {% translate 'Contributions' %}
-        </a>
-      </div>
+    
+    <div class="col-xl-4 col-md-4 mb-4">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon secondary">
+                <i class="bi bi-broadcast"></i>
+            </div>
+            <div class="stats-number">{{ contribution_count|default:0 }}</div>
+            <div class="stats-label">{% trans "Your Contributions" %}</div>
+        </div>
     </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">{% translate 'Website' %}</h5>
-        <p class="card-text">{% translate 'Visist the Website for more general informations.' %}</p>
-        <a class="link-dark" href="https://okmq.de/">
-          {% translate 'OKMQ-Website' %}
-        </a>
-      </div>
+    
+    <div class="col-xl-4 col-md-4 mb-4">
+        <div class="dashboard-card stats-card">
+            <div class="stats-icon info">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stats-number">{{ rental_count|default:0 }}</div>
+            <div class="stats-label">{% trans "Rental" %}</div>
+            <div class="stats-details mt-2">
+                <small class="text-muted">
+                    <span class="text-primary">{{ active_rentals|default:0 }} {% trans "Active" %}</span> • 
+                    <span class="text-success">{{ returned_rentals|default:0 }} {% trans "Returned" %}</span> • 
+                    <span class="text-warning">{{ overdue_rentals|default:0 }} {% trans "Overdue" %}</span>
+                </small>
+            </div>
+        </div>
     </div>
 </div>
+ 
+
+ 
+ <!-- Profile Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-person-circle text-primary me-2"></i>
+                    {% trans "Profile" %}
+                </h5>
+                <p class="card-subtitle">{% trans "Manage your profile and account settings" %}</p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="profile-info">
+                            
+                            <div class="profile-header mb-4">
+                                <div class="profile-avatar">
+                                    <i class="bi bi-person-circle text-primary"></i>
+                                </div>
+                                <div class="profile-details">
+                                    <h4 class="profile-name">
+                                        {% if user_display_name %}
+                                            {{ user_display_name }}
+                                        {% else %}
+                                            {{ user.username|default:"User" }}
+                                        {% endif %}
+                                    </h4>
+                                    <div class="profile-email">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        {{ user.email }}
+                                    </div>
+                                    {% if profile %}
+                                        <div class="profile-meta mt-2">
+                                            {% if profile.phone_number %}
+                                                <span class="profile-meta-item">
+                                                    <i class="bi bi-telephone me-1"></i>
+                                                    {{ profile.phone_number }}
+                                                </span>
+                                            {% endif %}
+                                            {% if profile.mobile_number %}
+                                                <span class="profile-meta-item">
+                                                    <i class="bi bi-phone me-1"></i>
+                                                    {{ profile.mobile_number }}
+                                                </span>
+                                            {% endif %}
+                                            {% if profile.birthday %}
+                                                <span class="profile-meta-item">
+                                                    <i class="bi bi-calendar-event me-1"></i>
+                                                    {{ profile.birthday|date:"d.m.Y" }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        {% if profile.street or profile.city %}
+                                            <div class="profile-address mt-2">
+                                                <i class="bi bi-geo-alt me-2"></i>
+                                                {% if profile.street %}{{ profile.street }}{% if profile.house_number %}, {{ profile.house_number }}{% endif %}{% endif %}
+                                                {% if profile.zipcode or profile.city %}<br>{% if profile.zipcode %}{{ profile.zipcode }}{% endif %}{% if profile.city %} {{ profile.city }}{% endif %}{% endif %}
+                                            </div>
+                                        {% endif %}
+                                        <div class="profile-status mt-3">
+                                            {% if profile.verified %}
+                                                <span class="badge bg-success me-2">
+                                                    <i class="bi bi-check-circle me-1"></i>{% trans "Verified" %}
+                                                </span>
+                                            {% endif %}
+                                            {% if profile.member %}
+                                                <span class="badge bg-primary me-2">
+                                                    <i class="bi bi-star me-1"></i>{% trans "Member" %}
+                                                </span>
+                                            {% endif %}
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-building me-1"></i>{{ profile.media_authority.name }}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="profile-actions">
+                            <h6 class="text-muted mb-3">{% trans "Quick Actions" %}</h6>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'registration:user_data' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil me-2"></i>{% trans "Edit Profile" %}
+                                </a>
+                                <a href="{% url 'password_reset' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-key me-2"></i>{% trans "Change Password" %}
+                                </a>
+                                <a href="{% url 'registration:print_registration' %}" class="btn btn-outline-info">
+                                    <i class="bi bi-printer me-2"></i>{% trans "Print Registration" %}
+                                </a>
+                                <a href="{% url 'privacy_policy' %}" class="btn btn-outline-dark">
+                                    <i class="bi bi-shield-check me-2"></i>{% trans "Privacy Policy" %}
+                                </a>
+                                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+ <div class="row">
+    <!-- Notifications - Moved to top as most important -->
+    <div class="col-xl-8 mb-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-bell text-danger me-2"></i>{% trans "Notifications" %}
+                </h5>
+                <p class="card-subtitle">{% trans "Your important updates and alerts" %}</p>
+            </div>
+            <div class="notifications-list">
+                {% for notification in notifications|slice:":3" %}
+                <div class="alert alert-{{ notification.type }} alert-sm mb-2">
+                    <i class="bi bi-{{ notification.icon }} me-2"></i>
+                    {{ notification.message }}
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-3">
+                    <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                    <p class="mt-2 mb-0">{% trans "All systems operational" %}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="col-xl-4 mb-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-lightning text-warning me-2"></i>{% trans "Quick Actions" %}
+                </h5>
+                <p class="card-subtitle">{% trans "Your common tasks and shortcuts" %}</p>
+            </div>
+            <div class="d-grid gap-2">
+                <a href="{% url 'licenses:create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>{% trans "Create License" %}
+                </a>
+                <a href="{% url 'contributions:contributions' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-hand-thumbs-up me-2"></i>{% trans "Contributions" %}
+                </a>
+                <!-- RESTORE_WORKING_LINK: To re-enable, replace the button below with the anchor in this comment.
+                <a href="{% url 'rental_dashboard' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-calendar-plus me-2"></i>{% trans "Rental Dashboard" %}
+                </a>
+                -->
+                <button type="button" class="btn btn-outline-primary coming-soon-btn" data-feature="rental">
+                    <i class="bi bi-calendar-plus me-2"></i>{% trans "Rental Dashboard" %}
+                </button>
+                <a href="https://okmq.de/" target="_blank" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>{% trans "OKMQ Website" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Activities - Moved to bottom as less critical -->
+    <div class="col-xl-8 mb-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-activity text-info me-2"></i>{% trans "Recent Activities" %}
+                </h5>
+                <p class="card-subtitle">{% trans "Your latest updates and activities" %}</p>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Activity" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_activities %}
+                            {% for activity in recent_activities|slice:":5" %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-circle-fill text-primary me-2" style="font-size: 0.5rem;"></i>
+                                        {{ activity.description }}
+                                    </div>
+                                </td>
+                                <td>{{ activity.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <span class="badge bg-{{ activity.status_color }}">{{ activity.status }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">
+                                    <i class="bi bi-info-circle me-2"></i>{% trans "No recent activities" %}
+                                    <br><small class="text-muted">{% trans "Your activities will appear here when you use the system" %}</small>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Overview -->
+    <div class="col-xl-4 mb-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-graph-up text-success me-2"></i>{% trans "Monthly Overview" %}
+                </h5>
+                <p class="card-subtitle">{% trans "Your activity trends over the last 6 months" %}</p>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- JavaScript translations -->
+<script src="{% url 'javascript-catalog' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Pass monthly statistics data to JavaScript using json_script tag -->
+{{ monthly_stats|json_script:"monthly-stats-data" }}
+
+<script>
+    // Get monthly statistics data from json_script tag
+    try {
+        const monthlyStatsElement = document.getElementById('monthly-stats-data');
+        if (monthlyStatsElement && monthlyStatsElement.textContent) {
+            window.monthlyStats = JSON.parse(monthlyStatsElement.textContent);
+        } else {
+            window.monthlyStats = {
+                labels: [],
+                licenses: [],
+                rentals: [],
+                contributions: []
+            };
+        }
+    } catch (error) {
+        console.warn('Failed to parse monthly stats:', error);
+        window.monthlyStats = {
+            labels: [],
+            rentals: [],
+            contributions: []
+        };
+    }
+</script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

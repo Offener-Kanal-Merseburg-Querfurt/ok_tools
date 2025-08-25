@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-17 22:43+0200\n"
+"POT-Creation-Date: 2025-08-25 22:17+0200\n"
 "PO-Revision-Date: 2025-01-15 02:03+0100\n"
 "Last-Translator: Daniel Havlik <dh@gocept.com>\n"
 "Language-Team: \n"
@@ -20,22 +20,28 @@ msgstr ""
 
 #: contributions/admin.py:104 contributions/admin.py:194
 #: contributions/models.py:71
+#: contributions/templates/contributions/list.html:155
 msgid "Broadcast Date"
 msgstr "Sendedatum"
 
 #: contributions/admin.py:105
+#: rental/templates/rental/admin_rental_process.html:473
+#: rental/templates/rental/rental_detail.html:602
 msgid "Start Time"
 msgstr "Startzeit"
 
 #: contributions/admin.py:106
+#: rental/templates/rental/admin_rental_process.html:506
+#: rental/templates/rental/rental_detail.html:635
 msgid "End Time"
 msgstr "Endzeit"
 
 #: contributions/admin.py:107 contributions/admin.py:192
 #: contributions/admin.py:366
-#: contributions/templates/contributions/list.html:12 licenses/admin.py:33
-#: licenses/models.py:73
-#: planung/templates/admin/planung/calendar_weeks.html:104 projects/admin.py:65
+#: contributions/templates/contributions/list.html:154 licenses/admin.py:33
+#: licenses/models.py:73 licenses/templates/licenses/list.html:68
+#: planung/templates/admin/planung/calendar_weeks.html:172 projects/admin.py:65
+#: registration/models.py:238
 msgid "Title"
 msgstr "Titel"
 
@@ -45,13 +51,13 @@ msgid "Subtitle"
 msgstr "Untertitel"
 
 #: contributions/admin.py:109 inventory/admin.py:27 inventory/models.py:30
-#: inventory/models.py:47 inventory/models.py:64 inventory/models.py:178
+#: inventory/models.py:47 inventory/models.py:63 inventory/models.py:176
 #: licenses/admin.py:35 licenses/models.py:87 projects/admin.py:67
-#: projects/models.py:143 rental/admin.py:282 rental/models.py:255
-#: rental/models.py:447 rental/models.py:491
-#: rental/templates/rental/rental_stats.html:226
-#: rental/templates/rental/rental_stats.html:274
-#: rental/templates/rental/rental_stats.html:381
+#: projects/models.py:143 rental/admin.py:307 rental/models.py:264
+#: rental/models.py:465 rental/models.py:513
+#: rental/templates/rental/rental_stats.html:238
+#: rental/templates/rental/rental_stats.html:287
+#: rental/templates/rental/rental_stats.html:427
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -60,12 +66,14 @@ msgid "Credits"
 msgstr "Beteiligt"
 
 #: contributions/admin.py:112
-#: contributions/templates/contributions/list.html:15 inventory/admin.py:30
-#: inventory/admin.py:101 inventory/models.py:69 inventory/models.py:198
-#: licenses/admin.py:40 licenses/admin.py:242 licenses/models.py:46
-#: licenses/models.py:60 licenses/models.py:176
-#: licenses/templates/licenses/details.html:16
-#: rental/templates/rental/rental_stats.html:229
+#: contributions/templates/contributions/list.html:157 inventory/admin.py:30
+#: inventory/admin.py:101 inventory/models.py:68 inventory/models.py:197
+#: inventory/templates/inventory/list.html:68 licenses/admin.py:40
+#: licenses/admin.py:242 licenses/models.py:46 licenses/models.py:60
+#: licenses/models.py:176 licenses/templates/licenses/details.html:19
+#: licenses/templates/licenses/list.html:33
+#: licenses/templates/licenses/list.html:69
+#: rental/templates/rental/rental_stats.html:241
 msgid "Category"
 msgstr "Kategorie"
 
@@ -75,7 +83,7 @@ msgstr "In OK-Mediathek speichern"
 
 #: contributions/admin.py:163
 msgid "Program"
-msgstr "Program"
+msgstr "Programm"
 
 #: contributions/admin.py:191
 msgid "License number"
@@ -87,7 +95,7 @@ msgstr "Sendezeit"
 
 #: contributions/admin.py:196 contributions/admin.py:351 licenses/admin.py:36
 #: licenses/admin.py:236 licenses/models.py:167 registration/models.py:208
-#: registration/templates/navbar.html:71 ok_tools/templates/dashboard.html:12
+#: registration/templates/navbar.html:70 ok_tools/templates/dashboard.html:58
 msgid "Profile"
 msgstr "Profil"
 
@@ -96,13 +104,15 @@ msgid "Profile ID"
 msgstr "Profil-ID"
 
 #: contributions/admin.py:198
-#: contributions/templates/contributions/list.html:14 licenses/admin.py:39
-#: licenses/models.py:98 projects/admin.py:69 projects/models.py:155
+#: contributions/templates/contributions/list.html:156 licenses/admin.py:39
+#: licenses/models.py:98 planung/admin.py:203 projects/admin.py:69
+#: projects/models.py:155
 msgid "Duration"
 msgstr "Dauer"
 
 #: contributions/admin.py:199
-#: contributions/templates/contributions/list.html:34
+#: contributions/templates/contributions/list.html:106
+#: contributions/templates/contributions/list.html:184 ok_tools/views.py:187
 msgid "Live"
 msgstr "Live"
 
@@ -116,7 +126,7 @@ msgstr "Sendewoche"
 
 #: contributions/admin.py:232
 msgid "In this week"
-msgstr "In diser Woche"
+msgstr "In dieser Woche"
 
 #: contributions/admin.py:233
 msgid "Until next week"
@@ -130,15 +140,13 @@ msgstr "Bis einschließlich übernächste Woche"
 msgid "Primary Contribution"
 msgstr "Primärbeitrag"
 
-#: contributions/admin.py:275 inventory/models.py:493 inventory/models.py:494
-#: licenses/admin.py:121 licenses/templates/licenses/details.html:27
-#: licenses/templates/licenses/list.html:26
+#: contributions/admin.py:275 inventory/models.py:507 inventory/models.py:508
+#: licenses/admin.py:121 licenses/templates/licenses/details.html:30
 msgid "Yes"
 msgstr "Ja"
 
-#: contributions/admin.py:276 inventory/models.py:493 inventory/models.py:494
-#: licenses/admin.py:122 licenses/templates/licenses/details.html:30
-#: licenses/templates/licenses/list.html:29
+#: contributions/admin.py:276 inventory/models.py:507 inventory/models.py:508
+#: licenses/admin.py:122 licenses/templates/licenses/details.html:33
 msgid "No"
 msgstr "Nein"
 
@@ -147,12 +155,12 @@ msgid "Broadcast year"
 msgstr "Sendejahr"
 
 #: contributions/admin.py:306 licenses/admin.py:91 projects/admin.py:113
-#: registration/admin.py:159
+#: registration/admin.py:160
 msgid "This year"
 msgstr "Dieses Jahr"
 
 #: contributions/admin.py:307 licenses/admin.py:92 projects/admin.py:114
-#: registration/admin.py:160
+#: registration/admin.py:161
 msgid "Last year"
 msgstr "Letztes Jahr"
 
@@ -160,7 +168,7 @@ msgstr "Letztes Jahr"
 msgid "Title, Subtitle, Number"
 msgstr "Titel, Untertitel, Nummer"
 
-#: contributions/admin.py:357 licenses/admin.py:241 registration/admin.py:90
+#: contributions/admin.py:357 licenses/admin.py:241 registration/admin.py:91
 #: registration/models.py:79 registration/models.py:91
 #: registration/models.py:185
 msgid "Media Authority"
@@ -170,14 +178,15 @@ msgstr "Bürgermedium"
 msgid "Is primary"
 msgstr "Primärbeitrag"
 
-#: contributions/admin.py:376 inventory/models.py:443 registration/models.py:66
-#: registration/models.py:132 rental/admin.py:196 rental/models.py:11
-#: rental/templates/rental/rental_stats.html:161 rental/views.py:278
+#: contributions/admin.py:376 inventory/models.py:457 registration/models.py:66
+#: registration/models.py:132 rental/admin.py:214 rental/models.py:11
+#: rental/templates/rental/rental_stats.html:173 rental/views.py:301
+#: ok_tools/templates/rental_dashboard.html:43
 msgid "User"
 msgstr "Nutzer"
 
 #: contributions/admin.py:382 licenses/admin.py:32 licenses/models.py:157
-#: planung/templates/admin/planung/calendar_weeks.html:103
+#: planung/templates/admin/planung/calendar_weeks.html:171
 msgid "Number"
 msgstr "Nummer"
 
@@ -191,8 +200,7 @@ msgid "\"%(obj)s\" successfully imported."
 msgstr "\"%(obj)s\" erfolgreich importiert."
 
 #: contributions/apps.py:10 contributions/models.py:98
-#: registration/templates/navbar.html:116 ok_tools/templates/dashboard.html:46
-#: ok_tools/templates/dashboard.html:49
+#: registration/templates/navbar.html:114 ok_tools/templates/dashboard.html:202
 msgid "Contributions"
 msgstr "Beiträge"
 
@@ -234,8 +242,7 @@ msgstr ""
 msgid "Successfully created %d contributions."
 msgstr "Erfolgreich %d Beiträge erstellt."
 
-#: contributions/models.py:65 licenses/models.py:254
-#: licenses/templates/licenses/list.html:12
+#: contributions/models.py:65 licenses/models.py:254 planung/admin.py:202
 msgid "License"
 msgstr "Freistellung"
 
@@ -251,13 +258,13 @@ msgstr "Beitrag"
 msgid "DISA export file"
 msgstr "DISA-Export-Datei"
 
-#: contributions/models.py:125 inventory/models.py:326 inventory/models.py:644
+#: contributions/models.py:125 inventory/models.py:340 inventory/models.py:661
 msgid "Imported"
 msgstr "Importiert"
 
-#: contributions/models.py:129 inventory/models.py:328 inventory/models.py:646
+#: contributions/models.py:129 inventory/models.py:342 inventory/models.py:663
 msgid "Just marking the file as imported does not import the file!"
-msgstr "Als importiert markierte dateien werden nicht automatisch importiert!"
+msgstr "Als importiert markierte Dateien werden nicht automatisch importiert!"
 
 #: contributions/models.py:145
 msgid "DISA-Import"
@@ -270,6 +277,7 @@ msgstr "DISA-Importe"
 #: contributions/templates/admin/disa_import_change_form.html:8
 #: inventory/templates/admin/inspection_import_change_form.html:7
 #: inventory/templates/admin/inventory_import_change_form.html:7
+#: inventory/templates/inventory/list.html:16
 msgid "Import"
 msgstr "Import"
 
@@ -288,56 +296,125 @@ msgstr "Beim Datenexport werden ausschließlich Primärbeiträge exportiert."
 msgid "Submit"
 msgstr "Bestätigen"
 
-#: contributions/templates/contributions/list.html:7
-msgid "Your contributions"
+#: contributions/templates/contributions/list.html:5
+#: contributions/templates/contributions/list.html:6
+#: ok_tools/templates/dashboard.html:27
+msgid "Your Contributions"
 msgstr "Ihre Beiträge"
 
-#: contributions/templates/contributions/list.html:13
-#: planung/templates/admin/planung/calendar_weeks.html:102
-msgid "Start"
-msgstr "Start"
+#: contributions/templates/contributions/list.html:12
+msgid "Manage your broadcast contributions and airings"
+msgstr "Verwalten Sie Ihre Sendebeiträge und Ausstrahlungen"
 
-#: contributions/templates/contributions/list.html:39
-msgid "No contributions yet."
-msgstr "Es sind keine Beiträge vorhanden."
+#: contributions/templates/contributions/list.html:17
+msgid "Switch view"
+msgstr "Ansicht wechseln"
 
-#: inventory/admin.py:26 inventory/admin.py:206 inventory/models.py:173
+#: contributions/templates/contributions/list.html:20
+msgid "New License"
+msgstr "Neue Freistellung"
+
+#: contributions/templates/contributions/list.html:34
+msgid "Active Licenses"
+msgstr "Aktive Freistellungen"
+
+#: contributions/templates/contributions/list.html:43
+msgid "Total Broadcasts"
+msgstr "Sendungen gesamt"
+
+#: contributions/templates/contributions/list.html:52
+msgid "Live Broadcasts"
+msgstr "Live-Sendungen"
+
+#: contributions/templates/contributions/list.html:61
+msgid "Recordings"
+msgstr "Aufzeichnungen"
+
+#: contributions/templates/contributions/list.html:84
+msgid "Broadcasts"
+msgstr "Sendungen"
+
+#: contributions/templates/contributions/list.html:110
+#: contributions/templates/contributions/list.html:186
+msgid "Recording"
+msgstr "Aufzeichnung"
+
+#: contributions/templates/contributions/list.html:136
+msgid "No contributions found"
+msgstr "Keine Beiträge gefunden"
+
+#: contributions/templates/contributions/list.html:137
+msgid "You have no broadcast contributions yet. Create a license first."
+msgstr ""
+"Sie haben noch keine Sendebeiträge. Erstellen Sie zuerst eine Freistellung."
+
+#: contributions/templates/contributions/list.html:139
+msgid "Create first license"
+msgstr "Erste Freistellung erstellen"
+
+#: contributions/templates/contributions/list.html:158 inventory/admin.py:33
+#: inventory/admin.py:243 inventory/admin.py:314 inventory/models.py:212
+#: inventory/models.py:499 inventory/templates/inventory/list.html:78
+#: inventory/templates/inventory/list.html:160
+#: licenses/templates/licenses/list.html:25
+#: licenses/templates/licenses/list.html:70 rental/admin.py:347
+#: rental/models.py:55 rental/templates/rental/list.html:65
+#: rental/templates/rental/list.html:115
+#: rental/templates/rental/rental_detail.html:503
+#: rental/templates/rental/rental_stats.html:174
+#: rental/templates/rental/rental_stats.html:244
+#: rental/templates/rental/rental_stats.html:289
+#: ok_tools/templates/dashboard.html:237
+msgid "Status"
+msgstr "Status"
+
+#: contributions/templates/contributions/list.html:159
+#: licenses/templates/licenses/list.html:73
+#: planung/templates/admin/planung/calendar_weeks.html:174
+#: rental/templates/rental/list.html:116
+#: rental/templates/rental/rental_detail.html:252
+#: rental/templates/rental/rental_stats.html:291
+msgid "Actions"
+msgstr "Aktionen"
+
+#: contributions/templates/contributions/list.html:268
+msgid "Card view"
+msgstr "Kartenansicht"
+
+#: contributions/templates/contributions/list.html:273
+msgid "Table view"
+msgstr "Tabellenansicht"
+
+#: inventory/admin.py:26 inventory/admin.py:206 inventory/models.py:171
 msgid "Inventory Number"
 msgstr "Inventarnummer"
 
-#: inventory/admin.py:28 inventory/models.py:184
+#: inventory/admin.py:28 inventory/models.py:182
 msgid "Serial Number"
 msgstr "Seriennummer"
 
 #: inventory/admin.py:29 inventory/admin.py:100 inventory/models.py:35
-#: inventory/models.py:191 inventory/models.py:579
+#: inventory/models.py:189 inventory/models.py:596
 msgid "Manufacturer"
 msgstr "Hersteller"
 
-#: inventory/admin.py:31 inventory/admin.py:103 inventory/models.py:135
-#: inventory/models.py:203 inventory/models.py:486 rental/models.py:493
-#: rental/templates/rental/rental_stats.html:228
+#: inventory/admin.py:31 inventory/admin.py:103 inventory/models.py:133
+#: inventory/models.py:203 inventory/models.py:500
+#: inventory/templates/inventory/list.html:88
+#: inventory/templates/inventory/list.html:172 rental/models.py:515
+#: rental/templates/rental/rental_stats.html:240
 msgid "Location"
 msgstr "Standort"
 
-#: inventory/admin.py:32 inventory/models.py:206 inventory/models.py:484
-#: rental/models.py:321 rental/models.py:373
-#: rental/templates/rental/rental_detail.html:209
-#: rental/templates/rental/rental_stats.html:410
+#: inventory/admin.py:32 inventory/models.py:206 inventory/models.py:498
+#: rental/models.py:333 rental/models.py:388
+#: rental/templates/rental/rental_detail.html:394
+#: rental/templates/rental/rental_stats.html:456
 msgid "Quantity"
 msgstr "Menge"
 
-#: inventory/admin.py:33 inventory/admin.py:243 inventory/admin.py:314
-#: inventory/models.py:212 inventory/models.py:485 rental/admin.py:321
-#: rental/models.py:55 rental/templates/rental/rental_detail.html:318
-#: rental/templates/rental/rental_stats.html:162
-#: rental/templates/rental/rental_stats.html:232
-#: rental/templates/rental/rental_stats.html:276
-msgid "Status"
-msgstr "Status"
-
 #: inventory/admin.py:34 inventory/admin.py:102 inventory/models.py:219
-#: inventory/models.py:482 rental/templates/rental/rental_stats.html:227
+#: inventory/models.py:496 rental/templates/rental/rental_stats.html:239
 msgid "Owner"
 msgstr "Eigentümer"
 
@@ -349,25 +426,25 @@ msgstr "Inventarnummer-Eigentümer"
 msgid "Purchase Date"
 msgstr "Kaufdatum"
 
-#: inventory/admin.py:168 inventory/models.py:422
+#: inventory/admin.py:168 inventory/models.py:436
 msgid "Model Name"
 msgstr "Modellbezeichnung"
 
-#: inventory/admin.py:169 inventory/models.py:426
+#: inventory/admin.py:169 inventory/models.py:440
 msgid "Object ID"
 msgstr "Objekt-ID"
 
-#: inventory/admin.py:170 inventory/models.py:431
-#: rental/templates/rental/admin_rental_process.html:55
-#: rental/templates/rental/rental_stats.html:411
+#: inventory/admin.py:170 inventory/models.py:445
+#: rental/templates/rental/admin_rental_process.html:61
+#: rental/templates/rental/rental_stats.html:457
 msgid "Action"
 msgstr "Aktion"
 
-#: inventory/admin.py:171 inventory/admin.py:212 inventory/models.py:436
+#: inventory/admin.py:171 inventory/admin.py:212 inventory/models.py:450
 msgid "Changes"
 msgstr "Änderungen"
 
-#: inventory/admin.py:172 inventory/models.py:447
+#: inventory/admin.py:172 inventory/models.py:461
 msgid "Timestamp"
 msgstr "Zeitstempel"
 
@@ -379,8 +456,8 @@ msgstr "-"
 msgid "Download Error Log File"
 msgstr "Fehlerprotokolldatei herunterladen"
 
-#: inventory/admin.py:265 inventory/admin.py:336 inventory/models.py:344
-#: inventory/models.py:662
+#: inventory/admin.py:265 inventory/admin.py:336 inventory/models.py:358
+#: inventory/models.py:679
 msgid "Error Log"
 msgstr "Fehlerprotokoll"
 
@@ -393,10 +470,12 @@ msgid "Import selected inspection files"
 msgstr "Ausgewählte Prüfprotokoll-Dateien importieren."
 
 #: inventory/apps.py:10 inventory/inventory_import.py:18
+#: inventory/templates/inventory/list.html:5
+#: inventory/templates/inventory/list.html:6
 msgid "Inventory"
 msgstr "Inventar"
 
-#: inventory/forms.py:10 inventory/models.py:564
+#: inventory/forms.py:10 inventory/models.py:581
 msgid "Inspection Number"
 msgstr "Prüfnummer"
 
@@ -417,22 +496,19 @@ msgid "Could not read headers from file."
 msgstr "Kopfzeilen konnten aus der Datei nicht gelesen werden."
 
 #: inventory/inspection_import.py:87
-#, fuzzy, python-format
-#| msgid "File must contain columns: %(columns)s"
+#, python-format
 msgid "File must contain columns: %(columns)s. Missing: %(missing)s"
-msgstr "Datei muss folgende Spalten enthalten: %(columns)s"
+msgstr ""
+"Datei muss folgende Spalten enthalten: %(columns)s. Fehlend: %(missing)s"
 
 #: inventory/inspection_import.py:124
-#, fuzzy, python-format
-#| msgid ""
-#| "Invalid date format. Supported formats: YYYY-MM-DD, DD.MM.YYYY, DD/MM/"
-#| "YYYY, YYYY/MM/DD"
+#, python-format
 msgid ""
 "Invalid date format for \"inspection_date\". Supported formats: YYYY-MM-DD, "
 "DD.MM.YYYY, DD/MM/YYYY, YYYY/MM/DD. Received: \"%(date_str)s\""
 msgstr ""
-"Ungültiges Datumsformat. Unterstützte Formate: YYYY-MM-DD, DD.MM.YYYY, DD/MM/"
-"YYYY, YYYY/MM/DD"
+"Ungültiges Datumsformat für \"inspection_date\". Unterstützte Formate: YYYY-"
+"MM-DD, DD.MM.YYYY, DD/MM/YYYY, YYYY/MM/DD. Erhalten: \"%(date_str)s\""
 
 #: inventory/inspection_import.py:154
 msgid "No file provided for import."
@@ -465,16 +541,14 @@ msgid "Field 'inspection_number' cannot be empty."
 msgstr "Feld 'Prüfnummer' darf nicht leer sein."
 
 #: inventory/inspection_import.py:233
-#, fuzzy, python-format
-#| msgid "Row %(row)s: %(error)s"
+#, python-format
 msgid "Row %(row_num)s: %(error)s"
-msgstr "Zeile %(row)s: %(error)s"
+msgstr "Zeile %(row_num)s: %(error)s"
 
 #: inventory/inspection_import.py:238
-#, fuzzy, python-format
-#| msgid "Row %(row)s: %(error)s"
+#, python-format
 msgid "Error processing row %(row_num)s: %(error)s"
-msgstr "Zeile %(row)s: %(error)s"
+msgstr "Fehler beim Verarbeiten von Zeile %(row_num)s: %(error)s"
 
 #: inventory/inspection_import.py:246 inventory/inventory_import.py:247
 msgid "Import Errors"
@@ -494,16 +568,14 @@ msgid "import_errors_%(timestamp)s.xlsx"
 msgstr "import_fehler_%(timestamp)s.xlsx"
 
 #: inventory/inspection_import.py:264
-#, fuzzy, python-format
-#| msgid "Row %(row)s: %(error)s"
+#, python-format
 msgid "Import failed: %(error)s"
-msgstr "Zeile %(row)s: %(error)s"
+msgstr "Import fehlgeschlagen: %(error)s"
 
 #: inventory/inspection_import.py:265
-#, fuzzy, python-format
-#| msgid "Row %(row)s: %(error)s"
+#, python-format
 msgid "Fatal Error: %(error)s"
-msgstr "Zeile %(row)s: %(error)s"
+msgstr "Schwerwiegender Fehler: %(error)s"
 
 #: inventory/inspection_import.py:267
 msgid "No errors during import."
@@ -531,11 +603,6 @@ msgstr "Name für %(model)s fehlt in Zeile %(row)s. Wird übersprungen..."
 #, python-format
 msgid "Column %(col)s should be named \"%(expected)s\", but got \"%(actual)s\""
 msgstr "Spalte %(col)s sollte \"%(expected)s\" heißen, ist aber \"%(actual)s\""
-
-#: inventory/inventory_import.py:106
-#, python-brace-format
-msgid "Invalid inventory number \"{inventory_number}\""
-msgstr "Ungültige Inventarnummer \"{inventory_number}\""
 
 #: inventory/inventory_import.py:137
 #, python-format
@@ -578,10 +645,10 @@ msgstr "Zeile %(row)s: %(error)s"
 msgid "No errors"
 msgstr "Keine Fehler"
 
-#: inventory/models.py:29 inventory/models.py:46 inventory/models.py:63
-#: inventory/models.py:120 rental/models.py:251
-#: rental/templates/rental/rental_stats.html:273
-#: rental/templates/rental/rental_stats.html:377
+#: inventory/models.py:29 inventory/models.py:46 inventory/models.py:62
+#: inventory/models.py:118 rental/models.py:260
+#: rental/templates/rental/rental_stats.html:286
+#: rental/templates/rental/rental_stats.html:423
 msgid "Name"
 msgstr "Name"
 
@@ -597,34 +664,35 @@ msgstr "Organisation"
 msgid "Organizations"
 msgstr "Organisationen"
 
-#: inventory/models.py:70 licenses/models.py:61
+#: inventory/models.py:69 licenses/models.py:61
 msgid "Categories"
 msgstr "Kategorien"
 
-#: inventory/models.py:127
+#: inventory/models.py:125
 msgid "Parent"
 msgstr "Übergeordnet"
 
-#: inventory/models.py:136
-#, fuzzy
-#| msgid "Location"
+#: inventory/models.py:134
 msgid "Locations"
 msgstr "Standorte"
 
-#: inventory/models.py:164
+#: inventory/models.py:162
 msgid "In stock"
 msgstr "Auf Lager"
 
-#: inventory/models.py:165 rental/templates/rental/rental_stats.html:213
-#: rental/templates/rental/rental_stats.html:231
+#: inventory/models.py:163 inventory/templates/inventory/list.html:50
+#: inventory/templates/inventory/list.html:82
+#: inventory/templates/inventory/list.html:164
+#: rental/templates/rental/rental_stats.html:225
+#: rental/templates/rental/rental_stats.html:243
 msgid "Rented"
 msgstr "Verliehen"
 
-#: inventory/models.py:166
+#: inventory/models.py:164
 msgid "Written off"
 msgstr "Ausgemustert"
 
-#: inventory/models.py:167
+#: inventory/models.py:165
 msgid "Defect"
 msgstr "Defekt"
 
@@ -640,7 +708,7 @@ msgstr "Anschaffungskosten"
 msgid "Date Added"
 msgstr "Hinzugefügt am"
 
-#: inventory/models.py:246 inventory/models.py:483
+#: inventory/models.py:246 inventory/models.py:497
 msgid "Available for Rental"
 msgstr "Zur Ausleihe verfügbar"
 
@@ -656,181 +724,368 @@ msgstr "Reservierte Menge"
 msgid "Rented Quantity"
 msgstr "Verliehene Menge"
 
-#: inventory/models.py:269 inventory/models.py:576
+#: inventory/models.py:273 inventory/models.py:593
 msgid "Inventory Item"
 msgstr "Inventargegenstand"
 
-#: inventory/models.py:270
+#: inventory/models.py:274
 msgid "Inventory Items"
 msgstr "Inventargegenstände"
 
-#: inventory/models.py:288
+#: inventory/models.py:292
 msgid "Not specified"
 msgstr "Nicht angegeben"
 
-#: inventory/models.py:295 inventory/models.py:613
-#: rental/templates/rental/rental_detail.html:187
+#: inventory/models.py:309 inventory/models.py:630
+#: licenses/templates/licenses/list.html:29
+#: licenses/templates/licenses/list.html:99
+#: licenses/templates/licenses/list.html:205
+#: rental/templates/rental/list.html:174
+#: rental/templates/rental/rental_detail.html:372 ok_tools/views.py:156
 msgid "Pending"
 msgstr "Ausstehend"
 
-#: inventory/models.py:296 inventory/models.py:614
+#: inventory/models.py:310 inventory/models.py:631
 msgid "In Progress"
 msgstr "In Bearbeitung"
 
-#: inventory/models.py:297 inventory/models.py:615
+#: inventory/models.py:311 inventory/models.py:632
+#: rental/templates/rental/list.html:38 rental/templates/rental/list.html:69
+#: rental/templates/rental/list.html:168 ok_tools/views.py:156
 msgid "Completed"
 msgstr "Abgeschlossen"
 
-#: inventory/models.py:298 inventory/models.py:616
+#: inventory/models.py:312 inventory/models.py:633
 msgid "Completed with Errors"
 msgstr "Mit Fehlern abgeschlossen"
 
-#: inventory/models.py:299 inventory/models.py:617
+#: inventory/models.py:313 inventory/models.py:634
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
-#: inventory/models.py:310
+#: inventory/models.py:324
 msgid "Inventory file"
 msgstr "Inventardatei"
 
-#: inventory/models.py:322 inventory/models.py:640
+#: inventory/models.py:336 inventory/models.py:657
 msgid "Import Status"
 msgstr "Importstatus"
 
-#: inventory/models.py:333 inventory/models.py:651
+#: inventory/models.py:347 inventory/models.py:668
 msgid "Items Created"
 msgstr "Erstellte Artikel"
 
-#: inventory/models.py:338 inventory/models.py:656
+#: inventory/models.py:352 inventory/models.py:673
 msgid "Items Skipped"
 msgstr "Übersprungene Artikel"
 
-#: inventory/models.py:349 inventory/models.py:667
+#: inventory/models.py:363 inventory/models.py:684
 msgid "Import Date"
 msgstr "Importdatum"
 
-#: inventory/models.py:355 inventory/models.py:673
+#: inventory/models.py:369 inventory/models.py:690
 msgid "Completed Date"
 msgstr "Abschlussdatum"
 
-#: inventory/models.py:362 inventory/models.py:680
+#: inventory/models.py:376 inventory/models.py:697
 msgid "Error Log File"
 msgstr "Fehlerprotokolldatei"
 
-#: inventory/models.py:368
+#: inventory/models.py:382
 msgid "Inventory Import"
 msgstr "Inventarimport"
 
-#: inventory/models.py:369
+#: inventory/models.py:383
 msgid "Inventory Imports"
 msgstr "Inventarimporte"
 
-#: inventory/models.py:378 inventory/models.py:696
+#: inventory/models.py:392 inventory/models.py:713
 msgid "No file provided."
 msgstr "Keine Datei bereitgestellt."
 
-#: inventory/models.py:415 rental/templates/rental/rental_stats.html:163
-#: rental/templates/rental/rental_stats.html:277
+#: inventory/models.py:429 licenses/templates/licenses/list.html:72
+#: rental/templates/rental/rental_stats.html:175
+#: rental/templates/rental/rental_stats.html:290
 msgid "Created"
 msgstr "Erstellt"
 
-#: inventory/models.py:416
+#: inventory/models.py:430
 msgid "Updated"
 msgstr "Aktualisiert"
 
-#: inventory/models.py:417
+#: inventory/models.py:431
 msgid "Deleted"
 msgstr "Gelöscht"
 
-#: inventory/models.py:453
+#: inventory/models.py:467
 msgid "Audit Log"
 msgstr "Prüfprotokoll"
 
-#: inventory/models.py:454
+#: inventory/models.py:468
 msgid "Audit Logs"
 msgstr "Prüfprotokolle"
 
-#: inventory/models.py:459
+#: inventory/models.py:473
 #, python-format
 msgid "%(number)s %(action)s by %(user)s at %(timestamp)s"
 msgstr "%(number)s %(action)s von %(user)s um %(timestamp)s"
 
-#: inventory/models.py:473
+#: inventory/models.py:487
 #, python-format
 msgid "Deleted item (ID: %(id)s)"
 msgstr "Gelöschter Artikel (ID: %(id)s)"
 
-#: inventory/models.py:479
+#: inventory/models.py:493
 msgid "No changes recorded."
 msgstr "Keine Änderungen erfasst."
 
-#: inventory/models.py:498
+#: inventory/models.py:512
 #, python-format
 msgid "%(field)s: %(old)s → %(new)s"
 msgstr "%(field)s: %(old)s → %(new)s"
 
-#: inventory/models.py:557
+#: inventory/models.py:574
 msgid "Whole device"
 msgstr "Gesamtgerät"
 
-#: inventory/models.py:558
+#: inventory/models.py:575
 msgid "Power cable"
 msgstr "Netzkabel"
 
-#: inventory/models.py:559
+#: inventory/models.py:576
 msgid "Power supply unit"
 msgstr "Netzteil"
 
-#: inventory/models.py:565
+#: inventory/models.py:582
 msgid "Number assigned by the inspection company"
 msgstr "Von der Prüfgesellschaft zugewiesene Nummer"
 
-#: inventory/models.py:580
-#, fuzzy
-#| msgid "Object Type"
+#: inventory/models.py:597
 msgid "Device Type"
-msgstr "Objekttyp"
+msgstr "Gerätetyp"
 
-#: inventory/models.py:581 rental/models.py:60 rental/models.py:356
-#: rental/models.py:497 rental/models.py:607
+#: inventory/models.py:598 rental/models.py:60 rental/models.py:371
+#: rental/models.py:521 rental/models.py:631
+#: rental/templates/rental/list.html:79
 msgid "Room"
 msgstr "Raum"
 
-#: inventory/models.py:587
+#: inventory/models.py:604
 msgid "Target Part"
 msgstr "Prüfteil"
 
-#: inventory/models.py:589
+#: inventory/models.py:606
 msgid "Inspection Date"
 msgstr "Prüfdatum"
 
-#: inventory/models.py:594
+#: inventory/models.py:611
 msgid "Result / Comment"
 msgstr "Ergebnis / Kommentar"
 
-#: inventory/models.py:600
+#: inventory/models.py:617
 msgid "Inspection"
 msgstr "Prüfung"
 
-#: inventory/models.py:601
+#: inventory/models.py:618
 msgid "Inspections"
 msgstr "Prüfungen"
 
-#: inventory/models.py:628
+#: inventory/models.py:645
 msgid "Inspection file"
 msgstr "Prüfdatei"
 
-#: inventory/models.py:686
+#: inventory/models.py:703
 msgid "Inspection Import"
 msgstr "Prüfimport"
 
-#: inventory/models.py:687
+#: inventory/models.py:704
 msgid "Inspection Imports"
 msgstr "Prüfimporte"
 
 #: inventory/templates/admin/export.html:25
 msgid "The data export will include all inventory items."
 msgstr "Der Datenexport umfasst alle Inventargegenstände."
+
+#: inventory/templates/inventory/list.html:12
+msgid "Manage your equipment and inventory items"
+msgstr "Verwalten Sie Ihre Ausrüstung und Inventargegenstände"
+
+#: inventory/templates/inventory/list.html:19
+msgid "Add Item"
+msgstr "Artikel hinzufügen"
+
+#: inventory/templates/inventory/list.html:32
+msgid "Total Items"
+msgstr "Artikel insgesamt"
+
+#: inventory/templates/inventory/list.html:41
+#: inventory/templates/inventory/list.html:81
+#: inventory/templates/inventory/list.html:162
+#: rental/templates/rental/rental_stats.html:223 rental/views.py:1201
+#: rental/views.py:3037
+msgid "Available"
+msgstr "Verfügbar"
+
+#: inventory/templates/inventory/list.html:59
+#: inventory/templates/inventory/list.html:83
+#: inventory/templates/inventory/list.html:166
+msgid "Maintenance"
+msgstr "Wartung"
+
+#: inventory/templates/inventory/list.html:70
+#: rental/templates/rental/admin_rental_process.html:90
+#: ok_tools/templates/rental_dashboard.html:168
+msgid "All Categories"
+msgstr "Alle Kategorien"
+
+#: inventory/templates/inventory/list.html:71
+msgid "Camera"
+msgstr "Kamera"
+
+#: inventory/templates/inventory/list.html:72
+msgid "Audio"
+msgstr "Audio"
+
+#: inventory/templates/inventory/list.html:73
+msgid "Lighting"
+msgstr "Beleuchtung"
+
+#: inventory/templates/inventory/list.html:74
+msgid "Computer"
+msgstr "Computer"
+
+#: inventory/templates/inventory/list.html:80
+#: rental/templates/rental/list.html:67
+msgid "All Statuses"
+msgstr "Alle Status"
+
+#: inventory/templates/inventory/list.html:84 rental/models.py:46
+#: rental/templates/rental/rental_detail.html:233
+#: rental/templates/rental/rental_detail.html:508
+#: rental/templates/rental/rental_stats.html:140
+#: rental/templates/rental/rental_stats.html:224
+#: rental/templates/rental/rental_stats.html:242
+msgid "Reserved"
+msgstr "Reserviert"
+
+#: inventory/templates/inventory/list.html:90
+#: rental/templates/rental/admin_rental_process.html:95
+#: ok_tools/templates/rental_dashboard.html:174
+msgid "All Locations"
+msgstr "Alle Standorte"
+
+#: inventory/templates/inventory/list.html:91
+msgid "Storage"
+msgstr "Lager"
+
+#: inventory/templates/inventory/list.html:92
+#: rental/templates/rental/list.html:80
+msgid "Studio"
+msgstr "Studio"
+
+#: inventory/templates/inventory/list.html:93
+msgid "Office"
+msgstr "Büro"
+
+#: inventory/templates/inventory/list.html:97
+#: licenses/templates/admin/filter_numeric_range.html:46
+#: licenses/templates/licenses/list.html:50
+#: rental/templates/rental/list.html:93
+msgid "Search"
+msgstr "Suchen"
+
+#: inventory/templates/inventory/list.html:98
+#: rental/templates/rental/rental_stats.html:442
+msgid "Search items..."
+msgstr "Artikel suchen..."
+
+#: inventory/templates/inventory/list.html:103
+#: licenses/templates/licenses/list.html:56
+#: rental/templates/rental/list.html:99
+msgid "Clear Filters"
+msgstr "Filter löschen"
+
+#: inventory/templates/inventory/list.html:124
+msgid "View Details"
+msgstr "Details anzeigen"
+
+#: inventory/templates/inventory/list.html:127
+#: licenses/templates/licenses/details.html:45
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: inventory/templates/inventory/list.html:131
+#: planung/templates/admin/planung/calendar_weeks.html:190
+msgid "Delete"
+msgstr "Löschen"
+
+#: inventory/templates/inventory/list.html:168
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: inventory/templates/inventory/list.html:179
+msgid "Last Inspection"
+msgstr "Letzte Prüfung"
+
+#: inventory/templates/inventory/list.html:188
+msgid "Rent"
+msgstr "Ausleihen"
+
+#: inventory/templates/inventory/list.html:192
+msgid "Not Available"
+msgstr "Nicht verfügbar"
+
+#: inventory/templates/inventory/list.html:204
+msgid "No inventory items found"
+msgstr "Keine Inventargegenstände gefunden"
+
+#: inventory/templates/inventory/list.html:205
+msgid "Add your first item"
+msgstr "Fügen Sie Ihren ersten Artikel hinzu"
+
+#: inventory/templates/inventory/list.html:214
+msgid "Inventory pagination"
+msgstr "Inventar-Seitennummerierung"
+
+#: inventory/templates/inventory/list.html:218
+#: licenses/templates/licenses/list.html:148
+#: rental/templates/rental/list.html:218
+msgid "First"
+msgstr "Erste"
+
+#: inventory/templates/inventory/list.html:221
+#: licenses/templates/licenses/list.html:151
+#: rental/templates/rental/list.html:221
+msgid "Previous"
+msgstr "Vorherige"
+
+#: inventory/templates/inventory/list.html:227
+#: licenses/templates/licenses/list.html:157
+#: rental/templates/rental/list.html:227
+msgid "Page"
+msgstr "Seite"
+
+#: inventory/templates/inventory/list.html:227
+#: licenses/templates/licenses/list.html:157
+#: rental/templates/rental/list.html:227
+msgid "of"
+msgstr "von"
+
+#: inventory/templates/inventory/list.html:233
+#: licenses/templates/licenses/list.html:163
+#: rental/templates/rental/list.html:233
+msgid "Next"
+msgstr "Nächste"
+
+#: inventory/templates/inventory/list.html:236
+#: licenses/templates/licenses/list.html:166
+#: rental/templates/rental/list.html:236
+msgid "Last"
+msgstr "Letzte"
+
+#: inventory/templates/inventory/list.html:308
+msgid "Are you sure you want to delete this inventory item?"
+msgstr "Sind Sie sicher, dass Sie diesen Inventargegenstand löschen möchten?"
 
 #: licenses/admin.py:38 licenses/models.py:93
 msgid "Further involved persons"
@@ -860,7 +1115,7 @@ msgstr "Jugendschutz notwendig"
 msgid "Screen Board"
 msgstr "Bildschirmtafel"
 
-#: licenses/admin.py:53 registration/admin.py:88 registration/models.py:177
+#: licenses/admin.py:53 registration/admin.py:89 registration/models.py:177
 msgid "created at"
 msgstr "erstellt am"
 
@@ -914,7 +1169,10 @@ msgstr ""
 "nicht bestätigt werden, bis das Profil verifiziert ist."
 
 #: licenses/apps.py:10 licenses/models.py:255
-#: registration/templates/navbar.html:103 ok_tools/templates/dashboard.html:33
+#: licenses/templates/licenses/list.html:5
+#: licenses/templates/licenses/list.html:6
+#: planung/templates/admin/planung/calendar_weeks.html:33
+#: registration/templates/navbar.html:101
 msgid "Licenses"
 msgstr "Freistellungen"
 
@@ -935,17 +1193,19 @@ msgid "The duration field is required."
 msgstr "Es muss eine Dauer angegeben werden."
 
 #: licenses/forms.py:110
-#: planung/templates/admin/planung/calendar_weeks.html:124
+#: planung/templates/admin/planung/calendar_weeks.html:192
 msgid "Save"
 msgstr "Speichern"
 
-#: licenses/forms.py:150 rental/templates/rental/admin_rental_process.html:47
-#: rental/templates/rental/admin_rental_process.html:350
+#: licenses/forms.py:150 rental/templates/rental/admin_rental_process.html:53
+#: rental/templates/rental/admin_rental_process.html:368
+#: rental/templates/rental/rental_stats.html:386
 msgid "From"
 msgstr "Von"
 
-#: licenses/forms.py:154 rental/templates/rental/admin_rental_process.html:48
-#: rental/templates/rental/admin_rental_process.html:354
+#: licenses/forms.py:154 rental/templates/rental/admin_rental_process.html:54
+#: rental/templates/rental/admin_rental_process.html:372
+#: rental/templates/rental/rental_stats.html:390
 msgid "To"
 msgstr "Bis"
 
@@ -973,7 +1233,8 @@ msgstr "23:00 Uhr (ab 18 J.)"
 msgid "Not Selected"
 msgstr "Nicht ausgewählt"
 
-#: licenses/models.py:99 projects/models.py:156
+#: licenses/models.py:99 licenses/templates/licenses/create.html:128
+#: projects/models.py:156
 msgid "Format: hh:mm:ss or mm:ss"
 msgstr "Format: hh:mm:ss oder mm:ss"
 
@@ -985,11 +1246,13 @@ msgstr "Austausch zwischen Bürgermedien erlauben"
 msgid "Media Authority exchange allowed in other states than Saxony-Anhalt."
 msgstr "Austausch zwischen Bürgermedien in anderen Bundesländern erlauben."
 
-#: licenses/models.py:136 licenses/templates/licenses/details.html:17
+#: licenses/models.py:136 licenses/templates/licenses/details.html:20
 msgid "Youth protection category"
 msgstr "Jugendschutz-Kategorie"
 
-#: licenses/models.py:180 licenses/templates/licenses/list.html:13
+#: licenses/models.py:180 licenses/templates/licenses/list.html:28
+#: licenses/templates/licenses/list.html:97
+#: licenses/templates/licenses/list.html:203
 msgid "Confirmed"
 msgstr "Genehmigt"
 
@@ -1006,11 +1269,9 @@ msgstr "Die Dauer darf nicht Null sein."
 msgid "By %(filter_title)s"
 msgstr "Nach %(filter_title)s"
 
-#: licenses/templates/admin/filter_numeric_range.html:46
-msgid "Search"
-msgstr "Suchen"
-
 #: licenses/templates/admin/filter_numeric_range.html:47
+#: licenses/templates/licenses/create.html:278
+#: ok_tools/templates/rental_dashboard.html:214
 msgid "Reset"
 msgstr "Zurücksetzen"
 
@@ -1028,57 +1289,141 @@ msgstr ""
 "            Bestätigte Freistellungen sind nicht änderbar.\n"
 "        "
 
-#: licenses/templates/licenses/create.html:7
-msgid "Create a license"
+#: licenses/templates/licenses/create.html:5
+#: licenses/templates/licenses/create.html:6
+#: licenses/templates/licenses/create.html:281
+#: licenses/templates/licenses/list.html:16
+#: ok_tools/templates/dashboard.html:199
+msgid "Create License"
 msgstr "Freistellung erstellen"
 
-#: licenses/templates/licenses/details.html:8
-msgid "Details for "
-msgstr "Details zu "
+#: licenses/templates/licenses/create.html:12
+msgid "Create a new broadcast exemption"
+msgstr "Neue Sendefreistellung erstellen"
 
-#: licenses/templates/licenses/details.html:42
-msgid "Edit"
-msgstr "Bearbeiten"
+#: licenses/templates/licenses/create.html:13
+msgid "Fill in all required fields to create your license"
+msgstr ""
+"Füllen Sie alle erforderlichen Felder aus, um Ihre Freistellung zu erstellen"
 
-#: licenses/templates/licenses/details.html:46
+#: licenses/templates/licenses/create.html:17
+msgid "Back to Overview"
+msgstr "Zurück zur Übersicht"
+
+#: licenses/templates/licenses/create.html:31 registration/admin.py:314
+msgid "Basic Information"
+msgstr "Grundinformationen"
+
+#: licenses/templates/licenses/create.html:33
+msgid "Title, description and category of the license"
+msgstr "Titel, Beschreibung und Kategorie der Freistellung"
+
+#: licenses/templates/licenses/create.html:100
+msgid "Additional involved persons (optional)"
+msgstr "Weitere beteiligte Personen (optional)"
+
+#: licenses/templates/licenses/create.html:111
+msgid "Media Settings"
+msgstr "Medieneinstellungen"
+
+#: licenses/templates/licenses/create.html:113
+msgid "Duration, broadcast date and repetitions"
+msgstr "Dauer, Sendedatum und Wiederholungen"
+
+#: licenses/templates/licenses/create.html:174
+msgid "Exchange Settings"
+msgstr "Austauscheinstellungen"
+
+#: licenses/templates/licenses/create.html:176
+msgid "Permissions for exchange between citizen media"
+msgstr "Berechtigungen für den Austausch zwischen Bürgermedien"
+
+#: licenses/templates/licenses/create.html:190
+msgid "Saxony-Anhalt"
+msgstr "Sachsen-Anhalt"
+
+#: licenses/templates/licenses/create.html:202
+msgid "Other Federal States"
+msgstr "Andere Bundesländer"
+
+#: licenses/templates/licenses/create.html:213
+msgid "Special Settings"
+msgstr "Spezielle Einstellungen"
+
+#: licenses/templates/licenses/create.html:215
+msgid "Special settings and youth protection"
+msgstr "Spezielle Einstellungen und Jugendschutz"
+
+#: licenses/templates/licenses/create.html:227
+msgid "Screen board (duration will be set automatically)"
+msgstr "Laufschrift (Dauer wird automatisch gesetzt)"
+
+#: licenses/templates/licenses/create.html:274 rental/models.py:380
+#: rental/templates/rental/admin_rental_process.html:227
+#: rental/templates/rental/admin_rental_process.html:265
+#: rental/templates/rental/admin_rental_process.html:557
+#: rental/templates/rental/rental_detail.html:270
+#: rental/templates/rental/rental_detail.html:546
+#: rental/templates/rental/rental_detail.html:686
+#: rental/templates/rental/rental_stats.html:470
+#: rental/templates/rental/rental_stats.html:493
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: licenses/templates/licenses/create.html:386
+msgid "Are you sure you want to reset all inputs?"
+msgstr "Sind Sie sicher, dass Sie alle Eingaben zurücksetzen möchten?"
+
+#: licenses/templates/licenses/details.html:6
+#: licenses/templates/licenses/details.html:7
+msgid "License Details"
+msgstr "Freistellungsdetails"
+
+#: licenses/templates/licenses/details.html:11
+msgid "Details for"
+msgstr "Details für"
+
+#: licenses/templates/licenses/details.html:49
 msgid "Print"
 msgstr "Drucken"
 
-#: licenses/templates/licenses/list.html:7
-msgid "Your licenses"
-msgstr "Ihre Freistellungen"
+#: licenses/templates/licenses/list.html:12
+msgid "Manage your licenses and permissions"
+msgstr "Verwalten Sie Ihre Freistellungen und Berechtigungen"
 
-#: licenses/templates/licenses/list.html:14
-#: planung/templates/admin/planung/calendar_weeks.html:106
-#: rental/templates/rental/rental_detail.html:85
-#: rental/templates/rental/rental_stats.html:278
-msgid "Actions"
-msgstr "Aktionen"
+#: licenses/templates/licenses/list.html:27
+#: rental/templates/rental/rental_stats.html:139
+#: rental/templates/rental/rental_stats.html:222
+msgid "All Status"
+msgstr "Alle Status"
 
-#: licenses/templates/licenses/list.html:38
-msgid "Edit license"
-msgstr "Freistellung bearbeiten"
+#: licenses/templates/licenses/list.html:51
+msgid "Search licenses..."
+msgstr "Freistellungen suchen..."
 
-#: licenses/templates/licenses/list.html:39
-msgid "edit"
-msgstr "bearbeiten"
+#: licenses/templates/licenses/list.html:71
+msgid "Suggested Date"
+msgstr "Gewünschtes Datum"
 
-#: licenses/templates/licenses/list.html:46
-msgid "Print official document"
-msgstr "Offiziellen Antrag drucken"
+#: licenses/templates/licenses/list.html:108
+msgid "No Date"
+msgstr "Kein Datum"
 
-#: licenses/templates/licenses/list.html:47
-msgid "print"
-msgstr "drucken"
+#: licenses/templates/licenses/list.html:131
+msgid "No licenses found"
+msgstr "Keine Freistellungen gefunden"
 
-#: licenses/templates/licenses/list.html:53
-msgid "No licenses yet."
-msgstr "Bisher sind keine Freistellungen vorhanden."
+#: licenses/templates/licenses/list.html:132
+msgid "Create your first license"
+msgstr "Erstellen Sie Ihre erste Freistellung"
 
-#: licenses/templates/licenses/list.html:59
-#: registration/templates/navbar.html:110 ok_tools/templates/dashboard.html:40
-msgid "Create license"
-msgstr "Freistellung erstellen"
+#: licenses/templates/licenses/list.html:144
+msgid "License pagination"
+msgstr "Freistellungs-Seitennummerierung"
+
+#: licenses/templates/licenses/list.html:258
+msgid "Are you sure you want to delete this license?"
+msgstr "Sind Sie sicher, dass Sie diese Freistellung löschen möchten?"
 
 #: licenses/templates/licenses/update.html:9
 #, python-format
@@ -1106,21 +1451,21 @@ msgstr ""
 msgid "Back to overview"
 msgstr "Zurück zur übersicht"
 
-#: licenses/views.py:24
+#: licenses/views.py:25
 msgid "License not found."
 msgstr "Freistellung nicht gefunden."
 
-#: licenses/views.py:65
+#: licenses/views.py:69
 #, python-format
 msgid "License %(license)s successfully created."
 msgstr "Freistellung %(license)s erfolgreich erstellt."
 
-#: licenses/views.py:97
+#: licenses/views.py:116
 #, python-format
 msgid "License %(license)s successfully edited."
 msgstr "Freistellung %(license)s erfolgreich bearbeitet."
 
-#: licenses/views.py:106
+#: licenses/views.py:125
 #, python-format
 msgid ""
 "The License %(license)s is already confirmed and therefor no longer editable."
@@ -1128,55 +1473,63 @@ msgstr ""
 "Die Freistellung %(license)s ist bereits genehmigt und somit nicht mehr "
 "veränderbar."
 
-#: planung/admin.py:116
+#: planung/admin.py:124
 msgid "Mon"
 msgstr "MO"
 
-#: planung/admin.py:117
+#: planung/admin.py:125
 msgid "Tue"
 msgstr "DI"
 
-#: planung/admin.py:118
+#: planung/admin.py:126
 msgid "Wed"
 msgstr "MI"
 
-#: planung/admin.py:119
+#: planung/admin.py:127
 msgid "Thu"
 msgstr "DO"
 
-#: planung/admin.py:120
+#: planung/admin.py:128
 msgid "Fri"
 msgstr "FR"
 
-#: planung/admin.py:121
+#: planung/admin.py:129
 msgid "Sat"
 msgstr "SA"
 
-#: planung/admin.py:122
+#: planung/admin.py:130
 msgid "Sun"
 msgstr "SO"
 
-#: planung/admin.py:126
+#: planung/admin.py:134
 msgid "Calendar Weeks – Broadcast Planning"
 msgstr "Kalenderwochen - Sendeplanung"
 
-#: planung/admin.py:142
+#: planung/admin.py:150
 msgid "Draft?"
 msgstr "Entwurf?"
 
-#: planung/admin.py:151
+#: planung/admin.py:159
 msgid "Planned items"
 msgstr "Geplante Beiträge"
 
-#: planung/admin.py:160
+#: planung/admin.py:168
 msgid "Comment"
 msgstr "Kommentar"
 
-#: planung/admin.py:187
+#: planung/admin.py:188
+msgid "not found"
+msgstr "nicht gefunden"
+
+#: planung/admin.py:195
 msgid "min"
 msgstr "Min"
 
-#: planung/admin.py:201
+#: planung/admin.py:201 planung/templates/admin/planung/calendar_weeks.html:170
+msgid "Start"
+msgstr "Start"
+
+#: planung/admin.py:209
 msgid "Planned items (preview)"
 msgstr "Geplante Beiträge (Vorschau)"
 
@@ -1184,109 +1537,125 @@ msgstr "Geplante Beiträge (Vorschau)"
 msgid "Calendar weeks"
 msgstr "Kalenderwochen"
 
-#: planung/templates/admin/planung/calendar_weeks.html:61
+#: planung/templates/admin/planung/calendar_weeks.html:17
+msgid "Current Week"
+msgstr "Aktuelle Woche"
+
+#: planung/templates/admin/planung/calendar_weeks.html:21
+#: planung/templates/admin/planung/calendar_weeks.html:45
+#: planung/templates/admin/planung/calendar_weeks.html:69
+#: planung/templates/admin/planung/calendar_weeks.html:93
+msgid "Planned days"
+msgstr "Geplante Tage"
+
+#: planung/templates/admin/planung/calendar_weeks.html:25
+#: planung/templates/admin/planung/calendar_weeks.html:49
+#: planung/templates/admin/planung/calendar_weeks.html:73
+#: planung/templates/admin/planung/calendar_weeks.html:97
+msgid "Total time"
+msgstr "Gesamtzeit"
+
+#: planung/templates/admin/planung/calendar_weeks.html:29
+#: planung/templates/admin/planung/calendar_weeks.html:53
+#: planung/templates/admin/planung/calendar_weeks.html:77
+#: planung/templates/admin/planung/calendar_weeks.html:101
+msgid "Fill rate"
+msgstr "Füllgrad"
+
+#: planung/templates/admin/planung/calendar_weeks.html:41
+msgid "Next Week"
+msgstr "Nächste Woche"
+
+#: planung/templates/admin/planung/calendar_weeks.html:57
+#: planung/templates/admin/planung/calendar_weeks.html:81
+#: planung/templates/admin/planung/calendar_weeks.html:105
+msgid "Freistellungen"
+msgstr "Freistellungen"
+
+#: planung/templates/admin/planung/calendar_weeks.html:65
+msgid "Week After Next"
+msgstr "Übernächste Woche"
+
+#: planung/templates/admin/planung/calendar_weeks.html:89
+msgid "3 Weeks Ahead"
+msgstr "3 Wochen voraus"
+
+#: planung/templates/admin/planung/calendar_weeks.html:126
 msgid "KW"
 msgstr "KW"
 
-#: planung/templates/admin/planung/calendar_weeks.html:84
-#: planung/templates/admin/planung/calendar_weeks.html:123
-#: rental/templates/rental/admin_rental_process.html:147
-#: rental/templates/rental/admin_rental_process.html:170
-#: rental/templates/rental/admin_rental_process.html:195
-#: rental/templates/rental/admin_rental_process.html:282
-#: rental/templates/rental/admin_rental_process.html:395
+#: planung/templates/admin/planung/calendar_weeks.html:152
+#: planung/templates/admin/planung/calendar_weeks.html:191
+#: rental/templates/rental/admin_rental_process.html:161
+#: rental/templates/rental/admin_rental_process.html:184
+#: rental/templates/rental/admin_rental_process.html:207
+#: rental/templates/rental/admin_rental_process.html:300
+#: rental/templates/rental/admin_rental_process.html:418
+#: rental/templates/rental/rental_stats.html:402
+#: ok_tools/templates/rental_dashboard.html:261
+#: ok_tools/templates/rental_dashboard.html:349
+#: ok_tools/templates/rental_dashboard.html:375
+#: ok_tools/templates/rental_dashboard.html:400
+#: ok_tools/templates/rental_dashboard.html:425
 msgid "Close"
 msgstr "Schließen"
 
-#: planung/templates/admin/planung/calendar_weeks.html:91
+#: planung/templates/admin/planung/calendar_weeks.html:157
 msgid "Broadcast block"
 msgstr "Sendewoche"
 
-#: planung/templates/admin/planung/calendar_weeks.html:91
+#: planung/templates/admin/planung/calendar_weeks.html:157
 msgid "105 Min"
 msgstr "105 Min"
 
-#: planung/templates/admin/planung/calendar_weeks.html:92
-#: planung/templates/admin/planung/calendar_weeks.html:145
+#: planung/templates/admin/planung/calendar_weeks.html:158
+#: planung/templates/admin/planung/calendar_weeks.html:213
 msgid "Full available"
 msgstr "Vollständig verfügbar"
 
-#: planung/templates/admin/planung/calendar_weeks.html:95
+#: planung/templates/admin/planung/calendar_weeks.html:159
+msgid "Gaps >5 min count as used time"
+msgstr "Lücken >5 Min zählen als genutzte Zeit"
+
+#: planung/templates/admin/planung/calendar_weeks.html:163
 msgid "Enter license number..."
 msgstr "Freistellungsnummer eingeben..."
 
-#: planung/templates/admin/planung/calendar_weeks.html:96
+#: planung/templates/admin/planung/calendar_weeks.html:164
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: planung/templates/admin/planung/calendar_weeks.html:105
+#: planung/templates/admin/planung/calendar_weeks.html:173
 msgid "Duration (Min)"
 msgstr "Dauer (Min)"
 
-#: planung/templates/admin/planung/calendar_weeks.html:115
+#: planung/templates/admin/planung/calendar_weeks.html:183
 msgid "Comment or notes:"
 msgstr "Kommentar oder Notizen:"
 
-#: planung/templates/admin/planung/calendar_weeks.html:121
+#: planung/templates/admin/planung/calendar_weeks.html:189
 msgid "Sort by time"
 msgstr "Nach Zeit sortieren"
 
-#: planung/templates/admin/planung/calendar_weeks.html:122
-msgid "Delete"
-msgstr "Löschen"
-
-#: planung/templates/admin/planung/calendar_weeks.html:125
+#: planung/templates/admin/planung/calendar_weeks.html:193
 msgid "Plan!"
 msgstr "Plan!"
 
-#: planung/templates/admin/planung/calendar_weeks.html:146
+#: planung/templates/admin/planung/calendar_weeks.html:214
 #, python-format
 msgid "Still %%(minutes)s min free"
 msgstr "Noch %%(minutes)s Min frei"
 
-#: planung/templates/admin/planung/calendar_weeks.html:147
+#: planung/templates/admin/planung/calendar_weeks.html:215
 #, python-format
 msgid "Overplanned by %%(minutes)s min!"
 msgstr "Überplanen um %%(minutes)s Min!"
 
-#: planung/templates/admin/planung/calendar_weeks.html:148
+#: planung/templates/admin/planung/calendar_weeks.html:216
 msgid "License not found or not confirmed"
-msgstr "Freistellung nicht gefunden."
+msgstr "Freistellung nicht gefunden oder nicht bestätigt"
 
-#: planung/templates/admin/planung/calendar_weeks.html:303
-#: planung/templates/admin/planung/calendar_weeks.html:394
-msgid "⚠️ Date is missing."
-msgstr "⚠️ Datum fehlt."
-
-#: planung/templates/admin/planung/calendar_weeks.html:344
-msgid "Draft saved successfully."
-msgstr "Entwurf erfolgreich gespeichert."
-
-#: planung/templates/admin/planung/calendar_weeks.html:348
-msgid "Error saving the draft."
-msgstr "Fehler beim Speichern des Entwurfs."
-
-#: planung/templates/admin/planung/calendar_weeks.html:365
-msgid "Plan saved successfully!"
-msgstr "Plan erfolgreich gespeichert!"
-
-#: planung/templates/admin/planung/calendar_weeks.html:370
-msgid "Error saving the plan. Please try again."
-msgstr "Fehler beim Speichern des Plans. Bitte versuchen Sie es erneut."
-
-#: planung/templates/admin/planung/calendar_weeks.html:397
-msgid "Delete plan for this day?"
-msgstr "Plan für diesen Tag löschen?"
-
-#: planung/templates/admin/planung/calendar_weeks.html:406
-msgid "Plan deleted!"
-msgstr "Plan gelöscht!"
-
-#: planung/templates/admin/planung/calendar_weeks.html:411
-msgid "Error deleting the plan."
-msgstr "Fehler beim Löschen des Plans."
-
-#: planung/views.py:21
+#: planung/views.py:25
 msgid "License not found or not confirmed."
 msgstr "Freistellung nicht gefunden oder nicht bestätigt."
 
@@ -1295,7 +1664,8 @@ msgid "Topic"
 msgstr "Thema"
 
 #: projects/admin.py:68 projects/models.py:149
-#: rental/templates/rental/admin_rental_process.html:376
+#: rental/templates/rental/admin_rental_process.html:394
+#: ok_tools/templates/dashboard.html:236
 msgid "Date"
 msgstr "Datum"
 
@@ -1454,8 +1824,8 @@ msgstr ""
 "der Teilnehmer nach Geschlecht (%(gender)s) überein. Bitte korrigieren Sie "
 "die Eingabe."
 
-#: projects/models.py:314 rental/admin.py:97
-#: rental/templates/rental/rental_stats.html:160
+#: projects/models.py:314 rental/admin.py:105
+#: rental/templates/rental/rental_stats.html:172
 msgid "Project"
 msgstr "Projekt"
 
@@ -1463,149 +1833,157 @@ msgstr "Projekt"
 msgid "Export dates"
 msgstr "Zeiten exportieren"
 
-#: registration/admin.py:34 registration/admin.py:51
+#: registration/admin.py:35 registration/admin.py:52
 msgid "E-Mail address"
 msgstr "E-Mail-Adresse"
 
-#: registration/admin.py:37 registration/admin.py:54
+#: registration/admin.py:38 registration/admin.py:55
 msgid "Password"
 msgstr "Passwort"
 
-#: registration/admin.py:40
+#: registration/admin.py:41
 msgid "Admin"
 msgstr "Admin"
 
-#: registration/admin.py:43
+#: registration/admin.py:44
 msgid "permissions"
 msgstr "Berechtigungen"
 
-#: registration/admin.py:46 registration/admin.py:57
+#: registration/admin.py:47 registration/admin.py:58
 msgid "Staff"
 msgstr "Mitarbeiter"
 
-#: registration/admin.py:76
+#: registration/admin.py:77
 msgid "ID"
 msgstr "ID"
 
-#: registration/admin.py:77 registration/models.py:136
+#: registration/admin.py:78 registration/models.py:136
 msgid "first name"
 msgstr "Vorname"
 
-#: registration/admin.py:78 registration/models.py:138
+#: registration/admin.py:79 registration/models.py:138
 msgid "last name"
 msgstr "Nachname"
 
-#: registration/admin.py:79 registration/models.py:141
+#: registration/admin.py:80 registration/models.py:141
 msgid "gender"
 msgstr "Geschlecht"
 
-#: registration/admin.py:80 registration/models.py:54
+#: registration/admin.py:81 registration/models.py:54
 msgid "email address"
 msgstr "E-Mail-Adresse"
 
-#: registration/admin.py:81 registration/models.py:150
+#: registration/admin.py:82 registration/models.py:150
 msgid "phone number"
 msgstr "Telefonnummer"
 
-#: registration/admin.py:82 registration/models.py:153
+#: registration/admin.py:83 registration/models.py:153
 msgid "mobile number"
 msgstr "Handynummer"
 
-#: registration/admin.py:83 registration/models.py:157
+#: registration/admin.py:84 registration/models.py:157
 msgid "birthday"
 msgstr "Geburtstag"
 
-#: registration/admin.py:84 registration/models.py:160
+#: registration/admin.py:85 registration/models.py:160
 msgid "street"
 msgstr "Straße"
 
-#: registration/admin.py:85 registration/models.py:162
+#: registration/admin.py:86 registration/models.py:162
 msgid "house number"
 msgstr "Hausnummer"
 
-#: registration/admin.py:86 registration/models.py:164
+#: registration/admin.py:87 registration/models.py:164
 msgid "zipcode"
 msgstr "Postleitzahl"
 
-#: registration/admin.py:87 registration/models.py:166
+#: registration/admin.py:88 registration/models.py:166
 msgid "city"
 msgstr "Stadt"
 
-#: registration/admin.py:89 registration/models.py:189
+#: registration/admin.py:90 registration/models.py:189
 msgid "member"
 msgstr "Mitglied"
 
-#: registration/admin.py:91 registration/models.py:196
+#: registration/admin.py:92 registration/models.py:196
 msgid "comment"
 msgstr "Kommentar"
 
-#: registration/admin.py:113
+#: registration/admin.py:114
 msgid "birthmonth"
 msgstr "Geburtsmonat"
 
-#: registration/admin.py:119
+#: registration/admin.py:120
 msgid "January"
 msgstr "Januar"
 
-#: registration/admin.py:120
+#: registration/admin.py:121
 msgid "February"
 msgstr "Februar"
 
-#: registration/admin.py:121
+#: registration/admin.py:122
 msgid "March"
 msgstr "März"
 
-#: registration/admin.py:122
+#: registration/admin.py:123
 msgid "April"
 msgstr "April"
 
-#: registration/admin.py:123
+#: registration/admin.py:124
 msgid "May"
 msgstr "Mai"
 
-#: registration/admin.py:124
+#: registration/admin.py:125
 msgid "June"
 msgstr "Juni"
 
-#: registration/admin.py:125
+#: registration/admin.py:126
 msgid "July"
 msgstr "Juli"
 
-#: registration/admin.py:126
+#: registration/admin.py:127
 msgid "August"
 msgstr "August"
 
-#: registration/admin.py:127
+#: registration/admin.py:128
 msgid "September"
 msgstr "September"
 
-#: registration/admin.py:128
+#: registration/admin.py:129
 msgid "October"
 msgstr "Oktober"
 
-#: registration/admin.py:129
+#: registration/admin.py:130
 msgid "November"
 msgstr "November"
 
-#: registration/admin.py:130
+#: registration/admin.py:131
 msgid "December"
 msgstr "Dezember"
 
-#: registration/admin.py:152
+#: registration/admin.py:153
 msgid "created year"
 msgstr "Erstellungsjahr"
 
-#: registration/admin.py:201
+#: registration/admin.py:202
 msgid "e-mail, first name, last name"
 msgstr "E-Mail, Vorname, Nachname"
 
-#: registration/admin.py:230
+#: registration/admin.py:231
 msgid "Verify selected profiles"
 msgstr "Ausgewählte Profile verifizieren"
 
-#: registration/admin.py:240
+#: registration/admin.py:241
 msgid "Unverify selected profiles"
 msgstr "Ausgewählte Profile deverifizieren"
+
+#: registration/admin.py:317
+msgid "Display Settings"
+msgstr "Anzeigeeinstellungen"
+
+#: registration/admin.py:320
+msgid "Metadata"
+msgstr "Metadaten"
 
 #: registration/apps.py:9
 msgid "Registration"
@@ -1639,8 +2017,8 @@ msgstr "Ich habe die Nutzungsordnung gelesen und akzeptiere sie."
 msgid "Birthday"
 msgstr "Geburtstag"
 
-#: registration/forms.py:131 registration/templates/navbar.html:133
-#: registration/templates/registration/register.html:7
+#: registration/forms.py:131 registration/templates/navbar.html:131
+#: ok_tools/templates/guest_welcome.html:85
 msgid "Register"
 msgstr "Registrieren"
 
@@ -1699,6 +2077,154 @@ msgstr "Das Profil wurde unter Vorlage eines Personalausweises verifiziert."
 #: registration/models.py:209
 msgid "Profiles"
 msgstr "Profile"
+
+#: registration/models.py:218 rental/templates/rental/rental_stats.html:328
+msgid "Information"
+msgstr "Informationen"
+
+#: registration/models.py:219
+msgid "Success"
+msgstr "Erfolg"
+
+#: registration/models.py:220 rental/templates/rental/rental_stats.html:335
+msgid "Warning"
+msgstr "Warnung"
+
+#: registration/models.py:221
+msgid "Danger"
+msgstr "Gefahr"
+
+#: registration/models.py:225
+msgid "Info Circle"
+msgstr "Info-Kreis"
+
+#: registration/models.py:226
+msgid "Check Circle"
+msgstr "Häkchen-Kreis"
+
+#: registration/models.py:227
+msgid "Exclamation Triangle"
+msgstr "Ausrufezeichen-Dreieck"
+
+#: registration/models.py:228
+msgid "Exclamation Circle"
+msgstr "Ausrufezeichen-Kreis"
+
+#: registration/models.py:229
+msgid "Clock"
+msgstr "Uhr"
+
+#: registration/models.py:230
+msgid "Bell"
+msgstr "Glocke"
+
+#: registration/models.py:231
+msgid "Broadcast"
+msgstr "Sendung"
+
+#: registration/models.py:232
+msgid "Star"
+msgstr "Stern"
+
+#: registration/models.py:233
+msgid "Gear"
+msgstr "Zahnrad"
+
+#: registration/models.py:234
+msgid "Shield Check"
+msgstr "Schild-Häkchen"
+
+#: registration/models.py:240
+msgid "Short title for the notification"
+msgstr "Kurzer Titel für die Benachrichtigung"
+
+#: registration/models.py:244
+msgid "Message"
+msgstr "Nachricht"
+
+#: registration/models.py:245
+msgid "Main notification text"
+msgstr "Haupttext der Benachrichtigung"
+
+#: registration/models.py:249 rental/templates/rental/list.html:75
+msgid "Type"
+msgstr "Typ"
+
+#: registration/models.py:253
+msgid "Notification type determines color and style"
+msgstr "Benachrichtigungstyp bestimmt Farbe und Stil"
+
+#: registration/models.py:257
+msgid "Icon"
+msgstr "Symbol"
+
+#: registration/models.py:261
+msgid "Bootstrap Icons icon name"
+msgstr "Bootstrap Icons Symbolname"
+
+#: registration/models.py:265 rental/models.py:516 rental/models.py:692
+#: rental/templates/rental/list.html:68 rental/templates/rental/list.html:166
+#: rental/templates/rental/rental_stats.html:434
+#: ok_tools/templates/dashboard.html:40
+msgid "Active"
+msgstr "Aktiv"
+
+#: registration/models.py:267
+msgid "Only active notifications are displayed to users"
+msgstr "Nur aktive Benachrichtigungen werden Benutzern angezeigt"
+
+#: registration/models.py:271
+msgid "Priority"
+msgstr "Priorität"
+
+#: registration/models.py:273
+msgid "Higher priority notifications appear first (1-10)"
+msgstr "Benachrichtigungen mit höherer Priorität erscheinen zuerst (1-10)"
+
+#: registration/models.py:277
+#: rental/templates/rental/admin_rental_process.html:458
+#: rental/templates/rental/list.html:113
+#: rental/templates/rental/rental_detail.html:587
+msgid "Start Date"
+msgstr "Startdatum"
+
+#: registration/models.py:279
+msgid "When to start showing this notification"
+msgstr "Wann diese Benachrichtigung angezeigt werden soll"
+
+#: registration/models.py:283
+#: rental/templates/rental/admin_rental_process.html:464
+#: rental/templates/rental/list.html:114
+#: rental/templates/rental/rental_detail.html:593
+msgid "End Date"
+msgstr "Enddatum"
+
+#: registration/models.py:286
+msgid "When to stop showing this notification (optional)"
+msgstr ""
+"Wann diese Benachrichtigung nicht mehr angezeigt werden soll (optional)"
+
+#: registration/models.py:290
+msgid "Created At"
+msgstr "Erstellt am"
+
+#: registration/models.py:299
+msgid "Created By"
+msgstr "Erstellt von"
+
+#: registration/models.py:300
+msgid "Admin who created this notification (auto-filled)"
+msgstr ""
+"Administrator, der diese Benachrichtigung erstellt hat (automatisch "
+"ausgefüllt)"
+
+#: registration/models.py:309
+msgid "Notification"
+msgstr "Benachrichtigung"
+
+#: registration/models.py:310 ok_tools/templates/dashboard.html:168
+msgid "Notifications"
+msgstr "Benachrichtigungen"
 
 #: registration/print.py:94
 msgid "registration_form.pdf"
@@ -1759,55 +2285,66 @@ msgstr ""
 "\n"
 "Ihr Account für %(ok_name)s wurde verifiziert\n"
 
-#: registration/templates/navbar.html:75
+#: registration/templates/navbar.html:74
 #: registration/templates/registration/print_registration.html:32
-#: ok_tools/templates/dashboard.html:15
 msgid "Edit user data"
 msgstr "Profil bearbeiten"
 
-#: registration/templates/navbar.html:78
+#: registration/templates/navbar.html:77
 #: registration/templates/registration/password_reset_confirm.html:16
-#: ok_tools/templates/dashboard.html:19
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: registration/templates/navbar.html:83 ok_tools/templates/dashboard.html:23
+#: registration/templates/navbar.html:82
 msgid "Print Registration Form"
 msgstr "Nutzer*innenantrag drucken"
 
-#: registration/templates/navbar.html:88 ok_tools/templates/dashboard.html:27
+#: registration/templates/navbar.html:87 ok_tools/templates/dashboard.html:145
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
 
-#: registration/templates/navbar.html:107 ok_tools/templates/dashboard.html:36
+#: registration/templates/navbar.html:105
 msgid "Overview"
 msgstr "Übersicht"
 
-#: registration/templates/navbar.html:127
+#: registration/templates/navbar.html:108
+msgid "Create license"
+msgstr "Freistellung erstellen"
+
+#: registration/templates/navbar.html:125 ok_tools/templates/dashboard.html:150
 msgid "Logout"
 msgstr "Abmelden"
 
-#: registration/templates/navbar.html:139
+#: registration/templates/navbar.html:137
+#: registration/templates/registration/login.html:6
+#: ok_tools/templates/guest_welcome.html:82
 msgid "Login"
 msgstr "Anmelden"
 
-#: registration/templates/registration/edit_profile.html:7
-#: registration/templates/registration/print_registration.html:7
-msgid "User data for "
-msgstr "Nutzerdaten für "
+#: registration/templates/registration/login.html:16
+msgid "Welcome Back"
+msgstr "Willkommen zurück"
 
-#: registration/templates/registration/login.html:9
-#: registration/templates/registration/password_reset_done.html:12
-msgid "Log In"
+#: registration/templates/registration/login.html:17
+msgid "Sign in to your OKMQ account"
+msgstr "Melden Sie sich in Ihrem OKMQ-Konto an"
+
+#: registration/templates/registration/login.html:25
+#: rental/templates/rental/access_denied.html:28
+msgid "Sign In"
 msgstr "Anmelden"
 
-#: registration/templates/registration/login.html:13
-msgid "Log in"
-msgstr "Anmelden"
+#: registration/templates/registration/login.html:28
+msgid "Forgot Password?"
+msgstr "Passwort vergessen?"
 
-#: registration/templates/registration/login.html:14
-msgid "Forgot Password"
-msgstr "Passwort vergessen"
+#: registration/templates/registration/login.html:34
+msgid "Don't have an account?"
+msgstr "Haben Sie noch kein Konto?"
+
+#: registration/templates/registration/login.html:35
+msgid "Register here"
+msgstr "Hier registrieren"
 
 #: registration/templates/registration/password_reset_complete.html:5
 #: registration/templates/registration/password_reset_complete.html:8
@@ -1859,6 +2396,10 @@ msgstr ""
 msgid "Home"
 msgstr "Home"
 
+#: registration/templates/registration/password_reset_done.html:12
+msgid "Log In"
+msgstr "Anmelden"
+
 #: registration/templates/registration/password_reset_email.html:3
 #, python-format
 msgid ""
@@ -1891,9 +2432,10 @@ msgid ""
 "Your username, in case you’ve forgotten: %(user.get_username)s\n"
 msgstr ""
 "\n"
-"Ihr Benutzername lautet: %(user.get_username)s\n"
+"Ihr Benutzername, falls Sie ihn vergessen haben: %(user.get_username)s\n"
 
 #: registration/templates/registration/password_reset_form.html:7
+#: ok_tools/templates/dashboard.html:139
 msgid "Change Password"
 msgstr "Passwort ändern"
 
@@ -1941,6 +2483,10 @@ msgstr ""
 msgid "Welcome to the %(ok_name)s"
 msgstr "Wilkommen beim %(ok_name)s"
 
+#: registration/templates/registration/print_registration.html:7
+msgid "User data for "
+msgstr "Nutzerdaten für "
+
 #: registration/templates/registration/print_registration.html:29
 msgid "Print registration form"
 msgstr "Nutzer*innenantrag drucken"
@@ -1948,6 +2494,24 @@ msgstr "Nutzer*innenantrag drucken"
 #: registration/templates/registration/print_registration.html:35
 msgid "Print template only"
 msgstr "Nur Vorlage drucken"
+
+#: registration/templates/registration/register.html:14
+msgid "Create Your Account"
+msgstr "Erstellen Sie Ihr Konto"
+
+#: registration/templates/registration/register.html:15
+msgid "Join the OKMQ community and start creating amazing content"
+msgstr ""
+"Treten Sie der OKMQ-Gemeinschaft bei und beginnen Sie mit der Erstellung "
+"großartiger Inhalte"
+
+#: registration/templates/registration/register.html:21
+msgid "Already have an account?"
+msgstr "Haben Sie bereits ein Konto?"
+
+#: registration/templates/registration/register.html:22
+msgid "Sign in here"
+msgstr "Hier anmelden"
 
 #: registration/templates/registration/user_created.html:6
 msgid "Welcome!"
@@ -1970,150 +2534,157 @@ msgstr ""
 msgid "Back to the start page"
 msgstr "Zurück zur Startseite"
 
-#: registration/views.py:47
+#: registration/views.py:48
 #, python-format
 msgid "There is no profile for %(user)s"
 msgstr "Es existiert kein Profil für %(user)s"
 
-#: registration/views.py:200
+#: registration/views.py:217
 msgid "Your profile was successfully updated."
 msgstr "Ihr Profil wurde erfolgreich aktualisiert."
 
-#: rental/admin.py:91
+#: rental/admin.py:99
 msgid "Meta"
 msgstr "Meta"
 
-#: rental/admin.py:94
+#: rental/admin.py:102
 msgid "Actors"
 msgstr "Akteure"
 
-#: rental/admin.py:100
+#: rental/admin.py:108
 msgid "Dates"
 msgstr "Daten"
 
-#: rental/admin.py:103 rental/admin.py:147 rental/models.py:72
-#: rental/models.py:190 rental/models.py:329 rental/models.py:400
-#: rental/models.py:615 rental/templates/rental/rental_detail.html:224
+#: rental/admin.py:111 rental/admin.py:158 rental/models.py:72
+#: rental/models.py:193 rental/models.py:341 rental/models.py:415
+#: rental/models.py:639 rental/templates/rental/admin_rental_process.html:550
+#: rental/templates/rental/rental_detail.html:409
+#: rental/templates/rental/rental_detail.html:679
 msgid "Notes"
 msgstr "Notizen"
 
-#: rental/admin.py:141
+#: rental/admin.py:152
 msgid "Quantities"
 msgstr "Mengen"
 
-#: rental/admin.py:144
+#: rental/admin.py:155
 msgid "Return Information"
 msgstr "Rückgabeinformationen"
 
-#: rental/admin.py:162
+#: rental/admin.py:173
 msgid "Overdue Status"
 msgstr "Überfälligkeitsstatus"
 
-#: rental/admin.py:189 rental/admin.py:191 rental/models.py:276
+#: rental/admin.py:207 rental/admin.py:209 rental/models.py:287
 msgid "Equipment sets"
 msgstr "Ausrüstungssets"
 
-#: rental/admin.py:201 rental/models.py:17 rental/models.py:264
+#: rental/admin.py:219 rental/models.py:17 rental/models.py:273
+#: rental/templates/rental/admin_rental_process.html:542
+#: rental/templates/rental/rental_detail.html:671
 msgid "Created by"
 msgstr "Erstellt von"
 
-#: rental/admin.py:203 rental/models.py:21
-#: rental/templates/rental/admin_rental_process.html:42
+#: rental/admin.py:221 rental/models.py:21
+#: rental/templates/rental/admin_rental_process.html:48
 msgid "Project name"
 msgstr "Projektname"
 
-#: rental/admin.py:204 rental/models.py:24
+#: rental/admin.py:222 rental/models.py:24
 msgid "Purpose"
 msgstr "Zweck"
 
-#: rental/admin.py:205 rental/models.py:28
+#: rental/admin.py:223 rental/models.py:28
 msgid "Requested start date"
 msgstr "Gewünschtes Startdatum"
 
-#: rental/admin.py:206 rental/models.py:31
+#: rental/admin.py:224 rental/models.py:31
 msgid "Requested end date"
 msgstr "Gewünschtes Enddatum"
 
-#: rental/admin.py:223
+#: rental/admin.py:242
 #, python-format
 msgid "Rental request created: %s"
 msgstr "Ausleihantrag erstellt: %s"
 
-#: rental/admin.py:230 rental/templates/admin/rental/rent_sets_form.html:5
+#: rental/admin.py:249 rental/templates/admin/rental/rent_sets_form.html:5
 msgid "Create rental from equipment sets"
 msgstr "Ausleihe aus Ausrüstungssets erstellen"
 
-#: rental/admin.py:274
+#: rental/admin.py:299
 msgid "Capacity & Location"
 msgstr "Kapazität & Standort"
 
-#: rental/admin.py:300
+#: rental/admin.py:326
 msgid "Details"
 msgstr "Details"
 
-#: rental/admin.py:328
+#: rental/admin.py:354
 msgid "Rental dates"
 msgstr "Ausleihdaten"
 
-#: rental/apps.py:8 rental/templates/rental/admin_rental_process.html:232
+#: rental/apps.py:10 rental/templates/rental/admin_rental_process.html:244
+#: ok_tools/templates/dashboard.html:37
+#: ok_tools/templates/rental_dashboard.html:5
 msgid "Rental"
 msgstr "Ausleihe"
 
-#: rental/forms.py:19
+#: rental/forms.py:26
 msgid "Requested end date must be after start date."
 msgstr "Das gewünschte Enddatum muss nach dem Startdatum liegen."
 
-#: rental/forms.py:36 rental/serializers.py:85
+#: rental/forms.py:48 rental/serializers.py:91
 msgid "Quantity must be positive."
 msgstr "Die Menge muss positiv sein."
 
-#: rental/forms.py:52
+#: rental/forms.py:64
 msgid "Cannot reserve more than requested amount."
 msgstr "Es kann nicht mehr als die angeforderte Menge reserviert werden."
 
-#: rental/forms.py:54 rental/serializers.py:92
+#: rental/forms.py:66 rental/serializers.py:98
 msgid "Not enough items available to reserve."
 msgstr "Nicht genügend Artikel zur Reservierung verfügbar."
 
-#: rental/forms.py:59 rental/serializers.py:95
+#: rental/forms.py:71 rental/serializers.py:101
 msgid "Cannot issue more than requested."
 msgstr "Es kann nicht mehr als angefordert ausgegeben werden."
 
-#: rental/forms.py:61 rental/serializers.py:97
+#: rental/forms.py:73 rental/serializers.py:103
 msgid "Cannot issue more than reserved."
 msgstr "Es kann nicht mehr als reserviert ausgegeben werden."
 
-#: rental/forms.py:66
+#: rental/forms.py:78
 msgid "Cannot return more than outstanding issued quantity."
 msgstr ""
 "Es kann nicht mehr als die ausstehende ausgegebene Menge zurückgegeben "
 "werden."
 
-#: rental/forms.py:69 rental/serializers.py:103
+#: rental/forms.py:81 rental/serializers.py:109
 msgid "Cannot cancel more than reserved."
 msgstr "Es kann nicht mehr als reserviert storniert werden."
 
-#: rental/forms.py:84
+#: rental/forms.py:101
 msgid "Description is required for the selected issue type."
 msgstr "Für den ausgewählten Problemtyp ist eine Beschreibung erforderlich."
 
-#: rental/management/commands/expire_room_rentals.py:109
-msgid "Automatic cancellation of expired room reservation: {}"
-msgstr "Automatische Stornierung der abgelaufenen Raumreservierung: {}"
+#: rental/management/commands/expire_room_rentals.py:116
+msgid "Automatic return of expired room reservation: {}"
+msgstr "Automatische Rückgabe der abgelaufenen Raumreservierung: {}"
 
-#: rental/management/commands/expire_room_rentals.py:128
+#: rental/management/commands/expire_room_rentals.py:136
 msgid "Automatic return of expired room rental: {}"
 msgstr "Automatische Rückgabe der abgelaufenen Raumausleihe: {}"
 
-#: rental/management/commands/expire_room_rentals.py:150
+#: rental/management/commands/expire_room_rentals.py:158
 msgid ""
-"Automatic expiration of expired room rentals: processed {} rentals, "
-"reservations: {}, rentals: {}"
+"Automatic expiration of expired room rentals: processed {} rentals, auto-"
+"returned reservations: {}, returned rentals: {}"
 msgstr ""
 "Automatisches Ablaufen von abgelaufenen Raumausleihen: {} Ausleihen "
-"bearbeitet, Reservierungen: {}, Ausleihen: {}"
+"bearbeitet, automatisch zurückgegebene Reservierungen: {}, zurückgegebene "
+"Ausleihen: {}"
 
-#: rental/management/commands/expire_room_rentals.py:164
+#: rental/management/commands/expire_room_rentals.py:172
 msgid "Error during automatic expiration of expired room rentals: {}"
 msgstr "Fehler beim automatischen Ablaufen von abgelaufenen Raumausleihen: {}"
 
@@ -2129,35 +2700,31 @@ msgstr "Tatsächliches Enddatum"
 msgid "Draft"
 msgstr "Entwurf"
 
-#: rental/models.py:46 rental/templates/rental/rental_detail.html:66
-#: rental/templates/rental/rental_detail.html:323
-#: rental/templates/rental/rental_stats.html:136
-#: rental/templates/rental/rental_stats.html:212
-#: rental/templates/rental/rental_stats.html:230
-msgid "Reserved"
-msgstr "Reserviert"
-
-#: rental/models.py:47 rental/templates/rental/rental_detail.html:67
-#: rental/templates/rental/rental_detail.html:140
-#: rental/templates/rental/rental_detail.html:322
-#: rental/templates/rental/rental_stats.html:137
+#: rental/models.py:47 rental/templates/rental/rental_detail.html:234
+#: rental/templates/rental/rental_detail.html:325
+#: rental/templates/rental/rental_detail.html:507
+#: rental/templates/rental/rental_stats.html:141
 msgid "Issued"
 msgstr "Ausgegeben"
 
-#: rental/models.py:48 rental/templates/rental/rental_detail.html:60
-#: rental/templates/rental/rental_detail.html:68
-#: rental/templates/rental/rental_detail.html:144
-#: rental/templates/rental/rental_detail.html:321
-#: rental/templates/rental/rental_stats.html:138
+#: rental/models.py:48 rental/templates/rental/rental_detail.html:227
+#: rental/templates/rental/rental_detail.html:235
+#: rental/templates/rental/rental_detail.html:329
+#: rental/templates/rental/rental_detail.html:506
+#: rental/templates/rental/rental_stats.html:142
+#: ok_tools/templates/dashboard.html:41
+#: ok_tools/templates/rental_dashboard.html:69
 msgid "Returned"
 msgstr "Zurückgegeben"
 
-#: rental/models.py:49 rental/templates/rental/rental_detail.html:69
-#: rental/templates/rental/rental_stats.html:139
+#: rental/models.py:49 rental/templates/rental/rental_detail.html:236
+#: rental/templates/rental/rental_stats.html:143
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: rental/models.py:59 rental/templates/rental/rental_detail.html:112
+#: rental/models.py:59 rental/templates/rental/list.html:78
+#: rental/templates/rental/rental_detail.html:284
+#: rental/templates/rental/rental_stats.html:149
 msgid "Equipment"
 msgstr "Ausrüstung"
 
@@ -2173,266 +2740,255 @@ msgstr "Ausleihtyp"
 msgid "Type of rental: equipment, room, or both"
 msgstr "Art der Ausleihe: Ausrüstung, Raum oder beides"
 
-#: rental/models.py:79 rental/models.py:160 rental/models.py:602
+#: rental/models.py:81 rental/models.py:163 rental/models.py:626
 msgid "Rental request"
 msgstr "Ausleihantrag"
 
-#: rental/models.py:80
+#: rental/models.py:82
 msgid "Rental requests"
 msgstr "Ausleihanträge"
 
-#: rental/models.py:150
+#: rental/models.py:153
 msgid "No rooms"
 msgstr "Keine Räume"
 
-#: rental/models.py:165 rental/models.py:317
+#: rental/models.py:168 rental/models.py:329
 msgid "Inventory item"
 msgstr "Inventargegenstand"
 
-#: rental/models.py:166
+#: rental/models.py:169
 msgid "Search by number, description, manufacturer"
 msgstr "Suche nach Nummer, Beschreibung, Hersteller"
 
-#: rental/models.py:170
+#: rental/models.py:173
 msgid "Quantity requested"
 msgstr "Angeforderte Menge"
 
-#: rental/models.py:174
+#: rental/models.py:177
 msgid "Quantity issued"
 msgstr "Ausgegebene Menge"
 
-#: rental/models.py:178
+#: rental/models.py:181
 msgid "Quantity returned"
 msgstr "Zurückgegebene Menge"
 
-#: rental/models.py:184
+#: rental/models.py:187
 msgid "Actual return date"
 msgstr "Tatsächliches Rückgabedatum"
 
-#: rental/models.py:185
+#: rental/models.py:188
 msgid "Date when the item was actually returned (auto-filled on return)"
 msgstr ""
 "Datum, an dem der Artikel tatsächlich zurückgegeben wurde (wird bei Rückgabe "
 "automatisch ausgefüllt)"
 
-#: rental/models.py:194 rental/models.py:347 rental/models.py:432
+#: rental/models.py:199 rental/models.py:362 rental/models.py:450
 msgid "Rental item"
 msgstr "Ausleihgegenstand"
 
-#: rental/models.py:195
+#: rental/models.py:200
 msgid "Rental items"
 msgstr "Ausleihgegenstände"
 
-#: rental/models.py:259
+#: rental/models.py:268
 msgid "Is template"
 msgstr "Ist Vorlage"
 
-#: rental/models.py:268
+#: rental/models.py:277
 msgid "Is active"
 msgstr "Ist aktiv"
 
-#: rental/models.py:275 rental/models.py:312
+#: rental/models.py:286 rental/models.py:324
 msgid "Equipment set"
 msgstr "Ausrüstungsset"
 
-#: rental/models.py:325
+#: rental/models.py:337
 msgid "Is required"
 msgstr "Ist erforderlich"
 
-#: rental/models.py:333
+#: rental/models.py:347
 msgid "Equipment set item"
 msgstr "Ausrüstungsset-Gegenstand"
 
-#: rental/models.py:334
+#: rental/models.py:348
 msgid "Equipment set items"
 msgstr "Ausrüstungsset-Gegenstände"
 
-#: rental/models.py:362 rental/templates/rental/admin_rental_process.html:57
+#: rental/models.py:377 rental/templates/rental/admin_rental_process.html:63
+#: ok_tools/templates/rental_dashboard.html:130
 msgid "Reserve"
 msgstr "Reservieren"
 
-#: rental/models.py:363
+#: rental/models.py:378
 msgid "Issue"
 msgstr "Ausgeben"
 
-#: rental/models.py:364 rental/templates/rental/rental_detail.html:207
-#: rental/templates/rental/rental_stats.html:165
+#: rental/models.py:379 rental/templates/rental/rental_detail.html:392
+#: rental/templates/rental/rental_stats.html:177
 msgid "Return"
 msgstr "Zurückgeben"
 
-#: rental/models.py:365 rental/templates/rental/admin_rental_process.html:215
-#: rental/templates/rental/admin_rental_process.html:247
-#: rental/templates/rental/rental_detail.html:98
-#: rental/templates/rental/rental_detail.html:359
-#: rental/templates/rental/rental_stats.html:424
-#: rental/templates/rental/rental_stats.html:447
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: rental/models.py:370
+#: rental/models.py:385
 msgid "Transaction type"
 msgstr "Transaktionstyp"
 
-#: rental/models.py:379
+#: rental/models.py:394
 msgid "Performed by"
 msgstr "Durchgeführt von"
 
-#: rental/models.py:383
+#: rental/models.py:398
 msgid "Performed at"
 msgstr "Durchgeführt am"
 
-#: rental/models.py:387 rental/templates/rental/rental_detail.html:217
+#: rental/models.py:402 rental/templates/rental/rental_detail.html:402
 msgid "Excellent"
 msgstr "Ausgezeichnet"
 
-#: rental/models.py:388 rental/templates/rental/rental_detail.html:218
+#: rental/models.py:403 rental/templates/rental/rental_detail.html:403
 msgid "Good"
 msgstr "Gut"
 
-#: rental/models.py:389 rental/templates/rental/rental_detail.html:219
+#: rental/models.py:404 rental/templates/rental/rental_detail.html:404
 msgid "Fair"
 msgstr "Befriedigend"
 
-#: rental/models.py:390 rental/templates/rental/rental_detail.html:220
+#: rental/models.py:405 rental/templates/rental/rental_detail.html:405
 msgid "Poor"
 msgstr "Schlecht"
 
-#: rental/models.py:396 rental/templates/rental/rental_detail.html:215
+#: rental/models.py:411 rental/templates/rental/rental_detail.html:400
 msgid "Condition"
 msgstr "Zustand"
 
-#: rental/models.py:404
+#: rental/models.py:421
 msgid "Rental transaction"
 msgstr "Ausleihtransaktion"
 
-#: rental/models.py:405
+#: rental/models.py:422
 msgid "Rental transactions"
 msgstr "Ausleihtransaktionen"
 
-#: rental/models.py:420
+#: rental/models.py:438
 msgid "Either item or room must be specified"
 msgstr "Entweder Gegenstand oder Raum muss angegeben werden"
 
-#: rental/models.py:422
+#: rental/models.py:440
 msgid "Cannot specify both item and room simultaneously"
 msgstr "Gegenstand und Raum können nicht gleichzeitig angegeben werden"
 
-#: rental/models.py:436
+#: rental/models.py:454
 msgid "Damaged"
 msgstr "Beschädigt"
 
-#: rental/models.py:437
+#: rental/models.py:455
 msgid "Missing"
 msgstr "Fehlt"
 
-#: rental/models.py:438
+#: rental/models.py:456
 msgid "Late Return"
 msgstr "Verspätete Rückgabe"
 
-#: rental/models.py:439
+#: rental/models.py:457
 msgid "Other"
 msgstr "Sonstiges"
 
-#: rental/models.py:444
+#: rental/models.py:462
 msgid "Issue type"
 msgstr "Problemtyp"
 
-#: rental/models.py:451
+#: rental/models.py:469
 msgid "Minor"
 msgstr "Geringfügig"
 
-#: rental/models.py:452
+#: rental/models.py:470
 msgid "Major"
 msgstr "Schwerwiegend"
 
-#: rental/models.py:453
+#: rental/models.py:471
 msgid "Critical"
 msgstr "Kritisch"
 
-#: rental/models.py:458
+#: rental/models.py:476
 msgid "Severity"
 msgstr "Schweregrad"
 
-#: rental/models.py:464
+#: rental/models.py:482
 msgid "Reported by"
 msgstr "Gemeldet von"
 
-#: rental/models.py:468
+#: rental/models.py:486
 msgid "Reported at"
 msgstr "Gemeldet am"
 
-#: rental/models.py:472
+#: rental/models.py:490
 msgid "Resolved"
 msgstr "Gelöst"
 
-#: rental/models.py:476
+#: rental/models.py:494
 msgid "Resolution notes"
 msgstr "Lösungsnotizen"
 
-#: rental/models.py:480
+#: rental/models.py:500
 msgid "Rental issue"
 msgstr "Ausleihproblem"
 
-#: rental/models.py:481
+#: rental/models.py:501
 msgid "Rental issues"
 msgstr "Ausleihprobleme"
 
-#: rental/models.py:490
+#: rental/models.py:512
 msgid "Room name"
 msgstr "Raumname"
 
-#: rental/models.py:492 rental/templates/rental/rental_detail.html:291
+#: rental/models.py:514 rental/templates/rental/rental_detail.html:476
 msgid "Capacity"
 msgstr "Kapazität"
 
-#: rental/models.py:494 rental/models.py:665
-#: rental/templates/rental/rental_stats.html:388
-msgid "Active"
-msgstr "Aktiv"
-
-#: rental/models.py:498 rental/templates/rental/admin_rental_process.html:88
-#: rental/templates/rental/rental_detail.html:264
+#: rental/models.py:522 rental/templates/rental/admin_rental_process.html:99
+#: rental/templates/rental/rental_detail.html:449
+#: rental/templates/rental/rental_stats.html:150
+#: ok_tools/templates/rental_dashboard.html:179
 msgid "Rooms"
 msgstr "Räume"
 
-#: rental/models.py:610
+#: rental/models.py:634
 msgid "Number of people"
 msgstr "Anzahl Personen"
 
-#: rental/models.py:611
+#: rental/models.py:635
 msgid "Number of people using the room"
 msgstr "Anzahl der Personen, die den Raum nutzen"
 
-#: rental/models.py:616
+#: rental/models.py:640
 msgid "Additional notes for room rental"
 msgstr "Zusätzliche Notizen für Raumausleihe"
 
-#: rental/models.py:620
+#: rental/models.py:646
 msgid "Room rental"
 msgstr "Raumausleihe"
 
-#: rental/models.py:621
+#: rental/models.py:647
 msgid "Room rentals"
 msgstr "Raumausleihen"
 
-#: rental/models.py:661
+#: rental/models.py:688 ok_tools/templates/rental_dashboard.html:75
 msgid "Expired"
 msgstr "Abgelaufen"
 
-#: rental/models.py:663
+#: rental/models.py:690
 msgid "Expiring soon"
 msgstr "Läuft bald ab"
 
-#: rental/models.py:672 rental/models.py:673
-#: rental/templates/rental/admin_rental_process.html:34
+#: rental/models.py:702 rental/models.py:703
+#: rental/templates/rental/admin_rental_process.html:40
 msgid "Rental Process"
 msgstr "Ausleihprozess"
 
-#: rental/serializers.py:90
+#: rental/serializers.py:96
 msgid "Cannot reserve more than requested."
 msgstr "Es kann nicht mehr als angefordert reserviert werden."
 
-#: rental/serializers.py:100
+#: rental/serializers.py:106
 msgid "Cannot return more than outstanding issued."
 msgstr ""
 "Es kann nicht mehr als die ausstehende ausgegebene Menge zurückgegeben "
@@ -2451,24 +3007,20 @@ msgstr "Ausleihprozess öffnen"
 msgid "Create"
 msgstr "Erstellen"
 
-#: rental/templates/rental/access_denied.html:8
-#: rental/templates/rental/access_denied.html:19
+#: rental/templates/rental/access_denied.html:11
+#: rental/templates/rental/access_denied.html:22
 msgid "Access Denied"
 msgstr "Zugriff verweigert"
 
-#: rental/templates/rental/access_denied.html:21
+#: rental/templates/rental/access_denied.html:24
 msgid "You do not have permission to access this page."
 msgstr "Sie haben keine Berechtigung, auf diese Seite zuzugreifen."
 
-#: rental/templates/rental/access_denied.html:25
-msgid "Sign In"
-msgstr "Anmelden"
-
-#: rental/templates/rental/access_denied.html:28
+#: rental/templates/rental/access_denied.html:31
 msgid "To Admin Page"
 msgstr "Zur Admin-Seite"
 
-#: rental/templates/rental/access_denied.html:33
+#: rental/templates/rental/access_denied.html:36
 msgid "Only employees have access to rental functions."
 msgstr "Nur Mitarbeiter haben Zugriff auf Ausleihfunktionen."
 
@@ -2476,408 +3028,565 @@ msgstr "Nur Mitarbeiter haben Zugriff auf Ausleihfunktionen."
 msgid "Rental Management"
 msgstr "Ausleihverwaltung"
 
-#: rental/templates/rental/admin_rental_process.html:18
+#: rental/templates/rental/admin_rental_process.html:24
 msgid "Inventory Rental"
 msgstr "Inventarausleihe"
 
-#: rental/templates/rental/admin_rental_process.html:22
+#: rental/templates/rental/admin_rental_process.html:28
 msgid "Back to Administration"
 msgstr "Zurück zur Verwaltung"
 
-#: rental/templates/rental/admin_rental_process.html:25
+#: rental/templates/rental/admin_rental_process.html:31
+#: ok_tools/templates/rental_dashboard.html:57
 msgid "Statistics"
 msgstr "Statistiken"
 
-#: rental/templates/rental/admin_rental_process.html:36
-#: rental/templates/rental/admin_rental_process.html:96
+#: rental/templates/rental/admin_rental_process.html:42
+#: rental/templates/rental/admin_rental_process.html:107
 msgid "Select User"
 msgstr "Benutzer auswählen"
 
-#: rental/templates/rental/admin_rental_process.html:37
-#: rental/templates/rental/rental_stats.html:143
+#: rental/templates/rental/admin_rental_process.html:43
+#: rental/templates/rental/rental_stats.html:155
 msgid "Search user..."
 msgstr "Benutzer suchen..."
 
-#: rental/templates/rental/admin_rental_process.html:38
+#: rental/templates/rental/admin_rental_process.html:44
 msgid "Select user"
 msgstr "Benutzer auswählen"
 
-#: rental/templates/rental/admin_rental_process.html:41
+#: rental/templates/rental/admin_rental_process.html:47
 msgid "Project Info"
 msgstr "Projektinformationen"
 
-#: rental/templates/rental/admin_rental_process.html:43
+#: rental/templates/rental/admin_rental_process.html:49
 msgid "Purpose of use"
 msgstr "Verwendungszweck"
 
-#: rental/templates/rental/admin_rental_process.html:46
+#: rental/templates/rental/admin_rental_process.html:52
 msgid "Time Period"
 msgstr "Zeitraum"
 
-#: rental/templates/rental/admin_rental_process.html:51
+#: rental/templates/rental/admin_rental_process.html:57
 msgid "Select Equipment"
 msgstr "Ausrüstung auswählen"
 
-#: rental/templates/rental/admin_rental_process.html:52
+#: rental/templates/rental/admin_rental_process.html:58
 msgid "No items selected"
 msgstr "Keine Artikel ausgewählt"
 
-#: rental/templates/rental/admin_rental_process.html:58
+#: rental/templates/rental/admin_rental_process.html:64
 msgid "Issue Immediately"
 msgstr "Sofort ausgeben"
 
-#: rental/templates/rental/admin_rental_process.html:69
+#: rental/templates/rental/admin_rental_process.html:68
+msgid ""
+"Note: Rooms are automatically reserved and will return after the scheduled "
+"time."
+msgstr ""
+"Hinweis: Räume werden automatisch reserviert und kehren nach der geplanten "
+"Zeit zurück."
+
+#: rental/templates/rental/admin_rental_process.html:80
+#: ok_tools/templates/rental_dashboard.html:158
 msgid "Search inventory..."
 msgstr "Inventar durchsuchen..."
 
-#: rental/templates/rental/admin_rental_process.html:74
-#: rental/templates/rental/rental_stats.html:203
+#: rental/templates/rental/admin_rental_process.html:85
+#: rental/templates/rental/rental_stats.html:215
+#: ok_tools/templates/rental_dashboard.html:163
 msgid "All Owners"
 msgstr "Alle Eigentümer"
 
-#: rental/templates/rental/admin_rental_process.html:79
-msgid "All Categories"
-msgstr "Alle Kategorien"
-
-#: rental/templates/rental/admin_rental_process.html:84
-msgid "All Locations"
-msgstr "Alle Standorte"
-
-#: rental/templates/rental/admin_rental_process.html:89
-#: rental/templates/rental/admin_rental_process.html:259
-#: rental/templates/rental/rental_stats.html:110
-#: rental/templates/rental/rental_stats.html:259
+#: rental/templates/rental/admin_rental_process.html:100
+#: rental/templates/rental/admin_rental_process.html:277
+#: rental/templates/rental/rental_stats.html:114
+#: rental/templates/rental/rental_stats.html:272
+#: ok_tools/templates/rental_dashboard.html:237
 msgid "Equipment Sets"
 msgstr "Ausrüstungssets"
 
-#: rental/templates/rental/admin_rental_process.html:103
+#: rental/templates/rental/admin_rental_process.html:114
 msgid "User Statistics"
 msgstr "Benutzerstatistiken"
 
-#: rental/templates/rental/admin_rental_process.html:112
+#: rental/templates/rental/admin_rental_process.html:123
+#: ok_tools/templates/rental_dashboard.html:191
 msgid "Available Inventory"
 msgstr "Verfügbares Inventar"
 
-#: rental/templates/rental/admin_rental_process.html:119
+#: rental/templates/rental/admin_rental_process.html:131
 msgid "Reset Form"
 msgstr "Formular zurücksetzen"
 
-#: rental/templates/rental/admin_rental_process.html:121
+#: rental/templates/rental/admin_rental_process.html:132
+#: ok_tools/templates/rental_dashboard.html:217
+msgid "Group by Location"
+msgstr "Nach Standort gruppieren"
+
+#: rental/templates/rental/admin_rental_process.html:135
 msgid "Show Equipment Sets"
 msgstr "Ausrüstungssets anzeigen"
 
-#: rental/templates/rental/admin_rental_process.html:122
+#: rental/templates/rental/admin_rental_process.html:136
 msgid "Save as Draft"
 msgstr "Als Entwurf speichern"
 
-#: rental/templates/rental/admin_rental_process.html:135
-#: rental/templates/rental/rental_stats.html:75
+#: rental/templates/rental/admin_rental_process.html:149
+#: rental/templates/rental/list.html:29
+#: rental/templates/rental/rental_stats.html:79
 msgid "Active Rentals"
 msgstr "Aktive Ausleihen"
 
-#: rental/templates/rental/admin_rental_process.html:142
+#: rental/templates/rental/admin_rental_process.html:156
 msgid "Loading active rentals..."
 msgstr "Lade aktive Ausleihen..."
 
-#: rental/templates/rental/admin_rental_process.html:158
+#: rental/templates/rental/admin_rental_process.html:172
 msgid "Returned Rentals"
 msgstr "Zurückgegebene Ausleihen"
 
-#: rental/templates/rental/admin_rental_process.html:165
+#: rental/templates/rental/admin_rental_process.html:179
+#: ok_tools/templates/rental_dashboard.html:395
 msgid "Loading returned rentals..."
 msgstr "Lade zurückgegebene Ausleihen..."
 
-#: rental/templates/rental/admin_rental_process.html:181
+#: rental/templates/rental/admin_rental_process.html:195
 msgid "Overdue Rentals"
 msgstr "Überfällige Ausleihen"
 
-#: rental/templates/rental/admin_rental_process.html:189
+#: rental/templates/rental/admin_rental_process.html:202
 msgid "Loading overdue rentals..."
 msgstr "Lade überfällige Ausleihen..."
 
-#: rental/templates/rental/admin_rental_process.html:206
+#: rental/templates/rental/admin_rental_process.html:218
 msgid "Return Items"
 msgstr "Artikel zurückgeben"
 
-#: rental/templates/rental/admin_rental_process.html:216
+#: rental/templates/rental/admin_rental_process.html:228
 msgid "Process Return"
 msgstr "Rückgabe bearbeiten"
 
-#: rental/templates/rental/admin_rental_process.html:227
-#: rental/templates/rental/rental_detail.html:344
+#: rental/templates/rental/admin_rental_process.html:239
+#: rental/templates/rental/rental_detail.html:529
 msgid "Extend Rental"
 msgstr "Ausleihe verlängern"
 
-#: rental/templates/rental/admin_rental_process.html:238
-#: rental/templates/rental/rental_detail.html:353
-msgid "New End Date"
-msgstr "Neues Enddatum"
-
-#: rental/templates/rental/admin_rental_process.html:242
-msgid "Reason for Extension (optional)"
-msgstr "Grund für Verlängerung (optional)"
-
-#: rental/templates/rental/admin_rental_process.html:243
-msgid "Reason for extension..."
-msgstr "Grund für Verlängerung..."
-
-#: rental/templates/rental/admin_rental_process.html:248
-#: rental/templates/rental/rental_detail.html:89
-#: rental/templates/rental/rental_detail.html:360
-msgid "Extend"
-msgstr "Verlängern"
-
-#: rental/templates/rental/admin_rental_process.html:265
-msgid "Available Sets"
-msgstr "Verfügbare Sets"
-
-#: rental/templates/rental/admin_rental_process.html:269
-#: rental/templates/rental/rental_stats.html:284
-msgid "Loading sets..."
-msgstr "Lade Sets..."
-
-#: rental/templates/rental/admin_rental_process.html:274
-#: rental/templates/rental/rental_stats.html:404
-msgid "Set Contents"
-msgstr "Set-Inhalt"
-
-#: rental/templates/rental/admin_rental_process.html:276
-msgid "Select a set to see contents"
-msgstr "Wählen Sie ein Set aus, um den Inhalt zu sehen"
-
-#: rental/templates/rental/admin_rental_process.html:283
-msgid "Add Set to Rental"
-msgstr "Set zur Ausleihe hinzufügen"
-
-#: rental/templates/rental/admin_rental_process.html:294
-#: rental/templates/rental/admin_rental_process.html:323
-msgid "Available Rooms"
-msgstr "Verfügbare Räume"
-
-#: rental/templates/rental/admin_rental_process.html:302
-msgid "List"
-msgstr "Liste"
-
-#: rental/templates/rental/admin_rental_process.html:307
-msgid "Calendar"
-msgstr "Kalender"
-
-#: rental/templates/rental/admin_rental_process.html:312
-msgid "Timeline"
-msgstr "Zeitlinie"
-
-#: rental/templates/rental/admin_rental_process.html:327
-msgid "Loading rooms..."
-msgstr "Lade Räume..."
-
-#: rental/templates/rental/admin_rental_process.html:332
-msgid "Scheduling"
-msgstr "Terminplanung"
-
-#: rental/templates/rental/admin_rental_process.html:334
-msgid "Select a room to schedule time"
-msgstr "Wählen Sie einen Raum zur Terminplanung"
-
-#: rental/templates/rental/admin_rental_process.html:344
-#: rental/templates/rental/admin_rental_process.html:370
-msgid "Select Room"
-msgstr "Raum auswählen"
-
-#: rental/templates/rental/admin_rental_process.html:346
-#: rental/templates/rental/admin_rental_process.html:372
-msgid "All Rooms"
-msgstr "Alle Räume"
-
-#: rental/templates/rental/admin_rental_process.html:361
-msgid "Loading calendar..."
-msgstr "Lade Kalender..."
-
-#: rental/templates/rental/admin_rental_process.html:381
-msgid "Refresh"
-msgstr "Aktualisieren"
-
-#: rental/templates/rental/admin_rental_process.html:388
-msgid "Loading timeline..."
-msgstr "Lade Zeitlinie..."
-
-#: rental/templates/rental/admin_rental_process.html:396
-msgid "Add Room to Rental"
-msgstr "Raum zur Ausleihe hinzufügen"
-
-#: rental/templates/rental/rental_detail.html:8
-msgid "Rental Details"
-msgstr "Ausleihdetails"
-
-#: rental/templates/rental/rental_detail.html:33
-#: rental/templates/rental/rental_stats.html:45
-msgid "Back to Rental Process"
-msgstr "Zurück zum Ausleihprozess"
-
-#: rental/templates/rental/rental_detail.html:37
-#: rental/templates/rental/rental_stats.html:49
-#: rental/templates/rental/rental_stats.html:116
-msgid "Administration"
-msgstr "Verwaltung"
-
-#: rental/templates/rental/rental_detail.html:94
-msgid "Edit Return"
-msgstr "Rückgabe bearbeiten"
-
-#: rental/templates/rental/rental_detail.html:112
-msgid "items"
-msgstr "Artikel"
-
-#: rental/templates/rental/rental_detail.html:136
-msgid "Requested"
-msgstr "Angefordert"
-
-#: rental/templates/rental/rental_detail.html:154
-#: rental/templates/rental/rental_detail.html:312
-msgid "Planned until"
-msgstr "Geplant bis"
-
-#: rental/templates/rental/rental_detail.html:161
-msgid "Actually returned"
-msgstr "Tatsächlich zurückgegeben"
-
-#: rental/templates/rental/rental_detail.html:168
-msgid "day"
-msgstr "Tag"
-
-#: rental/templates/rental/rental_detail.html:168
-msgid "overdue"
-msgstr "überfällig"
-
-#: rental/templates/rental/rental_detail.html:172
-msgid "Returned on time"
-msgstr "Pünktlich zurückgegeben"
-
-#: rental/templates/rental/rental_detail.html:177
-msgid "Not yet returned"
-msgstr "Noch nicht zurückgegeben"
-
-#: rental/templates/rental/rental_detail.html:183
-msgid "Overdue"
-msgstr "Überfällig"
-
-#: rental/templates/rental/rental_detail.html:200
-msgid "outstanding"
-msgstr "ausstehend"
-
-#: rental/templates/rental/rental_detail.html:228
-#: rental/templates/rental/rental_detail.html:240
-msgid "Issues"
-msgstr "Probleme"
-
-#: rental/templates/rental/rental_detail.html:231
-msgid "Add Issue"
-msgstr "Problem hinzufügen"
-
-#: rental/templates/rental/rental_detail.html:244
-msgid "by"
-msgstr "von"
-
-#: rental/templates/rental/rental_detail.html:264
-msgid "rooms"
-msgstr "Räume"
-
-#: rental/templates/rental/rental_detail.html:278
-msgid "people"
-msgstr "Personen"
-
-#: rental/templates/rental/rental_detail.html:295
-msgid "Booked"
-msgstr "Gebucht"
-
-#: rental/templates/rental/rental_detail.html:349
+#: rental/templates/rental/admin_rental_process.html:250
+#: rental/templates/rental/rental_detail.html:534
 msgid "Current End Date"
 msgstr "Aktuelles Enddatum"
 
-#: rental/templates/rental/rental_stats.html:8
+#: rental/templates/rental/admin_rental_process.html:256
+#: rental/templates/rental/rental_detail.html:540
+msgid "New End Date"
+msgstr "Neues Enddatum"
+
+#: rental/templates/rental/admin_rental_process.html:260
+msgid "Reason for Extension (optional)"
+msgstr "Grund für Verlängerung (optional)"
+
+#: rental/templates/rental/admin_rental_process.html:261
+msgid "Reason for extension..."
+msgstr "Grund für Verlängerung..."
+
+#: rental/templates/rental/admin_rental_process.html:266
+#: rental/templates/rental/rental_detail.html:261
+#: rental/templates/rental/rental_detail.html:547
+msgid "Extend"
+msgstr "Verlängern"
+
+#: rental/templates/rental/admin_rental_process.html:283
+#: ok_tools/templates/rental_dashboard.html:244
+msgid "Available Sets"
+msgstr "Verfügbare Sets"
+
+#: rental/templates/rental/admin_rental_process.html:287
+#: rental/templates/rental/rental_stats.html:297
+#: ok_tools/templates/rental_dashboard.html:248
+msgid "Loading sets..."
+msgstr "Lade Sets..."
+
+#: rental/templates/rental/admin_rental_process.html:292
+#: rental/templates/rental/rental_stats.html:450
+#: ok_tools/templates/rental_dashboard.html:253
+msgid "Set Contents"
+msgstr "Set-Inhalt"
+
+#: rental/templates/rental/admin_rental_process.html:294
+msgid "Select a set to see contents"
+msgstr "Wählen Sie ein Set aus, um den Inhalt zu sehen"
+
+#: rental/templates/rental/admin_rental_process.html:301
+msgid "Add Set to Rental"
+msgstr "Set zur Ausleihe hinzufügen"
+
+#: rental/templates/rental/admin_rental_process.html:312
+#: rental/templates/rental/admin_rental_process.html:341
+#: ok_tools/templates/rental_dashboard.html:274
+#: ok_tools/templates/rental_dashboard.html:299
+msgid "Available Rooms"
+msgstr "Verfügbare Räume"
+
+#: rental/templates/rental/admin_rental_process.html:320
+#: ok_tools/templates/rental_dashboard.html:283
+msgid "List"
+msgstr "Liste"
+
+#: rental/templates/rental/admin_rental_process.html:325
+#: rental/templates/rental/rental_stats.html:245
+#: ok_tools/templates/rental_dashboard.html:288
+msgid "Calendar"
+msgstr "Kalender"
+
+#: rental/templates/rental/admin_rental_process.html:330
+msgid "Timeline"
+msgstr "Zeitlinie"
+
+#: rental/templates/rental/admin_rental_process.html:345
+#: ok_tools/templates/rental_dashboard.html:303
+msgid "Loading rooms..."
+msgstr "Lade Räume..."
+
+#: rental/templates/rental/admin_rental_process.html:350
+msgid "Scheduling"
+msgstr "Terminplanung"
+
+#: rental/templates/rental/admin_rental_process.html:352
+msgid "Select a room to schedule time"
+msgstr "Wählen Sie einen Raum zur Terminplanung"
+
+#: rental/templates/rental/admin_rental_process.html:362
+#: rental/templates/rental/admin_rental_process.html:388
+msgid "Select Room"
+msgstr "Raum auswählen"
+
+#: rental/templates/rental/admin_rental_process.html:364
+#: rental/templates/rental/admin_rental_process.html:390
+#: ok_tools/templates/rental_dashboard.html:322
+msgid "All Rooms"
+msgstr "Alle Räume"
+
+#: rental/templates/rental/admin_rental_process.html:379
+#: rental/templates/rental/rental_stats.html:397
+#: ok_tools/templates/rental_dashboard.html:337
+msgid "Loading calendar..."
+msgstr "Lade Kalender..."
+
+#: rental/templates/rental/admin_rental_process.html:399
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: rental/templates/rental/admin_rental_process.html:406
+msgid "Loading timeline..."
+msgstr "Lade Zeitlinie..."
+
+#: rental/templates/rental/admin_rental_process.html:415
+msgid ""
+"Rooms are automatically reserved and will return after the scheduled time."
+msgstr ""
+"Räume werden automatisch reserviert und kehren nach der geplanten Zeit "
+"zurück."
+
+#: rental/templates/rental/admin_rental_process.html:419
+msgid "Add Room to Rental"
+msgstr "Raum zur Ausleihe hinzufügen"
+
+#: rental/templates/rental/admin_rental_process.html:431
+#: rental/templates/rental/rental_detail.html:256
+#: rental/templates/rental/rental_detail.html:560
+msgid "Issue Equipment from Reservation"
+msgstr "Ausrüstung aus Reservierung ausgeben"
+
+#: rental/templates/rental/admin_rental_process.html:432
+#: rental/templates/rental/rental_detail.html:561
+msgid "Rooms remain reserved and are not issued"
+msgstr "Räume bleiben reserviert und werden nicht ausgegeben"
+
+#: rental/templates/rental/admin_rental_process.html:439
+#: rental/templates/rental/rental_detail.html:568
+msgid "Equipment Items"
+msgstr "Ausrüstungsgegenstände"
+
+#: rental/templates/rental/admin_rental_process.html:445
+#: rental/templates/rental/rental_detail.html:574
+msgid "Rooms (Reserved Only)"
+msgstr "Räume (nur reserviert)"
+
+#: rental/templates/rental/admin_rental_process.html:449
+#: rental/templates/rental/rental_detail.html:578
+msgid "Note:"
+msgstr "Hinweis:"
+
+#: rental/templates/rental/admin_rental_process.html:449
+#: rental/templates/rental/rental_detail.html:578
+msgid ""
+"Rooms cannot be issued - they remain reserved and are automatically "
+"available after the scheduled time."
+msgstr ""
+"Räume können nicht ausgegeben werden - sie bleiben reserviert und sind "
+"automatisch nach der geplanten Zeit verfügbar."
+
+#: rental/templates/rental/admin_rental_process.html:475
+#: rental/templates/rental/admin_rental_process.html:508
+#: rental/templates/rental/rental_detail.html:604
+#: rental/templates/rental/rental_detail.html:637
+msgid "Select time"
+msgstr "Zeit auswählen"
+
+#: rental/templates/rental/admin_rental_process.html:544
+#: rental/templates/rental/rental_detail.html:673
+msgid "Select staff member"
+msgstr "Mitarbeiter auswählen"
+
+#: rental/templates/rental/admin_rental_process.html:551
+#: rental/templates/rental/rental_detail.html:680
+msgid "Optional notes"
+msgstr "Optionale Notizen"
+
+#: rental/templates/rental/admin_rental_process.html:559
+#: rental/templates/rental/rental_detail.html:688
+msgid "Issue Equipment"
+msgstr "Ausrüstung ausgeben"
+
+#: rental/templates/rental/list.html:5 rental/templates/rental/list.html:6
+msgid "Rentals"
+msgstr "Ausleihen"
+
+#: rental/templates/rental/list.html:12
+msgid "Manage equipment rentals and bookings"
+msgstr "Ausrüstungsausleihen und Buchungen verwalten"
+
+#: rental/templates/rental/list.html:16
+msgid "Create Rental"
+msgstr "Ausleihe erstellen"
+
+#: rental/templates/rental/list.html:47 rental/templates/rental/list.html:70
+#: rental/templates/rental/list.html:172
+msgid "Upcoming"
+msgstr "Bevorstehend"
+
+#: rental/templates/rental/list.html:56 rental/templates/rental/list.html:71
+#: rental/templates/rental/list.html:170
+#: rental/templates/rental/rental_detail.html:368
+#: ok_tools/templates/dashboard.html:42
+msgid "Overdue"
+msgstr "Überfällig"
+
+#: rental/templates/rental/list.html:77
+#: rental/templates/rental/rental_stats.html:148
+msgid "All Types"
+msgstr "Alle Typen"
+
+#: rental/templates/rental/list.html:84
+msgid "Date Range"
+msgstr "Datumsbereich"
+
+#: rental/templates/rental/list.html:86
+msgid "All Dates"
+msgstr "Alle Daten"
+
+#: rental/templates/rental/list.html:87
+msgid "Today"
+msgstr "Heute"
+
+#: rental/templates/rental/list.html:88
+msgid "This Week"
+msgstr "Diese Woche"
+
+#: rental/templates/rental/list.html:89
+msgid "This Month"
+msgstr "Dieser Monat"
+
+#: rental/templates/rental/list.html:94
+msgid "Search rentals..."
+msgstr "Ausleihen suchen..."
+
+#: rental/templates/rental/list.html:111
+msgid "Item/Service"
+msgstr "Artikel/Service"
+
+#: rental/templates/rental/list.html:112
+msgid "Renter"
+msgstr "Mieter"
+
+#: rental/templates/rental/list.html:201
+msgid "No rentals found"
+msgstr "Keine Ausleihen gefunden"
+
+#: rental/templates/rental/list.html:202
+msgid "Create your first rental"
+msgstr "Erstellen Sie Ihre erste Ausleihe"
+
+#: rental/templates/rental/list.html:214
+msgid "Rentals pagination"
+msgstr "Ausleihen-Paginierung"
+
+#: rental/templates/rental/list.html:308
+msgid "Are you sure you want to delete this rental?"
+msgstr "Sind Sie sicher, dass Sie diese Ausleihe löschen möchten?"
+
+#: rental/templates/rental/rental_detail.html:12
+msgid "Rental Details"
+msgstr "Ausleihdetails"
+
+#: rental/templates/rental/rental_detail.html:200
+#: rental/templates/rental/rental_stats.html:49
+msgid "Back to Rental Process"
+msgstr "Zurück zum Ausleihprozess"
+
+#: rental/templates/rental/rental_detail.html:204
+#: rental/templates/rental/rental_stats.html:53
+#: rental/templates/rental/rental_stats.html:120
+msgid "Administration"
+msgstr "Verwaltung"
+
+#: rental/templates/rental/rental_detail.html:266
+msgid "Save return"
+msgstr "Rückgabe speichern"
+
+#: rental/templates/rental/rental_detail.html:284
+msgid "items"
+msgstr "Artikel"
+
+#: rental/templates/rental/rental_detail.html:299
+msgid "Select for return"
+msgstr "Für Rückgabe auswählen"
+
+#: rental/templates/rental/rental_detail.html:321
+msgid "Requested"
+msgstr "Angefordert"
+
+#: rental/templates/rental/rental_detail.html:339
+#: rental/templates/rental/rental_detail.html:497
+msgid "Planned until"
+msgstr "Geplant bis"
+
+#: rental/templates/rental/rental_detail.html:346
+msgid "Actually returned"
+msgstr "Tatsächlich zurückgegeben"
+
+#: rental/templates/rental/rental_detail.html:353
+msgid "day"
+msgstr "Tag"
+
+#: rental/templates/rental/rental_detail.html:353
+msgid "overdue"
+msgstr "überfällig"
+
+#: rental/templates/rental/rental_detail.html:357
+msgid "Returned on time"
+msgstr "Pünktlich zurückgegeben"
+
+#: rental/templates/rental/rental_detail.html:362
+msgid "Not yet returned"
+msgstr "Noch nicht zurückgegeben"
+
+#: rental/templates/rental/rental_detail.html:385
+msgid "outstanding"
+msgstr "ausstehend"
+
+#: rental/templates/rental/rental_detail.html:413
+#: rental/templates/rental/rental_detail.html:425
+msgid "Issues"
+msgstr "Probleme"
+
+#: rental/templates/rental/rental_detail.html:416
+msgid "Add Issue"
+msgstr "Problem hinzufügen"
+
+#: rental/templates/rental/rental_detail.html:429
+msgid "by"
+msgstr "von"
+
+#: rental/templates/rental/rental_detail.html:449
+msgid "rooms"
+msgstr "Räume"
+
+#: rental/templates/rental/rental_detail.html:463
+msgid "people"
+msgstr "Personen"
+
+#: rental/templates/rental/rental_detail.html:480
+msgid "Booked"
+msgstr "Gebucht"
+
+#: rental/templates/rental/rental_stats.html:12
 msgid "Rental Statistics"
 msgstr "Ausleihstatistiken"
 
-#: rental/templates/rental/rental_stats.html:52
+#: rental/templates/rental/rental_stats.html:56
 msgid "Rental Statistics & Administration"
 msgstr "Ausleihstatistiken & Verwaltung"
 
-#: rental/templates/rental/rental_stats.html:69
+#: rental/templates/rental/rental_stats.html:73
 msgid "Total Rentals"
 msgstr "Ausleihen gesamt"
 
-#: rental/templates/rental/rental_stats.html:81
+#: rental/templates/rental/rental_stats.html:85
 msgid "Users with Rentals"
 msgstr "Benutzer mit Ausleihen"
 
-#: rental/templates/rental/rental_stats.html:87
+#: rental/templates/rental/rental_stats.html:91
 msgid "Available Items"
 msgstr "Verfügbare Artikel"
 
-#: rental/templates/rental/rental_stats.html:98
-#: rental/templates/rental/rental_stats.html:129
+#: rental/templates/rental/rental_stats.html:102
+#: rental/templates/rental/rental_stats.html:133
 msgid "All Rentals"
 msgstr "Alle Ausleihen"
 
-#: rental/templates/rental/rental_stats.html:104
-#: rental/templates/rental/rental_stats.html:197
+#: rental/templates/rental/rental_stats.html:108
+#: rental/templates/rental/rental_stats.html:209
 msgid "Inventory Status"
 msgstr "Inventarstatus"
 
-#: rental/templates/rental/rental_stats.html:135
-#: rental/templates/rental/rental_stats.html:210
-msgid "All Status"
-msgstr "Alle Status"
+#: rental/templates/rental/rental_stats.html:151
+msgid "Mixed"
+msgstr "Gemischt"
 
-#: rental/templates/rental/rental_stats.html:146
+#: rental/templates/rental/rental_stats.html:158
 msgid "Automatic expiration of room reservations and rentals"
 msgstr "Automatisches Ablaufen von Raumreservierungen und -ausleihen"
 
-#: rental/templates/rental/rental_stats.html:147
+#: rental/templates/rental/rental_stats.html:159
 msgid "Expire Rooms"
 msgstr "Räume ablaufen lassen"
 
-#: rental/templates/rental/rental_stats.html:164
+#: rental/templates/rental/rental_stats.html:176
 msgid "Period"
 msgstr "Zeitraum"
 
-#: rental/templates/rental/rental_stats.html:166
+#: rental/templates/rental/rental_stats.html:178
 msgid "Items/Rooms"
 msgstr "Artikel/Räume"
 
-#: rental/templates/rental/rental_stats.html:172
-#: rental/templates/rental/rental_stats.html:238
+#: rental/templates/rental/rental_stats.html:184
+#: rental/templates/rental/rental_stats.html:251
 msgid "Loading data..."
 msgstr "Lade Daten..."
 
-#: rental/templates/rental/rental_stats.html:211 rental/views.py:942
-msgid "Available"
-msgstr "Verfügbar"
-
-#: rental/templates/rental/rental_stats.html:225
+#: rental/templates/rental/rental_stats.html:237
 msgid "Inventory No."
 msgstr "Inventar-Nr."
 
-#: rental/templates/rental/rental_stats.html:263
+#: rental/templates/rental/rental_stats.html:276
 msgid "Create New Set"
 msgstr "Neues Set erstellen"
 
-#: rental/templates/rental/rental_stats.html:275
+#: rental/templates/rental/rental_stats.html:288
 msgid "Items"
 msgstr "Artikel"
 
-#: rental/templates/rental/rental_stats.html:297
+#: rental/templates/rental/rental_stats.html:310
 msgid "Set Details"
 msgstr "Set-Details"
 
-#: rental/templates/rental/rental_stats.html:300
+#: rental/templates/rental/rental_stats.html:313
 msgid "Select a set to see details"
 msgstr "Wählen Sie ein Set aus, um Details zu sehen"
 
-#: rental/templates/rental/rental_stats.html:315
-msgid "Information"
-msgstr "Informationen"
-
-#: rental/templates/rental/rental_stats.html:318
+#: rental/templates/rental/rental_stats.html:331
 msgid ""
 "These administration functions allow you to reset or clean up the entire "
 "rental system."
@@ -2885,136 +3594,137 @@ msgstr ""
 "Diese Verwaltungsfunktionen ermöglichen es Ihnen, das gesamte Ausleihsystem "
 "zurückzusetzen oder zu bereinigen."
 
-#: rental/templates/rental/rental_stats.html:322
-msgid "Warning"
-msgstr "Warnung"
-
-#: rental/templates/rental/rental_stats.html:322
+#: rental/templates/rental/rental_stats.html:335
 msgid "These actions cannot be undone. Make sure you have a backup."
 msgstr ""
 "Diese Aktionen können nicht rückgängig gemacht werden. Stellen Sie sicher, "
 "dass Sie eine Sicherung haben."
 
-#: rental/templates/rental/rental_stats.html:325
+#: rental/templates/rental/rental_stats.html:338
 msgid "Available Actions"
 msgstr "Verfügbare Aktionen"
 
-#: rental/templates/rental/rental_stats.html:327
-#: rental/templates/rental/rental_stats.html:341
+#: rental/templates/rental/rental_stats.html:340
+#: rental/templates/rental/rental_stats.html:354
 msgid "Reset Inventory Quantities"
 msgstr "Inventarmengen zurücksetzen"
 
-#: rental/templates/rental/rental_stats.html:327
+#: rental/templates/rental/rental_stats.html:340
 msgid "Sets all reserved_quantity and rented_quantity to 0"
 msgstr "Setzt alle reserved_quantity und rented_quantity auf 0"
 
-#: rental/templates/rental/rental_stats.html:328
-#: rental/templates/rental/rental_stats.html:345
+#: rental/templates/rental/rental_stats.html:341
+#: rental/templates/rental/rental_stats.html:358
 msgid "Cancel Active Rentals"
 msgstr "Aktive Ausleihen stornieren"
 
-#: rental/templates/rental/rental_stats.html:328
+#: rental/templates/rental/rental_stats.html:341
 msgid "Cancels all active rentals and resets inventory quantities"
 msgstr "Storniert alle aktiven Ausleihen und setzt Inventarmengen zurück"
 
-#: rental/templates/rental/rental_stats.html:329
-#: rental/templates/rental/rental_stats.html:349
+#: rental/templates/rental/rental_stats.html:342
+#: rental/templates/rental/rental_stats.html:362
 msgid "Delete All Data"
 msgstr "Alle Daten löschen"
 
-#: rental/templates/rental/rental_stats.html:329
+#: rental/templates/rental/rental_stats.html:342
 msgid "Deletes ALL rental data and resets inventory"
 msgstr "Löscht ALLE Ausleihdaten und setzt Inventar zurück"
 
-#: rental/templates/rental/rental_stats.html:337
+#: rental/templates/rental/rental_stats.html:350
 msgid "Danger Zone"
 msgstr "Gefahrenzone"
 
-#: rental/templates/rental/rental_stats.html:353
+#: rental/templates/rental/rental_stats.html:366
 msgid "Confirmation code required"
 msgstr "Bestätigungscode erforderlich"
 
-#: rental/templates/rental/rental_stats.html:368
+#: rental/templates/rental/rental_stats.html:380
+msgid "Inventory schedule"
+msgstr "Inventarplan"
+
+#: rental/templates/rental/rental_stats.html:414
 msgid "Create Equipment Set"
 msgstr "Ausrüstungsset erstellen"
 
-#: rental/templates/rental/rental_stats.html:394
+#: rental/templates/rental/rental_stats.html:440
 msgid "Add Items"
 msgstr "Artikel hinzufügen"
 
-#: rental/templates/rental/rental_stats.html:396
-msgid "Search items..."
-msgstr "Artikel suchen..."
-
-#: rental/templates/rental/rental_stats.html:399
+#: rental/templates/rental/rental_stats.html:445
 msgid "Enter a search term..."
 msgstr "Suchbegriff eingeben..."
 
-#: rental/templates/rental/rental_stats.html:409
+#: rental/templates/rental/rental_stats.html:455
 msgid "Item"
 msgstr "Artikel"
 
-#: rental/templates/rental/rental_stats.html:416
+#: rental/templates/rental/rental_stats.html:462
 msgid "No items added"
 msgstr "Keine Artikel hinzugefügt"
 
-#: rental/templates/rental/rental_stats.html:425
+#: rental/templates/rental/rental_stats.html:471
 msgid "Save Set"
 msgstr "Set speichern"
 
-#: rental/templates/rental/rental_stats.html:436
+#: rental/templates/rental/rental_stats.html:482
 msgid "Confirmation Required"
 msgstr "Bestätigung erforderlich"
 
-#: rental/templates/rental/rental_stats.html:442
+#: rental/templates/rental/rental_stats.html:488
 msgid "Enter"
 msgstr "Eingeben"
 
-#: rental/templates/rental/rental_stats.html:442
+#: rental/templates/rental/rental_stats.html:488
 msgid "to continue"
 msgstr "um fortzufahren"
 
-#: rental/templates/rental/rental_stats.html:448
+#: rental/templates/rental/rental_stats.html:494
 msgid "Confirm"
 msgstr "Bestätigen"
 
-#: rental/views.py:206
+#: rental/views.py:228
 msgid "You must log in to access this page."
 msgstr "Sie müssen sich anmelden, um auf diese Seite zuzugreifen."
 
-#: rental/views.py:212
+#: rental/views.py:234
 msgid "You do not have permission to access this page. Only staff have access."
 msgstr ""
 "Sie haben keine Berechtigung, auf diese Seite zuzugreifen. Nur Mitarbeiter "
 "haben Zugriff."
 
-#: rental/views.py:278
+#: rental/views.py:301 ok_tools/templates/dashboard.html:119
 msgid "Member"
 msgstr "Mitglied"
 
-#: rental/views.py:279
+#: rental/views.py:302
 msgid "MSA, OKMQ"
 msgstr "MSA, OKMQ"
 
-#: rental/views.py:279
+#: rental/views.py:302
 msgid "MSA"
 msgstr "MSA"
 
-#: rental/views.py:310
+#: rental/views.py:333 rental/views.py:2848
 msgid "User profile not found"
 msgstr "Benutzerprofil nicht gefunden"
 
-#: rental/views.py:418 rental/views.py:720 rental/views.py:1135
-#: rental/views.py:1207 rental/views.py:1350 rental/views.py:1492
-#: rental/views.py:1803 rental/views.py:1855
+#: rental/views.py:452 rental/views.py:641 rental/views.py:945
+#: rental/views.py:1394 rental/views.py:1467 rental/views.py:1613
+#: rental/views.py:1759 rental/views.py:2085 rental/views.py:2138
+#: rental/views.py:3343 rental/views.py:3445 rental/views.py:3542
 msgid "Method not allowed"
 msgstr "Methode nicht erlaubt"
 
-#: rental/views.py:430
+#: rental/views.py:459
+msgid "You can only create rentals for yourself"
+msgstr "Sie können nur Ausleihen für sich selbst erstellen"
+
+#: rental/views.py:469 rental/views.py:653 rental/views.py:3467
 msgid "Invalid date format"
 msgstr "Ungültiges Datumsformat"
 
-#: rental/views.py:442
+#: rental/views.py:481 rental/views.py:665
 #, python-brace-format
 msgid ""
 "Start time cannot be in the past. Selected time: {start_time}, Current time: "
@@ -3023,7 +3733,7 @@ msgstr ""
 "Startzeit kann nicht in der Vergangenheit liegen. Gewählte Zeit: "
 "{start_time}, Aktuelle Zeit: {current_time}"
 
-#: rental/views.py:452
+#: rental/views.py:491 rental/views.py:675
 #, python-brace-format
 msgid ""
 "End time cannot be in the past. Selected time: {end_time}, Current time: "
@@ -3032,11 +3742,11 @@ msgstr ""
 "Endzeit kann nicht in der Vergangenheit liegen. Gewählte Zeit: {end_time}, "
 "Aktuelle Zeit: {current_time}"
 
-#: rental/views.py:463
+#: rental/views.py:502 rental/views.py:686
 msgid "End time must be after start time"
 msgstr "Endzeit muss nach Startzeit liegen"
 
-#: rental/views.py:477
+#: rental/views.py:516 rental/views.py:700
 #, python-brace-format
 msgid ""
 "Item \"{item_description}\" is not available for the selected period. "
@@ -3045,17 +3755,20 @@ msgstr ""
 "Artikel \"{item_description}\" ist für den gewählten Zeitraum nicht "
 "verfügbar. Verfügbar: {available}, angefordert: {requested}"
 
-#: rental/views.py:536 rental/views.py:953 rental/views.py:2235
+#: rental/views.py:576 rental/views.py:760 rental/views.py:1212
+#: rental/views.py:2540 rental/views.py:3394
 msgid "Unknown user"
 msgstr "Unbekannter Benutzer"
 
-#: rental/views.py:555 rental/views.py:557 rental/views.py:972
-#: rental/views.py:974 rental/views.py:2255 rental/views.py:2261
+#: rental/views.py:595 rental/views.py:597 rental/views.py:779
+#: rental/views.py:781 rental/views.py:1231 rental/views.py:1233
+#: rental/views.py:2560 rental/views.py:2566 rental/views.py:3413
+#: rental/views.py:3415
 #, python-brace-format
 msgid "User #{user_id}"
 msgstr "Benutzer #{user_id}"
 
-#: rental/views.py:564
+#: rental/views.py:604 rental/views.py:788
 #, python-brace-format
 msgid ""
 "Room \"{room_name}\" is not available for the selected period. Conflicts: "
@@ -3064,172 +3777,444 @@ msgstr ""
 "Raum \"{room_name}\" ist für den gewählten Zeitraum nicht verfügbar. "
 "Konflikte: {conflicts}"
 
-#: rental/views.py:580
+#: rental/views.py:620 rental/views.py:804
 msgid "Rental request created successfully"
 msgstr "Ausleihantrag erfolgreich erstellt"
 
-#: rental/views.py:870
+#: rental/views.py:1129
 msgid "Location not specified"
 msgstr "Standort nicht angegeben"
 
-#: rental/views.py:871
+#: rental/views.py:1130
 msgid "No category"
 msgstr "Keine Kategorie"
 
-#: rental/views.py:980
+#: rental/views.py:1239
 #, python-brace-format
 msgid "Not available - Conflicts: {conflicts}"
 msgstr "Nicht verfügbar - Konflikte: {conflicts}"
 
-#: rental/views.py:984
+#: rental/views.py:1243
 #, python-brace-format
 msgid " and {count} more"
 msgstr " und {count} weitere"
 
-#: rental/views.py:1142
+#: rental/views.py:1401
 msgid "Rental ID is required"
 msgstr "Ausleih-ID ist erforderlich"
 
-#: rental/views.py:1150
+#: rental/views.py:1410
 msgid "Only reserved or issued rentals can be cancelled"
 msgstr "Nur reservierte oder ausgegebene Ausleihen können storniert werden"
 
-#: rental/views.py:1162
+#: rental/views.py:1422
 msgid "Cancelled reserved quantity via admin interface"
 msgstr "Reservierte Menge über Admin-Oberfläche storniert"
 
-#: rental/views.py:1173
+#: rental/views.py:1433
 msgid "Returned issued quantity due to cancellation via admin interface"
 msgstr ""
 "Ausgegebene Menge aufgrund Stornierung über Admin-Oberfläche zurückgegeben"
 
-#: rental/views.py:1184
+#: rental/views.py:1444
 #, python-brace-format
 msgid "Rental request {rental_id} has been cancelled successfully"
 msgstr "Ausleihantrag {rental_id} wurde erfolgreich storniert"
 
-#: rental/views.py:1215
+#: rental/views.py:1475
 msgid "Rental ID and items are required"
 msgstr "Ausleih-ID und Artikel sind erforderlich"
 
-#: rental/views.py:1223
+#: rental/views.py:1485
 msgid "Only active rentals can have returns"
 msgstr "Nur aktive Ausleihen können zurückgegeben werden"
 
-#: rental/views.py:1284
+#: rental/views.py:1546
 msgid "Items returned successfully"
 msgstr "Artikel erfolgreich zurückgegeben"
 
-#: rental/views.py:1358
+#: rental/views.py:1621
 msgid "Rental ID and new end date are required"
 msgstr "Ausleih-ID und neues Enddatum sind erforderlich"
 
-#: rental/views.py:1367
+#: rental/views.py:1630
 msgid "Only active rentals can be extended"
 msgstr "Nur aktive Ausleihen können verlängert werden"
 
-#: rental/views.py:1399
+#: rental/views.py:1662
 msgid "Invalid date format. Please use YYYY-MM-DDTHH:MM or ISO format"
 msgstr ""
 "Ungültiges Datumsformat. Bitte verwenden Sie YYYY-MM-DDTHH:MM oder ISO-Format"
 
-#: rental/views.py:1409
+#: rental/views.py:1672
 msgid "New end date must be after current end date"
 msgstr "Neues Enddatum muss nach dem aktuellen Enddatum liegen"
 
-#: rental/views.py:1412
+#: rental/views.py:1675
 #, python-brace-format
 msgid "Invalid date format: {error}"
 msgstr "Ungültiges Datumsformat: {error}"
 
-#: rental/views.py:1420
+#: rental/views.py:1683
 #, python-brace-format
 msgid "Rental request {rental_id} has been extended until {end_date}"
 msgstr "Ausleihantrag {rental_id} wurde bis {end_date} verlängert"
 
-#: rental/views.py:1501
+#: rental/views.py:1768
 msgid "Invalid confirmation code"
 msgstr "Ungültiger Bestätigungscode"
 
-#: rental/views.py:1519
+#: rental/views.py:1789
 msgid "All rental data has been reset"
 msgstr "Alle Ausleihdaten wurden zurückgesetzt"
 
-#: rental/views.py:1528
+#: rental/views.py:1798
 msgid "Inventory quantities have been reset"
 msgstr "Inventarmengen wurden zurückgesetzt"
 
-#: rental/views.py:1548
+#: rental/views.py:1818
 #, python-brace-format
 msgid "{count} active rentals have been cancelled"
 msgstr "{count} aktive Ausleihen wurden storniert"
 
-#: rental/views.py:1551
+#: rental/views.py:1821
 msgid "Invalid action"
 msgstr "Ungültige Aktion"
 
-#: rental/views.py:1830
+#: rental/views.py:2113
 #, python-brace-format
 msgid "Equipment Set \"{name}\" was successfully created."
 msgstr "Ausrüstungsset \"{name}\" wurde erfolgreich erstellt."
 
-#: rental/views.py:1866
+#: rental/views.py:2149
 #, python-brace-format
 msgid "Equipment Set \"{name}\" was successfully deleted."
 msgstr "Ausrüstungsset \"{name}\" wurde erfolgreich gelöscht."
 
-#: rental/views.py:1963 rental/views.py:2004
+#: rental/views.py:2247 rental/views.py:2289
 #, python-brace-format
 msgid "Error loading rental: {error}"
 msgstr "Fehler beim Laden der Ausleihe: {error}"
 
-#: rental/views.py:2068
+#: rental/views.py:2353
 msgid "Only POST method allowed"
 msgstr "Nur POST-Methode erlaubt"
 
-#: rental/views.py:2110
+#: rental/views.py:2395
 msgid "Automatic expiration of room rentals completed"
 msgstr "Automatisches Ablaufen von Raumausleihen abgeschlossen"
 
-#: rental/views.py:2121
+#: rental/views.py:2406
 #, python-brace-format
 msgid "Error executing command: {error}"
 msgstr "Fehler beim Ausführen des Befehls: {error}"
 
-#: rental/views.py:2265
+#: rental/views.py:2570
 msgid "No project"
 msgstr "Kein Projekt"
+
+#: rental/views.py:3042
+msgid "Not available for selected period"
+msgstr "Für den gewählten Zeitraum nicht verfügbar"
+
+#: rental/views.py:3353 rental/views.py:3457
+msgid "Missing required parameters"
+msgstr "Erforderliche Parameter fehlen"
+
+#: rental/views.py:3366
+msgid "Invalid date/time format"
+msgstr "Ungültiges Datum/Zeit-Format"
+
+#: rental/views.py:3385
+msgid "Room is available for the selected period."
+msgstr "Raum ist für den gewählten Zeitraum verfügbar."
+
+#: rental/views.py:3424
+msgid "Room is not available for the selected period."
+msgstr "Raum ist für den gewählten Zeitraum nicht verfügbar."
+
+#: rental/views.py:3480
+msgid "Rental must be in reserved status to issue"
+msgstr "Ausleihe muss im Status 'reserviert' sein, um ausgegeben zu werden"
+
+#: rental/views.py:3485
+msgid ""
+"Cannot issue rental with only rooms. Equipment is required to change status "
+"from reserved to issued."
+msgstr ""
+"Ausleihe mit nur Räumen kann nicht ausgegeben werden. Ausrüstung ist "
+"erforderlich, um den Status von 'reserviert' auf 'ausgegeben' zu ändern."
+
+#: rental/views.py:3492
+msgid "Invalid user ID"
+msgstr "Ungültige Benutzer-ID"
+
+#: rental/views.py:3523
+msgid "Rental successfully issued from reservation"
+msgstr "Ausleihe erfolgreich aus Reservierung ausgegeben"
 
 #: ok_tools/templates/admin/base_site.html:6
 #: ok_tools/templates/admin/base_site.html:15
 msgid "Administrationinterface"
 msgstr "Verwaltungsoberfläche"
 
-#: ok_tools/templates/dashboard.html:13
-msgid "Edit all inormations concerning your profile."
-msgstr "Bearbeiten Sie Ihr Profile und zugehörige Daten."
+#: ok_tools/templates/dashboard.html:5
+msgid "Dashboard - OK Tools"
+msgstr "Dashboard - OK Tools"
 
-#: ok_tools/templates/dashboard.html:34
-msgid "Edit your Licenses."
-msgstr "Bearbeiten Sie ihre Freistellungen."
+#: ok_tools/templates/dashboard.html:6
+msgid "My Dashboard"
+msgstr "Mein Dashboard"
 
-#: ok_tools/templates/dashboard.html:47
-msgid "Look at your Contributions."
-msgstr "Sehen Sie Ihre Beiträge ein."
+#: ok_tools/templates/dashboard.html:17
+msgid "Your Licenses"
+msgstr "Ihre Freistellungen"
 
-#: ok_tools/templates/dashboard.html:55
-msgid "Website"
-msgstr "Website"
+#: ok_tools/templates/dashboard.html:60
+msgid "Manage your profile and account settings"
+msgstr "Verwalten Sie Ihr Profil und Ihre Kontoeinstellungen"
 
-#: ok_tools/templates/dashboard.html:56
-msgid "Visist the Website for more general informations."
-msgstr "Besuchen Sie die Website für weitere Informationen."
+#: ok_tools/templates/dashboard.html:114
+msgid "Verified"
+msgstr "Verifiziert"
 
-#: ok_tools/templates/dashboard.html:58
-msgid "OKMQ-Website"
+#: ok_tools/templates/dashboard.html:133 ok_tools/templates/dashboard.html:193
+msgid "Quick Actions"
+msgstr "Schnellaktionen"
+
+#: ok_tools/templates/dashboard.html:136
+msgid "Edit Profile"
+msgstr "Profil bearbeiten"
+
+#: ok_tools/templates/dashboard.html:142
+msgid "Print Registration"
+msgstr "Registrierung drucken"
+
+#: ok_tools/templates/dashboard.html:170
+msgid "Your important updates and alerts"
+msgstr "Ihre wichtigen Updates und Benachrichtigungen"
+
+#: ok_tools/templates/dashboard.html:181
+msgid "All systems operational"
+msgstr "Alle Systeme funktionsfähig"
+
+#: ok_tools/templates/dashboard.html:195
+msgid "Your common tasks and shortcuts"
+msgstr "Ihre häufigen Aufgaben und Verknüpfungen"
+
+#: ok_tools/templates/dashboard.html:206 ok_tools/templates/dashboard.html:210
+msgid "Rental Dashboard"
+msgstr "Ausleih-Dashboard"
+
+#: ok_tools/templates/dashboard.html:213
+msgid "OKMQ Website"
 msgstr "OKMQ-Website"
 
-#: ok_tools/templates/home.html:20
+#: ok_tools/templates/dashboard.html:226
+msgid "Recent Activities"
+msgstr "Letzte Aktivitäten"
+
+#: ok_tools/templates/dashboard.html:228
+msgid "Your latest updates and activities"
+msgstr "Ihre neuesten Updates und Aktivitäten"
+
+#: ok_tools/templates/dashboard.html:235
+msgid "Activity"
+msgstr "Aktivität"
+
+#: ok_tools/templates/dashboard.html:259
+msgid "No recent activities"
+msgstr "Keine aktuellen Aktivitäten"
+
+#: ok_tools/templates/dashboard.html:260
+msgid "Your activities will appear here when you use the system"
+msgstr "Ihre Aktivitäten werden hier angezeigt, wenn Sie das System nutzen"
+
+#: ok_tools/templates/dashboard.html:276
+msgid "Monthly Overview"
+msgstr "Monatsübersicht"
+
+#: ok_tools/templates/dashboard.html:278
+msgid "Your activity trends over the last 6 months"
+msgstr "Ihre Aktivitätstrends der letzten 6 Monate"
+
+#: ok_tools/templates/guest_welcome.html:12
+msgid "Welcome to OK Tools"
+msgstr "Willkommen bei OK Tools"
+
+#: ok_tools/templates/guest_welcome.html:13
+msgid ""
+"OK Tools is the official platform for users of Offener Kanal Merseburg-"
+"Querfurt (OKMQ). Here you can register as a user, submit your videos for "
+"broadcasting, check the broadcast history, and book equipment or studio "
+"rooms for your productions."
+msgstr ""
+"OK Tools ist die offizielle Plattform für Nutzer des Offenen Kanals "
+"Merseburg-Querfurt (OKMQ). Hier können Sie sich als Nutzer registrieren, "
+"Ihre Videos zur Ausstrahlung einreichen, die Sendehistorie einsehen und "
+"Ausrüstung oder Studioräume für Ihre Produktionen buchen."
+
+#: ok_tools/templates/guest_welcome.html:16
+msgid "Available after registration:"
+msgstr "Verfügbar nach der Registrierung:"
+
+#: ok_tools/templates/guest_welcome.html:16
+msgid ""
+"All features below become accessible once you create an account and log in."
+msgstr ""
+"Alle unten aufgeführten Funktionen werden zugänglich, sobald Sie ein Konto "
+"erstellen und sich anmelden."
+
+#: ok_tools/templates/guest_welcome.html:27
+msgid "User Registration"
+msgstr "Benutzerregistrierung"
+
+#: ok_tools/templates/guest_welcome.html:28
+msgid ""
+"Create your personal OKMQ account to get access to our media services, "
+"facilities, and broadcasting options."
+msgstr ""
+"Erstellen Sie Ihr persönliches OKMQ-Konto, um Zugang zu unseren "
+"Mediendiensten, Einrichtungen und Sendemöglichkeiten zu erhalten."
+
+#: ok_tools/templates/guest_welcome.html:30
+msgid "First Step"
+msgstr "Erster Schritt"
+
+#: ok_tools/templates/guest_welcome.html:40
+msgid "Video Contribution"
+msgstr "Videobeitrag"
+
+#: ok_tools/templates/guest_welcome.html:41
+msgid ""
+"Submit your own productions for broadcasting on TV, in our livestream, and "
+"in the public Mediathek. Keep track of when your videos have been shown."
+msgstr ""
+"Reichen Sie Ihre eigenen Produktionen zur Ausstrahlung im Fernsehen, in "
+"unserem Livestream und in der öffentlichen Mediathek ein. Verfolgen Sie, "
+"wann Ihre Videos gezeigt wurden."
+
+#: ok_tools/templates/guest_welcome.html:43
+#: ok_tools/templates/guest_welcome.html:56
+#: ok_tools/templates/guest_welcome.html:69
+msgid "After Login"
+msgstr "Nach der Anmeldung"
+
+#: ok_tools/templates/guest_welcome.html:53
+msgid "Studios & Editing Rooms"
+msgstr "Studios & Schnittplätze"
+
+#: ok_tools/templates/guest_welcome.html:54
+msgid ""
+"Book professional editing suites or our TV studio to realize your projects "
+"with full technical support."
+msgstr ""
+"Buchen Sie professionelle Schnittplätze oder unser TV-Studio, um Ihre "
+"Projekte mit vollständiger technischer Unterstützung zu realisieren."
+
+#: ok_tools/templates/guest_welcome.html:66
+msgid "Equipment Rental"
+msgstr "Ausrüstungsverleih"
+
+#: ok_tools/templates/guest_welcome.html:67
+msgid ""
+"Borrow professional video, audio, and lighting equipment for free as part of "
+"your OKMQ membership."
+msgstr ""
+"Leihen Sie sich professionelle Video-, Audio- und Beleuchtungsausrüstung "
+"kostenlos als Teil Ihrer OKMQ-Mitgliedschaft aus."
+
+#: ok_tools/templates/guest_welcome.html:78
+msgid "Ready to get started?"
+msgstr "Bereit loszulegen?"
+
+#: ok_tools/templates/guest_welcome.html:79
+msgid ""
+"Sign up now and become part of the OKMQ community – create, broadcast, and "
+"share your own video productions."
+msgstr ""
+"Melden Sie sich jetzt an und werden Sie Teil der OKMQ-Gemeinschaft – "
+"erstellen, senden und teilen Sie Ihre eigenen Videoproduktionen."
+
+#: ok_tools/templates/guest_welcome.html:89
+msgid "Choose one of the options above to begin"
+msgstr "Wählen Sie eine der obigen Optionen, um zu beginnen"
+
+#: ok_tools/templates/guest_welcome.html:102
+msgid "About OKMQ"
+msgstr "Über OKMQ"
+
+#: ok_tools/templates/guest_welcome.html:104
+msgid ""
+"Offener Kanal Merseburg-Querfurt (OKMQ) is a community media organization "
+"that provides access to professional media production facilities and "
+"broadcasting opportunities for local communities."
+msgstr ""
+"Der Offene Kanal Merseburg-Querfurt (OKMQ) ist eine "
+"Bürgermedienorganisation, die lokalen Gemeinschaften Zugang zu "
+"professionellen Medienproduktionseinrichtungen und Sendemöglichkeiten bietet."
+
+#: ok_tools/templates/guest_welcome.html:109
+msgid "Contact Information"
+msgstr "Kontaktinformationen"
+
+#: ok_tools/templates/guest_welcome.html:112
+msgid "OFFENER KANAL Merseburg-Querfurt e.V."
+msgstr "OFFENER KANAL Merseburg-Querfurt e.V."
+
+#: ok_tools/templates/guest_welcome.html:113
+msgid "Community Media Center"
+msgstr "Bürgermedien-Zentrum"
+
+#: ok_tools/templates/guest_welcome.html:127
+msgid "Phone:"
+msgstr "Telefon:"
+
+#: ok_tools/templates/guest_welcome.html:128
+msgid "Fax:"
+msgstr "Fax:"
+
+#: ok_tools/templates/guest_welcome.html:129
+msgid "E-mail:"
+msgstr "E-Mail:"
+
+#: ok_tools/templates/guest_welcome.html:137
+msgid "Website:"
+msgstr "Website:"
+
+#: ok_tools/templates/guest_welcome.html:143
+msgid "Opening hours:"
+msgstr "Öffnungszeiten:"
+
+#: ok_tools/templates/guest_welcome.html:144
+msgid "Mon:"
+msgstr "Mo:"
+
+#: ok_tools/templates/guest_welcome.html:145
+msgid "Tue – Thu:"
+msgstr "Di – Do:"
+
+#: ok_tools/templates/guest_welcome.html:146
+msgid "Fri:"
+msgstr "Fr:"
+
+#: ok_tools/templates/guest_welcome.html:147
+msgid "(or by arrangement)"
+msgstr "(oder nach Vereinbarung)"
+
+#: ok_tools/templates/guest_welcome.html:167
+msgid "Datenschutzerklärung"
+msgstr "Datenschutzerklärung"
+
+#: ok_tools/templates/guest_welcome.html:170
+msgid "Impressum"
+msgstr "Impressum"
+
+#: ok_tools/templates/guest_welcome.html:175
+msgid "© 2025 OFFENER KANAL Merseburg-Querfurt e.V. All rights reserved."
+msgstr "© 2025 OFFENER KANAL Merseburg-Querfurt e.V. Alle Rechte vorbehalten."
+
+#: ok_tools/templates/home.html:26
 msgid ""
 "\n"
 "    This account is not verified. Please print the application form, sign it "
@@ -3243,11 +4228,11 @@ msgstr ""
 "zusammen mit Ihrem Personalausweis bei uns vorbei. Ihr Account wird dann von "
 "uns verifiziert. "
 
-#: ok_tools/templates/home.html:25
+#: ok_tools/templates/home.html:31
 msgid "Application form"
 msgstr "Nutzer*innenantrag"
 
-#: ok_tools/templates/home.html:29
+#: ok_tools/templates/home.html:35
 msgid ""
 "\n"
 "    This account is verified.\n"
@@ -3257,6 +4242,220 @@ msgstr ""
 "    Ihr Account ist verifiziert.\n"
 "    "
 
-#: ok_tools/templates/home.html:35
-msgid "You are not logged in"
-msgstr "Sie sind nicht angemeldet."
+#: ok_tools/templates/rental_dashboard.html:6
+msgid "Equipment and Studio Rooms Booking"
+msgstr "Ausrüstung und Studioräume Buchung"
+
+#: ok_tools/templates/rental_dashboard.html:18
+msgid "Booking Process"
+msgstr "Buchungsprozess"
+
+#: ok_tools/templates/rental_dashboard.html:26
+msgid "1. Your Information"
+msgstr "1. Ihre Informationen"
+
+#: ok_tools/templates/rental_dashboard.html:63
+msgid "Current"
+msgstr "Aktuell"
+
+#: ok_tools/templates/rental_dashboard.html:85
+msgid "2. Project Information"
+msgstr "2. Projektinformationen"
+
+#: ok_tools/templates/rental_dashboard.html:88
+msgid "Project Name"
+msgstr "Projektname"
+
+#: ok_tools/templates/rental_dashboard.html:91
+msgid "Purpose of Use"
+msgstr "Verwendungszweck"
+
+#: ok_tools/templates/rental_dashboard.html:99
+msgid "3. Time Period"
+msgstr "3. Zeitraum"
+
+#: ok_tools/templates/rental_dashboard.html:102
+#: ok_tools/templates/rental_dashboard.html:326
+msgid "From:"
+msgstr "Von:"
+
+#: ok_tools/templates/rental_dashboard.html:106
+#: ok_tools/templates/rental_dashboard.html:330
+msgid "To:"
+msgstr "Bis:"
+
+#: ok_tools/templates/rental_dashboard.html:115
+msgid "4. Selection"
+msgstr "4. Auswahl"
+
+#: ok_tools/templates/rental_dashboard.html:118
+msgid "Nothing selected"
+msgstr "Nichts ausgewählt"
+
+#: ok_tools/templates/rental_dashboard.html:126
+msgid "5. Action"
+msgstr "5. Aktion"
+
+#: ok_tools/templates/rental_dashboard.html:135
+#: ok_tools/templates/rental_dashboard.html:346
+msgid "Rooms are automatically returned after scheduled time"
+msgstr "Räume werden automatisch nach der geplanten Zeit zurückgegeben"
+
+#: ok_tools/templates/rental_dashboard.html:150
+msgid "Filters"
+msgstr "Filter"
+
+#: ok_tools/templates/rental_dashboard.html:200
+msgid "Select dates to view availability"
+msgstr "Wählen Sie Daten aus, um die Verfügbarkeit anzuzeigen"
+
+#: ok_tools/templates/rental_dashboard.html:222
+msgid "Show Sets"
+msgstr "Sets anzeigen"
+
+#: ok_tools/templates/rental_dashboard.html:255
+msgid "Select a set to view contents"
+msgstr "Wählen Sie ein Set aus, um den Inhalt anzuzeigen"
+
+#: ok_tools/templates/rental_dashboard.html:262
+msgid "Add Set"
+msgstr "Set hinzufügen"
+
+#: ok_tools/templates/rental_dashboard.html:308
+msgid "Booking"
+msgstr "Buchung"
+
+#: ok_tools/templates/rental_dashboard.html:310
+msgid "Select a room to book time"
+msgstr "Wählen Sie einen Raum zur Zeitbuchung"
+
+#: ok_tools/templates/rental_dashboard.html:320
+msgid "Select room:"
+msgstr "Raum auswählen:"
+
+#: ok_tools/templates/rental_dashboard.html:350
+msgid "Add Room"
+msgstr "Raum hinzufügen"
+
+#: ok_tools/templates/rental_dashboard.html:362
+msgid "CURRENT RENTALS"
+msgstr "AKTUELLE AUSLEIHEN"
+
+#: ok_tools/templates/rental_dashboard.html:370
+msgid "Loading current rentals..."
+msgstr "Lade aktuelle Ausleihen..."
+
+#: ok_tools/templates/rental_dashboard.html:387
+msgid "RETURNED RENTALS"
+msgstr "ZURÜCKGEGEBENE AUSLEIHEN"
+
+#: ok_tools/templates/rental_dashboard.html:412
+msgid "EXPIRED RENTALS"
+msgstr "ABGELAUFENE AUSLEIHEN"
+
+#: ok_tools/templates/rental_dashboard.html:420
+msgid "Loading expired rentals..."
+msgstr "Lade abgelaufene Ausleihen..."
+
+#: ok_tools/views.py:153
+#, python-format
+msgid "License created: %(title)s"
+msgstr "Freistellung erstellt: %(title)s"
+
+#: ok_tools/views.py:167
+#, python-format
+msgid "Rental %(type)s for %(item)s"
+msgstr "Ausleihe %(type)s für %(item)s"
+
+#: ok_tools/views.py:184
+#, python-format
+msgid "Contribution broadcast: %(title)s"
+msgstr "Beitrag gesendet: %(title)s"
+
+#: ok_tools/views.py:187
+msgid "Recorded"
+msgstr "Aufgezeichnet"
+
+#: ok_tools/views.py:234
+#, python-format
+msgid "%(count)d of your license(s) pending approval"
+msgstr "%(count)d Ihrer Freistellung(en) warten auf Genehmigung"
+
+#: ok_tools/views.py:251
+#, python-format
+msgid "You have %(count)d active rental(s)"
+msgstr "Sie haben %(count)d aktive Ausleihe(n)"
+
+#: ok_tools/views.py:264
+#, python-format
+msgid "You have %(count)d contribution(s) this week"
+msgstr "Sie haben %(count)d Beitrag/Beiträge diese Woche"
+
+#: ok_tools/views.py:272
+#, python-format
+msgid "Welcome back, %(name)s!"
+msgstr "Willkommen zurück, %(name)s!"
+
+#~ msgid "System"
+#~ msgstr "System"
+
+#~ msgid "Log in"
+#~ msgstr "Anmelden"
+
+#~ msgid "Edit Return"
+#~ msgstr "Rückgabe bearbeiten"
+
+#~ msgid "You are not logged in"
+#~ msgstr "Sie sind nicht angemeldet."
+
+#, python-brace-format
+#~ msgid "Invalid inventory number \"{inventory_number}\""
+#~ msgstr "Ungültige Inventarnummer \"{inventory_number}\""
+
+#~ msgid "Edit license"
+#~ msgstr "Freistellung bearbeiten"
+
+#~ msgid "edit"
+#~ msgstr "bearbeiten"
+
+#~ msgid "Print official document"
+#~ msgstr "Offiziellen Antrag drucken"
+
+#~ msgid "print"
+#~ msgstr "drucken"
+
+#~ msgid "⚠️ Date is missing."
+#~ msgstr "⚠️ Datum fehlt."
+
+#~ msgid "Draft saved successfully."
+#~ msgstr "Entwurf erfolgreich gespeichert."
+
+#~ msgid "Error saving the draft."
+#~ msgstr "Fehler beim Speichern des Entwurfs."
+
+#~ msgid "Plan saved successfully!"
+#~ msgstr "Plan erfolgreich gespeichert!"
+
+#~ msgid "Error saving the plan. Please try again."
+#~ msgstr "Fehler beim Speichern des Plans. Bitte versuchen Sie es erneut."
+
+#~ msgid "Delete plan for this day?"
+#~ msgstr "Plan für diesen Tag löschen?"
+
+#~ msgid "Plan deleted!"
+#~ msgstr "Plan gelöscht!"
+
+#~ msgid "Error deleting the plan."
+#~ msgstr "Fehler beim Löschen des Plans."
+
+#~ msgid "Edit all inormations concerning your profile."
+#~ msgstr "Bearbeiten Sie Ihr Profile und zugehörige Daten."
+
+#~ msgid "Edit your Licenses."
+#~ msgstr "Bearbeiten Sie ihre Freistellungen."
+
+#~ msgid "Look at your Contributions."
+#~ msgstr "Sehen Sie Ihre Beiträge ein."
+
+#~ msgid "Visist the Website for more general informations."
+#~ msgstr "Besuchen Sie die Website für weitere Informationen."

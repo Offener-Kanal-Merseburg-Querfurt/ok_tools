@@ -1,38 +1,456 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% load i18n %}
-{% load crispy_forms_tags %}
+
+{% block title %}{% trans 'Create License' %} - OK Tools{% endblock %}
+{% block page_title %}{% trans 'Create License' %}{% endblock %}
 
 {% block content %}
-<h1> {% translate 'Create a license' %}</h1>
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h4 class="text-muted">{% trans 'Create a new broadcast exemption' %}</h4>
+        <p class="text-muted mb-0">{% trans 'Fill in all required fields to create your license' %}</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'licenses:licenses' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>{% trans 'Back to Overview' %}
+        </a>
+    </div>
+</div>
 
-{% crispy form %}
+<!-- License Form -->
+<form method="post" id="license-form">
+    {% csrf_token %}
+    
+    <!-- Basic Information Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                {% trans 'Basic Information' %}
+            </h5>
+            <p class="card-subtitle">{% trans 'Title, description and category of the license' %}</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                        <i class="bi bi-type-bold me-1"></i>{{ form.title.label }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.title.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.subtitle.id_for_label }}" class="form-label">
+                        <i class="bi bi-type me-1"></i>{{ form.subtitle.label }}
+                    </label>
+                    {{ form.subtitle }}
+                    {% if form.subtitle.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.subtitle.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                        <i class="bi bi-tags me-1"></i>{{ form.category.label }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.category.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        <i class="bi bi-card-text me-1"></i>{{ form.description.label }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.description.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="{{ form.further_persons.id_for_label }}" class="form-label">
+                        <i class="bi bi-people me-1"></i>{{ form.further_persons.label }}
+                    </label>
+                    {{ form.further_persons }}
+                    {% if form.further_persons.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.further_persons.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">{% trans 'Additional involved persons (optional)' %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Media Settings Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-broadcast text-success me-2"></i>
+                {% trans 'Media Settings' %}
+            </h5>
+            <p class="card-subtitle">{% trans 'Duration, broadcast date and repetitions' %}</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.duration.id_for_label }}" class="form-label">
+                        <i class="bi bi-clock me-1"></i>{{ form.duration.label }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    {{ form.duration }}
+                    {% if form.duration.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.duration.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">{% trans 'Format: hh:mm:ss or mm:ss' %}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.suggested_date.id_for_label }}" class="form-label">
+                        <i class="bi bi-calendar-event me-1"></i>{{ form.suggested_date.label }}
+                    </label>
+                    {{ form.suggested_date }}
+                    {% if form.suggested_date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.suggested_date.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.repetitions_allowed.id_for_label }}" class="form-label">
+                        <i class="bi bi-arrow-repeat me-1"></i>{{ form.repetitions_allowed.label }}
+                    </label>
+                    {{ form.repetitions_allowed }}
+                    {% if form.repetitions_allowed.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.repetitions_allowed.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.store_in_ok_media_library.id_for_label }}" class="form-label">
+                        <i class="bi bi-archive me-1"></i>{{ form.store_in_ok_media_library.label }}
+                    </label>
+                    {{ form.store_in_ok_media_library }}
+                    {% if form.store_in_ok_media_library.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.store_in_ok_media_library.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exchange Settings Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-share text-info me-2"></i>
+                {% trans 'Exchange Settings' %}
+            </h5>
+            <p class="card-subtitle">{% trans 'Permissions for exchange between citizen media' %}</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.media_authority_exchange_allowed.id_for_label }}" class="form-label">
+                        <i class="bi bi-building me-1"></i>{{ form.media_authority_exchange_allowed.label }}
+                    </label>
+                    {{ form.media_authority_exchange_allowed }}
+                    {% if form.media_authority_exchange_allowed.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.media_authority_exchange_allowed.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">{% trans 'Saxony-Anhalt' %}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.media_authority_exchange_allowed_other_states.id_for_label }}" class="form-label">
+                        <i class="bi bi-globe me-1"></i>{{ form.media_authority_exchange_allowed_other_states.label }}
+                    </label>
+                    {{ form.media_authority_exchange_allowed_other_states }}
+                    {% if form.media_authority_exchange_allowed_other_states.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.media_authority_exchange_allowed_other_states.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">{% trans 'Other Federal States' %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Special Settings Card -->
+    <div class="dashboard-card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-gear text-warning me-2"></i>
+                {% trans 'Special Settings' %}
+            </h5>
+            <p class="card-subtitle">{% trans 'Special settings and youth protection' %}</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Left side: Bildschirmtafel -->
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.is_screen_board.id_for_label }}" class="form-label">
+                        <i class="bi bi-display me-1"></i>{{ form.is_screen_board.label }}
+                    </label>
+                    <div class="form-check">
+                        {{ form.is_screen_board }}
+                        <label class="form-check-label" for="{{ form.is_screen_board.id_for_label }}">
+                            {% trans 'Screen board (duration will be set automatically)' %}
+                        </label>
+                    </div>
+                    {% if form.is_screen_board.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.is_screen_board.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Right side: Jugendschutz -->
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.youth_protection_necessary.id_for_label }}" class="form-label">
+                        <i class="bi bi-shield-exclamation me-1"></i>{{ form.youth_protection_necessary.label }}
+                    </label>
+                    {{ form.youth_protection_necessary }}
+                    {% if form.youth_protection_necessary.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.youth_protection_necessary.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Youth protection category row -->
+            <div class="row" id="youth-protection-category-row" style="display: none;">
+                <div class="col-md-6 offset-md-6 mb-3">
+                    <label for="{{ form.youth_protection_category.id_for_label }}" class="form-label">
+                        <i class="bi bi-shield-check me-1"></i>{{ form.youth_protection_category.label }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    {{ form.youth_protection_category }}
+                    {% if form.youth_protection_category.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.youth_protection_category.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'licenses:licenses' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>{% trans 'Cancel' %}
+                </a>
+                <div>
+                    <button type="button" class="btn btn-outline-warning me-2" onclick="resetForm()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>{% trans 'Reset' %}
+                    </button>
+                    <button type="submit" name="save" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-2"></i>{% trans 'Create License' %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_css %}
 <style>
-    #div_id_youth_protection_category {
-        display: none; /* Initially hide the row */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-label .text-danger {
+    font-size: 1.1em;
+}
+
+.card-subtitle {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+#license-form .form-control {
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+#license-form .form-control:focus {
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+
+#license-form .form-select {
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+}
+
+#license-form .form-select:focus {
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+
+#license-form .form-check-input:checked {
+    background-color: #5e72e4;
+    border-color: #5e72e4;
+}
+
+#license-form .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+
+.form-check-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Custom styles for screen board checkbox */
+.form-check {
+    margin-top: 0.5rem;
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.1em;
+    margin-right: 0.5em;
+    border: 2px solid #6c757d;
+    border-radius: 4px;
+}
+
+.form-check-input:checked {
+    background-color: #5e72e4;
+    border-color: #5e72e4;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
     }
 </style>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const youthProtectionField = document.getElementById("id_youth_protection_necessary");
-    const youthCategoryRow = document.getElementById("div_id_youth_protection_category");
+function resetForm() {
+    if (confirm('{% trans "Are you sure you want to reset all inputs?" %}')) {
+        document.getElementById('license-form').reset();
+        toggleYouthProtectionCategory();
+    }
+}
 
-    function toggleYouthCategoryRow() {
-        if (youthProtectionField.value === "true") {
-            youthCategoryRow.style.display = "block";
+function toggleYouthProtectionCategory() {
+    const youthProtectionField = document.getElementById('id_youth_protection_necessary');
+    const youthCategoryRow = document.getElementById('youth-protection-category-row');
+    
+    if (youthProtectionField && youthCategoryRow) {
+        if (youthProtectionField.value === 'true') {
+            youthCategoryRow.style.display = 'block';
         } else {
-            youthCategoryRow.style.display = "none";
+            youthCategoryRow.style.display = 'none';
         }
     }
+}
 
+function toggleScreenBoard(checkbox) {
+    const durationField = document.getElementById('id_duration');
+    if (durationField) {
+        if (checkbox.checked) {
+            durationField.value = '00:00:10';
+            durationField.disabled = true;
+        } else {
+            durationField.disabled = false;
+            durationField.value = '';
+        }
+    }
+}
+
+// Auto-format duration field
+document.addEventListener('DOMContentLoaded', function() {
+    const durationField = document.getElementById('id_duration');
+    
+    if (durationField) {
+        durationField.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9:]/g, '');
+            
+            // Auto-format as user types
+            if (value.length === 2 && !value.includes(':')) {
+                value = value + ':';
+            } else if (value.length === 5 && value.split(':').length === 2) {
+                value = value + ':';
+            }
+            
+            e.target.value = value;
+        });
+        
+        // Set placeholder
+        durationField.placeholder = '00:00:00';
+    }
+    
+    // Initialize youth protection category visibility
+    toggleYouthProtectionCategory();
+    
+    // Add event listener for youth protection field
+    const youthProtectionField = document.getElementById('id_youth_protection_necessary');
     if (youthProtectionField) {
-        youthProtectionField.addEventListener("change", toggleYouthCategoryRow);
-        toggleYouthCategoryRow(); // Initialize visibility
+        youthProtectionField.addEventListener('change', toggleYouthProtectionCategory);
+    }
+    
+    // Initialize screen board field
+    const screenBoardField = document.getElementById('id_is_screen_board');
+    if (screenBoardField) {
+        toggleScreenBoard(screenBoardField);
     }
 });
-
 </script>
-
-{% endblock content %}
+{% endblock %}
