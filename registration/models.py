@@ -304,7 +304,7 @@ class Notification(models.Model):
 
     class Meta:
         """Define the message IDs."""
-        
+
         verbose_name = _('Notification')
         verbose_name_plural = _('Notifications')
         ordering = ['-priority', '-created_at']
