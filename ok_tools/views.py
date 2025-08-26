@@ -39,7 +39,6 @@ except ImportError:
 @login_required
 def dashboard(request):
     """Dashboard view with statistics and overview for current user"""
-
     # Get counts for stats cards - only for current user
     if License:
         license_count = License.objects.filter(profile__okuser=request.user).count()
@@ -142,7 +141,7 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 def get_recent_activities(request):
-    """Get recent activities for dashboard - only for current user"""
+    """Get recent activities for dashboard - only for current user."""
     activities = []
 
     try:
@@ -201,7 +200,7 @@ def get_recent_activities(request):
     return activities[:5]
 
 def get_notifications(request):
-    """Get system notifications for dashboard - only for current user"""
+    """Get system notifications for dashboard - only for current user."""
     notifications = []
 
     try:
@@ -278,7 +277,7 @@ def get_notifications(request):
     return notifications
 
 def get_monthly_statistics(request):
-    """Get monthly statistics for dashboard chart"""
+    """Get monthly statistics for dashboard chart."""
     stats = {
         'labels': [],
         'licenses': [],
@@ -336,7 +335,7 @@ def get_monthly_statistics(request):
     return stats
 
 def home(request):
-    """Home view - redirects to dashboard if authenticated"""
+    """Home view - redirects to dashboard if authenticated."""
     if request.user.is_authenticated:
         return dashboard(request)
     return render(request, 'home.html')
