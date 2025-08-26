@@ -210,9 +210,7 @@ class Profile(models.Model):
 
 
 class Notification(models.Model):
-    """
-    Model for system notifications that can be displayed to users.
-    """
+    """Model for system notifications that can be displayed to users."""
 
     NOTIFICATION_TYPES = [
         ('info', _('Information')),
@@ -306,6 +304,7 @@ class Notification(models.Model):
 
     class Meta:
         """Define the message IDs."""
+        
         verbose_name = _('Notification')
         verbose_name_plural = _('Notifications')
         ordering = ['-priority', '-created_at']
