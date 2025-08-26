@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
 from import_export import resources
 from import_export.admin import ExportMixin
+from ok_tools.admin import SanitizeGetParamsMixin
 from import_export.fields import Field
 from ok_tools.datetime import TZ
 from rangefilter.filters import DateTimeRangeFilter
@@ -324,7 +325,7 @@ class YearFilter(admin.SimpleListFilter):
                 raise ValueError(msg)
 
 
-class ContributionAdmin(ExportMixin, admin.ModelAdmin):
+class ContributionAdmin(SanitizeGetParamsMixin, ExportMixin, admin.ModelAdmin):
     """How should the Contribution be shown on the admin site."""
 
     resource_classes = [ProgramResource, ContributionResource]

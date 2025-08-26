@@ -10,6 +10,7 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 from import_export import resources
 from import_export.admin import ExportMixin
+from ok_tools.admin import SanitizeGetParamsMixin
 from import_export.fields import Field
 from rangefilter.filters import DateRangeFilter
 import datetime
@@ -131,7 +132,7 @@ class YearFilter(admin.SimpleListFilter):
                 raise ValueError(msg)
 
 
-class ProjectAdmin(ExportMixin, admin.ModelAdmin):
+class ProjectAdmin(SanitizeGetParamsMixin, ExportMixin, admin.ModelAdmin):
     """Admin interface definitions for Projects."""
 
     resource_classes = [ProjectResource]
