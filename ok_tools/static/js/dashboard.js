@@ -1,34 +1,10 @@
 // Dashboard JavaScript functionality
+// Note: Mobile sidebar functionality is now handled in base.html
+// This file focuses on dashboard-specific features like charts, tooltips, and animations
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Sidebar toggle functionality
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebarToggleTop = document.getElementById('sidebarToggleTop');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.querySelector('.main-content');
-
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-        });
-    }
-
-    if (sidebarToggleTop) {
-        sidebarToggleTop.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-        });
-    }
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-        if (window.innerWidth <= 991.98) {
-            if (!sidebar.contains(event.target) &&
-                !sidebarToggle.contains(event.target) &&
-                !sidebarToggleTop.contains(event.target)) {
-                sidebar.classList.remove('show');
-            }
-        }
-    });
+    // Sidebar functionality is now handled in base.html
+    // This file focuses on dashboard-specific functionality
 
     // Set active sidebar link based on current page
     setActiveSidebarLink();

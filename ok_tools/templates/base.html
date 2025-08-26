@@ -88,6 +88,9 @@
         </ul>
     </nav>
 
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Navigation -->
@@ -206,6 +209,58 @@
                     e.preventDefault();
                     comingSoonModal.show();
                 });
+            });
+
+            // Mobile sidebar functionality
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+                body.classList.toggle('sidebar-open');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+                body.classList.remove('sidebar-open');
+            }
+
+            // Toggle sidebar
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            if (sidebarToggleTop) {
+                sidebarToggleTop.addEventListener('click', toggleSidebar);
+            }
+
+            // Close sidebar when clicking overlay
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            // Close sidebar when clicking on sidebar links
+            const sidebarLinks = sidebar.querySelectorAll('.sidebar-link');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', closeSidebar);
+            });
+
+            // Close sidebar on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 992) {
+                    closeSidebar();
+                }
+            });
+
+            // Close sidebar on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeSidebar();
+                }
             });
         });
     </script>

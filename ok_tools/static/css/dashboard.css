@@ -396,10 +396,14 @@ body {
     color: var(--danger-color);
 }
 
+
+
 /* Responsive Design */
 @media (max-width: 991.98px) {
     .sidebar {
         transform: translateX(-100%);
+        z-index: 1001;
+        transition: transform 0.3s ease;
     }
 
     .sidebar.show {
@@ -417,12 +421,41 @@ body {
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        z-index: 1000;
         display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
     .sidebar-overlay.show {
         display: block;
+        opacity: 1;
+    }
+
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    /* Improve sidebar toggle button visibility */
+    .sidebar-toggle {
+        color: #004354 !important;
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        z-index: 1002;
+        transition: color 0.2s ease;
+    }
+
+    .sidebar-toggle:hover {
+        color: #003344 !important;
+    }
+
+    /* Ensure sidebar header is properly positioned */
+    .sidebar-header {
+        position: relative;
+        z-index: 1002;
     }
 }
 
@@ -1067,7 +1100,8 @@ body {
     }
 }
 
-/* Guest Welcome Page Styles */
+
+
 .welcome-icon {
     animation: fadeInUp 0.8s ease-out;
 }
@@ -1102,6 +1136,24 @@ body {
     }
 }
 
+/* Call to Action Card Styles */
+.dashboard-card.call-to-action-card {
+    min-height: auto !important;
+    height: auto !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border: 2px solid #dee2e6 !important;
+}
+
+.dashboard-card.call-to-action-card .card-body {
+    padding: 2rem 1.5rem !important;
+}
+
+.call-to-action-text {
+    line-height: 1.6;
+    font-size: 1.1rem;
+    margin-bottom: 2rem !important;
+}
+
 /* Responsive adjustments for guest welcome */
 @media (max-width: 768px) {
     .display-4 {
@@ -1118,6 +1170,48 @@ body {
 
     .feature-icon i {
         font-size: 2rem !important;
+    }
+
+
+
+    /* Mobile call to action adjustments */
+    .dashboard-card.call-to-action-card .card-body {
+        padding: 1.5rem 1rem !important;
+    }
+
+    .call-to-action-text {
+        font-size: 1rem;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .dashboard-card.call-to-action-card .btn-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    /* Stack buttons vertically on mobile */
+    .dashboard-card.call-to-action-card .d-sm-flex {
+        flex-direction: column !important;
+    }
+
+    .dashboard-card.call-to-action-card .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-card.call-to-action-card .btn:last-child {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-card.call-to-action-card .card-body {
+        padding: 1rem 0.75rem !important;
+    }
+
+    .call-to-action-text {
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem !important;
     }
 }
 
@@ -1649,5 +1743,160 @@ input:disabled {
 
     .contact-info .col-sm-6:last-child {
         margin-bottom: 0;
+    }
+}
+
+/* Additional Mobile Responsiveness Improvements */
+@media (max-width: 768px) {
+    /* Dashboard stats cards */
+    .stats-card {
+        height: auto;
+        min-height: 150px;
+        padding: 1.5rem 1rem;
+    }
+
+    .stats-number {
+        font-size: 1.5rem;
+    }
+
+    .stats-icon {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.25rem;
+    }
+
+    /* Profile section */
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-avatar i {
+        font-size: 3rem;
+    }
+
+    .profile-name {
+        font-size: 1.5rem;
+    }
+
+    .profile-meta {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .profile-status {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Table responsiveness */
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+    }
+
+    /* Chart container */
+    .chart-container {
+        min-height: 250px;
+    }
+
+    #dashboardChart {
+        height: 250px !important;
+        max-height: 250px;
+    }
+
+    /* Quick actions */
+    .dashboard-card .d-grid {
+        gap: 0.75rem !important;
+    }
+
+    .dashboard-card .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Extra small devices */
+    .dashboard-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stats-card {
+        padding: 1rem 0.75rem;
+        min-height: 120px;
+    }
+
+    .stats-number {
+        font-size: 1.25rem;
+    }
+
+    .stats-label {
+        font-size: 0.75rem;
+    }
+
+    .profile-name {
+        font-size: 1.25rem;
+    }
+
+    .profile-email {
+        font-size: 1rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-subtitle {
+        font-size: 0.8rem;
+    }
+
+    /* Top navbar adjustments */
+    .top-navbar {
+        padding: 0.75rem 0;
+        height: auto;
+        min-height: 60px;
+    }
+
+    .top-navbar h4 {
+        font-size: 1.1rem;
+    }
+
+    /* Sidebar toggle button */
+    .sidebar-toggle {
+        padding: 0.25rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Touch-friendly improvements for mobile */
+@media (max-width: 768px) {
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .sidebar-link {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+
+    .dropdown-item {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+
+    /* Improve form field touch targets */
+    .form-control,
+    .form-select,
+    select,
+    input {
+        min-height: 44px;
     }
 }
