@@ -58,37 +58,3 @@ def _custom_get_app_list(self: admin.AdminSite, request, app_label=None):  # typ
 
 
 default_site.get_app_list = _custom_get_app_list.__get__(default_site, admin.AdminSite)
-
-
-class SanitizeGetParamsMixin:
-    """Mixin to normalize GET parameters for admin changelist.
-
-    Some third-party filters (e.g., date range filters) or repeated query
-    parameters may produce list values in request.GET. Django form fields
-    expect strings and will call .strip(), which fails on lists.
-
-    This mixin flattens list values to the last non-empty string before the
-    parent changelist_view processes them.
-    """
-
-    @staticmethod
-    def _flatten_querydict(querydict: Any) -> Any:
-        try:
-            qd = querydict.copy()
-        except Exception:
-            return querydict
-
-        for key, values in qd.lists():
-            if isinstance(values, list):
-                # pick the last non-empty value; fallback to empty string
-                flattened = next((v for v in reversed(values) if v not in (None, "")), "")
-                qd.setlist(key, [flattened])
-        return qd
-
-    def changelist_view(self, request, extra_context=None):  # type: ignore[override]
-        try:
-            request.GET = self._flatten_querydict(request.GET)
-        except Exception:
-            # Fail-safe: proceed without modification
-            pass
-        return super().changelist_view(request, extra_context=extra_context)

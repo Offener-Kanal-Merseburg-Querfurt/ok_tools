@@ -12,16 +12,120 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext as _p
 from import_export import resources
 from import_export.admin import ExportMixin
-from ok_tools.admin import SanitizeGetParamsMixin
 from import_export.fields import Field
 from ok_tools.datetime import TZ
-from rangefilter.filters import DateTimeRangeFilter
+# from rangefilter.filters import DateTimeRangeFilter
 import datetime
 import logging
 import tablib
 
 
 logger = logging.getLogger('django')
+
+
+class CustomDateTimeRangeFilter(admin.FieldListFilter):
+    """Кастомный фильтр для диапазона дат и времени, совместимый с Django 5.2.5."""
+    
+    template = 'admin/filter_datetime_range.html'
+    title = 'Broadcast date'
+    
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        self.field_path = field_path
+        self.parameter_name = field_path
+        self.used_parameters = params
+        super().__init__(field, request, params, model, model_admin, field_path)
+        
+    def choices(self, changelist):
+        return ({
+            'request': self.request,
+            'parameter_name': self.parameter_name,
+            'form': self._get_form(),
+            'title': self.title,
+        }, )
+    
+    def _get_form(self):
+        """Создает форму для фильтра."""
+        from django import forms
+        
+        class DateTimeRangeForm(forms.Form):
+            gte_0 = forms.CharField(
+                label=_('Date from'),
+                required=False,
+                widget=forms.TextInput(attrs={'placeholder': _('From'), 'type': 'date'})
+            )
+            gte_1 = forms.CharField(
+                label=_('Time from'),
+                required=False,
+                widget=forms.TextInput(attrs={'placeholder': _('From'), 'type': 'time'})
+            )
+            lte_0 = forms.CharField(
+                label=_('Date to'),
+                required=False,
+                widget=forms.TextInput(attrs={'placeholder': _('To'), 'type': 'date'})
+            )
+            lte_1 = forms.CharField(
+                label=_('Time to'),
+                required=False,
+                widget=forms.TextInput(attrs={'placeholder': _('To'), 'type': 'time'})
+            )
+        
+        # Создаем словарь с данными для формы
+        form_data = {}
+        for param in self.expected_parameters():
+            if param in self.used_parameters:
+                form_data[param.replace(f'{self.parameter_name}__', '')] = self.used_parameters[param]
+        
+        return DateTimeRangeForm(data=form_data)
+    
+    def queryset(self, request, queryset):
+        """Применяет фильтр к queryset."""
+        gte_date = self.used_parameters.get(f'{self.parameter_name}__gte_0')
+        gte_time = self.used_parameters.get(f'{self.parameter_name}__gte_1')
+        lte_date = self.used_parameters.get(f'{self.parameter_name}__lte_0')
+        lte_time = self.used_parameters.get(f'{self.parameter_name}__lte_1')
+        
+        # Обрабатываем случай, когда параметр может быть списком
+        if isinstance(gte_date, list):
+            gte_date = gte_date[0] if gte_date else None
+        if isinstance(gte_time, list):
+            gte_time = gte_time[0] if gte_time else None
+        if isinstance(lte_date, list):
+            lte_date = lte_date[0] if lte_date else None
+        if isinstance(lte_time, list):
+            lte_time = lte_time[0] if lte_time else None
+        
+        if gte_date:
+            try:
+                gte_datetime = datetime.datetime.strptime(gte_date, '%Y-%m-%d')
+                if gte_time:
+                    gte_time_obj = datetime.datetime.strptime(gte_time, '%H:%M').time()
+                    gte_datetime = datetime.datetime.combine(gte_datetime.date(), gte_time_obj)
+                queryset = queryset.filter(**{f'{self.field_path}__gte': gte_datetime})
+            except ValueError:
+                pass
+        
+        if lte_date:
+            try:
+                lte_datetime = datetime.datetime.strptime(lte_date, '%Y-%m-%d')
+                if lte_time:
+                    lte_time_obj = datetime.datetime.strptime(lte_time, '%H:%M').time()
+                    lte_datetime = datetime.datetime.combine(lte_datetime.date(), lte_time_obj)
+                else:
+                    lte_datetime = datetime.datetime.combine(lte_datetime.date(), datetime.time.max)
+                queryset = queryset.filter(**{f'{self.field_path}__gte': lte_datetime})
+            except ValueError:
+                pass
+        
+        return queryset
+    
+    def expected_parameters(self):
+        """Возвращает ожидаемые параметры."""
+        return [
+            f'{self.parameter_name}__gte_0',
+            f'{self.parameter_name}__gte_1',
+            f'{self.parameter_name}__lte_0',
+            f'{self.parameter_name}__lte_1',
+        ]
 
 
 class ProgramResource(resources.ModelResource):
@@ -325,7 +429,7 @@ class YearFilter(admin.SimpleListFilter):
                 raise ValueError(msg)
 
 
-class ContributionAdmin(SanitizeGetParamsMixin, ExportMixin, admin.ModelAdmin):
+class ContributionAdmin(ExportMixin, admin.ModelAdmin):
     """How should the Contribution be shown on the admin site."""
 
     resource_classes = [ProgramResource, ContributionResource]
@@ -350,7 +454,7 @@ class ContributionAdmin(SanitizeGetParamsMixin, ExportMixin, admin.ModelAdmin):
 
     list_filter = [
         AutocompleteFilterFactory(_('Profile'), 'license__profile'),
-        ('broadcast_date', DateTimeRangeFilter),
+        ('broadcast_date', CustomDateTimeRangeFilter),
         PrimaryFilter,
         YearFilter,
         WeekFilter,
