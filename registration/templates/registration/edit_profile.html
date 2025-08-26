@@ -27,7 +27,7 @@
 <!-- Profile Form -->
 <form method="post" id="profile-form">
     {% csrf_token %}
-    
+
     <!-- Personal Information Card -->
     <div class="dashboard-card mb-4">
         <div class="card-header">
@@ -313,12 +313,12 @@ function resetForm() {
 // Auto-format phone numbers
 document.addEventListener('DOMContentLoaded', function() {
     const phoneInputs = document.querySelectorAll('input[type="text"][name*="phone"], input[type="text"][name*="mobile"]');
-    
+
     phoneInputs.forEach(input => {
         input.addEventListener('input', function(e) {
             // Remove all non-digit characters
             let value = e.target.value.replace(/\D/g, '');
-            
+
             // Format German phone number
             if (value.length > 0) {
                 if (value.startsWith('49')) {
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            
+
             e.target.value = value;
         });
     });

@@ -74,7 +74,7 @@ class CreateLicenseView(generic.CreateView):
     def get_form(self, form_class=None):
         """User of created License is current user."""
         form = super().get_form(form_class)
-        
+
         # Add Bootstrap classes to form fields
         for field_name, field in form.fields.items():
             if hasattr(field.widget, 'attrs'):
@@ -84,7 +84,7 @@ class CreateLicenseView(generic.CreateView):
                     field.widget.attrs.update({'class': 'form-select'})
                 else:
                     field.widget.attrs.update({'class': 'form-control'})
-        
+
         try:
             profile = Profile.objects.get(okuser=self.request.user)
             form.instance.profile = profile

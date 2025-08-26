@@ -1,7 +1,7 @@
 from .models import Gender
 from .models import MediaAuthority
-from .models import Profile
 from .models import Notification
+from .models import Profile
 from .print import generate_registration_form
 from django.contrib import admin
 from django.contrib import messages
@@ -285,7 +285,7 @@ admin.site.register(MediaAuthority, MediaAuthorityAdmin)
 
 class NotificationAdmin(admin.ModelAdmin):
     """Admin interface for Notification model."""
-    
+
     list_display = [
         'title',
         'notification_type',
@@ -297,7 +297,7 @@ class NotificationAdmin(admin.ModelAdmin):
         'created_by',
         'created_at'
     ]
-    
+
     list_filter = [
         'notification_type',
         'is_active',
@@ -305,11 +305,11 @@ class NotificationAdmin(admin.ModelAdmin):
         'start_date',
         'created_at'
     ]
-    
+
     search_fields = ['title', 'message']
-    
+
     list_editable = ['is_active', 'priority']
-    
+
     fieldsets = (
         (_('Basic Information'), {
             'fields': ('title', 'message', 'notification_type', 'icon')
@@ -322,22 +322,22 @@ class NotificationAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     readonly_fields = ['created_at', 'created_by']
-    
+
     def get_readonly_fields(self, request, obj=None):
         """Make created_by readonly when editing existing notification."""
         if obj:  # Editing existing notification
             return self.readonly_fields
         else:  # Creating new notification
             return ['created_at']  # created_by will be auto-filled
-    
+
     def save_model(self, request, obj, form, change):
         """Set created_by to current user if not set."""
         if not change:  # Creating new notification
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
-    
+
     def get_queryset(self, request):
         """Show all notifications for superusers, only active for staff."""
         qs = super().get_queryset(request)

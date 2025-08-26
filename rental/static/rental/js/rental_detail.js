@@ -39,13 +39,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkbox.disabled = false; // Enable checkboxes by default
                 checkbox.checked = false;
             });
-            
+
             // Hide all return forms initially
             const returnForms = document.querySelectorAll('.return-form');
             returnForms.forEach(form => {
                 form.classList.add('d-none');
             });
-            
+
             // Set initial button state only if return button exists
             this.updateReturnButtonState();
         }
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemCard = checkbox.closest('.item-card');
             const itemId = checkbox.dataset.itemId;
             const isChecked = checkbox.checked;
-            
+
             if (isChecked) {
                 itemCard.classList.add('selected-for-return');
                 // Show return form for this item
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     returnForm.classList.add('d-none');
                 }
             }
-            
+
             // Update return button state
             this.updateReturnButtonState();
         }
@@ -128,12 +128,12 @@ document.addEventListener('DOMContentLoaded', function() {
         updateReturnButtonState() {
             const selectedItems = document.querySelectorAll('.item-return-checkbox:checked');
             const returnBtn = document.getElementById('returnBtn');
-            
+
             // Check if return button exists (it might not be rendered if can_return is False)
             if (!returnBtn) {
                 return;
             }
-            
+
             if (selectedItems.length > 0) {
                 returnBtn.disabled = false;
                 returnBtn.className = 'btn btn-success';
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleReturnForms() {
             const returnBtn = document.getElementById('returnBtn');
             if (!returnBtn) return;
-            
+
             const isReturnMode = returnBtn.classList.contains('btn-outline-success') === false;
 
             if (isReturnMode) {
@@ -256,16 +256,16 @@ document.addEventListener('DOMContentLoaded', function() {
         enterReturnMode() {
             const returnBtn = document.getElementById('returnBtn');
             if (!returnBtn) return;
-            
+
             returnBtn.innerHTML = '<i class="fas fa-undo me-1"></i>' + gettext('Exit return mode');
             returnBtn.className = 'btn btn-outline-success';
-            
+
             // Show checkboxes for all items that can be returned
             const checkboxes = document.querySelectorAll('.item-return-checkbox');
             checkboxes.forEach(checkbox => {
                 checkbox.disabled = false;
             });
-            
+
             // Update button state
             this.updateReturnButtonState();
         }
@@ -273,16 +273,16 @@ document.addEventListener('DOMContentLoaded', function() {
         exitReturnMode() {
             const returnBtn = document.getElementById('returnBtn');
             if (!returnBtn) return;
-            
+
             returnBtn.innerHTML = '<i class="fas fa-save me-1"></i>' + gettext('Save return');
             returnBtn.className = 'btn btn-outline-success';
-            
+
             // Hide all return forms
             const returnForms = document.querySelectorAll('.return-form');
             returnForms.forEach(form => {
                 form.classList.add('d-none');
             });
-            
+
             // Uncheck all checkboxes and remove selection styling
             const checkboxes = document.querySelectorAll('.item-return-checkbox');
             checkboxes.forEach(checkbox => {
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const itemCard = checkbox.closest('.item-card');
                 itemCard.classList.remove('selected-for-return');
             });
-            
+
             // Reset button state to initial
             returnBtn.disabled = false;
             returnBtn.className = 'btn btn-outline-success';
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const itemId = checkbox.dataset.itemId;
                 const itemCard = checkbox.closest('.item-card');
                 const returnForm = itemCard.querySelector('.return-form');
-                
+
                 if (returnForm) {
                     const quantity = parseInt(returnForm.querySelector('.return-quantity').value) || 0;
                     const condition = returnForm.querySelector('.return-condition').value;
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get current rental dates from the page
             const rentalData = document.querySelector('#rental-data');
             let startDate, endDate, startTime, endTime;
-            
+
             if (rentalData && rentalData.dataset.startDate && rentalData.dataset.endDate) {
                 // Parse dates from dataset
                 startDate = rentalData.dataset.startDate;
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 startTime = '10:00';
                 endTime = '18:00';
             }
-            
+
             // Set dates and times in the modal
             document.getElementById('issueStartDate').value = startDate;
             document.getElementById('issueEndDate').value = endDate;
@@ -533,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label form-label-sm">${gettext('Requested')}:</label>
-                                    <input type="number" class="form-control form-control-sm issue-quantity" 
+                                    <input type="number" class="form-control form-control-sm issue-quantity"
                                            data-item-id="${itemId}" data-requested="${quantityRequested}"
                                            value="${quantityIssued || quantityRequested}" min="0" max="${quantityRequested}">
                                 </div>
@@ -633,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (data.success) {
                     alert(gettext('Rental successfully issued from reservation'));
-                    
+
                     // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('issueFromReservationModal'));
                     modal.hide();

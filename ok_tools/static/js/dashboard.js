@@ -6,44 +6,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarToggleTop = document.getElementById('sidebarToggleTop');
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.querySelector('.main-content');
-    
+
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', function() {
             sidebar.classList.toggle('show');
         });
     }
-    
+
     if (sidebarToggleTop) {
         sidebarToggleTop.addEventListener('click', function() {
             sidebar.classList.toggle('show');
         });
     }
-    
+
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(event) {
         if (window.innerWidth <= 991.98) {
-            if (!sidebar.contains(event.target) && 
-                !sidebarToggle.contains(event.target) && 
+            if (!sidebar.contains(event.target) &&
+                !sidebarToggle.contains(event.target) &&
                 !sidebarToggleTop.contains(event.target)) {
                 sidebar.classList.remove('show');
             }
         }
     });
-    
+
     // Set active sidebar link based on current page
     setActiveSidebarLink();
-    
+
     // Initialize tooltips
     initializeTooltips();
-    
+
     // Initialize charts if Chart.js is available and data is present
     if (typeof Chart !== 'undefined') {
         initializeCharts();
     }
-    
+
     // Add fade-in animation to dashboard cards
     addFadeInAnimation();
-    
+
     // Cleanup charts when page is unloaded
     window.addEventListener('beforeunload', cleanupCharts);
 });
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function setActiveSidebarLink() {
     const currentPath = window.location.pathname;
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    
+
     sidebarLinks.forEach(link => {
         const href = link.getAttribute('href');
         if (href && currentPath.includes(href.replace('/', ''))) {
@@ -76,7 +76,7 @@ function initializeCharts() {
         console.warn('Chart.js is not loaded');
         return;
     }
-    
+
     // Check if monthly stats data is available
     if (!window.monthlyStats || !window.monthlyStats.labels || !Array.isArray(window.monthlyStats.labels) || window.monthlyStats.labels.length === 0) {
         console.warn('Monthly stats data not available or empty, showing placeholder');
@@ -84,7 +84,7 @@ function initializeCharts() {
         showChartPlaceholder();
         return;
     }
-    
+
     const ctx = document.getElementById('dashboardChart');
     if (ctx) {
         // Destroy existing chart if it exists and is a valid Chart.js instance
@@ -95,7 +95,7 @@ function initializeCharts() {
                 console.warn('Error destroying existing chart:', e);
             }
         }
-        
+
         // Create new chart with real data
         try {
             window.dashboardChart = new Chart(ctx, {
@@ -191,7 +191,7 @@ function addFadeInAnimation() {
             }
         });
     });
-    
+
     cards.forEach(card => {
         observer.observe(card);
     });
@@ -225,9 +225,9 @@ function showNotification(message, type = 'info') {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {

@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusFilter = document.getElementById('statusFilter');
     const categoryFilter = document.getElementById('categoryFilter');
     const searchInput = document.getElementById('searchInput');
-    
+
     [statusFilter, categoryFilter, searchInput].forEach(filter => {
         filter.addEventListener('change', filterLicenses);
         if (filter === searchInput) {
@@ -191,12 +191,12 @@ function filterLicenses() {
     const status = document.getElementById('statusFilter').value;
     const category = document.getElementById('categoryFilter').value;
     const search = document.getElementById('searchInput').value.toLowerCase();
-    
+
     const rows = document.querySelectorAll('#licensesTable tbody tr');
-    
+
     rows.forEach(row => {
         let show = true;
-        
+
         // Status filter
         if (status) {
             const statusText = row.querySelector('td:nth-child(3)').textContent.trim();
@@ -206,7 +206,7 @@ function filterLicenses() {
                 show = false;
             }
         }
-        
+
         // Category filter
         if (category) {
             const categoryText = row.querySelector('td:nth-child(2)').textContent.trim();
@@ -234,7 +234,7 @@ function filterLicenses() {
                 show = false;
             }
         }
-        
+
         // Search filter
         if (search) {
             const text = row.textContent.toLowerCase();
@@ -242,7 +242,7 @@ function filterLicenses() {
                 show = false;
             }
         }
-        
+
         row.style.display = show ? '' : 'none';
     });
 }

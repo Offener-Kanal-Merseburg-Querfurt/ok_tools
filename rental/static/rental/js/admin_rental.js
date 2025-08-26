@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         this.loadUserInventory(u.id);
         // Check if overlay is removed when period is selected
         this.loadInventoryIfPeriodSelected();
-        
+
         // Update action buttons
         this.updateActionButtons();
       } catch (error) {
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <strong>${u.name || gettext('Unknown')}</strong><br>
           <small>${gettext('Status')}: ${u.member_status || gettext('User')} | ${gettext('Authorized')}: ${u.permissions || 'MSA'}</small>
         </div>`;
-      
+
       // Update right panel to show only selected user
       this.updateUserSelectionPanel(u);
     }
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateUserSelectionPanel(u) {
       const container = document.getElementById('userResults');
       if (!container) return;
-      
+
       // Clear the container and show only selected user
       container.innerHTML = `
         <div class="list-group-item list-group-item-success">
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </button>
         </div>
       `;
-      
+
       // Add event listener for change user button
       const changeUserBtn = container.querySelector('#changeUserBtn');
       if (changeUserBtn) {
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resetUserSelection() {
       // Clear selected user
       this.selectedUser = null;
-      
+
       // Reset left panel
       const selectedUserBox = document.getElementById('selectedUser');
       if (selectedUserBox) {
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <small><i class="fas fa-info-circle me-1"></i>${gettext('Select user')}</small>
           </div>`;
       }
-      
+
       // Reset right panel to show search
       const container = document.getElementById('userResults');
       if (container) {
@@ -266,22 +266,22 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         `;
       }
-      
+
       // Disable steps that require user selection
       this.disableStep(3);
       this.disableStep(4);
       this.disableStep(5);
-      
+
       // Clear inventory panel
       const inventoryPanel = document.querySelector('.inventory-selection-panel');
       if (inventoryPanel) {
         inventoryPanel.classList.add('d-none');
       }
-      
+
       // Clear selected items
       this.selectedItems = [];
       this.updateSelectedItemsUI();
-      
+
       // Update action buttons
       this.updateActionButtons();
     }
@@ -377,28 +377,28 @@ document.addEventListener('DOMContentLoaded', function() {
       const locationSelect = document.getElementById('locationFilter');
       if (locationSelect && options.locations) {
         locationSelect.innerHTML = '<option value="all">' + gettext('All Locations') + '</option>';
-        
+
         // Recursive function to add location options with proper indentation
         const addLocationOptions = (locations, level = 0) => {
           locations.forEach(location => {
             const option = document.createElement('option');
             option.value = location.full_path;
-            
+
             // Create indentation based on level
             const indent = '&nbsp;'.repeat(level * 4);
             option.innerHTML = indent + location.name;
             option.dataset.level = level;
             option.dataset.fullPath = location.full_path;
-            
+
             locationSelect.appendChild(option);
-            
+
             // Add children recursively
             if (location.children && location.children.length > 0) {
               addLocationOptions(location.children, level + 1);
             }
           });
         };
-        
+
         addLocationOptions(options.locations);
       }
     }
@@ -460,11 +460,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     formatLocationPath(path) {
       if (!path) return '';
-      
+
       // Split path by ' -> ' and format with visual hierarchy
       const parts = path.split(' -> ');
       if (parts.length === 1) return parts[0];
-      
+
       return parts.map((part, index) => {
         const indent = '&nbsp;'.repeat(index * 2);
         const separator = index < parts.length - 1 ? ' → ' : '';
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
           btn.innerHTML = '<i class="fas fa-sitemap me-1"></i>' + gettext('Group by Location');
         }
       }
-      
+
       // Re-render inventory if we have items
       if (this.selectedUser) {
         this.loadUserInventory(this.selectedUser.id);
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderInventory(items) {
       const grid = document.getElementById('inventoryGrid');
       if (!grid) return;
-    
+
       grid.innerHTML = '';
 
       if (items.length === 0) {
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
       items.forEach(it => {
         const col = document.createElement('div');
         col.className = 'col-md-6 col-lg-4 mb-3 d-flex';
-        
+
         // Create item card with location path
         const cardHTML = this.createItemCardHTML(it);
         const locationPathHTML = `
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <span class="location-hierarchy">${this.formatLocationPath(it.location_path || '')}</span>
           </div>
         `;
-        
+
         // Insert location path after the category line
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = cardHTML;
@@ -532,12 +532,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (categoryLine) {
           categoryLine.insertAdjacentHTML('afterend', locationPathHTML);
         }
-        
+
         col.innerHTML = tempDiv.innerHTML;
-        
+
         const card = col.querySelector('.item-card');
         this.bindItemCardEvents(card, it);
-        
+
         grid.appendChild(col);
       });
     }
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderInventoryGrouped(items, grid) {
       // Group items by location
       const locationGroups = {};
-      
+
       items.forEach(item => {
         const locationPath = item.location_path || gettext('Unknown Location');
         if (!locationGroups[locationPath]) {
@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       sortedLocations.forEach(locationPath => {
         const itemsInLocation = locationGroups[locationPath];
-        
+
         // Create location header
         const locationHeader = document.createElement('div');
         locationHeader.className = 'col-12 mb-3';
@@ -579,18 +579,18 @@ document.addEventListener('DOMContentLoaded', function() {
         itemsRow.className = 'col-12 mb-3';
         const itemsContainer = document.createElement('div');
         itemsContainer.className = 'row';
-        
+
         itemsInLocation.forEach(item => {
           const col = document.createElement('div');
           col.className = 'col-md-6 col-lg-4 mb-3 d-flex';
           col.innerHTML = this.createItemCardHTML(item);
-          
+
           const card = col.querySelector('.item-card');
           this.bindItemCardEvents(card, item);
-          
+
           itemsContainer.appendChild(col);
         });
-        
+
         itemsRow.appendChild(itemsContainer);
         grid.appendChild(itemsRow);
       });
@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         this.enableStep(4);
       }
-      
+
       // Update action buttons based on selection
       this.updateActionButtons();
     }
@@ -768,7 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.selectedItems.length === 0) {
           this.disableStep(5);
         }
-        
+
         // Update action buttons based on selection
         this.updateActionButtons();
       } else {
@@ -785,7 +785,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.selectedItems.length === 0 && this.selectedRooms.length === 0) {
           this.disableStep(5);
         }
-        
+
         // Update action buttons based on selection
         this.updateActionButtons();
       } else {
@@ -853,7 +853,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateActionButtons() {
       const reserveBtn = document.getElementById('reserveBtn');
       const issueBtn = document.getElementById('issueBtn');
-      
+
       if (!reserveBtn || !issueBtn) return;
 
       // If only rooms are selected, disable issue button
@@ -1142,7 +1142,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (result.success) {
           const actionText = finalAction === 'issued' ? 'issued' : 'reserved';
-          const roomNote = this.selectedRooms && this.selectedRooms.length > 0 ? 
+          const roomNote = this.selectedRooms && this.selectedRooms.length > 0 ?
             gettext(' Rooms will automatically return after the scheduled time.') : '';
           alert(gettext(`Rental successfully ${actionText}! ID: ${result.rental_id}${roomNote}`));
           this.resetForm();
@@ -1181,7 +1181,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update UI for all sections
       this.updateSelectedItemsUI();
       this.updateSelectedRoomsUI();
-      
+
       // Update action buttons
       this.updateActionButtons();
 
@@ -1251,7 +1251,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     disableStep(n) {
       const steps = document.querySelectorAll('.workflow-step');
-      
+
       // Disable step n and all future steps
       for (let i = n-1; i < steps.length; i++) {
         if (steps[i]) {
@@ -1259,7 +1259,7 @@ document.addEventListener('DOMContentLoaded', function() {
           steps[i].querySelectorAll('input,textarea,button').forEach(el => el.disabled = true);
         }
       }
-      
+
       // Mark step n-1 as active if it exists
       if (n > 1 && steps[n-2]) {
         steps[n-2].classList.remove('completed');
@@ -1281,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update UI for all sections
         this.updateSelectedItemsUI();
         this.updateSelectedRoomsUI();
-        
+
         // Update action buttons
         this.updateActionButtons();
 
@@ -1522,7 +1522,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update UI
       this.updateSelectedItemsUI();
       this.enableStep(5);
-      
+
       // Update action buttons based on selection
       this.updateActionButtons();
 
@@ -1916,13 +1916,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Group consecutive occupied slots for the same user
         const groupedSlots = this.groupConsecutiveSlots(daySchedule.slots);
-        
+
         groupedSlots.forEach(group => {
           if (group.type === 'occupied') {
             // Render grouped occupied slots
             const gridColumn = group.startIndex + 1; // +1 because grid starts from 1
             const gridSpan = group.slots.length;
-            
+
             html += `<div class="timeline-slot occupied grouped" style="grid-column: ${gridColumn} / span ${gridSpan};" title="${this.getGroupedSlotTooltip(group)}">`;
             html += `<div class="slot-details">`;
             const userName = group.userName || gettext('Unknown user');
@@ -1965,15 +1965,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     groupConsecutiveSlots(slots) {
       if (!slots || slots.length === 0) return [];
-      
+
       const groups = [];
       let currentGroup = null;
-      
+
       slots.forEach((slot, index) => {
         if (slot.status === 'occupied' && slot.info) {
           // Check if this slot can be grouped with the current group
-          if (currentGroup && 
-              currentGroup.type === 'occupied' && 
+          if (currentGroup &&
+              currentGroup.type === 'occupied' &&
               currentGroup.userName === slot.info.user_name &&
               currentGroup.project === slot.info.project &&
               currentGroup.status === slot.info.status) {
@@ -2015,12 +2015,12 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       });
-      
+
       // Add the last group if exists
       if (currentGroup) {
         groups.push(currentGroup);
       }
-      
+
       return groups;
     }
 
@@ -2028,7 +2028,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (group.type === 'available') {
         return gettext('Available');
       }
-      
+
       const userName = group.userName || gettext('Unknown user');
       const project = group.project || gettext('No project');
       const status = group.status || 'unknown';
@@ -2156,19 +2156,19 @@ document.addEventListener('DOMContentLoaded', function() {
       const getSmartStartDate = () => {
         const now = new Date();
         const currentHour = now.getHours();
-        
+
         // If current time is after 18:00, suggest next day
         if (currentHour >= 18) {
           const tomorrow = new Date(now);
           tomorrow.setDate(tomorrow.getDate() + 1);
-          return tomorrow.getFullYear() + '-' + 
-                 String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + 
+          return tomorrow.getFullYear() + '-' +
+                 String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' +
                  String(tomorrow.getDate()).padStart(2, '0');
         }
-        
+
         // If it's during working hours, use today
-        return now.getFullYear() + '-' + 
-               String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+        return now.getFullYear() + '-' +
+               String(now.getMonth() + 1).padStart(2, '0') + '-' +
                String(now.getDate()).padStart(2, '0');
       };
 
@@ -2271,27 +2271,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Smart time calculation function
         const getSmartStartTime = (date) => {
           const now = new Date();
-          const today = now.getFullYear() + '-' + 
-                       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+          const today = now.getFullYear() + '-' +
+                       String(now.getMonth() + 1).padStart(2, '0') + '-' +
                        String(now.getDate()).padStart(2, '0');
-          
+
           if (date === today) {
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
-            
+
             // If current time is after 18:00, suggest tomorrow
             if (currentHour >= 18) {
               return null; // Will be handled by date logic
             }
-            
+
             // Round up to next 30-minute slot
             let suggestedHour = currentHour;
             let suggestedMinute = currentMinute <= 30 ? 30 : 0;
-            
+
             if (suggestedMinute === 0) {
               suggestedHour += 1;
             }
-            
+
             // Ensure time is within working hours (10:00-18:00)
             if (suggestedHour < 10) {
               suggestedHour = 10;
@@ -2299,11 +2299,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (suggestedHour >= 18) {
               return null; // Will be handled by date logic
             }
-            
+
             const suggestedTime = `${suggestedHour.toString().padStart(2, '0')}:${suggestedMinute.toString().padStart(2, '0')}`;
             return suggestedTime;
           }
-          
+
           return '10:00'; // Default for future dates
         };
 
@@ -2313,43 +2313,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
           // Set smart initial values (use already calculated date)
           const smartStartTime = getSmartStartTime(smartStartDate);
-          
+
           if (startDateInput) {
             startDateInput.value = smartStartDate;
           }
-          
+
           if (smartStartTime) {
             startTimeSelect.value = smartStartTime;
           } else {
             startTimeSelect.value = '10:00';
           }
-          
+
           // Calculate and set end time
           const startTime = startTimeSelect.value;
           const startHour = parseInt(startTime.split(':')[0]);
           const startMinute = parseInt(startTime.split(':')[1]);
-          
+
           let endHour = startHour;
           let endMinute = startMinute + 30;
-          
+
           if (endMinute >= 60) {
             endMinute = 0;
             endHour += 1;
           }
-          
+
           if (endHour > 18) {
             endHour = 18;
             endMinute = 0;
           }
-          
+
           const initialEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
           endTimeSelect.value = initialEndTime;
-          
+
                   // Also update end date to match start date initially
         if (endDateInput && !differentEndDateCheckbox?.checked) {
           endDateInput.value = smartStartDate;
         }
-        
+
         // Add change event listener for end date
         if (endDateInput) {
           endDateInput.addEventListener('change', () => {
@@ -2367,33 +2367,33 @@ document.addEventListener('DOMContentLoaded', function() {
               if (endDateInput && !differentEndDateCheckbox?.checked) {
                 endDateInput.value = startDateInput.value;
               }
-              
+
               // Update start time based on new date
               const smartStartTime = getSmartStartTime(startDateInput.value);
               if (smartStartTime && smartStartTime !== startTimeSelect.value) {
                 startTimeSelect.value = smartStartTime;
-                
+
                 // Recalculate end time
                 const startHour = parseInt(smartStartTime.split(':')[0]);
                 const startMinute = parseInt(smartStartTime.split(':')[1]);
-                
+
                 let endHour = startHour;
                 let endMinute = startMinute + 30;
-                
+
                 if (endMinute >= 60) {
                   endMinute = 0;
                   endHour += 1;
                 }
-                
+
                 if (endHour > 18) {
                   endHour = 18;
                   endMinute = 0;
                 }
-                
+
                 const newEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
                 endTimeSelect.value = newEndTime;
               }
-              
+
               // Check availability after date change
               setTimeout(() => {
                 this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
@@ -2424,7 +2424,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const newEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
             endTimeSelect.value = newEndTime;
-            
+
             // Check availability after time change
             setTimeout(() => {
               this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, newEndTime, availabilityStatus);
@@ -2433,7 +2433,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                   // Add change event listener for end time
         endTimeSelect.addEventListener('change', () => {
-          
+
           // Check availability after end time change
           setTimeout(() => {
             this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
@@ -2448,14 +2448,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!differentEndDateCheckbox.checked) {
               endDateInput.value = document.getElementById('roomStartDate').value;
             }
-            
+
             // Check availability after checkbox change
             setTimeout(() => {
               this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
             }, 300);
           });
         }
-        
+
         // Initial availability check
         setTimeout(() => {
           this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
@@ -2553,7 +2553,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update UI
       this.updateSelectedRoomsUI();
       this.enableStep(5);
-      
+
       // Update action buttons based on selection
       this.updateActionButtons();
 
@@ -2598,13 +2598,13 @@ document.addEventListener('DOMContentLoaded', function() {
     async showRentalDetails(userId, type) {
       try {
         const url = URLS.userRentalDetails.replace('{userId}', userId);
-        
+
         const resp = await fetch(`${url}?type=${type}`);
-        
+
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
         }
-        
+
         const data = await resp.json();
 
         // Show appropriate modal based on type
@@ -2634,7 +2634,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       } catch (error) {
         console.error('Error loading rental details:', error);
-        
+
         // Show error in the appropriate modal content
         let contentId;
         switch (type) {
@@ -2650,7 +2650,7 @@ document.addEventListener('DOMContentLoaded', function() {
           default:
             return;
         }
-        
+
         const container = document.getElementById(contentId);
         if (container) {
           container.innerHTML = `
@@ -2663,7 +2663,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </button>
             </div>`;
         }
-        
+
         // Still show the modal to display the error
         let modalId;
         switch (type) {
@@ -2679,7 +2679,7 @@ document.addEventListener('DOMContentLoaded', function() {
           default:
             return;
         }
-        
+
         const modal = new bootstrap.Modal(document.getElementById(modalId));
         modal.show();
       }
@@ -2816,28 +2816,28 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="card-body">
               <div class="rental-info-row">
                 <div class="rental-info-item">
-                  <strong>${gettext('Purpose')}:</strong> 
+                  <strong>${gettext('Purpose')}:</strong>
                   <span>${purpose}</span>
                 </div>
                 <div class="rental-info-item">
-                  <strong>${gettext('Created by')}:</strong> 
+                  <strong>${gettext('Created by')}:</strong>
                   <span>${createdBy}</span>
                 </div>
               </div>
               <div class="rental-info-row">
                 <div class="rental-info-item">
-                  <strong>${gettext('Planned from')}:</strong> 
+                  <strong>${gettext('Planned from')}:</strong>
                   <span>${startDate}</span>
                 </div>
                 <div class="rental-info-item">
-                  <strong>${gettext('Planned until')}:</strong> 
+                  <strong>${gettext('Planned until')}:</strong>
                   <span>${endDate}</span>
                 </div>
               </div>
               ${type === 'returned' ? `
               <div class="rental-info-row">
                 <div class="rental-info-item">
-                  <strong>${gettext('Returned')}:</strong> 
+                  <strong>${gettext('Returned')}:</strong>
                   <span>${actualEndDate}</span>
                 </div>
               </div>` : ''}
@@ -3626,13 +3626,13 @@ document.addEventListener('DOMContentLoaded', function() {
     async checkRoomAvailability(roomId, startDate, startTime, endDate, endTime, statusElement) {
         try {
             const url = `${URLS.checkRoomAvailability}?room_id=${roomId}&start_date=${startDate}&start_time=${startTime}&end_date=${endDate}&end_time=${endTime}`;
-            
+
             const resp = await fetch(url);
             const data = await resp.json();
 
             if (data.success) {
                 const addRoomBtn = document.getElementById('addRoomToRentalBtn');
-                
+
                 if (data.is_available) {
                     statusElement.innerHTML = `
                         <div class="alert alert-success">
@@ -3651,7 +3651,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="alert alert-danger">
                             <i class="fas fa-times-circle me-2"></i>
                             ${gettext('Room is not available for the selected period.')}
-                            ${data.conflicts && data.conflicts.length > 0 ? 
+                            ${data.conflicts && data.conflicts.length > 0 ?
                                 `<br><small class="mt-2"><strong>${gettext('Conflicts:')}</strong><br>${data.conflicts.join('<br>')}</small>` : ''}
                         </div>
                     `;
@@ -3697,7 +3697,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async finalRoomAvailabilityCheck(roomId, startDate, startTime, endDate, endTime, onSuccess) {
         try {
             const url = `${URLS.checkRoomAvailability}?room_id=${roomId}&start_date=${startDate}&start_time=${startTime}&end_date=${endDate}&end_time=${endTime}`;
-            
+
             const resp = await fetch(url);
             const data = await resp.json();
 
@@ -3706,9 +3706,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 onSuccess();
             } else {
                 // Room is not available, show error
-                const conflicts = data.conflicts && data.conflicts.length > 0 ? 
+                const conflicts = data.conflicts && data.conflicts.length > 0 ?
                     `<br><small class="mt-2"><strong>${gettext('Conflicts:')}</strong><br>${data.conflicts.join('<br>')}</small>` : '';
-                
+
                 alert(gettext('Room is not available for the selected period.') + conflicts);
             }
         } catch (error) {
@@ -3733,7 +3733,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const data = await resp.json();
             const rental = data.rentals && data.rentals.find(r => r.id == rentalId);
-            
+
             if (!rental) {
                 alert(gettext('Rental not found'));
                 return;
@@ -3757,7 +3757,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Set default dates and times
             const startDate = new Date(rental.requested_start_date);
             const endDate = new Date(rental.requested_end_date);
-            
+
             document.getElementById('issueStartDate').value = startDate.toISOString().split('T')[0];
             document.getElementById('issueEndDate').value = endDate.toISOString().split('T')[0];
             document.getElementById('issueStartTime').value = '10:00';
@@ -3831,7 +3831,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label form-label-sm">${gettext('Requested')}:</label>
-                                <input type="number" class="form-control form-control-sm issue-quantity" 
+                                <input type="number" class="form-control form-control-sm issue-quantity"
                                        data-item-id="${item.id}" data-requested="${quantityRequested}"
                                        value="${quantityIssued || quantityRequested}" min="0" max="${quantityRequested}">
                             </div>
@@ -3935,7 +3935,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.success) {
                 alert(gettext('Rental successfully issued from reservation'));
-                
+
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('issueFromReservationModal'));
                 modal.hide();

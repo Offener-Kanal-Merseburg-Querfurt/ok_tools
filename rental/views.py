@@ -450,10 +450,10 @@ def api_create_rental_user(request):
     # Security check: users can only create rentals for themselves
     if request.method != 'POST':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
-    
+
     try:
         data = json.loads(request.body)
-        
+
         # Ensure user is creating rental for themselves
         if data.get('user_id') != request.user.id:
             return JsonResponse({'error': _('You can only create rentals for yourself')}, status=403)
@@ -1003,10 +1003,10 @@ def api_get_filter_options(request):
     def get_location_tree():
         """Build hierarchical location tree."""
         locations = []
-        
+
         # Get root locations (no parent)
         root_locations = Location.objects.filter(parent__isnull=True).order_by('name')
-        
+
         for root in root_locations:
             location_data = {
                 'id': root.id,
@@ -1015,7 +1015,7 @@ def api_get_filter_options(request):
                 'level': 0,
                 'children': []
             }
-            
+
             # Recursively add children
             def add_children(parent_location, parent_data, level):
                 children = Location.objects.filter(parent=parent_location).order_by('name')
@@ -1029,10 +1029,10 @@ def api_get_filter_options(request):
                     }
                     parent_data['children'].append(child_data)
                     add_children(child, child_data, level + 1)
-            
+
             add_children(root, location_data, 1)
             locations.append(location_data)
-        
+
         return locations
 
     # Get categories
@@ -2481,7 +2481,7 @@ def api_get_room_schedule(request):
                     5: 'SA',  # Saturday
                     6: 'SO'   # Sunday
                 }
-                
+
                 day_schedule = {
                     'date': current_date.isoformat(),
                     'day_name': current_date.strftime('%A'),  # Monday, Tuesday, etc.
@@ -2790,10 +2790,10 @@ def api_get_filter_options_user(request):
     def get_location_tree():
         """Build hierarchical location tree."""
         locations = []
-        
+
         # Get root locations (no parent)
         root_locations = Location.objects.filter(parent__isnull=True).order_by('name')
-        
+
         for root in root_locations:
             location_data = {
                 'id': root.id,
@@ -2802,7 +2802,7 @@ def api_get_filter_options_user(request):
                 'level': 0,
                 'children': []
             }
-            
+
             # Recursively add children
             def add_children(parent_location, parent_data, level):
                 children = Location.objects.filter(parent=parent_location).order_by('name')
@@ -2816,10 +2816,10 @@ def api_get_filter_options_user(request):
                     }
                     parent_data['children'].append(child_data)
                     add_children(child, child_data, level + 1)
-            
+
             add_children(root, location_data, 1)
             locations.append(location_data)
-        
+
         return locations
 
     # Get categories
@@ -2841,7 +2841,7 @@ def api_get_user_inventory_simple(request, user_id):
     # Security check: users can only access their own inventory
     if request.user.id != user_id and not request.user.is_staff:
         return JsonResponse({'error': 'Access denied'}, status=403)
-    
+
     user = get_object_or_404(OKUser, id=user_id)
     profile = getattr(user, 'profile', None)
     if not profile:
@@ -2950,7 +2950,7 @@ def api_get_user_inventory_simple(request, user_id):
     return JsonResponse({'inventory': result})
 
 
-@login_required  
+@login_required
 def api_get_equipment_sets_user(request):
     """
     Get available equipment sets (user version).
@@ -3120,7 +3120,7 @@ def api_get_room_schedule_user(request):
                     5: 'SA',  # Saturday
                     6: 'SO'   # Sunday
                 }
-                
+
                 day_schedule = {
                     'date': current_date.isoformat(),
                     'day_name': current_date.strftime('%A'),
@@ -3203,16 +3203,16 @@ def api_get_user_rental_details(request):
     Returns rental details filtered by type (active, returned, overdue).
     """
     from django.utils import timezone
-    
+
     try:
         rental_type = request.GET.get('type', 'active')
-        
+
         # Get user's rental requests based on type
         user_rentals = RentalRequest.objects.select_related('created_by').prefetch_related(
             'items__inventory_item',
             'room_rentals__room'
         ).filter(user=request.user)
-        
+
         if rental_type == 'active':
             # Active rentals are those that are reserved/issued and NOT expired
             rentals = user_rentals.filter(
@@ -3236,7 +3236,7 @@ def api_get_user_rental_details(request):
                 'success': False,
                 'error': 'Invalid type parameter'
             }, status=400)
-        
+
         # Prepare rental data
         rental_data = []
         for rental in rentals:
@@ -3244,7 +3244,7 @@ def api_get_user_rental_details(request):
             rental_items = []
             for item in rental.items.all():
                 outstanding = (item.quantity_issued or 0) - (item.quantity_returned or 0)
-                
+
                 # Safely get inventory item info
                 inventory_item = item.inventory_item
                 if inventory_item:
@@ -3253,7 +3253,7 @@ def api_get_user_rental_details(request):
                 else:
                     description = 'Unknown item'
                     inventory_number = 'N/A'
-                
+
                 rental_items.append({
                     'id': item.id if item else 0,
                     'inventory_item': {
@@ -3265,7 +3265,7 @@ def api_get_user_rental_details(request):
                     'quantity_returned': item.quantity_returned or 0,
                     'outstanding': outstanding
                 })
-            
+
             # Get room rentals
             room_rentals = []
             for room_rental in rental.room_rentals.all():
@@ -3279,7 +3279,7 @@ def api_get_user_rental_details(request):
                     room_name = 'Unknown room'
                     room_capacity = 0
                     room_location = 'Location not specified'
-                
+
                 room_rentals.append({
                     'room': {
                         'name': room_name,
@@ -3289,12 +3289,12 @@ def api_get_user_rental_details(request):
                     'people_count': room_rental.people_count or 0,
                     'notes': room_rental.notes or ''
                 })
-            
+
             # Calculate days overdue if applicable
             days_overdue = 0
             if rental_type == 'overdue' and rental.requested_end_date:
                 days_overdue = (timezone.now().date() - rental.requested_end_date.date()).days
-            
+
             rental_data.append({
                 'id': rental.id if rental else 0,
                 'project_name': rental.project_name or '',
@@ -3307,7 +3307,7 @@ def api_get_user_rental_details(request):
                 'room_rentals': room_rentals or [],
                 'days_overdue': days_overdue or 0
             })
-        
+
         return JsonResponse({
             'success': True,
             'type': rental_type or '',
@@ -3317,7 +3317,7 @@ def api_get_user_rental_details(request):
             },
             'rentals': rental_data or []
         })
-        
+
     except Exception as e:
         import traceback
         print(f"Error in api_get_user_rental_details: {e}")
@@ -3332,52 +3332,52 @@ def api_get_user_rental_details(request):
 def api_check_room_availability(request):
     """
     Check if a room is available for a specific time period.
-    
+
     Args:
         request: HTTP request object with room_id, start_date, start_time, end_date, end_time
-        
+
     Returns:
         JsonResponse: Availability status and any conflicts
     """
     if request.method != 'GET':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
-    
+
     try:
         room_id = request.GET.get('room_id')
         start_date = request.GET.get('start_date')
         start_time = request.GET.get('start_time')
         end_date = request.GET.get('end_date')
         end_time = request.GET.get('end_time')
-        
+
         if not all([room_id, start_date, start_time, end_date, end_time]):
             return JsonResponse({'error': _('Missing required parameters')}, status=400)
-        
+
         # Parse dates and times
         from django.utils import timezone
         from django.utils.dateparse import parse_datetime
-        
+
         start_datetime_str = f"{start_date}T{start_time}"
         end_datetime_str = f"{end_date}T{end_time}"
-        
+
         start_datetime = parse_datetime(start_datetime_str)
         end_datetime = parse_datetime(end_datetime_str)
-        
+
         if not start_datetime or not end_datetime:
             return JsonResponse({'error': _('Invalid date/time format')}, status=400)
-        
+
         # Convert naive datetime to aware datetime if needed
         if timezone.is_naive(start_datetime):
             start_datetime = timezone.make_aware(start_datetime)
         if timezone.is_naive(end_datetime):
             end_datetime = timezone.make_aware(end_datetime)
-        
+
         # Get room
         from .models import Room
         room = get_object_or_404(Room, id=room_id)
-        
+
         # Check if room is available for the specified time
         is_available = room.is_available_for_time(start_datetime, end_datetime)
-        
+
         if is_available:
             return JsonResponse({
                 'success': True,
@@ -3388,11 +3388,11 @@ def api_check_room_availability(request):
             # Get conflicting rentals for more detailed information
             conflicts = room.get_conflicting_rentals(start_datetime, end_datetime)
             conflict_info = []
-            
+
             for conflict in conflicts:
                 user = conflict.rental_request.user
                 user_name = _("Unknown user")
-                
+
                 # Try to get name from profile
                 try:
                     if hasattr(user, 'profile') and user.profile:
@@ -3413,18 +3413,18 @@ def api_check_room_availability(request):
                         user_name = _("User #{user_id}").format(user_id=user.id)
                 except:
                     user_name = _("User #{user_id}").format(user_id=user.id)
-                
+
                 project = conflict.rental_request.project_name
                 status = conflict.rental_request.get_status_display()
                 conflict_info.append(f"{user_name} ({project}) - {status}")
-            
+
             return JsonResponse({
                 'success': True,
                 'is_available': False,
                 'message': _('Room is not available for the selected period.'),
                 'conflicts': conflict_info
             })
-            
+
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
@@ -3434,16 +3434,16 @@ def api_check_room_availability(request):
 def api_issue_from_reservation(request):
     """
     Issue a rental from reservation status with ability to adjust positions and dates.
-    
+
     Args:
         request: HTTP request object with rental_id, start_date, end_date, created_by, notes, item_quantities
-        
+
     Returns:
         JsonResponse: Success status and message
     """
     if request.method != 'POST':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
-    
+
     try:
         data = json.loads(request.body)
         rental_id = data.get('rental_id')
@@ -3452,45 +3452,45 @@ def api_issue_from_reservation(request):
         created_by = data.get('created_by')
         notes = data.get('notes', '')
         item_quantities = data.get('item_quantities', {})
-        
+
         if not all([rental_id, start_date, end_date, created_by]):
             return JsonResponse({'error': _('Missing required parameters')}, status=400)
-        
+
         # Parse dates
         from django.utils import timezone
         from django.utils.dateparse import parse_datetime
-        
+
         start_datetime = parse_datetime(start_date)
         end_datetime = parse_datetime(end_date)
-        
+
         if not start_datetime or not end_datetime:
             return JsonResponse({'error': _('Invalid date format')}, status=400)
-        
+
         # Convert naive datetime to aware datetime if needed
         if timezone.is_naive(start_datetime):
             start_datetime = timezone.make_aware(start_datetime)
         if timezone.is_naive(end_datetime):
             end_datetime = timezone.make_aware(end_datetime)
-        
+
         # Get rental request
         rental = get_object_or_404(RentalRequest, id=rental_id)
-        
+
         # Check if rental is in reserved status
         if rental.status != 'reserved':
             return JsonResponse({'error': _('Rental must be in reserved status to issue')}, status=400)
-        
+
         # Check if rental has any equipment items (rooms alone cannot be issued)
         has_equipment = rental.items.exists()
         if not has_equipment:
             return JsonResponse({'error': _('Cannot issue rental with only rooms. Equipment is required to change status from reserved to issued.')}, status=400)
-        
+
         # Get the user by ID
         try:
             from registration.models import OKUser
             created_by_user = OKUser.objects.get(id=created_by)
         except OKUser.DoesNotExist:
             return JsonResponse({'error': _('Invalid user ID')}, status=400)
-        
+
         # Update rental request - only equipment rentals can be issued
         rental.status = 'issued'
         rental.requested_start_date = start_datetime
@@ -3499,7 +3499,7 @@ def api_issue_from_reservation(request):
         if notes:
             rental.notes = notes
         rental.save()
-        
+
         # Update item quantities if provided
         if item_quantities:
             for item_id, quantity in item_quantities.items():
@@ -3509,7 +3509,7 @@ def api_issue_from_reservation(request):
                     rental_item.save()
                 except RentalItem.DoesNotExist:
                     continue
-        
+
         # Update room rentals if any - only update dates, keep status as reserved
         room_rentals = RoomRental.objects.filter(rental_request=rental)
         for room_rental in room_rentals:
@@ -3517,12 +3517,12 @@ def api_issue_from_reservation(request):
             room_rental.end_date = end_datetime
             # Rooms remain in reserved status - they are not physically issued
             room_rental.save()
-        
+
         return JsonResponse({
             'success': True,
             'message': _('Rental successfully issued from reservation')
         })
-        
+
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -3534,19 +3534,19 @@ def api_issue_from_reservation(request):
 def api_get_staff_users(request):
     """
     Get list of staff users for dropdown selection.
-    
+
     Returns:
         JsonResponse: List of staff users with id, name, and email
     """
     if request.method != 'GET':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
-    
+
     try:
         from registration.models import OKUser
-        
+
         # Get all staff users
         staff_users = OKUser.objects.filter(is_staff=True).select_related('profile')
-        
+
         users_data = []
         for user in staff_users:
             name = user.email
@@ -3557,18 +3557,18 @@ def api_get_staff_users(request):
                     name = user.profile.first_name
                 elif user.profile.last_name:
                     name = user.profile.last_name
-            
+
             users_data.append({
                 'id': user.id,
                 'name': name,
                 'email': user.email
             })
-        
+
         return JsonResponse({
             'success': True,
             'users': users_data
         })
-        
+
     except Exception as e:
         import traceback
         traceback.print_exc()

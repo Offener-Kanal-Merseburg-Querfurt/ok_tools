@@ -22,7 +22,7 @@
 <!-- License Form -->
 <form method="post" id="license-form">
     {% csrf_token %}
-    
+
     <!-- Basic Information Card -->
     <div class="dashboard-card mb-4">
         <div class="card-header">
@@ -233,7 +233,7 @@
                         </div>
                     {% endif %}
                 </div>
-                
+
                 <!-- Right side: Jugendschutz -->
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.youth_protection_necessary.id_for_label }}" class="form-label">
@@ -247,7 +247,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Youth protection category row -->
             <div class="row" id="youth-protection-category-row" style="display: none;">
                 <div class="col-md-6 offset-md-6 mb-3">
@@ -392,7 +392,7 @@ function resetForm() {
 function toggleYouthProtectionCategory() {
     const youthProtectionField = document.getElementById('id_youth_protection_necessary');
     const youthCategoryRow = document.getElementById('youth-protection-category-row');
-    
+
     if (youthProtectionField && youthCategoryRow) {
         if (youthProtectionField.value === 'true') {
             youthCategoryRow.style.display = 'block';
@@ -418,34 +418,34 @@ function toggleScreenBoard(checkbox) {
 // Auto-format duration field
 document.addEventListener('DOMContentLoaded', function() {
     const durationField = document.getElementById('id_duration');
-    
+
     if (durationField) {
         durationField.addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^0-9:]/g, '');
-            
+
             // Auto-format as user types
             if (value.length === 2 && !value.includes(':')) {
                 value = value + ':';
             } else if (value.length === 5 && value.split(':').length === 2) {
                 value = value + ':';
             }
-            
+
             e.target.value = value;
         });
-        
+
         // Set placeholder
         durationField.placeholder = '00:00:00';
     }
-    
+
     // Initialize youth protection category visibility
     toggleYouthProtectionCategory();
-    
+
     // Add event listener for youth protection field
     const youthProtectionField = document.getElementById('id_youth_protection_necessary');
     if (youthProtectionField) {
         youthProtectionField.addEventListener('change', toggleYouthProtectionCategory);
     }
-    
+
     // Initialize screen board field
     const screenBoardField = document.getElementById('id_is_screen_board');
     if (screenBoardField) {

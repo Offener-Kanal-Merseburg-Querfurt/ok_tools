@@ -401,15 +401,15 @@ body {
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .sidebar.show {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
     .sidebar-overlay {
         position: fixed;
         top: 0;
@@ -420,7 +420,7 @@ body {
         z-index: 999;
         display: none;
     }
-    
+
     .sidebar-overlay.show {
         display: block;
     }
@@ -675,21 +675,21 @@ body {
     .workflow-step {
         margin-bottom: 1rem;
     }
-    
+
     .item-card {
         margin-bottom: 1rem;
     }
-    
+
     .quantity-controls .input-group {
         max-width: 100px;
     }
-    
+
     .calendar-cell {
         min-height: 40px;
         padding: 0.25rem;
         font-size: 0.75rem;
     }
-    
+
     .day-number {
         font-size: 1rem;
     }
@@ -854,15 +854,15 @@ body {
         text-align: center;
         gap: 1rem;
     }
-    
+
     .profile-meta {
         justify-content: center;
     }
-    
+
     .profile-status {
         justify-content: center;
     }
-    
+
     .profile-actions {
         margin-top: 1rem;
     }
@@ -1049,19 +1049,19 @@ body {
         flex-direction: column;
         gap: 0.75rem;
     }
-    
+
     .rental-details-content .rental-info-item {
         min-width: auto;
     }
-    
+
     .rental-details-content .rental-card-header {
         padding: 0.75rem 1rem;
     }
-    
+
     .rental-details-content .rental-card-body {
         padding: 1rem;
     }
-    
+
     .rental-details-content .table-responsive {
         font-size: 0.8rem;
     }
@@ -1107,15 +1107,15 @@ body {
     .display-4 {
         font-size: 2rem;
     }
-    
+
     .lead {
         font-size: 1rem;
     }
-    
+
     .welcome-icon i {
         font-size: 3rem !important;
     }
-    
+
     .feature-icon i {
         font-size: 2rem !important;
     }
@@ -1640,13 +1640,13 @@ input:disabled {
     .contact-info .row {
         flex-direction: column;
     }
-    
+
     .contact-info .col-sm-6 {
         padding-left: 0;
         padding-right: 0;
         margin-bottom: 1rem;
     }
-    
+
     .contact-info .col-sm-6:last-child {
         margin-bottom: 0;
     }

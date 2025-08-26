@@ -1,5 +1,6 @@
 from registration.models import Profile
 
+
 def user_display_name(request):
     """Add user_display_name to global context."""
     if request.user.is_authenticated:
