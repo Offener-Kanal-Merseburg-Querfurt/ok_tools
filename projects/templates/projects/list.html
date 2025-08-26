@@ -139,14 +139,14 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="project-header mb-3">
                 <h6 class="project-title mb-2">{{ project.title|truncatechars:40 }}</h6>
                 {% if project.description %}
                 <p class="project-description text-muted small mb-2">{{ project.description|truncatechars:80 }}</p>
                 {% endif %}
             </div>
-            
+
             <div class="project-meta mb-3">
                 <div class="row text-center">
                     <div class="col-6">
@@ -167,7 +167,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="project-dates mb-3">
                 <div class="row">
                     <div class="col-6">
@@ -182,7 +182,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {% if project.progress %}
             <div class="project-progress mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -194,7 +194,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <div class="project-actions mt-3 pt-3 border-top">
                 <div class="d-grid gap-2">
                     <a href="#" class="btn btn-sm btn-outline-primary">
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const priorityFilter = document.getElementById('priorityFilter');
     const categoryFilter = document.getElementById('categoryFilter');
     const searchInput = document.getElementById('searchInput');
-    
+
     [statusFilter, priorityFilter, categoryFilter, searchInput].forEach(filter => {
         filter.addEventListener('change', filterProjects);
         if (filter === searchInput) {
@@ -276,27 +276,27 @@ function filterProjects() {
     const priority = document.getElementById('priorityFilter').value.toLowerCase();
     const category = document.getElementById('categoryFilter').value.toLowerCase();
     const search = document.getElementById('searchInput').value.toLowerCase();
-    
+
     const items = document.querySelectorAll('.project-item');
-    
+
     items.forEach(item => {
         let show = true;
-        
+
         // Status filter
         if (status && !item.querySelector('.project-status .badge').textContent.toLowerCase().includes(status)) {
             show = false;
         }
-        
+
         // Priority filter
         if (priority && !item.querySelector('.project-meta .badge').textContent.toLowerCase().includes(priority)) {
             show = false;
         }
-        
+
         // Category filter
         if (category && !item.querySelector('.project-meta small:last-child').textContent.toLowerCase().includes(category)) {
             show = false;
         }
-        
+
         // Search filter
         if (search) {
             const text = item.textContent.toLowerCase();
@@ -304,7 +304,7 @@ function filterProjects() {
                 show = false;
             }
         }
-        
+
         item.style.display = show ? '' : 'none';
     });
 }

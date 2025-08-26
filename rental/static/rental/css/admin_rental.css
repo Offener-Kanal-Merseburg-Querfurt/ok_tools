@@ -1286,24 +1286,24 @@
           font-family: 'Courier New', monospace;
           padding: 4px 8px;
       }
-      
+
       #locationFilter option[data-level="0"] {
           font-weight: bold;
           background-color: #f8f9fa;
       }
-      
+
       #locationFilter option[data-level="1"] {
           background-color: #ffffff;
       }
-      
+
       #locationFilter option[data-level="2"] {
           background-color: #f8f9fa;
       }
-      
+
       #locationFilter option[data-level="3"] {
           background-color: #ffffff;
       }
-      
+
       /* Hover effect for better readability */
       #locationFilter option:hover {
           background-color: #e9ecef;
@@ -1315,14 +1315,14 @@
           font-size: 0.9em;
           line-height: 1.4;
       }
-      
+
       .location-path {
           background-color: #f8f9fa;
           border-radius: 4px;
           padding: 6px 8px;
           border-left: 3px solid #007bff;
       }
-      
+
       .location-path i {
           color: #007bff;
       }
@@ -1332,12 +1332,12 @@
           background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
           border-left: 4px solid #007bff !important;
       }
-      
+
       .location-group-header h6 {
           color: #495057;
           margin-bottom: 0.5rem;
       }
-      
+
       .location-group-header .location-hierarchy {
           font-weight: 600;
       }
@@ -1349,22 +1349,22 @@
           color: #495057;
           grid-column: span 1; /* Will be overridden by inline styles */
       }
-      
+
       .timeline-slot.occupied.grouped .slot-details {
           text-align: center;
       }
-      
+
       .timeline-slot.occupied.grouped .user-name {
           font-weight: 600;
           color: #495057;
           margin-bottom: 2px;
       }
-      
+
       .timeline-slot.occupied.grouped .project-name {
           color: #6c757d;
           margin-bottom: 2px;
       }
-      
+
       .timeline-slot.occupied.grouped .status-badge {
           display: inline-block;
           padding: 2px 6px;
@@ -1373,19 +1373,19 @@
           font-weight: 600;
           text-transform: uppercase;
       }
-      
+
       .timeline-slot.occupied.grouped .people-count,
       .timeline-slot.occupied.grouped .time-range {
           font-size: 0.7rem;
           line-height: 1.2;
           margin-top: 2px;
       }
-      
+
       /* Timeline grid adjustments for grouped slots */
       .timeline-slots {
           grid-template-columns: repeat(17, 1fr) !important; /* Override existing styles */
       }
-      
+
       /* End marker styling */
       .timeline-slot.end-marker {
           background-color: #e9ecef !important;

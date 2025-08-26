@@ -17,19 +17,19 @@
         .rental-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
         .item-card { border: 1px solid #dee2e6; border-radius: 8px; transition: all 0.3s ease; }
         .item-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        
+
         /* Return selection styles */
         .item-card.selected-for-return {
             border: 2px solid #28a745;
             background-color: #f8fff9;
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
         }
-        
+
         .item-card.selected-for-return .form-check-input:checked {
             background-color: #28a745;
             border-color: #28a745;
         }
-        
+
         .item-card:not(.selected-for-return) .return-form {
             display: none !important;
         }
@@ -44,63 +44,63 @@
         .return-info { background: #f8f9fa; border: 1px solid #e9ecef; }
         .overdue-highlight { background: #fff5f5; border: 1px solid #fed7d7; }
         .ontime-highlight { background: #f0fff4; border: 1px solid #9ae6b4; }
-        
+
         /* Modal Styles */
         .modal-content {
             border-radius: 12px;
             border: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        
+
         .modal-header {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-bottom: 2px solid #007bff;
             border-radius: 12px 12px 0 0;
             padding: 1.5rem;
         }
-        
+
         .modal-title {
             color: #495057;
             font-weight: 600;
             font-size: 1.25rem;
         }
-        
+
         .modal-body {
             padding: 2rem;
         }
-        
+
         .modal-footer {
             background: #f8f9fa;
             border-top: 1px solid #dee2e6;
             border-radius: 0 0 12px 12px;
             padding: 1.5rem;
         }
-        
+
         /* Form Controls */
         .form-control, .form-select {
             border-radius: 8px;
             border: 2px solid #e9ecef;
             transition: all 0.2s ease;
         }
-        
+
         .form-control:focus, .form-select:focus {
             border-color: #007bff;
             box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
             transform: translateY(-1px);
         }
-        
+
         /* Buttons */
         .btn {
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.2s ease;
         }
-        
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        
+
         /* Rental Cards */
         .rental-card {
             border-radius: 12px;
@@ -108,29 +108,29 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-        
+
         .rental-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        
+
         .rental-card .card-header {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-bottom: 2px solid #007bff;
             padding: 1.5rem;
         }
-        
+
         .rental-card .card-header h5 {
             color: #495057;
             font-weight: 700;
             margin: 0;
             font-size: 1.3rem;
         }
-        
+
         .rental-card .card-body {
             padding: 2rem;
         }
-        
+
         /* Item Cards */
         .item-card {
             border-radius: 12px;
@@ -138,12 +138,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-        
+
         .item-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
-        
+
         /* Status Badges */
         .status-badge {
             border-radius: 20px;
@@ -151,14 +151,14 @@
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
-        
+
         /* Return Forms */
         .return-form {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 8px;
             border: 1px solid #dee2e6;
         }
-        
+
         /* Issues */
         .issue-form {
             background: #fff;
@@ -166,27 +166,27 @@
             border: 1px solid #e9ecef;
             transition: all 0.2s ease;
         }
-        
+
         .issue-form:hover {
             border-color: #007bff;
             box-shadow: 0 2px 8px rgba(0,123,255,0.1);
         }
-        
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .rental-header .d-flex {
                 flex-direction: column;
                 gap: 0.5rem;
             }
-            
+
             .rental-header .d-flex span {
                 text-align: center;
             }
-            
+
             .modal-body {
                 padding: 1rem;
             }
-            
+
             .rental-card .card-body {
                 padding: 1rem;
             }
@@ -291,8 +291,8 @@
                                         <!-- Return Selection Checkbox -->
                                         <div class="mb-2">
                                             <div class="form-check">
-                                                <input class="form-check-input item-return-checkbox" type="checkbox" 
-                                                       id="item-checkbox-{{ item.id }}" 
+                                                <input class="form-check-input item-return-checkbox" type="checkbox"
+                                                       id="item-checkbox-{{ item.id }}"
                                                        data-item-id="{{ item.id }}"
                                                        {% if item.quantity_issued|default:0|add:item.quantity_returned|default:0 > 0 %}checked{% endif %}>
                                                 <label class="form-check-label" for="item-checkbox-{{ item.id }}">
@@ -300,7 +300,7 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <h6 class="mb-1">{{ item.inventory_item.description|default:item.inventory_item.inventory_number }}</h6>
                                             <span class="badge bg-secondary">{{ item.inventory_item.inventory_number }}</span>
@@ -580,7 +580,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -595,7 +595,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -664,7 +664,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <div class="form-group">

@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Bind events
             this.bindEvents();
-            
+
             // Bind stats events
             this.bindStatsEvents();
-            
+
             // Load filter options
             this.loadFilterOptions();
 
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             } catch (error) {
                 console.error('Error loading rental details:', error);
-                
+
                 // Show error in modal content instead of alert
                 const contentId = this.getContentIdForType(type);
                 if (contentId) {
@@ -235,19 +235,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="rental-details-content">`;
 
             rentals.forEach(rental => {
-                const startDate = rental.requested_start_date ? 
+                const startDate = rental.requested_start_date ?
                     new Date(rental.requested_start_date).toLocaleString('de-DE', {
                         year: 'numeric', month: '2-digit', day: '2-digit',
                         hour: '2-digit', minute: '2-digit'
                     }) : 'N/A';
-                
-                const endDate = rental.requested_end_date ? 
+
+                const endDate = rental.requested_end_date ?
                     new Date(rental.requested_end_date).toLocaleString('de-DE', {
                         year: 'numeric', month: '2-digit', day: '2-digit',
                         hour: '2-digit', minute: '2-digit'
                     }) : 'N/A';
 
-                const actualEndDate = rental.actual_end_date ? 
+                const actualEndDate = rental.actual_end_date ?
                     new Date(rental.actual_end_date).toLocaleString('de-DE', {
                         year: 'numeric', month: '2-digit', day: '2-digit',
                         hour: '2-digit', minute: '2-digit'
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge ${this.getStatusBadgeClass(rental.status)}">${this.getStatusLabel(rental.status)}</span>
-                                ${type === 'overdue' && rental.days_overdue > 0 ? 
+                                ${type === 'overdue' && rental.days_overdue > 0 ?
                                     `<span class="badge bg-danger ms-1">${rental.days_overdue} ${gettext('days overdue')}</span>` : ''}
                             </div>
                         </div>
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td>${item.quantity_requested}</td>
                                 <td>${item.quantity_issued || 0}</td>
                                 <td>${item.quantity_returned || 0}</td>
-                                ${type === 'active' ? 
+                                ${type === 'active' ?
                                     `<td><span class="badge ${item.outstanding > 0 ? 'bg-warning' : 'bg-success'}">${item.outstanding}</span></td>` : ''}
                             </tr>`;
                     });
@@ -454,25 +454,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const locationSelect = document.getElementById('locationFilter');
             if (locationSelect && options.locations) {
                 locationSelect.innerHTML = `<option value="all">${gettext('All Locations')}</option>`;
-                
+
                 const addLocationOptions = (locations, level = 0) => {
                     locations.forEach(location => {
                         const option = document.createElement('option');
                         option.value = location.full_path;
-                        
+
                         const indent = '&nbsp;'.repeat(level * 4);
                         option.innerHTML = indent + location.name;
                         option.dataset.level = level;
                         option.dataset.fullPath = location.full_path;
-                        
+
                         locationSelect.appendChild(option);
-                        
+
                         if (location.children && location.children.length > 0) {
                             addLocationOptions(location.children, level + 1);
                         }
                     });
                 };
-                
+
                 addLocationOptions(options.locations);
             }
         }
@@ -528,19 +528,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof USER_ID !== 'undefined' && USER_ID) {
                 return USER_ID;
             }
-            
+
             // Fallback: try to get from DOM
             const userIdElement = document.querySelector('[data-user-id]');
             if (userIdElement) {
                 return userIdElement.dataset.userId;
             }
-            
+
             // Alternative: try to get from any workflow step
             const workflowStep = document.querySelector('.workflow-step');
             if (workflowStep && workflowStep.dataset.userId) {
                 return workflowStep.dataset.userId;
             }
-            
+
             console.error('User ID not found');
             return null;
         }
@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showSelectDatesHint() {
             const grid = document.getElementById('inventoryGrid');
             if (!grid) return;
-            
+
             grid.innerHTML = `
                 <div class="col-12">
                     <div class="text-center p-5">
@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const params = new URLSearchParams();
             params.append('start_date', startDate);
             params.append('end_date', endDate);
-            
+
             if (searchQuery) params.append('search', searchQuery);
             // if (ownerFilter !== 'all') params.append('owner', ownerFilter);
             if (categoryFilter !== 'all') params.append('category', categoryFilter);
@@ -629,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     btn.innerHTML = `<i class="bi bi-sitemap me-1"></i>${gettext('Group by location')}`;
                 }
             }
-            
+
             // Re-render inventory if we have items
             if (this.isPeriodSelected()) {
                 this.loadInventory();
@@ -665,10 +665,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const col = document.createElement('div');
                 col.className = 'col-md-6 col-lg-4 mb-3 d-flex';
                 col.innerHTML = this.createItemCardHTML(item);
-                
+
                 const card = col.querySelector('.item-card');
                 this.bindItemCardEvents(card, item);
-                
+
                 grid.appendChild(col);
             });
         }
@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderInventoryGrouped(items, grid) {
             // Group items by location
             const locationGroups = {};
-            
+
             items.forEach(item => {
                 const locationPath = item.location_path || gettext('Unknown location');
                 if (!locationGroups[locationPath]) {
@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
             grid.innerHTML = '';
             sortedLocations.forEach(locationPath => {
                 const itemsInLocation = locationGroups[locationPath];
-                
+
                 // Create location header
                 const locationHeader = document.createElement('div');
                 locationHeader.className = 'col-12 mb-3';
@@ -710,18 +710,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 itemsRow.className = 'col-12 mb-3';
                 const itemsContainer = document.createElement('div');
                 itemsContainer.className = 'row';
-                
+
                 itemsInLocation.forEach(item => {
                     const col = document.createElement('div');
                     col.className = 'col-md-6 col-lg-4 mb-3 d-flex';
                     col.innerHTML = this.createItemCardHTML(item);
-                    
+
                     const card = col.querySelector('.item-card');
                     this.bindItemCardEvents(card, item);
-                    
+
                     itemsContainer.appendChild(col);
                 });
-                
+
                 itemsRow.appendChild(itemsContainer);
                 grid.appendChild(itemsRow);
             });
@@ -1139,16 +1139,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show modal first
                     const modal = new bootstrap.Modal(document.getElementById('roomsModal'));
                     modal.show();
-                    
+
                     // Check availability for selected dates if they exist
                     const startDate = document.querySelector('[name="start_date"]')?.value;
                     const endDate = document.querySelector('[name="end_date"]')?.value;
-                    
+
                     if (startDate && endDate && this.selectedRoom) {
                         const startTime = document.getElementById('roomStartTime')?.value || '10:00';
                         const endTime = document.getElementById('roomEndTime')?.value || '10:30';
                         const availabilityStatus = document.getElementById('roomAvailabilityStatus');
-                        
+
                         if (availabilityStatus) {
                             this.checkRoomAvailability(this.selectedRoom.id, startDate, startTime, startDate, endTime, availabilityStatus);
                         }
@@ -1199,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Add event listeners for date changes to reload rooms with availability
         this.bindRoomDateEvents();
-        
+
         // Bind calendar events
         this.bindCalendarEvents();
     }
@@ -1274,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const startDate = document.getElementById('calendarStartDate')?.value || '';
             const endDate = document.getElementById('calendarEndDate')?.value || '';
 
-            if (!startDate || !endDate) {   
+            if (!startDate || !endDate) {
                 return;
             }
 
@@ -1572,19 +1572,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const getSmartStartDate = () => {
                 const now = new Date();
                 const currentHour = now.getHours();
-                
+
                 // If current time is after 18:00, suggest next day
                 if (currentHour >= 18) {
                     const tomorrow = new Date(now);
                     tomorrow.setDate(tomorrow.getDate() + 1);
-                    return tomorrow.getFullYear() + '-' + 
-                           String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + 
+                    return tomorrow.getFullYear() + '-' +
+                           String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' +
                            String(tomorrow.getDate()).padStart(2, '0');
                 }
-                
+
                 // If it's during working hours, use today
-                return now.getFullYear() + '-' + 
-                       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                return now.getFullYear() + '-' +
+                       String(now.getMonth() + 1).padStart(2, '0') + '-' +
                        String(now.getDate()).padStart(2, '0');
             };
 
@@ -1696,27 +1696,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Smart time calculation function
                 const getSmartStartTime = (date) => {
                     const now = new Date();
-                    const today = now.getFullYear() + '-' + 
-                                 String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                    const today = now.getFullYear() + '-' +
+                                 String(now.getMonth() + 1).padStart(2, '0') + '-' +
                                  String(now.getDate()).padStart(2, '0');
-                    
+
                     if (date === today) {
                         const currentHour = now.getHours();
                         const currentMinute = now.getMinutes();
-                        
+
                         // If current time is after 18:00, suggest tomorrow
                         if (currentHour >= 18) {
                             return null; // Will be handled by date logic
                         }
-                        
+
                         // Round up to next 30-minute slot
                         let suggestedHour = currentHour;
                         let suggestedMinute = currentMinute <= 30 ? 30 : 0;
-                        
+
                         if (suggestedMinute === 0) {
                             suggestedHour += 1;
                         }
-                        
+
                         // Ensure time is within working hours (10:00-18:00)
                         if (suggestedHour < 10) {
                             suggestedHour = 10;
@@ -1724,11 +1724,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else if (suggestedHour >= 18) {
                             return null; // Will be handled by date logic
                         }
-                        
+
                         const suggestedTime = `${suggestedHour.toString().padStart(2, '0')}:${suggestedMinute.toString().padStart(2, '0')}`;
                         return suggestedTime;
                     }
-                    
+
                     return '10:00'; // Default for future dates
                 };
 
@@ -1736,75 +1736,75 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Set smart initial values (use already calculated date)
                     const smartStartTime = getSmartStartTime(smartStartDate);
-                    
+
                     if (startDateInput) {
                         startDateInput.value = smartStartDate;
                     }
-                    
+
                     if (smartStartTime) {
                         startTimeSelect.value = smartStartTime;
                     } else {
                         startTimeSelect.value = '10:00';
                     }
-                    
+
                     // Calculate and set end time
                     const startTime = startTimeSelect.value;
                     const startHour = parseInt(startTime.split(':')[0]);
                     const startMinute = parseInt(startTime.split(':')[1]);
-                    
+
                     let endHour = startHour;
                     let endMinute = startMinute + 30;
-                    
+
                     if (endMinute >= 60) {
                         endMinute = 0;
                         endHour += 1;
                     }
-                    
+
                     if (endHour > 18) {
                         endHour = 18;
                         endMinute = 0;
                     }
-                    
+
                     const initialEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
                     endTimeSelect.value = initialEndTime;
 
                     // Add change event listener for start date
                     if (startDateInput) {
                         startDateInput.addEventListener('change', () => {
-                            
+
                             // Auto-update end date to match start date
                             if (endDateInput && !differentEndDateCheckbox?.checked) {
                                 endDateInput.value = startDateInput.value;
                             }
-                            
+
                             // Update start time based on new date
                             const smartStartTime = getSmartStartTime(startDateInput.value);
-                            
+
                             if (smartStartTime && smartStartTime !== startTimeSelect.value) {
                                 startTimeSelect.value = smartStartTime;
-                                
+
                                 // Recalculate end time
                                 const startHour = parseInt(smartStartTime.split(':')[0]);
                                 const startMinute = parseInt(smartStartTime.split(':')[1]);
-                                
+
                                 let endHour = startHour;
                                 let endMinute = startMinute + 30;
-                                
+
                                 if (endMinute >= 60) {
                                     endMinute = 0;
                                     endHour += 1;
                                 }
-                                
+
                                 if (endHour > 18) {
                                     endHour = 18;
                                     endMinute = 0;
                                 }
-                                
+
                                 const newEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
                                 endTimeSelect.value = newEndTime;
                             }
 
-                            
+
                             // Use setTimeout to prevent multiple rapid calls
                             setTimeout(() => {
                                 this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
@@ -1815,27 +1815,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Add change event listener for start time
                     startTimeSelect.addEventListener('change', () => {
                         const startTime = startTimeSelect.value;
-                        
+
                         // Recalculate end time
                         const startHour = parseInt(startTime.split(':')[0]);
                         const startMinute = parseInt(startTime.split(':')[1]);
-                        
+
                         let endHour = startHour;
                         let endMinute = startMinute + 30;
-                        
+
                         if (endMinute >= 60) {
                             endMinute = 0;
                             endHour += 1;
                         }
-                        
+
                         if (endHour > 18) {
                             endHour = 18;
                             endMinute = 0;
                         }
-                        
+
                         const newEndTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
                         endTimeSelect.value = newEndTime;
-                        
+
                         // Check availability after time change
                         setTimeout(() => {
                             this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, newEndTime, availabilityStatus);
@@ -1845,11 +1845,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Add change event listener for end time
                     endTimeSelect.addEventListener('change', () => {
                         const endTime = endTimeSelect.value;
-                        
+
                         // Check availability after end time change
                         this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTime, availabilityStatus);
                     });
-                    
+
                                     // Initial availability check
                 setTimeout(() => {
                     this.checkRoomAvailability(room.id, startDateInput.value, startTimeSelect.value, startDateInput.value, endTimeSelect.value, availabilityStatus);
@@ -1885,13 +1885,13 @@ document.addEventListener('DOMContentLoaded', function() {
         async checkRoomAvailability(roomId, startDate, startTime, endDate, endTime, statusElement) {
             try {
                 const url = `${URLS.checkRoomAvailability}?room_id=${roomId}&start_date=${startDate}&start_time=${startTime}&end_date=${endDate}&end_time=${endTime}`;
-                
+
                 const resp = await fetch(url);
                 const data = await resp.json();
 
                 if (data.success) {
                     const addRoomBtn = document.getElementById('addRoomToRentalBtn');
-                    
+
                     if (data.is_available) {
                         statusElement.innerHTML = `
                             <div class="alert alert-success">
@@ -1910,7 +1910,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="alert alert-danger">
                                 <i class="bi bi-x-circle me-2"></i>
                                 ${gettext('Room is not available for the selected period.')}
-                                ${data.conflicts && data.conflicts.length > 0 ? 
+                                ${data.conflicts && data.conflicts.length > 0 ?
                                     `<br><small class="mt-2"><strong>${gettext('Conflicts:')}</strong><br>${data.conflicts.join('<br>')}</small>` : ''}
                             </div>
                         `;
@@ -2043,7 +2043,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update UI
                 this.updateSelectedRoomsUI();
                 this.updateActionButtons();
-                
+
                 // Update action buttons based on selection
                 this.updateActionButtons();
 
@@ -2187,10 +2187,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         formatLocationPath(path) {
             if (!path) return '';
-            
+
             const parts = path.split(' -> ');
             if (parts.length === 1) return parts[0];
-            
+
             return parts.map((part, index) => {
                 const indent = '&nbsp;'.repeat(index * 2);
                 const separator = index < parts.length - 1 ? ' → ' : '';
@@ -2209,7 +2209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         async finalRoomAvailabilityCheck(roomId, startDate, startTime, endDate, endTime, onSuccess) {
             try {
                 const url = `${URLS.checkRoomAvailability}?room_id=${roomId}&start_date=${startDate}&start_time=${startTime}&end_date=${endDate}&end_time=${endTime}`;
-                
+
                 const resp = await fetch(url);
                 const data = await resp.json();
 

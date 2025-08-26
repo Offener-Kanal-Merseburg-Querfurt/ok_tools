@@ -4,9 +4,9 @@ from .forms import ProfileForm
 from .forms import UserDataForm
 from .models import Profile
 from .print import generate_registration_form
+from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required

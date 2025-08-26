@@ -6,8 +6,8 @@ Usage:
   python scripts/restore_rental_links.py
 """
 from __future__ import annotations
-
 import pathlib
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -43,7 +43,7 @@ def restore_base_html() -> None:
 
     # 2) Remove Coming Soon modal block by markers
     content = remove_between_markers(content, '<!-- COMING_SOON_MODAL_START', '<!-- COMING_SOON_MODAL_END -->')
-    
+
     # 3) Remove Coming Soon script block by markers
     content = remove_between_markers(content, '<!-- COMING_SOON_SCRIPT_START', '<!-- COMING_SOON_SCRIPT_END -->')
 
@@ -76,5 +76,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
-

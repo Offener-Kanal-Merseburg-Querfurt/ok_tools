@@ -545,7 +545,7 @@ def inventory_item_save_handler(sender, instance, created, **kwargs):
                     }
         if not changes:
             changes = None
-    
+
     AuditLog.objects.create(
         model_name="InventoryItem",
         object_id=str(instance.pk),

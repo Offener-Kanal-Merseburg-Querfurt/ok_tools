@@ -62,7 +62,7 @@
     function updateRemainingTime() {
       var totalUsedTime = 0;
       var videoItems = [];
-      
+
       // Собираем все видео с временем начала и длительностью
       $('#licenseTable tbody tr').each(function () {
         const $row = $(this);
@@ -79,30 +79,30 @@
           });
         }
       });
-      
+
       if (videoItems.length > 0) {
         // Сортируем по времени начала
         videoItems.sort(function(a, b) {
           return a.start - b.start;
         });
-        
+
         // Считаем общее занятое время
         var currentEnd = blockStart; // начинаем с 18:00
-        
+
         for (var i = 0; i < videoItems.length; i++) {
           var item = videoItems[i];
-          
+
           // Если есть промежуток больше 5 минут, добавляем его к занятому времени
           if (item.start - currentEnd > 5) {
             totalUsedTime += (item.start - currentEnd);
           }
-          
+
           // Добавляем время видео
           totalUsedTime += item.duration;
           currentEnd = item.end;
         }
       }
-      
+
       const remaining = maxBlockMinutes - totalUsedTime;
       const $remaining = $('#remainingTime');
 
@@ -184,7 +184,7 @@
       }
 
       const items = [];
-      
+
       $('#licenseTable tbody tr').each(function (index) {
           const $row = $(this);
           const titleCell = $row.find('td').eq(2).text();
@@ -193,7 +193,7 @@
           if (titleCell.includes(' – ')) {
             [title, subtitle] = titleCell.split(' – ', 2);
           }
-          
+
           const item = {
               number:    parseInt($row.find('td').eq(1).text(), 10),
               start:     $row.find('input[type="time"]').val(),
@@ -201,7 +201,7 @@
               title:     title,
               subtitle:  subtitle
           };
-          
+
           items.push(item);
       });
 
@@ -215,7 +215,7 @@
     $('#savePlanBtn').on('click', function () {
       const data = collectPlanData();
       if (!data) return;        // invalid date
-      
+
       data.draft = true;
 
       $.ajax({
@@ -336,40 +336,40 @@
       });
     }
 
-    // Function to load and display weekly statistics  
+    // Function to load and display weekly statistics
     var loadWeeklyStatistics = function() {
       var currentWeek = parseInt(CURRENT_WEEK, 10);
       var weeks = [currentWeek, currentWeek + 1, currentWeek + 2, currentWeek + 3];
-      
+
       weeks.forEach(function(weekNum, weekIndex) {
         var weekData = {
           planned: 0,
           totalTime: 0,
           freistellungen: new Set() // Уникальные номера лицензий
         };
-        
+
         // Get all dates for this week
         var weekStart = getWeekStartDate(weekNum);
-        
+
         // Create unique counter for this week
         var weekCounter = {
           daysProcessed: 0,
           totalDays: 7
         };
-        
+
         // Load data for each day in the week
         for (var i = 0; i < 7; i++) {
           var date = new Date(weekStart);
           date.setDate(date.getDate() + i + 1);  // +1 день для сдвига
           var isoDate = date.toISOString().split('T')[0];
-          
+
           // Use IIFE to create proper closure for weekIndex and counters
           (function(currentWeekIndex, currentWeekData, currentWeekCounter) {
             var apiUrl = '/api/day-plan/' + isoDate + '/';
-            
+
             $.get(apiUrl)
               .done(function (data) {
-                
+
                 if (data.items && data.items.length > 0) {
                   currentWeekData.planned++;
                   data.items.forEach(function(item) {
@@ -380,9 +380,9 @@
                     }
                   });
                 }
-                
+
                 currentWeekCounter.daysProcessed++;
-                
+
                 // Update statistics only when all days are processed
                 if (currentWeekCounter.daysProcessed === currentWeekCounter.totalDays) {
                   updateWeekStatistics(currentWeekIndex, currentWeekData);
@@ -390,7 +390,7 @@
               })
               .fail(function (xhr, status, error) {
                 currentWeekCounter.daysProcessed++;
-                
+
                 // Update statistics even if some days failed
                 if (currentWeekCounter.daysProcessed === currentWeekCounter.totalDays) {
                   updateWeekStatistics(currentWeekIndex, currentWeekData);
@@ -400,7 +400,7 @@
         }
       });
     };
-    
+
     // Helper functions for date calculations
     var getWeekStartDate = function(weekNum) {
       // Calculate start date for given week number
@@ -408,39 +408,39 @@
       var jan1 = new Date(currentYear, 0, 1);
       var days = (weekNum - 1) * 7;
       var weekStart = new Date(jan1.getTime() + days * 24 * 60 * 60 * 1000);
-      
+
       // Adjust to Monday
       var dayOfWeek = weekStart.getDay();
       var mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
       weekStart.setDate(weekStart.getDate() - mondayOffset);
-      
+
       return weekStart;
     };
-    
+
     var getWeekEndDate = function(weekNum) {
       var weekStart = getWeekStartDate(weekNum);
       var weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
       return weekEnd;
     };
-    
+
     // Update statistics display for specific week
     var updateWeekStatistics = function(weekIndex, data) {
       var weekIds = ['currentWeek', 'nextWeek', 'afterNextWeek', 'threeWeeksAhead'];
       var weekId = weekIds[weekIndex];
-      
+
       if (weekId) {
         var maxWeeklyTime = 105 * 7; // 735 минут за неделю (7 дней × 105 мин)
         var fillRate = Math.round((data.totalTime / maxWeeklyTime) * 100);
-        var timeText = data.totalTime > maxWeeklyTime ? 
-          (data.totalTime + '/' + maxWeeklyTime + ' min (' + (data.totalTime - maxWeeklyTime) + ' over)') : 
+        var timeText = data.totalTime > maxWeeklyTime ?
+          (data.totalTime + '/' + maxWeeklyTime + ' min (' + (data.totalTime - maxWeeklyTime) + ' over)') :
           (data.totalTime + '/' + maxWeeklyTime + ' min');
-        
+
         $('#' + weekId + 'Planned').text(data.planned);
         $('#' + weekId + 'Time').text(timeText);
         $('#' + weekId + 'Fill').text(fillRate + '%');
         $('#' + weekId + 'Freistellungen').text(data.freistellungen.size);
-        
+
         // Color coding for fill rate
         var fillElement = $('#' + weekId + 'Fill');
         if (fillRate > 100) {

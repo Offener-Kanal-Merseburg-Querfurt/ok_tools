@@ -4,7 +4,7 @@ ok_tools
 
 A set of tools to support administrative task in the OKs of the Medienanstalt Sachsen-Anhalt.
 
-**Current Version**: 2.0  
+**Current Version**: 2.0
 **Last Updated**: August 2025
 
 Features
@@ -176,10 +176,10 @@ Find new messages like this::
 
     # Create/update translation files
     bin/python manage.py makemessages -l de -l en
-    
+
     # Compile translations
     bin/python manage.py compilemessages
-    
+
     # Collect static files
     bin/python manage.py collectstatic
 

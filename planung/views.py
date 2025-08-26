@@ -1,4 +1,5 @@
 from .models import TagesPlan
+from datetime import timedelta
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404
 from django.http import HttpResponseRedirect
@@ -9,9 +10,9 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from licenses.models import License
-from datetime import timedelta
 import json
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ def save_day_plan(request):
         plan, created = TagesPlan.objects.update_or_create(
             datum=date, defaults={"json_plan": plan_data, "kommentar": kommentar}
         )
-        
+
         return JsonResponse({"status": "ok", "created": created})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
@@ -96,7 +97,7 @@ def day_plan_detail(request, iso_date):
     if request.method == "GET":
         try:
             plan = TagesPlan.objects.get(datum=date_obj)
-            
+
         except TagesPlan.DoesNotExist:
             raise Http404("No plan for this day")
         return JsonResponse(

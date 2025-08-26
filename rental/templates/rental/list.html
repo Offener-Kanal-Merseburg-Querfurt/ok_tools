@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const typeFilter = document.getElementById('typeFilter');
     const dateFilter = document.getElementById('dateFilter');
     const searchInput = document.getElementById('searchInput');
-    
+
     [statusFilter, typeFilter, dateFilter, searchInput].forEach(filter => {
         filter.addEventListener('change', filterRentals);
         if (filter === searchInput) {
@@ -263,27 +263,27 @@ function filterRentals() {
     const type = document.getElementById('typeFilter').value.toLowerCase();
     const date = document.getElementById('dateFilter').value.toLowerCase();
     const search = document.getElementById('searchInput').value.toLowerCase();
-    
+
     const rows = document.querySelectorAll('#rentalsTable tbody tr');
-    
+
     rows.forEach(row => {
         let show = true;
-        
+
         // Status filter
         if (status && !row.querySelector('td:nth-child(5)').textContent.toLowerCase().includes(status)) {
             show = false;
         }
-        
+
         // Type filter
         if (type && !row.querySelector('td:nth-child(1)').textContent.toLowerCase().includes(type)) {
             show = false;
         }
-        
+
         // Date filter (simplified)
         if (date) {
             // Add date filtering logic here
         }
-        
+
         // Search filter
         if (search) {
             const text = row.textContent.toLowerCase();
@@ -291,7 +291,7 @@ function filterRentals() {
                 show = false;
             }
         }
-        
+
         row.style.display = show ? '' : 'none';
     });
 }

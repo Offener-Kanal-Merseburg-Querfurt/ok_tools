@@ -133,7 +133,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="text-center mb-3">
                 <div class="item-icon mb-2">
                     {% if item.category == 'camera' %}
@@ -153,7 +153,7 @@
                 <small class="text-muted">{{ item.serial_number }}</small>
                 {% endif %}
             </div>
-            
+
             <div class="item-details">
                 <div class="row text-center">
                     <div class="col-6">
@@ -173,14 +173,14 @@
                         <small>{{ item.location|default:"Storage" }}</small>
                     </div>
                 </div>
-                
+
                 {% if item.last_inspection %}
                 <div class="mt-3 pt-3 border-top">
                     <small class="text-muted">{% trans 'Last Inspection' %}: {{ item.last_inspection|date:"d.m.Y" }}</small>
                 </div>
                 {% endif %}
             </div>
-            
+
             <div class="mt-3 pt-3 border-top">
                 <div class="d-grid">
                     {% if item.is_available %}
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusFilter = document.getElementById('statusFilter');
     const locationFilter = document.getElementById('locationFilter');
     const searchInput = document.getElementById('searchInput');
-    
+
     [categoryFilter, statusFilter, locationFilter, searchInput].forEach(filter => {
         filter.addEventListener('change', filterInventory);
         if (filter === searchInput) {
@@ -263,27 +263,27 @@ function filterInventory() {
     const status = document.getElementById('statusFilter').value.toLowerCase();
     const location = document.getElementById('locationFilter').value.toLowerCase();
     const search = document.getElementById('searchInput').value.toLowerCase();
-    
+
     const items = document.querySelectorAll('.inventory-item');
-    
+
     items.forEach(item => {
         let show = true;
-        
+
         // Category filter
         if (category && !item.querySelector('.item-category').textContent.toLowerCase().includes(category)) {
             show = false;
         }
-        
+
         // Status filter
         if (status && !item.querySelector('.item-details .badge').textContent.toLowerCase().includes(status)) {
             show = false;
         }
-        
+
         // Location filter
         if (location && !item.querySelector('.item-details small:last-child').textContent.toLowerCase().includes(location)) {
             show = false;
         }
-        
+
         // Search filter
         if (search) {
             const text = item.textContent.toLowerCase();
@@ -291,7 +291,7 @@ function filterInventory() {
                 show = false;
             }
         }
-        
+
         item.style.display = show ? '' : 'none';
     });
 }
