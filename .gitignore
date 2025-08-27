@@ -49,3 +49,30 @@ lib/
 docker*.yml
 docker*.cfg
 Dockerfile
+
+# i18n builds
+**/locale/**/LC_MESSAGES/*.mo
+
+# envs / caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# i18n builds
+**/locale/**/LC_MESSAGES/*.mo
+
+# Python trash
+**/__pycache__/
+*.pyc
+
+# venv
+.venv/
+venv/
+
+# local backups
+*.po.bak
+
+# local runtime config
+gunicorn.conf.py
+**/gunicorn.conf.py
