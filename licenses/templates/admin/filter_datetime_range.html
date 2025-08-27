@@ -1,12 +1,12 @@
 {% load i18n %}
 
 <div class="date-range-filter-container" style="background: var(--body-bg); border: 1px solid var(--hairline-color); border-radius: 4px; padding: 15px; margin: 10px 0;">
-    
+
     <!-- Custom date range -->
     <div class="custom-date-range">
         <h4 style="margin: 0 0 10px 0; font-size: 13px; color: var(--body-fg);">{% trans "Custom date range" %}:</h4>
         <form method="get" id="date-filter-form" style="display: flex; align-items: end; gap: 10px; flex-wrap: wrap;">
-            
+
             <!-- Hidden fields to save other parameters -->
             {% for k, v in spec.form.data.items %}
                 {% if k != spec.parameter_name|add:"__gte_0" and k != spec.parameter_name|add:"__gte_1" and k != spec.parameter_name|add:"__lte_0" and k != spec.parameter_name|add:"__lte_1" %}
@@ -16,60 +16,60 @@
 
             <div>
                 <label for="{{ spec.parameter_name }}__gte_0" style="display: block; font-size: 12px; margin-bottom: 3px; color: var(--body-fg);">{% trans "Date from" %}:</label>
-                <input type="date" 
-                       id="{{ spec.parameter_name }}__gte_0" 
-                       name="{{ spec.parameter_name }}__gte_0" 
+                <input type="date"
+                       id="{{ spec.parameter_name }}__gte_0"
+                       name="{{ spec.parameter_name }}__gte_0"
                        value="{{ spec.form.gte_0.value|default:'' }}"
                        style="padding: 6px; border: 1px solid var(--hairline-color); border-radius: 3px; font-size: 12px; background: var(--body-bg); color: var(--body-fg);">
             </div>
-            
+
             <div>
                 <label for="{{ spec.parameter_name }}__gte_1" style="display: block; font-size: 12px; margin-bottom: 3px; color: var(--body-fg);">{% trans "Time from" %}:</label>
-                <input type="time" 
-                       id="{{ spec.parameter_name }}__gte_1" 
-                       name="{{ spec.parameter_name }}__gte_1" 
+                <input type="time"
+                       id="{{ spec.parameter_name }}__gte_1"
+                       name="{{ spec.parameter_name }}__gte_1"
                        value="{{ spec.form.gte_1.value|default:'' }}"
                        style="padding: 6px; border: 1px solid var(--hairline-color); border-radius: 3px; font-size: 12px; background: var(--body-bg); color: var(--body-fg);">
             </div>
-            
+
             <div>
                 <label for="{{ spec.parameter_name }}__lte_0" style="display: block; font-size: 12px; margin-bottom: 3px; color: var(--body-fg);">{% trans "Date to" %}:</label>
-                <input type="date" 
-                       id="{{ spec.parameter_name }}__lte_0" 
-                       name="{{ spec.parameter_name }}__lte_0" 
+                <input type="date"
+                       id="{{ spec.parameter_name }}__lte_0"
+                       name="{{ spec.parameter_name }}__lte_0"
                        value="{{ spec.form.lte_0.value|default:'' }}"
                        style="padding: 6px; border: 1px solid var(--hairline-color); border-radius: 3px; font-size: 12px; background: var(--body-bg); color: var(--body-fg);">
             </div>
-            
+
             <div>
                 <label for="{{ spec.parameter_name }}__lte_1" style="display: block; font-size: 12px; margin-bottom: 3px; color: var(--body-fg);">{% trans "Time to" %}:</label>
-                <input type="time" 
-                       id="{{ spec.parameter_name }}__lte_1" 
-                       name="{{ spec.parameter_name }}__lte_1" 
+                <input type="time"
+                       id="{{ spec.parameter_name }}__lte_1"
+                       name="{{ spec.parameter_name }}__lte_1"
                        value="{{ spec.form.lte_1.value|default:'' }}"
                        style="padding: 6px; border: 1px solid var(--hairline-color); border-radius: 3px; font-size: 12px; background: var(--body-bg); color: var(--body-fg);">
             </div>
-            
+
             <div>
-                <button type="submit" 
-                        style="padding: 7px 14px; 
-                               background: var(--button-bg); 
-                               color: var(--button-fg); 
-                               border: 1px solid var(--button-border); 
-                               border-radius: 3px; 
+                <button type="submit"
+                        style="padding: 7px 14px;
+                               background: var(--button-bg);
+                               color: var(--button-fg);
+                               border: 1px solid var(--button-border);
+                               border-radius: 3px;
                                cursor: pointer;
                                font-size: 12px;">
                     {% trans "Search" %}
                 </button>
             </div>
-            
+
             <div>
                 <a href="?{% for k, v in spec.form.data.items %}{% if k != spec.parameter_name|add:'__gte_0' and k != spec.parameter_name|add:'__gte_1' and k != spec.parameter_name|add:'__lte_0' and k != spec.parameter_name|add:'__lte_1' %}{{ k }}={{ v }}&{% endif %}{% endfor %}"
-                   style="padding: 7px 14px; 
-                          background: var(--secondary); 
-                          color: var(--secondary-fg); 
-                          text-decoration: none; 
-                          border-radius: 3px; 
+                   style="padding: 7px 14px;
+                          background: var(--secondary);
+                          color: var(--secondary-fg);
+                          text-decoration: none;
+                          border-radius: 3px;
                           font-size: 12px;">
                     {% trans "Reset" %}
                 </a>
