@@ -396,8 +396,6 @@ body {
     color: var(--danger-color);
 }
 
-
-
 /* Responsive Design */
 @media (max-width: 991.98px) {
     .sidebar {
@@ -1100,8 +1098,7 @@ body {
     }
 }
 
-
-
+/* Guest Welcome Page Styles */
 .welcome-icon {
     animation: fadeInUp 0.8s ease-out;
 }
@@ -1171,8 +1168,6 @@ body {
     .feature-icon i {
         font-size: 2rem !important;
     }
-
-
 
     /* Mobile call to action adjustments */
     .dashboard-card.call-to-action-card .card-body {

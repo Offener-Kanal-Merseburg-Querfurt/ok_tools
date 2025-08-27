@@ -5,7 +5,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Sidebar functionality is now handled in base.html
     // This file focuses on dashboard-specific functionality
-
     // Set active sidebar link based on current page
     setActiveSidebarLink();
 

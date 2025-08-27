@@ -637,6 +637,7 @@ def api_create_rental(request):
     Returns:
         JsonResponse: Success status and rental ID or error message
     """
+
     if request.method != 'POST':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
     try:
@@ -992,6 +993,7 @@ def api_get_filter_options(request):
     Returns:
         JsonResponse: Available filter options for inventory
     """
+
     from inventory.models import Category
     from inventory.models import Location
     from inventory.models import Organization
@@ -1060,6 +1062,7 @@ def api_get_equipment_sets(request):
     Returns:
         JsonResponse: List of available equipment sets
     """
+
     try:
         from .models import EquipmentSet
         equipment_sets = EquipmentSet.objects.filter(is_active=True)
@@ -1158,6 +1161,7 @@ def api_get_rooms(request):
     Returns:
         JsonResponse: List of rooms with availability status
     """
+
     try:
         from .models import Room
         from django.utils import timezone
@@ -1273,6 +1277,7 @@ def api_get_user_rental_details_by_id(request, user_id=None):
     Returns:
         JsonResponse: Detailed rental information for the user
     """
+
     user = get_object_or_404(OKUser, id=user_id)
     rental_type = request.GET.get('type', 'active')  # active, returned, overdue
     rental_id = request.GET.get('rental_id')  # specific rental ID
@@ -1390,6 +1395,7 @@ def api_cancel_rental(request):
     Returns:
         JsonResponse: Success status and confirmation message
     """
+
     if request.method != 'POST':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
 
@@ -1463,6 +1469,7 @@ def api_return_rental_items(request):
     Returns:
         JsonResponse: Success status and completion information
     """
+
     if request.method != 'POST':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
 
@@ -1609,6 +1616,7 @@ def api_extend_rental(request):
     Returns:
         JsonResponse: Success status and confirmation message
     """
+
     if request.method != 'POST':
         return JsonResponse({'error': _('Method not allowed')}, status=405)
 

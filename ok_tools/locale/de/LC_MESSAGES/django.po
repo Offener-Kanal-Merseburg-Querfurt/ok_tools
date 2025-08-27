@@ -80,6 +80,7 @@ msgstr "Startzeit"
 msgid "End Time"
 msgstr "Endzeit"
 
+
 #: contributions/admin.py:212 contributions/admin.py:297
 #: contributions/admin.py:471
 #: contributions/templates/contributions/list.html:154 licenses/admin.py:138
@@ -114,6 +115,7 @@ msgstr "Beteiligt"
 #: inventory/admin.py:101 inventory/models.py:68 inventory/models.py:197
 #: inventory/templates/inventory/list.html:68 licenses/admin.py:145
 #: licenses/admin.py:369 licenses/models.py:46 licenses/models.py:60
+
 #: licenses/models.py:176 licenses/templates/licenses/details.html:19
 #: licenses/templates/licenses/list.html:33
 #: licenses/templates/licenses/list.html:69
@@ -1244,6 +1246,19 @@ msgstr "Es muss eine Dauer angegeben werden."
 msgid "Save"
 msgstr "Speichern"
 
+
+#: licenses/forms.py:150 rental/templates/rental/admin_rental_process.html:53
+#: rental/templates/rental/admin_rental_process.html:368
+#: rental/templates/rental/rental_stats.html:386
+msgid "From"
+msgstr "Von"
+
+#: licenses/forms.py:154 rental/templates/rental/admin_rental_process.html:54
+#: rental/templates/rental/admin_rental_process.html:372
+#: rental/templates/rental/rental_stats.html:390
+msgid "To"
+msgstr "Bis"
+
 #: licenses/generate_file.py:105
 msgid "license.pdf"
 msgstr "freistellung.pdf"
@@ -1301,7 +1316,7 @@ msgstr "Die Dauer darf nicht Null sein."
 
 #: licenses/templates/admin/filter_datetime_range.html:7
 msgid "Custom date range"
-msgstr ""
+msgstr "Benutzerdefinierter Zeitraum"
 
 #: licenses/templates/admin/filter_datetime_range.html:74
 #: licenses/templates/admin/filter_numeric_range.html:47
@@ -1311,20 +1326,16 @@ msgid "Reset"
 msgstr "Zurücksetzen"
 
 #: licenses/templates/admin/filter_datetime_range.html:84
-#, fuzzy
-#| msgid "Activity"
 msgid "Active filter"
 msgstr "Aktivität"
 
 #: licenses/templates/admin/filter_datetime_range.html:86
-#, fuzzy
-#| msgid "from 12"
 msgid "from"
-msgstr "20:00 Uhr (ab 12 J.)"
+msgstr "von"
 
 #: licenses/templates/admin/filter_datetime_range.html:90
 msgid "to"
-msgstr ""
+msgstr "bis"
 
 #: licenses/templates/admin/filter_numeric_range.html:39
 #, python-format
@@ -2137,6 +2148,158 @@ msgstr "Profile"
 #: registration/models.py:218 rental/templates/rental/rental_stats.html:328
 msgid "Information"
 msgstr "Informationen"
+
+#: registration/models.py:219
+msgid "Success"
+msgstr "Erfolg"
+
+#: registration/models.py:220 rental/templates/rental/rental_stats.html:335
+msgid "Warning"
+msgstr "Warnung"
+
+#: registration/models.py:221
+msgid "Danger"
+msgstr "Gefahr"
+
+#: registration/models.py:225
+msgid "Info Circle"
+msgstr "Info-Kreis"
+
+#: registration/models.py:226
+msgid "Check Circle"
+msgstr "Häkchen-Kreis"
+
+#: registration/models.py:227
+msgid "Exclamation Triangle"
+msgstr "Ausrufezeichen-Dreieck"
+
+#: registration/models.py:228
+msgid "Exclamation Circle"
+msgstr "Ausrufezeichen-Kreis"
+
+#: registration/models.py:229
+msgid "Clock"
+msgstr "Uhr"
+
+#: registration/models.py:230
+msgid "Bell"
+msgstr "Glocke"
+
+#: registration/models.py:231
+msgid "Broadcast"
+msgstr "Sendung"
+
+#: registration/models.py:232
+msgid "Star"
+msgstr "Stern"
+
+#: registration/models.py:233
+msgid "Gear"
+msgstr "Zahnrad"
+
+#: registration/models.py:234
+msgid "Shield Check"
+msgstr "Schild-Häkchen"
+
+#: registration/models.py:240
+msgid "Short title for the notification"
+msgstr "Kurzer Titel für die Benachrichtigung"
+
+#: registration/models.py:244
+msgid "Message"
+msgstr "Nachricht"
+
+#: registration/models.py:245
+msgid "Main notification text"
+msgstr "Haupttext der Benachrichtigung"
+
+#: registration/models.py:249 rental/templates/rental/list.html:75
+msgid "Type"
+msgstr "Typ"
+
+#: registration/models.py:253
+msgid "Notification type determines color and style"
+msgstr "Benachrichtigungstyp bestimmt Farbe und Stil"
+
+#: registration/models.py:257
+msgid "Icon"
+msgstr "Symbol"
+
+#: registration/models.py:261
+msgid "Bootstrap Icons icon name"
+msgstr "Bootstrap Icons Symbolname"
+
+#: registration/models.py:265 rental/models.py:516 rental/models.py:692
+#: rental/templates/rental/list.html:68 rental/templates/rental/list.html:166
+#: rental/templates/rental/rental_stats.html:434
+#: ok_tools/templates/dashboard.html:40
+msgid "Active"
+msgstr "Aktiv"
+
+#: registration/models.py:267
+msgid "Only active notifications are displayed to users"
+msgstr "Nur aktive Benachrichtigungen werden Benutzern angezeigt"
+
+#: registration/models.py:271
+msgid "Priority"
+msgstr "Priorität"
+
+#: registration/models.py:273
+msgid "Higher priority notifications appear first (1-10)"
+msgstr "Benachrichtigungen mit höherer Priorität erscheinen zuerst (1-10)"
+
+#: registration/models.py:277
+#: rental/templates/rental/admin_rental_process.html:458
+#: rental/templates/rental/list.html:113
+#: rental/templates/rental/rental_detail.html:587
+msgid "Start Date"
+msgstr "Startdatum"
+
+#: registration/models.py:279
+msgid "When to start showing this notification"
+msgstr "Wann diese Benachrichtigung angezeigt werden soll"
+
+#: registration/models.py:283
+#: rental/templates/rental/admin_rental_process.html:464
+#: rental/templates/rental/list.html:114
+#: rental/templates/rental/rental_detail.html:593
+msgid "End Date"
+msgstr "Enddatum"
+
+#: registration/models.py:286
+msgid "When to stop showing this notification (optional)"
+msgstr ""
+"Wann diese Benachrichtigung nicht mehr angezeigt werden soll (optional)"
+
+#: registration/models.py:290
+msgid "Created At"
+msgstr "Erstellt am"
+
+#: registration/models.py:299
+msgid "Created By"
+msgstr "Erstellt von"
+
+#: registration/models.py:300
+msgid "Admin who created this notification (auto-filled)"
+msgstr ""
+"Administrator, der diese Benachrichtigung erstellt hat (automatisch "
+"ausgefüllt)"
+
+#: registration/models.py:309
+msgid "Notification"
+msgstr "Benachrichtigung"
+
+#: registration/models.py:310 ok_tools/templates/dashboard.html:168
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+#: registration/print.py:94
+msgid "registration_form.pdf"
+msgstr "Nutzer_innenantrag.pdf"
+
+#: registration/templates/admin/registration_change_form_edit.html:8
+msgid "Print application"
+msgstr "Nutzer*innenantrag drucken"
 
 #: registration/models.py:219
 msgid "Success"
@@ -4010,7 +4173,6 @@ msgstr "Ungültige Benutzer-ID"
 #: rental/views.py:3523
 msgid "Rental successfully issued from reservation"
 msgstr "Ausleihe erfolgreich aus Reservierung ausgegeben"
-
 
 #: ok_tools/templates/admin/base_site.html:6
 #: ok_tools/templates/admin/base_site.html:15

@@ -8,6 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+
 "POT-Creation-Date: 2025-08-26 21:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -55,6 +56,7 @@ msgid "Time to"
 msgstr ""
 
 #: contributions/admin.py:209 contributions/admin.py:299
+
 #: contributions/models.py:71
 #: contributions/templates/contributions/list.html:155
 msgid "Broadcast Date"
@@ -1048,12 +1050,10 @@ msgstr ""
 
 #: inventory/templates/inventory/list.html:131
 #: planung/templates/admin/planung/calendar_weeks.html:190
-#: venv/lib/python3.13/site-packages/django/forms/formsets.py:499
 msgid "Delete"
 msgstr ""
 
 #: inventory/templates/inventory/list.html:168
-#: venv/lib/python3.13/site-packages/django/forms/widgets.py:866
 msgid "Unknown"
 msgstr ""
 
@@ -1223,6 +1223,18 @@ msgstr ""
 #: licenses/forms.py:110
 #: planung/templates/admin/planung/calendar_weeks.html:192
 msgid "Save"
+msgstr ""
+
+#: licenses/forms.py:150 rental/templates/rental/admin_rental_process.html:53
+#: rental/templates/rental/admin_rental_process.html:368
+#: rental/templates/rental/rental_stats.html:386
+msgid "From"
+msgstr ""
+
+#: licenses/forms.py:154 rental/templates/rental/admin_rental_process.html:54
+#: rental/templates/rental/admin_rental_process.html:372
+#: rental/templates/rental/rental_stats.html:390
+msgid "To"
 msgstr ""
 
 #: licenses/generate_file.py:105
@@ -1938,62 +1950,50 @@ msgid "birthmonth"
 msgstr ""
 
 #: registration/admin.py:120
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:25
 msgid "January"
 msgstr ""
 
 #: registration/admin.py:121
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:26
 msgid "February"
 msgstr ""
 
 #: registration/admin.py:122
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:27
 msgid "March"
 msgstr ""
 
 #: registration/admin.py:123
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:28
 msgid "April"
 msgstr ""
 
 #: registration/admin.py:124
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:29
 msgid "May"
 msgstr ""
 
 #: registration/admin.py:125
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:30
 msgid "June"
 msgstr ""
 
 #: registration/admin.py:126
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:31
 msgid "July"
 msgstr ""
 
 #: registration/admin.py:127
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:32
 msgid "August"
 msgstr ""
 
 #: registration/admin.py:128
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:33
 msgid "September"
 msgstr ""
 
 #: registration/admin.py:129
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:34
 msgid "October"
 msgstr ""
 
 #: registration/admin.py:130
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:35
 msgid "November"
 msgstr ""
 
 #: registration/admin.py:131
-#: venv/lib/python3.13/site-packages/django/utils/dates.py:36
 msgid "December"
 msgstr ""
 
@@ -2115,6 +2115,151 @@ msgstr ""
 
 #: registration/models.py:218 rental/templates/rental/rental_stats.html:328
 msgid "Information"
+msgstr ""
+
+#: registration/models.py:219
+msgid "Success"
+msgstr ""
+
+#: registration/models.py:220 rental/templates/rental/rental_stats.html:335
+msgid "Warning"
+msgstr ""
+
+#: registration/models.py:221
+msgid "Danger"
+msgstr ""
+
+#: registration/models.py:225
+msgid "Info Circle"
+msgstr ""
+
+#: registration/models.py:226
+msgid "Check Circle"
+msgstr ""
+
+#: registration/models.py:227
+msgid "Exclamation Triangle"
+msgstr ""
+
+#: registration/models.py:228
+msgid "Exclamation Circle"
+msgstr ""
+
+#: registration/models.py:229
+msgid "Clock"
+msgstr ""
+
+#: registration/models.py:230
+msgid "Bell"
+msgstr ""
+
+#: registration/models.py:231
+msgid "Broadcast"
+msgstr ""
+
+#: registration/models.py:232
+msgid "Star"
+msgstr ""
+
+#: registration/models.py:233
+msgid "Gear"
+msgstr ""
+
+#: registration/models.py:234
+msgid "Shield Check"
+msgstr ""
+
+#: registration/models.py:240
+msgid "Short title for the notification"
+msgstr ""
+
+#: registration/models.py:244
+msgid "Message"
+msgstr ""
+
+#: registration/models.py:245
+msgid "Main notification text"
+msgstr ""
+
+#: registration/models.py:249 rental/templates/rental/list.html:75
+msgid "Type"
+msgstr ""
+
+#: registration/models.py:253
+msgid "Notification type determines color and style"
+msgstr ""
+
+#: registration/models.py:257
+msgid "Icon"
+msgstr ""
+
+#: registration/models.py:261
+msgid "Bootstrap Icons icon name"
+msgstr ""
+
+#: registration/models.py:265 rental/models.py:516 rental/models.py:692
+#: rental/templates/rental/list.html:68 rental/templates/rental/list.html:166
+#: rental/templates/rental/rental_stats.html:434
+#: ok_tools/templates/dashboard.html:40
+msgid "Active"
+msgstr ""
+
+#: registration/models.py:267
+msgid "Only active notifications are displayed to users"
+msgstr ""
+
+#: registration/models.py:271
+msgid "Priority"
+msgstr ""
+
+#: registration/models.py:273
+msgid "Higher priority notifications appear first (1-10)"
+msgstr ""
+
+#: registration/models.py:277
+#: rental/templates/rental/admin_rental_process.html:458
+#: rental/templates/rental/list.html:113
+#: rental/templates/rental/rental_detail.html:587
+msgid "Start Date"
+msgstr ""
+
+#: registration/models.py:279
+msgid "When to start showing this notification"
+msgstr ""
+
+#: registration/models.py:283
+#: rental/templates/rental/admin_rental_process.html:464
+#: rental/templates/rental/list.html:114
+#: rental/templates/rental/rental_detail.html:593
+msgid "End Date"
+msgstr ""
+
+#: registration/models.py:286
+msgid "When to stop showing this notification (optional)"
+msgstr ""
+
+#: registration/models.py:290
+msgid "Created At"
+msgstr ""
+
+#: registration/models.py:299
+msgid "Created By"
+msgstr ""
+
+#: registration/models.py:300
+msgid "Admin who created this notification (auto-filled)"
+msgstr ""
+
+#: registration/models.py:309
+msgid "Notification"
+msgstr ""
+
+#: registration/models.py:310 ok_tools/templates/dashboard.html:168
+msgid "Notifications"
+msgstr ""
+
+#: registration/print.py:94
+msgid "registration_form.pdf"
 msgstr ""
 
 #: registration/models.py:219
