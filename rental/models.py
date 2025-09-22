@@ -701,3 +701,74 @@ class RentalProcessProxy(RentalRequest):
         proxy = True
         verbose_name = _('Rental Process')
         verbose_name_plural = _('Rental Process')
+
+
+class EquipmentTemplate(models.Model):
+    """Template for equipment sets that can be reused for creating rentals."""
+
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('Template Name'),
+        help_text=_('Name of the equipment template (e.g., "Concert Setup", "Workshop Equipment")')
+    )
+
+    description = models.TextField(
+        blank=True,
+        verbose_name=_('Description'),
+        help_text=_('Optional description of what this template is used for')
+    )
+
+    created_by = models.ForeignKey(
+        'registration.OKUser',
+        on_delete=models.CASCADE,
+        verbose_name=_('Created by'),
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('Updated at')
+    )
+
+    class Meta:
+        verbose_name = _('Equipment Template')
+        verbose_name_plural = _('Equipment Templates')
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class EquipmentTemplateItem(models.Model):
+    """Individual equipment items in a template."""
+
+    template = models.ForeignKey(
+        EquipmentTemplate,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name=_('Template')
+    )
+
+    inventory_item = models.ForeignKey(
+        'inventory.InventoryItem',
+        on_delete=models.CASCADE,
+        verbose_name=_('Inventory Item')
+    )
+
+    quantity = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_('Quantity'),
+        help_text=_('Default quantity for this item in the template')
+    )
+
+    class Meta:
+        verbose_name = _('Template Item')
+        verbose_name_plural = _('Template Items')
+        unique_together = ['template', 'inventory_item']
+
+    def __str__(self):
+        return f"{self.template.name} - {self.inventory_item.description} ({self.quantity})"

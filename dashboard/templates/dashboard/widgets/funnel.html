@@ -1,0 +1,1462 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "User Participation Funnel" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Filters Section -->
+    <div class="filter-section">
+        <form id="filtersForm" method="GET">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="dateRange" class="form-label">{% trans "Datumsbereich" %}</label>
+                    <select class="form-select" id="dateRange" name="days">
+                        <option value="7">{% trans "Last 7 days" %}</option>
+                        <option value="30">{% trans "Last 30 days" %}</option>
+                        <option value="90">{% trans "Last 90 days" %}</option>
+                        <option value="365">{% trans "Last year" %}</option>
+                        <option value="all">{% trans "All Time" %}</option>
+                        <option value="custom">{% trans "Custom Period" %}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="customStartDate" class="form-label">{% trans "Startdatum" %}</label>
+                    <input type="date" class="form-control" id="customStartDate" name="start_date" style="display: none;">
+                </div>
+                <div class="col-md-3">
+                    <label for="customEndDate" class="form-label">{% trans "Enddatum" %}</label>
+                    <input type="date" class="form-control" id="customEndDate" name="end_date" style="display: none;">
+                </div>
+                <div class="col-md-3">
+                    <label for="mediaAuthority" class="form-label">{% trans "Bürgermedium" %}</label>
+                    <select class="form-select" id="mediaAuthority" name="media_authority">
+                        <option value="">{% trans "All Authorities" %}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <label for="genderFilter" class="form-label">{% trans "Gender" %}</label>
+                    <select class="form-select" id="genderFilter" name="gender">
+                        <option value="">{% trans "All Genders" %}</option>
+                        <option value="m">{% trans "Male" %}</option>
+                        <option value="f">{% trans "Female" %}</option>
+                        <option value="d">{% trans "Diverse" %}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="ageGroupFilter" class="form-label">{% trans "Age Group" %}</label>
+                    <select class="form-select" id="ageGroupFilter" name="age_group">
+                        <option value="">{% trans "All Ages" %}</option>
+                        <option value="under_18">{% trans "Under 18" %}</option>
+                        <option value="18_25">{% trans "18-25" %}</option>
+                        <option value="26_35">{% trans "26-35" %}</option>
+                        <option value="36_50">{% trans "36-50" %}</option>
+                        <option value="over_50">{% trans "Over 50" %}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="categoryFilter" class="form-label">{% trans "Kategorie" %}</label>
+                    <select class="form-select" id="categoryFilter" name="category">
+                        <option value="">{% trans "Alle Kategorien" %}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">{% trans "Status" %}</label>
+                    <select class="form-select" id="statusFilter" name="status">
+                        <option value="">{% trans "Alle Status" %}</option>
+                        <option value="verified">{% trans "Verified" %}</option>
+                        <option value="unverified">{% trans "Unverified" %}</option>
+                        <option value="member">{% trans "Member" %}</option>
+                        <option value="non_member">{% trans "Non-Member" %}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">{% trans "Apply Filters" %}</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetFilters()">{% trans "Reset" %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Funnel Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card clickable-stat tooltip" data-type="registrations" data-title="{% trans 'Total Registrations' %}">
+                <div class="stat-number" id="totalRegistrations">-</div>
+                <div class="stat-label">{% trans "Total Registrations" %}</div>
+                <span class="tooltiptext">{% trans "Click to view detailed list of registrations" %}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card clickable-stat tooltip" data-type="verified" data-title="{% trans 'Verified Users' %}">
+                <div class="stat-number" id="verifiedUsers">-</div>
+                <div class="stat-label">{% trans "Verified Users" %}</div>
+                <span class="tooltiptext">{% trans "Click to view detailed list of verified users" %}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card clickable-stat tooltip" data-type="licenses" data-title="{% trans 'Licenses Created' %}">
+                <div class="stat-number" id="licensesCreated">-</div>
+                <div class="stat-label">{% trans "Licenses Created" %}</div>
+                <span class="tooltiptext">{% trans "Click to view detailed list of licenses" %}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card clickable-stat tooltip" data-type="broadcasts" data-title="{% trans 'First Broadcasts' %}">
+                <div class="stat-number" id="firstBroadcasts">-</div>
+                <div class="stat-label">{% trans "First Broadcasts" %}</div>
+                <span class="tooltiptext">{% trans "Click to view detailed list of first broadcasts" %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Funnel Visualization -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Participation Funnel" %}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversion Rates -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Conversion Rates" %}</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px;">
+                        <canvas id="conversionRatesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Alerts -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Active Alerts" %}</h5>
+                </div>
+                <div class="card-body">
+                    <div id="alertsList">
+                        <p class="text-muted">{% trans "Loading..." %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Thresholds Management -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Alert Thresholds" %}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Name" %}</th>
+                                    <th>{% trans "Stage" %}</th>
+                                    <th>{% trans "Metric Type" %}</th>
+                                    <th>{% trans "Threshold" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="thresholdsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">{% trans "Loading..." %}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(0,0,0,0.5); z-index: 9999;">
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">{% trans "Loading..." %}</span>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+window.chartData = {};
+window.funnelChart = null;
+window.conversionRatesChart = null;
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadFilterData();
+    loadFunnelData();
+    setupEventListeners();
+    toggleCustomDateInputs();
+    initializeFiltersFromURL();
+});
+
+// Load filter data via AJAX
+async function loadFilterData() {
+    try {
+        const response = await fetch('/admin-dashboard/api/filters-data/');
+        const data = await response.json();
+
+        if (data.success && data.data && data.data.context) {
+
+            // Populate Media Authority options
+            const mediaAuthoritySelect = document.getElementById('mediaAuthority');
+            if (mediaAuthoritySelect && data.data.context.media_authorities) {
+                while (mediaAuthoritySelect.children.length > 1) {
+                    mediaAuthoritySelect.removeChild(mediaAuthoritySelect.lastChild);
+                }
+
+                data.data.context.media_authorities.forEach(authority => {
+                    const option = document.createElement('option');
+                    option.value = authority.name;
+                    option.textContent = authority.name;
+                    mediaAuthoritySelect.appendChild(option);
+                });
+            }
+
+            // Populate Category options
+            const categorySelect = document.getElementById('categoryFilter');
+            if (categorySelect && data.data.context.category_choices) {
+                while (categorySelect.children.length > 1) {
+                    categorySelect.removeChild(categorySelect.lastChild);
+                }
+
+                data.data.context.category_choices.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+            }
+        } else {
+            console.error('Failed to load filter data:', data);
+        }
+    } catch (error) {
+        console.error('Error loading filter data:', error);
+    }
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    const filtersForm = document.getElementById('filtersForm');
+    if (filtersForm) {
+        filtersForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+    }
+
+    const dateRangeSelect = document.getElementById('dateRange');
+    if (dateRangeSelect) {
+        dateRangeSelect.addEventListener('change', function() {
+            toggleCustomDateInputs();
+        });
+    }
+}
+
+// Toggle custom date inputs
+function toggleCustomDateInputs() {
+    const dateRange = document.getElementById('dateRange').value;
+    const startDateInput = document.getElementById('customStartDate');
+    const endDateInput = document.getElementById('customEndDate');
+
+    if (dateRange === 'custom') {
+        startDateInput.style.display = 'block';
+        endDateInput.style.display = 'block';
+    } else {
+        startDateInput.style.display = 'none';
+        endDateInput.style.display = 'none';
+    }
+}
+
+// Initialize filters from URL
+function initializeFiltersFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const days = urlParams.get('days');
+    const startDate = urlParams.get('start_date');
+    const endDate = urlParams.get('end_date');
+
+    if (days) {
+        const dateRangeSelect = document.getElementById('dateRange');
+        if (dateRangeSelect) {
+            dateRangeSelect.value = days;
+        }
+
+        if (days === 'custom' && startDate && endDate) {
+            const startInput = document.getElementById('customStartDate');
+            const endInput = document.getElementById('customEndDate');
+            if (startInput) startInput.value = startDate;
+            if (endInput) endInput.value = endDate;
+        }
+    }
+
+    // Set other filter values from URL
+    const filters = ['media_authority', 'gender', 'age_group', 'category', 'status'];
+    filters.forEach(filter => {
+        const value = urlParams.get(filter);
+        if (value) {
+            const element = document.getElementById(filter === 'media_authority' ? 'mediaAuthority' : filter + 'Filter');
+            if (element) {
+                element.value = value;
+            }
+        }
+    });
+}
+
+// Apply filters
+function applyFilters() {
+    const form = document.getElementById('filtersForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (let [key, value] of formData.entries()) {
+        if (value) {
+            params.append(key, value);
+        }
+    }
+
+    window.history.pushState({}, '', window.location.pathname + '?' + params.toString());
+
+    loadFunnelData().then(function() {
+    }).catch(function(error) {
+        console.error('Error updating charts:', error);
+    });
+}
+
+// Reset filters
+function resetFilters() {
+    const form = document.getElementById('filtersForm');
+    form.reset();
+
+    window.history.pushState({}, '', window.location.pathname);
+
+    loadFunnelData().then(function() {
+    }).catch(function(error) {
+        console.error('Error updating charts:', error);
+    });
+}
+
+// Load funnel data
+async function loadFunnelData() {
+    setLoadingState(true);
+
+    try {
+        const formData = new FormData(document.getElementById('filtersForm'));
+        const params = new URLSearchParams();
+
+        for (let [key, value] of formData.entries()) {
+            if (value && value !== '') {
+                params.append(key, value);
+            }
+        }
+
+        // Load overview data
+        const overviewResponse = await fetch(`/admin-dashboard/api/funnel-metrics/?${params.toString()}`);
+        const overviewData = await overviewResponse.json();
+
+
+        // Load alerts data with same parameters as overview
+        const alertsResponse = await fetch(`/admin-dashboard/api/alerts-list/?${params.toString()}`);
+        const alertsData = await alertsResponse.json();
+
+        if (overviewData.success && alertsData.success) {
+            window.chartData = {
+                overview: overviewData.data,
+                alerts: alertsData.data
+            };
+
+            // Update statistics cards
+            updateStatisticsCards(overviewData.data.metrics);
+
+            // Update alerts
+            updateAlertsList(alertsData.data.alerts);
+
+            // Update thresholds table
+            updateThresholdsTable(alertsData.data.thresholds);
+
+            // Initialize charts
+            initializeCharts();
+
+        } else {
+            console.error('Error loading data:', overviewData.error || alertsData.error);
+        }
+    } catch (error) {
+        console.error('Error loading funnel data:', error);
+    } finally {
+        setLoadingState(false);
+    }
+}
+
+// Update statistics cards
+function updateStatisticsCards(metrics) {
+    document.getElementById('totalRegistrations').textContent = metrics.total_registrations || 0;
+    document.getElementById('verifiedUsers').textContent = metrics.verified_users || 0;
+    document.getElementById('licensesCreated').textContent = metrics.licenses_created || 0;
+    document.getElementById('firstBroadcasts').textContent = metrics.first_broadcasts || 0;
+}
+
+// Update alerts list
+function updateAlertsList(alerts) {
+    const container = document.getElementById('alertsList');
+
+    if (alerts && alerts.length > 0) {
+        container.innerHTML = alerts.map(alert => `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">${alert.threshold_name}</h6>
+                        <p class="mb-0">${alert.message}</p>
+                        <small class="text-muted">
+                            ${alert.stage} - {% trans "Current" %}: ${alert.current_value}, {% trans "Threshold" %}: ${alert.threshold_value}
+                        </small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="resolveAlert(${alert.id})">
+                        {% trans "Resolve" %}
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        container.innerHTML = '<p class="text-muted">{% trans "No active alerts" %}</p>';
+    }
+}
+
+// Update thresholds table
+function updateThresholdsTable(thresholds) {
+    const tbody = document.getElementById('thresholdsTableBody');
+
+    if (thresholds && thresholds.length > 0) {
+        tbody.innerHTML = thresholds.map(threshold => `
+            <tr>
+                <td>${threshold.name}</td>
+                <td>${threshold.stage}</td>
+                <td>${threshold.metric_type}</td>
+                <td>${threshold.threshold_value} ${threshold.comparison_operator}</td>
+                <td>
+                    <span class="badge bg-${threshold.is_active ? 'success' : 'secondary'}">
+                        ${threshold.is_active ? '{% trans "Active" %}' : '{% trans "Inactive" %}'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editThreshold(${threshold.id})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-${threshold.is_active ? 'warning' : 'success'}"
+                            onclick="toggleThreshold(${threshold.id}, ${!threshold.is_active})">
+                        <i class="bi bi-${threshold.is_active ? 'pause' : 'play'}"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">{% trans "No thresholds configured" %}</td></tr>';
+    }
+}
+
+// Initialize charts
+function initializeCharts() {
+    // Destroy existing charts
+    if (window.funnelChart) {
+        window.funnelChart.destroy();
+    }
+    if (window.conversionRatesChart) {
+        window.conversionRatesChart.destroy();
+    }
+
+    // Funnel Chart
+    initializeFunnelChart();
+
+    // Conversion Rates Chart
+    initializeConversionRatesChart();
+
+}
+
+// Initialize funnel chart
+function initializeFunnelChart() {
+    const ctx = document.getElementById('funnelChart').getContext('2d');
+    const funnelData = window.chartData.overview.funnel_data || {};
+
+    // Convert object to array format
+    const stages = Object.values(funnelData);
+    const labels = stages.map(stage => stage.name);
+    const data = stages.map(stage => stage.count);
+
+    window.funnelChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '{% trans "Users" %}',
+                data: data,
+                backgroundColor: [
+                    'rgba(23, 162, 184, 0.8)',
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(255, 193, 7, 0.8)',
+                    'rgba(220, 53, 69, 0.8)',
+                    'rgba(111, 66, 193, 0.8)',
+                    'rgba(253, 126, 20, 0.8)',
+                    'rgba(32, 201, 151, 0.8)',
+                    'rgba(108, 117, 125, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(23, 162, 184, 1)',
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(220, 53, 69, 1)',
+                    'rgba(111, 66, 193, 1)',
+                    'rgba(253, 126, 20, 1)',
+                    'rgba(32, 201, 151, 1)',
+                    'rgba(108, 117, 125, 1)'
+                ],
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#17a2b8',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            return '{% trans "Users" %}: ' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: '{% trans "Funnel Stage" %}',
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    display: true,
+                    title: {
+                        display: true,
+                        text: '{% trans "Number of Users" %}',
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
+                    },
+                    grid: {
+                        display: true,
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString();
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart',
+                delay: (context) => {
+                    return context.dataIndex * 100;
+                }
+            }
+        }
+    });
+}
+
+// Initialize conversion rates chart
+function initializeConversionRatesChart() {
+    const ctx = document.getElementById('conversionRatesChart').getContext('2d');
+
+    const conversionRates = window.chartData.overview?.conversion_rates || {};
+
+    const labels = Object.keys(conversionRates).map(key => {
+        const labelMap = {
+            'verification_rate': '{% trans "Verification Rate" %}',
+            'rental_request_rate': '{% trans "Rental Request Rate" %}',
+            'rental_completion_rate': '{% trans "Rental Completion Rate" %}',
+            'license_creation_rate': '{% trans "License Creation Rate" %}',
+            'contribution_creation_rate': '{% trans "Contribution Creation Rate" %}',
+            'first_broadcast_rate': '{% trans "First Broadcast Rate" %}',
+            'multiple_broadcast_rate': '{% trans "Multiple Broadcast Rate" %}'
+        };
+        return labelMap[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    });
+
+    // Filter out zero values and create separate arrays for labels and data
+    const filteredData = [];
+    const filteredLabels = [];
+    const filteredKeys = [];
+
+    Object.keys(conversionRates).forEach((key, index) => {
+        const value = conversionRates[key];
+        if (value > 0) { // Only show non-zero values
+            filteredData.push(Math.min(value, 100)); // Cap at 100%
+            filteredLabels.push(labels[index]);
+            filteredKeys.push(key);
+        }
+    });
+
+    // If no data, show a message
+    if (filteredData.length === 0) {
+        ctx.fillStyle = '#666';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('No conversion data available', ctx.canvas.width / 2, ctx.canvas.height / 2);
+        return;
+    }
+
+    // Extended color palette for more parameters
+    const colors = [
+        'rgba(23, 162, 184, 0.8)',   // Teal
+        'rgba(40, 167, 69, 0.8)',    // Green
+        'rgba(255, 193, 7, 0.8)',    // Yellow
+        'rgba(220, 53, 69, 0.8)',    // Red
+        'rgba(108, 117, 125, 0.8)',  // Gray
+        'rgba(111, 66, 193, 0.8)',   // Purple
+        'rgba(253, 126, 20, 0.8)',   // Orange
+        'rgba(20, 162, 184, 0.8)',   // Cyan
+        'rgba(25, 135, 84, 0.8)',    // Dark Green
+        'rgba(255, 99, 132, 0.8)'    // Pink
+    ];
+
+    const borderColors = [
+        'rgba(23, 162, 184, 1)',
+        'rgba(40, 167, 69, 1)',
+        'rgba(255, 193, 7, 1)',
+        'rgba(220, 53, 69, 1)',
+        'rgba(108, 117, 125, 1)',
+        'rgba(111, 66, 193, 1)',
+        'rgba(253, 126, 20, 1)',
+        'rgba(20, 162, 184, 1)',
+        'rgba(25, 135, 84, 1)',
+        'rgba(255, 99, 132, 1)'
+    ];
+
+    window.conversionRatesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: filteredLabels,
+            datasets: [{
+                data: filteredData,
+                backgroundColor: colors.slice(0, filteredData.length),
+                borderColor: borderColors.slice(0, filteredData.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        },
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#17a2b8',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const key = filteredKeys[context.dataIndex];
+                            const originalValue = window.chartData.overview?.conversion_rates?.[key] || 0;
+                            const displayValue = Math.min(originalValue, 100);
+                            const isCapped = originalValue > 100;
+                            return context.label + ': ' + displayValue.toFixed(2) + '%' + (isCapped ? ' (capped)' : '');
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
+
+// Set loading state
+function setLoadingState(loading) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (loading) {
+        overlay.classList.remove('d-none');
+    } else {
+        overlay.classList.add('d-none');
+    }
+}
+
+// Action functions
+function resolveAlert(alertId) {
+    if (confirm('{% trans "Are you sure you want to resolve this alert?" %}')) {
+        fetch(`/admin-dashboard/api/alerts-resolve/${alertId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('{% trans "Alert resolved successfully" %}', 'success');
+                loadFunnelData(); // Reload data
+            } else {
+                showNotification('{% trans "Error resolving alert: " %}' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('{% trans "Error resolving alert: " %}' + error.message, 'error');
+        });
+    }
+}
+
+function editThreshold(thresholdId) {
+    // Find the threshold data
+    const thresholds = window.chartData.alerts.thresholds || [];
+    const threshold = thresholds.find(t => t.id === thresholdId);
+
+    if (!threshold) {
+        showNotification('{% trans "Threshold not found" %}', 'error');
+        return;
+    }
+
+    // Create modal for editing threshold
+    const modalHtml = `
+        <div class="modal fade" id="editThresholdModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{% trans "Edit Threshold" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editThresholdForm">
+                            <input type="hidden" id="thresholdId" value="${threshold.id}">
+
+                            <div class="mb-3">
+                                <label for="thresholdName" class="form-label">{% trans "Name" %}</label>
+                                <input type="text" class="form-control" id="thresholdName" value="${threshold.name}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="thresholdStage" class="form-label">{% trans "Stage" %}</label>
+                                <select class="form-select" id="thresholdStage" required>
+                                    <option value="registered" ${threshold.stage === 'Registered' ? 'selected' : ''}>{% trans "Registered" %}</option>
+                                    <option value="verified" ${threshold.stage === 'Verifiziert' ? 'selected' : ''}>{% trans "Verified" %}</option>
+                                    <option value="license_created" ${threshold.stage === 'License Created' ? 'selected' : ''}>{% trans "License Created" %}</option>
+                                    <option value="first_broadcast" ${threshold.stage === 'First Broadcast' ? 'selected' : ''}>{% trans "First Broadcast" %}</option>
+                                    <option value="rental_completed" ${threshold.stage === 'Rental Completed' ? 'selected' : ''}>{% trans "Rental Completed" %}</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="thresholdMetricType" class="form-label">{% trans "Metric Type" %}</label>
+                                <select class="form-select" id="thresholdMetricType" required>
+                                    <option value="absolute_count" ${threshold.metric_type === 'Absolute Count' ? 'selected' : ''}>{% trans "Absolute Count" %}</option>
+                                    <option value="conversion_rate" ${threshold.metric_type === 'Conversion Rate' ? 'selected' : ''}>{% trans "Conversion Rate" %}</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="thresholdValue" class="form-label">{% trans "Threshold Value" %}</label>
+                                <input type="number" class="form-control" id="thresholdValue" value="${threshold.threshold_value}" step="0.1" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="thresholdOperator" class="form-label">{% trans "Comparison Operator" %}</label>
+                                <select class="form-select" id="thresholdOperator" required>
+                                    <option value="gt" ${threshold.comparison_operator === 'Greater Than' ? 'selected' : ''}>{% trans "Greater Than" %}</option>
+                                    <option value="lt" ${threshold.comparison_operator === 'Less Than' ? 'selected' : ''}>{% trans "Less Than" %}</option>
+                                    <option value="eq" ${threshold.comparison_operator === 'Equals' ? 'selected' : ''}>{% trans "Equals" %}</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="thresholdActive" ${threshold.is_active ? 'checked' : ''}>
+                                <label class="form-check-label" for="thresholdActive">
+                                    {% trans "Active" %}
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="button" class="btn btn-primary" onclick="saveThreshold()">{% trans "Save Changes" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove existing modal if any
+    const existingModal = document.getElementById('editThresholdModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editThresholdModal'));
+    modal.show();
+}
+
+function saveThreshold() {
+    const thresholdId = document.getElementById('thresholdId').value;
+    const name = document.getElementById('thresholdName').value;
+    const stage = document.getElementById('thresholdStage').value;
+    const metricType = document.getElementById('thresholdMetricType').value;
+    const thresholdValue = parseFloat(document.getElementById('thresholdValue').value);
+    const comparisonOperator = document.getElementById('thresholdOperator').value;
+    const isActive = document.getElementById('thresholdActive').checked;
+
+    // Validate form
+    if (!name || !stage || !metricType || isNaN(thresholdValue) || !comparisonOperator) {
+        showNotification('{% trans "Please fill in all required fields" %}', 'error');
+        return;
+    }
+
+        // Prepare data
+        const data = {
+            name: name,
+            stage: stage,
+            metric_type: metricType,
+            threshold_value: thresholdValue,
+            comparison_operator: comparisonOperator,
+            is_active: isActive
+        };
+
+
+    // Send update request
+    fetch(`/admin-dashboard/api/thresholds/${thresholdId}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification('{% trans "Threshold updated successfully" %}', 'success');
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editThresholdModal'));
+            modal.hide();
+            // Reload data
+            loadFunnelData();
+        } else {
+            showNotification('{% trans "Error updating threshold: " %}' + (result.error || 'Unknown error'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating threshold:', error);
+        showNotification('{% trans "Error updating threshold: " %}' + error.message, 'error');
+    });
+}
+
+function toggleThreshold(thresholdId, isActive) {
+    const action = isActive ? 'activate' : 'deactivate';
+    const message = isActive ?
+        '{% trans "Are you sure you want to activate this threshold?" %}' :
+        '{% trans "Are you sure you want to deactivate this threshold?" %}';
+
+    if (confirm(message)) {
+        fetch(`/admin-dashboard/api/thresholds/${thresholdId}/toggle/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showNotification(
+                    isActive ? '{% trans "Threshold activated successfully" %}' : '{% trans "Threshold deactivated successfully" %}',
+                    'success'
+                );
+                // Reload data
+                loadFunnelData();
+            } else {
+                showNotification('{% trans "Error toggling threshold: " %}' + (result.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling threshold:', error);
+            showNotification('{% trans "Error toggling threshold: " %}' + error.message, 'error');
+        });
+    }
+}
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Show notification to user
+function showNotification(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Interactive navigation functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers to stat cards
+    const statCards = document.querySelectorAll('.clickable-stat');
+    statCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const type = this.dataset.type;
+            const title = this.dataset.title;
+            showFunnelDetailModal(type, title);
+        });
+
+        // Add hover effect
+        card.style.cursor = 'pointer';
+    });
+});
+
+// Show funnel detail modal
+function showFunnelDetailModal(type, title) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('funnelDetailModal');
+    if (!modal) {
+        modal = createFunnelDetailModal();
+        document.body.appendChild(modal);
+    }
+
+    // Update modal title
+    const modalTitle = modal.querySelector('.modal-title');
+    modalTitle.textContent = title;
+
+    // Show loading state
+    const modalBody = modal.querySelector('.modal-body');
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">{% trans "Loading..." %}</span></div></div>';
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    // Load data
+    loadFunnelDetailData(type, modalBody);
+}
+// Create funnel detail modal
+function createFunnelDetailModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'funnelDetailModal';
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Funnel Detail View" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                    <button type="button" class="btn btn-primary" onclick="exportFunnelDetailData()">{% trans "Export CSV" %}</button>
+                </div>
+            </div>
+        </div>
+    `;
+    return modal;
+}
+
+// Load funnel detail data
+async function loadFunnelDetailData(type, modalBody, page = 1) {
+    try {
+        const formData = new FormData(document.getElementById('filtersForm'));
+        const params = new URLSearchParams();
+
+        for (let [key, value] of formData.entries()) {
+            if (value && value !== '') {
+                params.append(key, value);
+            }
+        }
+        params.append('type', type);
+        params.append('page', page);
+        params.append('per_page', 20);
+
+        const response = await fetch(`/admin-dashboard/api/funnel-detail/?${params.toString()}`);
+        const data = await response.json();
+
+        if (data.success) {
+            displayFunnelDetailData(data.data, modalBody, type);
+        } else {
+            modalBody.innerHTML = `<div class="alert alert-danger">{% trans "Error" %}: ${data.error}</div>`;
+        }
+    } catch (error) {
+        modalBody.innerHTML = `<div class="alert alert-danger">{% trans "Error loading data" %}: ${error.message}</div>`;
+    }
+}
+
+// Display funnel detail data
+function displayFunnelDetailData(data, modalBody, type) {
+    const { total_count, displayed_count, pagination } = data;
+
+    let html = `
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>{% trans "Total Records" %}:</strong> ${total_count}
+                </div>
+                <div class="col-md-6">
+                    <strong>{% trans "Displayed" %}:</strong> ${pagination ? `${pagination.start_index}-${pagination.end_index}` : displayed_count}
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (type === 'registrations' && data.profiles && data.profiles.length > 0) {
+        html += `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="funnelDetailTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "ID" %}</th>
+                            <th>{% trans "Email" %}</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Gender" %}</th>
+                            <th>{% trans "Birthday" %}</th>
+                            <th>{% trans "Verified" %}</th>
+                            <th>{% trans "Member" %}</th>
+                            <th>{% trans "Media Authority" %}</th>
+                            <th>{% trans "City" %}</th>
+                            <th>{% trans "Created" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        data.profiles.forEach(profile => {
+            const verifiedBadge = profile.verified ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning">{% trans "No" %}</span>';
+            const memberBadge = profile.member ? '<span class="badge bg-primary">{% trans "Yes" %}</span>' : '<span class="badge bg-secondary">{% trans "No" %}</span>';
+            html += `
+                <tr>
+                    <td>${profile.id}</td>
+                    <td>${profile.user_email}</td>
+                    <td>${profile.first_name} ${profile.last_name}</td>
+                    <td>${profile.gender}</td>
+                    <td>${profile.birthday}</td>
+                    <td>${verifiedBadge}</td>
+                    <td>${memberBadge}</td>
+                    <td>${profile.media_authority}</td>
+                    <td>${profile.city}</td>
+                    <td>${profile.created_at}</td>
+                </tr>
+            `;
+        });
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination if available
+        if (pagination && pagination.total_pages > 1) {
+            html += createPaginationHTML(pagination, type);
+        }
+    } else if (type === 'verified' && data.profiles && data.profiles.length > 0) {
+        html += `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="funnelDetailTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "ID" %}</th>
+                            <th>{% trans "Email" %}</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Gender" %}</th>
+                            <th>{% trans "Birthday" %}</th>
+                            <th>{% trans "Member" %}</th>
+                            <th>{% trans "Media Authority" %}</th>
+                            <th>{% trans "City" %}</th>
+                            <th>{% trans "Created" %}</th>
+                            <th>{% trans "Verified At" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        data.profiles.forEach(profile => {
+            const memberBadge = profile.member ? '<span class="badge bg-primary">{% trans "Yes" %}</span>' : '<span class="badge bg-secondary">{% trans "No" %}</span>';
+            html += `
+                <tr>
+                    <td>${profile.id}</td>
+                    <td>${profile.user_email}</td>
+                    <td>${profile.first_name} ${profile.last_name}</td>
+                    <td>${profile.gender}</td>
+                    <td>${profile.birthday}</td>
+                    <td>${memberBadge}</td>
+                    <td>${profile.media_authority}</td>
+                    <td>${profile.city}</td>
+                    <td>${profile.created_at}</td>
+                    <td>${profile.verified_at}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination if available
+        if (pagination && pagination.total_pages > 1) {
+            html += createPaginationHTML(pagination, type);
+        }
+    } else if (type === 'licenses' && data.licenses && data.licenses.length > 0) {
+        html += `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="funnelDetailTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "Number" %}</th>
+                            <th>{% trans "Title" %}</th>
+                            <th>{% trans "Subtitle" %}</th>
+                            <th>{% trans "Duration" %}</th>
+                            <th>{% trans "Profile Name" %}</th>
+                            <th>{% trans "Profile Email" %}</th>
+                            <th>{% trans "Category" %}</th>
+                            <th>{% trans "Confirmed" %}</th>
+                            <th>{% trans "Created" %}</th>
+                            <th>{% trans "Media Authority" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        data.licenses.forEach(license => {
+            const confirmedBadge = license.confirmed ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning">{% trans "No" %}</span>';
+
+            // Convert duration from ISO format to HH:MM:SS
+            let durationFormatted = '';
+            if (license.duration) {
+                try {
+                    // Parse ISO 8601 duration format (P0DT00H05M15S or PT00H05M15S)
+                    let match = license.duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+                    if (!match) {
+                        // Try alternative format with days: P0DT00H05M15S
+                        match = license.duration.match(/P(?:\d+D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+                    }
+
+                    if (match) {
+                        const hours = parseInt(match[1] || '0');
+                        const minutes = parseInt(match[2] || '0');
+                        const seconds = parseInt(match[3] || '0');
+                        durationFormatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    } else {
+                        // If it's already in HH:MM:SS format, use as is
+                        if (license.duration.match(/^\d{1,2}:\d{2}:\d{2}$/)) {
+                            durationFormatted = license.duration;
+                        } else {
+                            durationFormatted = license.duration;
+                        }
+                    }
+                } catch (e) {
+                    durationFormatted = license.duration;
+                }
+            }
+
+            html += `
+                <tr>
+                    <td>${license.number}</td>
+                    <td>${license.title}</td>
+                    <td>${license.subtitle}</td>
+                    <td>${durationFormatted}</td>
+                    <td>${license.profile_name}</td>
+                    <td>${license.profile_email}</td>
+                    <td>${license.category}</td>
+                    <td>${confirmedBadge}</td>
+                    <td>${license.created_at}</td>
+                    <td>${license.media_authority}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination if available
+        if (pagination && pagination.total_pages > 1) {
+            html += createPaginationHTML(pagination, type);
+        }
+    } else if (type === 'broadcasts' && data.contributions && data.contributions.length > 0) {
+        html += `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="funnelDetailTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "License Number" %}</th>
+                            <th>{% trans "Title" %}</th>
+                            <th>{% trans "Subtitle" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Profile Name" %}</th>
+                            <th>{% trans "Profile Email" %}</th>
+                            <th>{% trans "Category" %}</th>
+                            <th>{% trans "Broadcast Date" %}</th>
+                            <th>{% trans "Media Authority" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        data.contributions.forEach(contribution => {
+            html += `
+                <tr>
+                    <td>${contribution.license_number}</td>
+                    <td>${contribution.title}</td>
+                    <td>${contribution.subtitle}</td>
+                    <td>${contribution.description}</td>
+                    <td>${contribution.profile_name}</td>
+                    <td>${contribution.profile_email}</td>
+                    <td>${contribution.category}</td>
+                    <td>${contribution.broadcast_date}</td>
+                    <td>${contribution.media_authority}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination if available
+        if (pagination && pagination.total_pages > 1) {
+            html += createPaginationHTML(pagination, type);
+        }
+    } else {
+        html += '<div class="alert alert-info">{% trans "No data found for the selected criteria." %}</div>';
+    }
+
+    modalBody.innerHTML = html;
+}
+
+// Create pagination HTML
+function createPaginationHTML(pagination, type) {
+    const { current_page, total_pages, has_previous, has_next } = pagination;
+
+    let html = `
+        <nav aria-label="{% trans "Funnel pagination" %}" class="mt-3">
+            <ul class="pagination justify-content-center">
+    `;
+
+    // Previous button
+    if (has_previous) {
+        html += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadFunnelPage('${type}', ${current_page - 1}); return false;">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        `;
+    } else {
+        html += `
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+        `;
+    }
+
+    // Page numbers
+    const startPage = Math.max(1, current_page - 2);
+    const endPage = Math.min(total_pages, current_page + 2);
+
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === current_page) {
+            html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+        } else {
+            html += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="loadFunnelPage('${type}', ${i}); return false;">${i}</a>
+                </li>
+            `;
+        }
+    }
+
+    // Next button
+    if (has_next) {
+        html += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadFunnelPage('${type}', ${current_page + 1}); return false;">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `;
+    } else {
+        html += `
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+        `;
+    }
+
+    html += `
+            </ul>
+        </nav>
+    `;
+
+    return html;
+}
+
+// Load specific page
+function loadFunnelPage(type, page) {
+    const modalBody = document.querySelector('#funnelDetailModal .modal-body');
+    loadFunnelDetailData(type, modalBody, page);
+}
+
+// Export funnel detail data
+function exportFunnelDetailData() {
+    const table = document.getElementById('funnelDetailTable');
+    if (table) {
+        const rows = table.querySelectorAll('tr');
+        const csv = convertTableToCSV(rows);
+        const filename = `funnel_detail_${new Date().toISOString().split('T')[0]}.csv`;
+        downloadCSV(csv, filename);
+    }
+}
+
+// Convert table to CSV
+function convertTableToCSV(rows) {
+    let csv = '';
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const cols = row.querySelectorAll('td, th');
+        let rowData = [];
+        for (let j = 0; j < cols.length; j++) {
+            let cellText = cols[j].textContent.trim();
+            // Remove HTML tags and clean up
+            cellText = cellText.replace(/<[^>]*>/g, '');
+            rowData.push('"' + cellText + '"');
+        }
+        csv += rowData.join(',') + '\n';
+    }
+    return csv;
+}
+
+// Download CSV
+function downloadCSV(csv, filename) {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

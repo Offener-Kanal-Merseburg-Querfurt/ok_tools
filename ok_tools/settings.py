@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "projects",
     "contributions",
     "planung",
+    "dashboard",
     "admin_searchable_dropdown",
     "crispy_forms",
     "crispy_bootstrap4",
@@ -160,6 +161,11 @@ if use_secure_settings:
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = config.get("django", "language", fallback="de-de")
+
+LANGUAGES = [
+    ('de', 'Deutsch'),
+    ('en', 'English'),
+]
 
 TIME_ZONE = config.get("django", "timezone", fallback="Europe/Berlin")
 

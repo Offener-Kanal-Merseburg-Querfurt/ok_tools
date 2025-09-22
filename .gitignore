@@ -76,3 +76,30 @@ venv/
 # local runtime config
 gunicorn.conf.py
 **/gunicorn.conf.py
+
+# Project specific folders and files
+backup_translations/
+docs/
+logs/
+media/
+scripts/
+share/
+static/
+venv/
+.cursor/
+.coveragerc
+.isort.cfg
+CHANGES.md
+conftest.py
+docker-compose.yml
+docker.cfg
+Dockerfile
+gunicorn.conf.py.example
+manage.py
+memory.json
+production.cfg.example
+pytest.ini
+requirements-docker.txt
+setup.py
+test.cfg
+test.html

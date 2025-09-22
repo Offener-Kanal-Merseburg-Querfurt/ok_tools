@@ -4,8 +4,8 @@ ok_tools
 
 A set of tools to support administrative task in the OKs of the Medienanstalt Sachsen-Anhalt.
 
-**Current Version**: 2.0
-**Last Updated**: August 2025
+**Current Version**: 2.1
+**Last Updated**: September 2025
 
 Features
 ========
@@ -18,14 +18,18 @@ Features
 - **Planning Tools** - Calendar weeks and scheduling functionality
 - **Project Management** - Organize and track various projects
 - **User Registration** - User management with notification system
+- **Dashboard Analytics** - Comprehensive data visualization and monitoring
 
 **Additional Features:**
 - **Accessibility Compliance** - WCAG compliant interface
 - **Multi-language Support** - German and English localization
-- **Dashboard System** - Comprehensive activity monitoring
-- **Admin Interface** - Django admin customization
+- **Dashboard System** - Comprehensive activity monitoring with interactive charts
+- **Admin Interface** - Django admin customization with direct dashboard access
 - **REST API** - JSON endpoints for data access
 - **Cron Jobs** - Automated rental expiration management
+- **Interactive Charts** - Multiple chart types (doughnut, bar, horizontal bar) with data export
+- **Real-time Analytics** - User journey tracking and funnel metrics
+- **Alert System** - Automated monitoring and threshold-based notifications
 
 Installation
 ============

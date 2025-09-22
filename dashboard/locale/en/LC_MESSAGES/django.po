@@ -1,0 +1,2679 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-20 19:51+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: dashboard/apps.py:8
+msgid "Dashboard"
+msgstr ""
+
+#: dashboard/models.py:13 dashboard/templates/dashboard/widgets/funnel.html:825
+msgid "Registered"
+msgstr ""
+
+#: dashboard/models.py:14 dashboard/templates/dashboard/base.html:209
+#: dashboard/templates/dashboard/widgets/funnel.html:70
+#: dashboard/templates/dashboard/widgets/funnel.html:826
+#: dashboard/templates/dashboard/widgets/funnel.html:1131
+#: dashboard/templates/dashboard/widgets/users.html:112
+#: dashboard/templates/dashboard/widgets/users.html:1488
+msgid "Verified"
+msgstr ""
+
+#: dashboard/models.py:15
+msgid "Rental Requested"
+msgstr ""
+
+#: dashboard/models.py:16 dashboard/templates/dashboard/widgets/funnel.html:829
+msgid "Rental Completed"
+msgstr ""
+
+#: dashboard/models.py:17
+#: dashboard/templates/dashboard/widgets/contributions.html:1467
+#: dashboard/templates/dashboard/widgets/funnel.html:827
+msgid "License Created"
+msgstr ""
+
+#: dashboard/models.py:18
+msgid "Contribution Created"
+msgstr ""
+
+#: dashboard/models.py:19 dashboard/templates/dashboard/widgets/funnel.html:828
+msgid "First Broadcast"
+msgstr ""
+
+#: dashboard/models.py:20 dashboard/models.py:135
+msgid "Multiple Broadcasts"
+msgstr ""
+
+#: dashboard/models.py:29 dashboard/templates/dashboard/base.html:186
+msgid "User"
+msgstr ""
+
+#: dashboard/models.py:36 dashboard/models.py:214
+#: dashboard/templates/dashboard/widgets/funnel.html:177
+#: dashboard/templates/dashboard/widgets/funnel.html:823
+msgid "Stage"
+msgstr ""
+
+#: dashboard/models.py:41
+msgid "Achieved At"
+msgstr ""
+
+#: dashboard/models.py:50
+msgid "Rental Request"
+msgstr ""
+
+#: dashboard/models.py:58
+msgid "License"
+msgstr ""
+
+#: dashboard/models.py:66
+msgid "Contribution"
+msgstr ""
+
+#: dashboard/models.py:73
+msgid "Metadata"
+msgstr ""
+
+#: dashboard/models.py:77
+msgid "User Journey Stage"
+msgstr ""
+
+#: dashboard/models.py:78
+msgid "User Journey Stages"
+msgstr ""
+
+#: dashboard/models.py:90
+#: dashboard/templates/dashboard/widgets/contributions.html:1043
+#: dashboard/templates/dashboard/widgets/contributions.html:1056
+#: dashboard/templates/dashboard/widgets/licenses.html:1288
+#: dashboard/templates/dashboard/widgets/licenses.html:1301
+#: dashboard/templates/dashboard/widgets/projects.html:1748
+#: dashboard/templates/dashboard/widgets/users.html:1111
+#: dashboard/templates/dashboard/widgets/users.html:1124
+msgid "Date"
+msgstr ""
+
+#: dashboard/models.py:97 dashboard/templates/dashboard/widgets/funnel.html:89
+#: dashboard/templates/dashboard/widgets/funnel.html:91
+msgid "Total Registrations"
+msgstr ""
+
+#: dashboard/models.py:102 dashboard/templates/dashboard/widgets/funnel.html:96
+#: dashboard/templates/dashboard/widgets/funnel.html:98
+#: dashboard/templates/dashboard/widgets/users.html:110
+msgid "Verified Users"
+msgstr ""
+
+#: dashboard/models.py:108
+msgid "Rental Requests"
+msgstr ""
+
+#: dashboard/models.py:113
+msgid "Completed Rentals"
+msgstr ""
+
+#: dashboard/models.py:119
+#: dashboard/templates/dashboard/widgets/funnel.html:103
+#: dashboard/templates/dashboard/widgets/funnel.html:105
+msgid "Licenses Created"
+msgstr ""
+
+#: dashboard/models.py:125
+msgid "Contributions Created"
+msgstr ""
+
+#: dashboard/models.py:130
+#: dashboard/templates/dashboard/widgets/funnel.html:110
+#: dashboard/templates/dashboard/widgets/funnel.html:112
+msgid "First Broadcasts"
+msgstr ""
+
+#: dashboard/models.py:141
+msgid "Verification Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:146
+msgid "Rental Request Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:151
+msgid "Rental Completion Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:156
+msgid "License Creation Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:161
+msgid "Contribution Creation Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:166
+msgid "First Broadcast Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:171
+msgid "Multiple Broadcast Rate (%)"
+msgstr ""
+
+#: dashboard/models.py:176 dashboard/models.py:245
+#: dashboard/templates/dashboard/widgets/notifications.html:854
+msgid "Created At"
+msgstr ""
+
+#: dashboard/models.py:181
+msgid "Updated At"
+msgstr ""
+
+#: dashboard/models.py:185 dashboard/models.py:186
+msgid "Funnel Metrics"
+msgstr ""
+
+#: dashboard/models.py:198
+msgid "Alert Name"
+msgstr ""
+
+#: dashboard/models.py:204 dashboard/templates/dashboard/main.html:147
+#: dashboard/templates/dashboard/widgets/funnel.html:837
+msgid "Conversion Rate"
+msgstr ""
+
+#: dashboard/models.py:205
+#: dashboard/templates/dashboard/widgets/funnel.html:836
+msgid "Absolute Count"
+msgstr ""
+
+#: dashboard/models.py:206
+msgid "Trend Change"
+msgstr ""
+
+#: dashboard/models.py:208
+#: dashboard/templates/dashboard/widgets/funnel.html:178
+#: dashboard/templates/dashboard/widgets/funnel.html:834
+msgid "Metric Type"
+msgstr ""
+
+#: dashboard/models.py:218 dashboard/models.py:276
+#: dashboard/templates/dashboard/widgets/funnel.html:842
+msgid "Threshold Value"
+msgstr ""
+
+#: dashboard/models.py:224
+#: dashboard/templates/dashboard/widgets/funnel.html:850
+msgid "Less Than"
+msgstr ""
+
+#: dashboard/models.py:225
+msgid "Less Than or Equal"
+msgstr ""
+
+#: dashboard/models.py:226
+#: dashboard/templates/dashboard/widgets/funnel.html:849
+msgid "Greater Than"
+msgstr ""
+
+#: dashboard/models.py:227
+msgid "Greater Than or Equal"
+msgstr ""
+
+#: dashboard/models.py:228
+msgid "Equal"
+msgstr ""
+
+#: dashboard/models.py:230
+#: dashboard/templates/dashboard/widgets/funnel.html:847
+msgid "Comparison Operator"
+msgstr ""
+
+#: dashboard/models.py:235
+msgid "Is Active"
+msgstr ""
+
+#: dashboard/models.py:240
+msgid "Notification Recipients"
+msgstr ""
+
+#: dashboard/models.py:249
+msgid "Alert Threshold"
+msgstr ""
+
+#: dashboard/models.py:250
+#: dashboard/templates/dashboard/widgets/funnel.html:169
+msgid "Alert Thresholds"
+msgstr ""
+
+#: dashboard/models.py:263
+#: dashboard/templates/dashboard/widgets/funnel.html:179
+#: dashboard/templates/dashboard/widgets/funnel.html:438
+msgid "Threshold"
+msgstr ""
+
+#: dashboard/models.py:268
+msgid "Triggered At"
+msgstr ""
+
+#: dashboard/models.py:272
+msgid "Current Value"
+msgstr ""
+
+#: dashboard/models.py:280
+#: dashboard/templates/dashboard/widgets/notifications.html:847
+msgid "Message"
+msgstr ""
+
+#: dashboard/models.py:285
+msgid "Is Resolved"
+msgstr ""
+
+#: dashboard/models.py:291
+msgid "Resolved At"
+msgstr ""
+
+#: dashboard/models.py:295
+msgid "Alert Log"
+msgstr ""
+
+#: dashboard/models.py:296
+msgid "Alert Logs"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:12
+#: dashboard/templates/dashboard/base.html:40
+#: dashboard/templates/dashboard/main.html:5 dashboard/views.py:17
+msgid "Main Dashboard"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:48
+#: dashboard/templates/dashboard/widgets/funnel.html:517
+#: dashboard/templates/dashboard/widgets/funnel.html:563
+#: dashboard/templates/dashboard/widgets/users.html:728
+#: dashboard/templates/dashboard/widgets/users.html:773
+msgid "Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:56
+#: dashboard/templates/dashboard/widgets/licenses.html:884
+#: dashboard/templates/dashboard/widgets/licenses.html:929
+#: dashboard/templates/dashboard/widgets/licenses.html:1118
+#: dashboard/templates/dashboard/widgets/licenses.html:1163
+#: dashboard/templates/dashboard/widgets/licenses.html:1478
+#: dashboard/templates/dashboard/widgets/licenses.html:1523
+msgid "Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:64
+#: dashboard/templates/dashboard/widgets/contributions.html:639
+#: dashboard/templates/dashboard/widgets/contributions.html:684
+#: dashboard/templates/dashboard/widgets/contributions.html:873
+#: dashboard/templates/dashboard/widgets/contributions.html:918
+#: dashboard/templates/dashboard/widgets/contributions.html:1046
+msgid "Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:72
+#: dashboard/templates/dashboard/widgets/projects.html:806
+#: dashboard/templates/dashboard/widgets/projects.html:851
+#: dashboard/templates/dashboard/widgets/projects.html:927
+#: dashboard/templates/dashboard/widgets/projects.html:972
+#: dashboard/templates/dashboard/widgets/projects.html:1406
+#: dashboard/templates/dashboard/widgets/projects.html:1460
+msgid "Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:80
+msgid "Rental"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:88
+msgid "Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:96
+msgid "User Funnel"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:107
+#: dashboard/templates/dashboard/base.html:220
+#: dashboard/templates/dashboard/main.html:278
+msgid "Admin Panel"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:115
+msgid "User Management"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:123
+msgid "License Management"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:131
+msgid "Contribution Management"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:144
+#: dashboard/templates/dashboard/base.html:227
+msgid "Logout"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:182
+msgid "Superuser"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:184
+msgid "Staff"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:212
+#: dashboard/templates/dashboard/widgets/funnel.html:72
+#: dashboard/templates/dashboard/widgets/funnel.html:1132
+#: dashboard/templates/dashboard/widgets/funnel.html:1180
+#: dashboard/templates/dashboard/widgets/users.html:1489
+msgid "Member"
+msgstr ""
+
+#: dashboard/templates/dashboard/base.html:262
+#: dashboard/templates/dashboard/widgets/contributions.html:278
+#: dashboard/templates/dashboard/widgets/licenses.html:318
+#: dashboard/templates/dashboard/widgets/projects.html:245
+msgid "Loading data..."
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:21
+msgid "Refresh"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:24
+msgid "Export All"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:34
+#: dashboard/templates/dashboard/widgets/inventory.html:14
+#: dashboard/templates/dashboard/widgets/notifications.html:14
+msgid "Filters"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:40
+#: dashboard/templates/dashboard/widgets/contributions.html:19
+#: dashboard/templates/dashboard/widgets/licenses.html:17
+#: dashboard/templates/dashboard/widgets/projects.html:17
+#: dashboard/templates/dashboard/widgets/users.html:17
+msgid "Date Range"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:42
+#: dashboard/templates/dashboard/widgets/contributions.html:21
+#: dashboard/templates/dashboard/widgets/funnel.html:16
+#: dashboard/templates/dashboard/widgets/inventory.html:24
+#: dashboard/templates/dashboard/widgets/licenses.html:19
+#: dashboard/templates/dashboard/widgets/notifications.html:23
+#: dashboard/templates/dashboard/widgets/projects.html:19
+#: dashboard/templates/dashboard/widgets/users.html:19
+#: dashboard/widgets/filters.py:112
+msgid "Last 7 days"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:43
+#: dashboard/templates/dashboard/widgets/contributions.html:22
+#: dashboard/templates/dashboard/widgets/funnel.html:17
+#: dashboard/templates/dashboard/widgets/inventory.html:25
+#: dashboard/templates/dashboard/widgets/licenses.html:20
+#: dashboard/templates/dashboard/widgets/notifications.html:24
+#: dashboard/templates/dashboard/widgets/projects.html:20
+#: dashboard/templates/dashboard/widgets/users.html:20
+#: dashboard/widgets/filters.py:113
+msgid "Last 30 days"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:44
+#: dashboard/templates/dashboard/widgets/contributions.html:23
+#: dashboard/templates/dashboard/widgets/funnel.html:18
+#: dashboard/templates/dashboard/widgets/inventory.html:26
+#: dashboard/templates/dashboard/widgets/licenses.html:21
+#: dashboard/templates/dashboard/widgets/notifications.html:25
+#: dashboard/templates/dashboard/widgets/projects.html:21
+#: dashboard/templates/dashboard/widgets/users.html:21
+#: dashboard/widgets/filters.py:114
+msgid "Last 90 days"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:45
+#: dashboard/templates/dashboard/widgets/contributions.html:24
+#: dashboard/templates/dashboard/widgets/funnel.html:19
+#: dashboard/templates/dashboard/widgets/inventory.html:27
+#: dashboard/templates/dashboard/widgets/licenses.html:22
+#: dashboard/templates/dashboard/widgets/notifications.html:26
+#: dashboard/templates/dashboard/widgets/projects.html:22
+#: dashboard/templates/dashboard/widgets/users.html:22
+#: dashboard/widgets/filters.py:115
+msgid "Last year"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:46
+msgid "Custom period"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:50
+#: dashboard/templates/dashboard/widgets/contributions.html:30
+#: dashboard/templates/dashboard/widgets/inventory.html:32
+#: dashboard/templates/dashboard/widgets/inventory.html:1848
+#: dashboard/templates/dashboard/widgets/licenses.html:28
+#: dashboard/templates/dashboard/widgets/notifications.html:32
+#: dashboard/templates/dashboard/widgets/notifications.html:172
+#: dashboard/templates/dashboard/widgets/notifications.html:851
+#: dashboard/templates/dashboard/widgets/projects.html:28
+#: dashboard/templates/dashboard/widgets/users.html:28
+msgid "Start Date"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:54
+#: dashboard/templates/dashboard/widgets/contributions.html:34
+#: dashboard/templates/dashboard/widgets/inventory.html:36
+#: dashboard/templates/dashboard/widgets/inventory.html:1849
+#: dashboard/templates/dashboard/widgets/licenses.html:32
+#: dashboard/templates/dashboard/widgets/notifications.html:37
+#: dashboard/templates/dashboard/widgets/notifications.html:173
+#: dashboard/templates/dashboard/widgets/notifications.html:852
+#: dashboard/templates/dashboard/widgets/projects.html:32
+#: dashboard/templates/dashboard/widgets/users.html:32
+msgid "End Date"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:58
+#: dashboard/templates/dashboard/widgets/contributions.html:38
+#: dashboard/templates/dashboard/widgets/contributions.html:681
+#: dashboard/templates/dashboard/widgets/contributions.html:694
+#: dashboard/templates/dashboard/widgets/contributions.html:1475
+#: dashboard/templates/dashboard/widgets/funnel.html:1133
+#: dashboard/templates/dashboard/widgets/funnel.html:1181
+#: dashboard/templates/dashboard/widgets/funnel.html:1232
+#: dashboard/templates/dashboard/widgets/funnel.html:1310
+#: dashboard/templates/dashboard/widgets/inventory.html:1851
+#: dashboard/templates/dashboard/widgets/licenses.html:36
+#: dashboard/templates/dashboard/widgets/licenses.html:926
+#: dashboard/templates/dashboard/widgets/licenses.html:939
+#: dashboard/templates/dashboard/widgets/licenses.html:2080
+#: dashboard/templates/dashboard/widgets/users.html:36
+#: dashboard/templates/dashboard/widgets/users.html:215
+#: dashboard/templates/dashboard/widgets/users.html:1490
+msgid "Media Authority"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:60
+#: dashboard/templates/dashboard/main.html:1036
+#: dashboard/templates/dashboard/widgets/contributions.html:40
+#: dashboard/templates/dashboard/widgets/funnel.html:35
+#: dashboard/templates/dashboard/widgets/licenses.html:38
+#: dashboard/templates/dashboard/widgets/users.html:38
+msgid "All Authorities"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:64
+#: dashboard/templates/dashboard/widgets/contributions.html:46
+#: dashboard/templates/dashboard/widgets/funnel.html:41
+#: dashboard/templates/dashboard/widgets/funnel.html:1129
+#: dashboard/templates/dashboard/widgets/funnel.html:1178
+#: dashboard/templates/dashboard/widgets/inventory.html:40
+#: dashboard/templates/dashboard/widgets/licenses.html:44
+#: dashboard/templates/dashboard/widgets/users.html:44
+#: dashboard/templates/dashboard/widgets/users.html:1486
+msgid "Gender"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:66
+#: dashboard/templates/dashboard/widgets/contributions.html:48
+#: dashboard/templates/dashboard/widgets/funnel.html:43
+#: dashboard/templates/dashboard/widgets/licenses.html:46
+#: dashboard/templates/dashboard/widgets/users.html:46
+msgid "All Genders"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:67
+#: dashboard/templates/dashboard/widgets/contributions.html:49
+#: dashboard/templates/dashboard/widgets/contributions.html:759
+#: dashboard/templates/dashboard/widgets/funnel.html:44
+#: dashboard/templates/dashboard/widgets/inventory.html:43
+#: dashboard/templates/dashboard/widgets/licenses.html:47
+#: dashboard/templates/dashboard/widgets/licenses.html:1004
+#: dashboard/templates/dashboard/widgets/projects.html:1178
+#: dashboard/templates/dashboard/widgets/users.html:47
+#: dashboard/templates/dashboard/widgets/users.html:100
+#: dashboard/templates/dashboard/widgets/users.html:847
+msgid "Male"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:68
+#: dashboard/templates/dashboard/widgets/contributions.html:50
+#: dashboard/templates/dashboard/widgets/contributions.html:759
+#: dashboard/templates/dashboard/widgets/funnel.html:45
+#: dashboard/templates/dashboard/widgets/inventory.html:44
+#: dashboard/templates/dashboard/widgets/licenses.html:48
+#: dashboard/templates/dashboard/widgets/licenses.html:1004
+#: dashboard/templates/dashboard/widgets/projects.html:1178
+#: dashboard/templates/dashboard/widgets/users.html:48
+#: dashboard/templates/dashboard/widgets/users.html:106
+#: dashboard/templates/dashboard/widgets/users.html:847
+msgid "Female"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:69
+#: dashboard/templates/dashboard/widgets/contributions.html:51
+#: dashboard/templates/dashboard/widgets/contributions.html:759
+#: dashboard/templates/dashboard/widgets/funnel.html:46
+#: dashboard/templates/dashboard/widgets/inventory.html:45
+#: dashboard/templates/dashboard/widgets/licenses.html:49
+#: dashboard/templates/dashboard/widgets/licenses.html:1004
+#: dashboard/templates/dashboard/widgets/projects.html:1178
+#: dashboard/templates/dashboard/widgets/users.html:49
+#: dashboard/templates/dashboard/widgets/users.html:847
+msgid "Diverse"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:73
+#: dashboard/templates/dashboard/widgets/contributions.html:55
+#: dashboard/templates/dashboard/widgets/contributions.html:915
+#: dashboard/templates/dashboard/widgets/contributions.html:928
+#: dashboard/templates/dashboard/widgets/funnel.html:50
+#: dashboard/templates/dashboard/widgets/licenses.html:53
+#: dashboard/templates/dashboard/widgets/licenses.html:1160
+#: dashboard/templates/dashboard/widgets/licenses.html:1173
+#: dashboard/templates/dashboard/widgets/projects.html:1100
+#: dashboard/templates/dashboard/widgets/projects.html:1113
+#: dashboard/templates/dashboard/widgets/users.html:53
+#: dashboard/templates/dashboard/widgets/users.html:251
+#: dashboard/templates/dashboard/widgets/users.html:770
+#: dashboard/templates/dashboard/widgets/users.html:783
+msgid "Age Group"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:75
+#: dashboard/templates/dashboard/widgets/contributions.html:57
+#: dashboard/templates/dashboard/widgets/funnel.html:52
+#: dashboard/templates/dashboard/widgets/licenses.html:55
+#: dashboard/templates/dashboard/widgets/users.html:55
+msgid "All Ages"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:76
+#: dashboard/templates/dashboard/widgets/contributions.html:58
+#: dashboard/templates/dashboard/widgets/contributions.html:859
+#: dashboard/templates/dashboard/widgets/funnel.html:53
+#: dashboard/templates/dashboard/widgets/licenses.html:56
+#: dashboard/templates/dashboard/widgets/licenses.html:1104
+#: dashboard/templates/dashboard/widgets/users.html:56
+#: dashboard/templates/dashboard/widgets/users.html:258
+#: dashboard/templates/dashboard/widgets/users.html:714
+#: dashboard/widgets/filters.py:95 dashboard/widgets/inventory.py:232
+#: dashboard/widgets/inventory.py:247
+msgid "Under 18"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:77
+#: dashboard/templates/dashboard/widgets/contributions.html:59
+#: dashboard/templates/dashboard/widgets/contributions.html:859
+#: dashboard/templates/dashboard/widgets/funnel.html:54
+#: dashboard/templates/dashboard/widgets/licenses.html:57
+#: dashboard/templates/dashboard/widgets/licenses.html:1104
+#: dashboard/templates/dashboard/widgets/users.html:57
+#: dashboard/templates/dashboard/widgets/users.html:263
+#: dashboard/templates/dashboard/widgets/users.html:714
+#: dashboard/widgets/filters.py:96 dashboard/widgets/inventory.py:233
+#: dashboard/widgets/inventory.py:249
+msgid "18-25"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:78
+#: dashboard/templates/dashboard/widgets/contributions.html:60
+#: dashboard/templates/dashboard/widgets/contributions.html:859
+#: dashboard/templates/dashboard/widgets/funnel.html:55
+#: dashboard/templates/dashboard/widgets/licenses.html:58
+#: dashboard/templates/dashboard/widgets/licenses.html:1104
+#: dashboard/templates/dashboard/widgets/users.html:58
+#: dashboard/templates/dashboard/widgets/users.html:268
+#: dashboard/templates/dashboard/widgets/users.html:714
+#: dashboard/widgets/filters.py:97 dashboard/widgets/inventory.py:234
+#: dashboard/widgets/inventory.py:251
+msgid "26-35"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:79
+#: dashboard/templates/dashboard/widgets/contributions.html:61
+#: dashboard/templates/dashboard/widgets/contributions.html:859
+#: dashboard/templates/dashboard/widgets/funnel.html:56
+#: dashboard/templates/dashboard/widgets/licenses.html:59
+#: dashboard/templates/dashboard/widgets/licenses.html:1104
+#: dashboard/templates/dashboard/widgets/users.html:59
+#: dashboard/templates/dashboard/widgets/users.html:273
+#: dashboard/templates/dashboard/widgets/users.html:714
+#: dashboard/widgets/filters.py:98 dashboard/widgets/inventory.py:235
+#: dashboard/widgets/inventory.py:253
+msgid "36-50"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:80
+#: dashboard/templates/dashboard/widgets/contributions.html:62
+#: dashboard/templates/dashboard/widgets/contributions.html:859
+#: dashboard/templates/dashboard/widgets/funnel.html:57
+#: dashboard/templates/dashboard/widgets/licenses.html:60
+#: dashboard/templates/dashboard/widgets/licenses.html:1104
+#: dashboard/templates/dashboard/widgets/users.html:60
+#: dashboard/templates/dashboard/widgets/users.html:278
+#: dashboard/templates/dashboard/widgets/users.html:714
+#: dashboard/widgets/filters.py:99 dashboard/widgets/inventory.py:236
+#: dashboard/widgets/inventory.py:255
+msgid "Over 50"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:88
+#: dashboard/templates/dashboard/widgets/contributions.html:84
+#: dashboard/templates/dashboard/widgets/funnel.html:79
+#: dashboard/templates/dashboard/widgets/inventory.html:88
+#: dashboard/templates/dashboard/widgets/licenses.html:80
+#: dashboard/templates/dashboard/widgets/notifications.html:73
+#: dashboard/templates/dashboard/widgets/projects.html:83
+#: dashboard/templates/dashboard/widgets/users.html:82
+msgid "Apply Filters"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:91
+#: dashboard/templates/dashboard/widgets/contributions.html:85
+#: dashboard/templates/dashboard/widgets/funnel.html:80
+#: dashboard/templates/dashboard/widgets/inventory.html:89
+#: dashboard/templates/dashboard/widgets/licenses.html:81
+#: dashboard/templates/dashboard/widgets/notifications.html:74
+#: dashboard/templates/dashboard/widgets/projects.html:84
+#: dashboard/templates/dashboard/widgets/users.html:83
+msgid "Reset"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:107
+#: dashboard/templates/dashboard/widgets/users.html:92
+#: dashboard/templates/dashboard/widgets/users.html:94
+msgid "Total Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:116
+#: dashboard/templates/dashboard/widgets/contributions.html:166
+#: dashboard/templates/dashboard/widgets/licenses.html:90
+#: dashboard/templates/dashboard/widgets/licenses.html:92
+msgid "Total Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:125
+#: dashboard/templates/dashboard/widgets/contributions.html:94
+#: dashboard/templates/dashboard/widgets/contributions.html:992
+msgid "Total Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:134
+#: dashboard/templates/dashboard/widgets/projects.html:94
+msgid "Total Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:156
+#: dashboard/templates/dashboard/widgets/projects.html:1752
+msgid "Total Participants"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:165
+msgid "Avg Participants"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:174
+msgid "External Venue Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:187
+msgid "Total Inventory Items"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:196
+#: dashboard/templates/dashboard/widgets/inventory.html:126
+#: dashboard/templates/dashboard/widgets/inventory.html:741
+msgid "Rented Items"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:205
+#: dashboard/templates/dashboard/widgets/inventory.html:114
+#: dashboard/templates/dashboard/widgets/inventory.html:116
+#: dashboard/templates/dashboard/widgets/inventory.html:286
+msgid "Total Rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:214
+#: dashboard/templates/dashboard/widgets/inventory.html:120
+#: dashboard/templates/dashboard/widgets/inventory.html:122
+msgid "Active Rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:227
+msgid "Quick Actions"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:234
+msgid "Users Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:240
+msgid "Licenses Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:246
+msgid "Contributions Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:252
+msgid "Projects Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:260
+msgid "Inventory & Rental Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:266
+#: dashboard/templates/dashboard/widgets/notifications.html:4
+#: dashboard/views.py:88
+msgid "System Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:272
+msgid "Funnel Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:292
+msgid "Recent Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:293
+#: dashboard/templates/dashboard/main.html:311
+msgid "View All"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:299
+#: dashboard/templates/dashboard/main.html:317
+#: dashboard/templates/dashboard/main.html:344
+#: dashboard/templates/dashboard/main.html:357
+#: dashboard/templates/dashboard/main.html:370
+#: dashboard/templates/dashboard/main.html:383
+#: dashboard/templates/dashboard/widgets/contributions.html:1385
+#: dashboard/templates/dashboard/widgets/funnel.html:157
+#: dashboard/templates/dashboard/widgets/funnel.html:186
+#: dashboard/templates/dashboard/widgets/funnel.html:201
+#: dashboard/templates/dashboard/widgets/funnel.html:1041
+#: dashboard/templates/dashboard/widgets/inventory.html:261
+#: dashboard/templates/dashboard/widgets/inventory.html:300
+#: dashboard/templates/dashboard/widgets/inventory.html:318
+#: dashboard/templates/dashboard/widgets/inventory.html:332
+#: dashboard/templates/dashboard/widgets/inventory.html:358
+#: dashboard/templates/dashboard/widgets/inventory.html:371
+#: dashboard/templates/dashboard/widgets/inventory.html:1759
+#: dashboard/templates/dashboard/widgets/inventory.html:2006
+#: dashboard/templates/dashboard/widgets/licenses.html:1989
+#: dashboard/templates/dashboard/widgets/notifications.html:125
+#: dashboard/templates/dashboard/widgets/notifications.html:180
+#: dashboard/templates/dashboard/widgets/notifications.html:195
+#: dashboard/templates/dashboard/widgets/notifications.html:763
+#: dashboard/templates/dashboard/widgets/projects.html:1626
+#: dashboard/templates/dashboard/widgets/projects.html:1645
+#: dashboard/templates/dashboard/widgets/users.html:1392
+#: dashboard/templates/dashboard/widgets/users.html:1455
+msgid "Loading..."
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:301
+msgid "Loading recent users..."
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:310
+msgid "Recent Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:319
+msgid "Loading recent licenses..."
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:332
+msgid "System Status"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:343
+msgid "Database"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:356
+msgid "API Services"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:369
+msgid "File Storage"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:382
+msgid "Email Service"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:395
+msgid "Quick Stats"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:406
+msgid "Active Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:417
+msgid "Confirmed Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:428
+#: dashboard/templates/dashboard/widgets/contributions.html:101
+msgid "Live Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:439
+#: dashboard/templates/dashboard/widgets/licenses.html:104
+msgid "Pending Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:811
+msgid "No recent user activities found"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:819
+msgid "Failed to load recent activities"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:847
+msgid "No recent license activities found"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:855
+msgid "Failed to load recent license activities"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:981
+msgid "Dashboard data exported"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:1075
+msgid "Filters applied"
+msgstr ""
+
+#: dashboard/templates/dashboard/main.html:1091
+msgid "Filters reset"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:5
+msgid "Contributions Dashboard"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:25
+#: dashboard/templates/dashboard/widgets/funnel.html:20
+#: dashboard/templates/dashboard/widgets/licenses.html:23
+#: dashboard/templates/dashboard/widgets/projects.html:23
+#: dashboard/templates/dashboard/widgets/users.html:23
+#: dashboard/widgets/filters.py:116
+msgid "All Time"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:26
+#: dashboard/templates/dashboard/widgets/funnel.html:21
+#: dashboard/templates/dashboard/widgets/inventory.html:28
+#: dashboard/templates/dashboard/widgets/licenses.html:24
+#: dashboard/templates/dashboard/widgets/notifications.html:27
+#: dashboard/templates/dashboard/widgets/projects.html:24
+#: dashboard/templates/dashboard/widgets/users.html:24
+#: dashboard/widgets/filters.py:117
+msgid "Custom Period"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:66
+msgid "Live/Recorded"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:68
+#: dashboard/templates/dashboard/widgets/contributions.html:76
+#: dashboard/templates/dashboard/widgets/inventory.html:42
+#: dashboard/templates/dashboard/widgets/inventory.html:51
+#: dashboard/templates/dashboard/widgets/inventory.html:63
+#: dashboard/templates/dashboard/widgets/inventory.html:69
+#: dashboard/templates/dashboard/widgets/inventory.html:75
+#: dashboard/templates/dashboard/widgets/inventory.html:81
+#: dashboard/templates/dashboard/widgets/notifications.html:44
+#: dashboard/templates/dashboard/widgets/notifications.html:55
+#: dashboard/templates/dashboard/widgets/notifications.html:65
+#: dashboard/templates/dashboard/widgets/projects.html:58
+#: dashboard/templates/dashboard/widgets/projects.html:66
+#: dashboard/templates/dashboard/widgets/projects.html:76
+msgid "All"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:69
+msgid "Live Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:70
+msgid "Recorded Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:74
+#: dashboard/templates/dashboard/widgets/contributions.html:1472
+#: dashboard/templates/dashboard/widgets/inventory.html:1157
+#: dashboard/templates/dashboard/widgets/notifications.html:42
+#: dashboard/templates/dashboard/widgets/notifications.html:169
+#: dashboard/templates/dashboard/widgets/notifications.html:848
+#: dashboard/templates/dashboard/widgets/projects.html:1729
+msgid "Type"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:77
+msgid "Primary Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:78
+msgid "Repetitions Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:96
+msgid "TOTAL CONTRIBUTIONS"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:103
+msgid "LIVE"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:108
+msgid "Recorded Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:110
+msgid "RECORDED"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:115
+msgid "Unique Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:117
+msgid "UNIQUE LICENSES"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:126
+msgid "Primary Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:128
+msgid "PRIMARY"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:133
+msgid "Archive Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:135
+msgid "ARCHIVE"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:140
+msgid "Repetition Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:142
+msgid "REPETITIONS"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:148
+msgid "CONVERSION RATE"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:158
+msgid "License to Contribution Conversion"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:162
+msgid "of licenses result in contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:170
+msgid "With Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:175
+msgid "Avg. days from license to first contribution"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:183
+msgid "Live vs Recorded Distribution"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:197
+msgid "Contributions by Media Authority"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:199
+#: dashboard/templates/dashboard/widgets/contributions.html:212
+#: dashboard/templates/dashboard/widgets/contributions.html:229
+#: dashboard/templates/dashboard/widgets/contributions.html:242
+#: dashboard/templates/dashboard/widgets/contributions.html:261
+#: dashboard/templates/dashboard/widgets/inventory.html:146
+#: dashboard/templates/dashboard/widgets/inventory.html:159
+#: dashboard/templates/dashboard/widgets/inventory.html:176
+#: dashboard/templates/dashboard/widgets/inventory.html:189
+#: dashboard/templates/dashboard/widgets/inventory.html:206
+#: dashboard/templates/dashboard/widgets/inventory.html:219
+#: dashboard/templates/dashboard/widgets/inventory.html:346
+#: dashboard/templates/dashboard/widgets/licenses.html:154
+#: dashboard/templates/dashboard/widgets/licenses.html:167
+#: dashboard/templates/dashboard/widgets/licenses.html:184
+#: dashboard/templates/dashboard/widgets/licenses.html:197
+#: dashboard/templates/dashboard/widgets/licenses.html:214
+#: dashboard/templates/dashboard/widgets/licenses.html:256
+#: dashboard/templates/dashboard/widgets/licenses.html:269
+#: dashboard/templates/dashboard/widgets/licenses.html:286
+#: dashboard/templates/dashboard/widgets/licenses.html:299
+#: dashboard/templates/dashboard/widgets/projects.html:138
+#: dashboard/templates/dashboard/widgets/projects.html:151
+#: dashboard/templates/dashboard/widgets/projects.html:168
+#: dashboard/templates/dashboard/widgets/projects.html:181
+#: dashboard/templates/dashboard/widgets/projects.html:198
+#: dashboard/templates/dashboard/widgets/projects.html:211
+#: dashboard/templates/dashboard/widgets/projects.html:228
+#: dashboard/templates/dashboard/widgets/users.html:131
+#: dashboard/templates/dashboard/widgets/users.html:144
+#: dashboard/templates/dashboard/widgets/users.html:161
+#: dashboard/templates/dashboard/widgets/users.html:174
+#: dashboard/templates/dashboard/widgets/users.html:191
+#: dashboard/templates/dashboard/widgets/users.html:208
+#: dashboard/templates/dashboard/widgets/users.html:244
+msgid "Export"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:210
+msgid "Contributions by Gender"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:227
+msgid "Contributions by Age Group"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:240
+msgid "Primary vs Repetitions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:259
+msgid "Contributions Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:716
+#: dashboard/templates/dashboard/widgets/contributions.html:948
+#: dashboard/templates/dashboard/widgets/contributions.html:1080
+msgid "Number of Contributions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:835
+#: dashboard/templates/dashboard/widgets/contributions.html:1200
+#: dashboard/templates/dashboard/widgets/contributions.html:1302
+#: dashboard/templates/dashboard/widgets/inventory.html:956
+#: dashboard/templates/dashboard/widgets/inventory.html:1083
+#: dashboard/templates/dashboard/widgets/inventory.html:1115
+#: dashboard/templates/dashboard/widgets/inventory.html:1160
+#: dashboard/templates/dashboard/widgets/inventory.html:1314
+#: dashboard/templates/dashboard/widgets/licenses.html:852
+#: dashboard/templates/dashboard/widgets/licenses.html:1080
+#: dashboard/templates/dashboard/widgets/licenses.html:1445
+#: dashboard/templates/dashboard/widgets/licenses.html:1682
+#: dashboard/templates/dashboard/widgets/licenses.html:1791
+#: dashboard/templates/dashboard/widgets/licenses.html:1900
+#: dashboard/templates/dashboard/widgets/notifications.html:481
+#: dashboard/templates/dashboard/widgets/notifications.html:511
+#: dashboard/templates/dashboard/widgets/notifications.html:556
+#: dashboard/templates/dashboard/widgets/projects.html:774
+#: dashboard/templates/dashboard/widgets/projects.html:1258
+#: dashboard/templates/dashboard/widgets/users.html:690
+#: dashboard/templates/dashboard/widgets/users.html:923
+#: dashboard/templates/dashboard/widgets/users.html:1027
+msgid "Count"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1127
+#: dashboard/templates/dashboard/widgets/contributions.html:1664
+msgid "Live"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1127
+#: dashboard/templates/dashboard/widgets/contributions.html:1666
+msgid "Recorded"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1230
+msgid "Primary"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1230
+msgid "Repetitions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1405
+msgid "Contribution Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1412
+#: dashboard/templates/dashboard/widgets/funnel.html:1066
+#: dashboard/templates/dashboard/widgets/inventory.html:1785
+#: dashboard/templates/dashboard/widgets/inventory.html:2193
+#: dashboard/templates/dashboard/widgets/licenses.html:2016
+#: dashboard/templates/dashboard/widgets/notifications.html:790
+#: dashboard/templates/dashboard/widgets/projects.html:1669
+#: dashboard/templates/dashboard/widgets/users.html:1419
+msgid "Close"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1413
+#: dashboard/templates/dashboard/widgets/funnel.html:1067
+#: dashboard/templates/dashboard/widgets/inventory.html:1786
+#: dashboard/templates/dashboard/widgets/licenses.html:2017
+#: dashboard/templates/dashboard/widgets/notifications.html:791
+#: dashboard/templates/dashboard/widgets/projects.html:1670
+#: dashboard/templates/dashboard/widgets/users.html:1420
+msgid "Export CSV"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1434
+#: dashboard/templates/dashboard/widgets/funnel.html:1096
+#: dashboard/templates/dashboard/widgets/inventory.html:1808
+#: dashboard/templates/dashboard/widgets/licenses.html:2042
+#: dashboard/templates/dashboard/widgets/projects.html:1692
+msgid "Error"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1437
+#: dashboard/templates/dashboard/widgets/funnel.html:1099
+#: dashboard/templates/dashboard/widgets/inventory.html:1811
+#: dashboard/templates/dashboard/widgets/licenses.html:2045
+#: dashboard/templates/dashboard/widgets/projects.html:1695
+msgid "Error loading data"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1449
+#: dashboard/templates/dashboard/widgets/funnel.html:1111
+#: dashboard/templates/dashboard/widgets/inventory.html:1823
+#: dashboard/templates/dashboard/widgets/licenses.html:2057
+#: dashboard/templates/dashboard/widgets/projects.html:1732
+msgid "Total Records"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1452
+#: dashboard/templates/dashboard/widgets/funnel.html:1114
+#: dashboard/templates/dashboard/widgets/inventory.html:1826
+#: dashboard/templates/dashboard/widgets/licenses.html:2060
+#: dashboard/templates/dashboard/widgets/projects.html:1735
+msgid "Displayed"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1464
+#: dashboard/templates/dashboard/widgets/funnel.html:1302
+msgid "License Number"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1465
+msgid "License Title"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1466
+msgid "License Subtitle"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1468
+msgid "License Confirmed"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1469
+#: dashboard/templates/dashboard/widgets/funnel.html:176
+#: dashboard/templates/dashboard/widgets/funnel.html:818
+#: dashboard/templates/dashboard/widgets/funnel.html:1128
+#: dashboard/templates/dashboard/widgets/funnel.html:1177
+#: dashboard/templates/dashboard/widgets/licenses.html:2076
+#: dashboard/templates/dashboard/widgets/users.html:1484
+msgid "Name"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1470
+#: dashboard/templates/dashboard/widgets/funnel.html:1229
+#: dashboard/templates/dashboard/widgets/funnel.html:1308
+#: dashboard/templates/dashboard/widgets/inventory.html:61
+#: dashboard/templates/dashboard/widgets/inventory.html:783
+#: dashboard/templates/dashboard/widgets/inventory.html:1846
+#: dashboard/templates/dashboard/widgets/inventory.html:1890
+#: dashboard/templates/dashboard/widgets/licenses.html:64
+#: dashboard/templates/dashboard/widgets/licenses.html:2077
+#: dashboard/templates/dashboard/widgets/projects.html:1749
+msgid "Category"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1471
+#: dashboard/templates/dashboard/widgets/funnel.html:1309
+msgid "Broadcast Date"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1473
+msgid "License Duration"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1474
+#: dashboard/templates/dashboard/widgets/funnel.html:1226
+#: dashboard/templates/dashboard/widgets/licenses.html:1520
+#: dashboard/templates/dashboard/widgets/licenses.html:2075
+msgid "Duration"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1476
+#: dashboard/templates/dashboard/widgets/funnel.html:1134
+#: dashboard/templates/dashboard/widgets/funnel.html:1182
+#: dashboard/templates/dashboard/widgets/licenses.html:2081
+#: dashboard/templates/dashboard/widgets/users.html:1491
+msgid "City"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1484
+#: dashboard/templates/dashboard/widgets/funnel.html:1142
+#: dashboard/templates/dashboard/widgets/funnel.html:1143
+#: dashboard/templates/dashboard/widgets/funnel.html:1190
+#: dashboard/templates/dashboard/widgets/funnel.html:1239
+#: dashboard/templates/dashboard/widgets/inventory.html:1902
+#: dashboard/templates/dashboard/widgets/licenses.html:2088
+#: dashboard/templates/dashboard/widgets/projects.html:67
+#: dashboard/templates/dashboard/widgets/projects.html:77
+#: dashboard/templates/dashboard/widgets/projects.html:1762
+#: dashboard/templates/dashboard/widgets/projects.html:1763
+#: dashboard/templates/dashboard/widgets/projects.html:1764
+#: dashboard/templates/dashboard/widgets/users.html:1505
+#: dashboard/templates/dashboard/widgets/users.html:1506
+msgid "Yes"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1484
+#: dashboard/templates/dashboard/widgets/funnel.html:1142
+#: dashboard/templates/dashboard/widgets/funnel.html:1143
+#: dashboard/templates/dashboard/widgets/funnel.html:1190
+#: dashboard/templates/dashboard/widgets/funnel.html:1239
+#: dashboard/templates/dashboard/widgets/inventory.html:1902
+#: dashboard/templates/dashboard/widgets/licenses.html:2088
+#: dashboard/templates/dashboard/widgets/projects.html:68
+#: dashboard/templates/dashboard/widgets/projects.html:78
+#: dashboard/templates/dashboard/widgets/projects.html:1762
+#: dashboard/templates/dashboard/widgets/projects.html:1763
+#: dashboard/templates/dashboard/widgets/projects.html:1764
+#: dashboard/templates/dashboard/widgets/users.html:1505
+#: dashboard/templates/dashboard/widgets/users.html:1506
+msgid "No"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1545
+msgid "No data found"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1546
+msgid "No contributions found for the selected criteria"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1546
+msgid "type"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1547
+msgid "This could be due to"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1549
+msgid "No contributions match the current filters"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1550
+msgid "No contributions of this type exist in the selected date range"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1551
+msgid "Database connection issues"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1565
+msgid "Contributions pagination"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1569
+msgid "Showing"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1569
+msgid "to"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1569
+#: dashboard/templates/dashboard/widgets/inventory.html:1829
+#: dashboard/templates/dashboard/widgets/notifications.html:834
+#: dashboard/templates/dashboard/widgets/users.html:1472
+msgid "of"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1569
+msgid "entries"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1580
+#: dashboard/templates/dashboard/widgets/contributions.html:1587
+#: dashboard/templates/dashboard/widgets/inventory.html:1946
+#: dashboard/templates/dashboard/widgets/inventory.html:1952
+#: dashboard/templates/dashboard/widgets/licenses.html:2133
+#: dashboard/templates/dashboard/widgets/licenses.html:2135
+#: dashboard/templates/dashboard/widgets/projects.html:1798
+#: dashboard/templates/dashboard/widgets/projects.html:1804
+#: dashboard/templates/dashboard/widgets/users.html:1526
+msgid "Previous"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/contributions.html:1639
+#: dashboard/templates/dashboard/widgets/contributions.html:1646
+#: dashboard/templates/dashboard/widgets/inventory.html:1981
+#: dashboard/templates/dashboard/widgets/inventory.html:1987
+#: dashboard/templates/dashboard/widgets/licenses.html:2152
+#: dashboard/templates/dashboard/widgets/licenses.html:2154
+#: dashboard/templates/dashboard/widgets/projects.html:1833
+#: dashboard/templates/dashboard/widgets/projects.html:1839
+#: dashboard/templates/dashboard/widgets/users.html:1544
+msgid "Next"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:4 dashboard/views.py:99
+msgid "User Participation Funnel"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:14
+msgid "Datumsbereich"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:25
+msgid "Startdatum"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:29
+msgid "Enddatum"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:33
+msgid "Bürgermedium"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:61
+msgid "Kategorie"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:63
+msgid "Alle Kategorien"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:67
+#: dashboard/templates/dashboard/widgets/funnel.html:180
+#: dashboard/templates/dashboard/widgets/inventory.html:79
+#: dashboard/templates/dashboard/widgets/inventory.html:1850
+#: dashboard/templates/dashboard/widgets/licenses.html:70
+#: dashboard/templates/dashboard/widgets/notifications.html:63
+#: dashboard/templates/dashboard/widgets/notifications.html:171
+#: dashboard/templates/dashboard/widgets/notifications.html:850
+msgid "Status"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:69
+msgid "Alle Status"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:71
+msgid "Unverified"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:73
+msgid "Non-Member"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:92
+msgid "Click to view detailed list of registrations"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:99
+msgid "Click to view detailed list of verified users"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:106
+msgid "Click to view detailed list of licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:113
+msgid "Click to view detailed list of first broadcasts"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:123
+msgid "Participation Funnel"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:137
+msgid "Conversion Rates"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:153
+msgid "Active Alerts"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:181
+#: dashboard/templates/dashboard/widgets/notifications.html:175
+msgid "Actions"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:438
+msgid "Current"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:442
+msgid "Resolve"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:448
+msgid "No active alerts"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:465
+#: dashboard/templates/dashboard/widgets/funnel.html:858
+#: dashboard/templates/dashboard/widgets/licenses.html:2177
+#: dashboard/templates/dashboard/widgets/notifications.html:66
+#: dashboard/templates/dashboard/widgets/notifications.html:358
+#: dashboard/templates/dashboard/widgets/notifications.html:969
+msgid "Active"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:465
+#: dashboard/templates/dashboard/widgets/notifications.html:67
+#: dashboard/templates/dashboard/widgets/notifications.html:358
+#: dashboard/templates/dashboard/widgets/notifications.html:971
+msgid "Inactive"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:480
+msgid "No thresholds configured"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:573
+msgid "Funnel Stage"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:588
+#: dashboard/templates/dashboard/widgets/users.html:803
+msgid "Number of Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:625
+msgid "Verification Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:626
+msgid "Rental Request Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:627
+msgid "Rental Completion Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:628
+msgid "License Creation Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:629
+msgid "Contribution Creation Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:630
+msgid "First Broadcast Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:631
+msgid "Multiple Broadcast Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:771
+msgid "Are you sure you want to resolve this alert?"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:782
+msgid "Alert resolved successfully"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:785
+#: dashboard/templates/dashboard/widgets/funnel.html:789
+msgid "Error resolving alert: "
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:800
+msgid "Threshold not found"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:810
+msgid "Edit Threshold"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:851
+msgid "Equals"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:864
+msgid "Cancel"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:865
+msgid "Save Changes"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:897
+msgid "Please fill in all required fields"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:924
+msgid "Threshold updated successfully"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:931
+#: dashboard/templates/dashboard/widgets/funnel.html:936
+msgid "Error updating threshold: "
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:943
+msgid "Are you sure you want to activate this threshold?"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:944
+msgid "Are you sure you want to deactivate this threshold?"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:957
+msgid "Threshold activated successfully"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:957
+msgid "Threshold deactivated successfully"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:963
+#: dashboard/templates/dashboard/widgets/funnel.html:968
+msgid "Error toggling threshold: "
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1059
+msgid "Funnel Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1126
+#: dashboard/templates/dashboard/widgets/funnel.html:1175
+msgid "ID"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1127
+#: dashboard/templates/dashboard/widgets/funnel.html:1176
+#: dashboard/templates/dashboard/widgets/users.html:1485
+msgid "Email"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1130
+#: dashboard/templates/dashboard/widgets/funnel.html:1179
+msgid "Birthday"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1135
+#: dashboard/templates/dashboard/widgets/funnel.html:1183
+#: dashboard/templates/dashboard/widgets/funnel.html:1231
+#: dashboard/templates/dashboard/widgets/inventory.html:1895
+#: dashboard/templates/dashboard/widgets/licenses.html:2078
+#: dashboard/templates/dashboard/widgets/users.html:1492
+msgid "Created"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1184
+msgid "Verified At"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1223
+#: dashboard/templates/dashboard/widgets/licenses.html:2072
+msgid "Number"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1224
+#: dashboard/templates/dashboard/widgets/funnel.html:1303
+#: dashboard/templates/dashboard/widgets/licenses.html:2073
+#: dashboard/templates/dashboard/widgets/notifications.html:168
+#: dashboard/templates/dashboard/widgets/notifications.html:846
+#: dashboard/templates/dashboard/widgets/projects.html:1747
+msgid "Title"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1225
+#: dashboard/templates/dashboard/widgets/funnel.html:1304
+#: dashboard/templates/dashboard/widgets/licenses.html:2074
+msgid "Subtitle"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1227
+#: dashboard/templates/dashboard/widgets/funnel.html:1306
+msgid "Profile Name"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1228
+#: dashboard/templates/dashboard/widgets/funnel.html:1307
+msgid "Profile Email"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1230
+#: dashboard/templates/dashboard/widgets/licenses.html:73
+#: dashboard/templates/dashboard/widgets/licenses.html:99
+#: dashboard/templates/dashboard/widgets/licenses.html:1372
+#: dashboard/templates/dashboard/widgets/licenses.html:2079
+msgid "Confirmed"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1305
+#: dashboard/templates/dashboard/widgets/inventory.html:1888
+msgid "Description"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1343
+#: dashboard/templates/dashboard/widgets/inventory.html:1924
+#: dashboard/templates/dashboard/widgets/licenses.html:2116
+#: dashboard/templates/dashboard/widgets/notifications.html:893
+#: dashboard/templates/dashboard/widgets/projects.html:1850
+#: dashboard/templates/dashboard/widgets/users.html:1551
+msgid "No data found for the selected criteria."
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/funnel.html:1354
+msgid "Funnel pagination"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:4 dashboard/views.py:77
+msgid "Rental Statistics"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:22
+#: dashboard/templates/dashboard/widgets/inventory.html:1410
+#: dashboard/templates/dashboard/widgets/inventory.html:1550
+#: dashboard/templates/dashboard/widgets/notifications.html:21
+msgid "Time Period"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:49
+msgid "Membership"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:52
+#: dashboard/templates/dashboard/widgets/users.html:118
+#: dashboard/templates/dashboard/widgets/users.html:954
+msgid "Members"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:53
+msgid "Non-members"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:67
+#: dashboard/templates/dashboard/widgets/inventory.html:1891
+msgid "Owner"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:73
+#: dashboard/templates/dashboard/widgets/inventory.html:1894
+msgid "Location"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:82
+#: dashboard/templates/dashboard/widgets/inventory.html:110
+msgid "In Stock"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:83
+msgid "Out of Stock"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:84
+msgid "Maintenance"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:102
+#: dashboard/templates/dashboard/widgets/inventory.html:104
+#: dashboard/templates/dashboard/widgets/inventory.html:730
+msgid "Total Items"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:108
+#: dashboard/templates/dashboard/widgets/inventory.html:280
+msgid "Available Items"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:128
+msgid "Rented"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:134
+msgid "Utilization Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:144
+#: dashboard/templates/dashboard/widgets/inventory.html:2115
+msgid "Inventory by Category"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:157
+#: dashboard/templates/dashboard/widgets/inventory.html:2116
+msgid "Inventory by Owner"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:174
+#: dashboard/templates/dashboard/widgets/inventory.html:2117
+msgid "Rentals by Status"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:187
+#: dashboard/templates/dashboard/widgets/inventory.html:2118
+msgid "Rentals by Type"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:204
+#: dashboard/templates/dashboard/widgets/inventory.html:2119
+msgid "Rentals by Gender"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:217
+#: dashboard/templates/dashboard/widgets/inventory.html:2120
+msgid "Rentals Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:234
+msgid "Equipment Sets Statistics"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:241
+msgid "Active Sets"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:247
+msgid "Available Sets"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:257
+msgid "Popular Equipment Sets"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:273
+msgid "Popular Inventory Statistics"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:296
+msgid "Popular Inventory Items"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:312
+msgid "User Activity Analytics"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:315
+msgid "Anti-Rating"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:316
+msgid "Users who rent but don't create licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:326
+msgid "Content Creators"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:329
+msgid "Rating"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:330
+msgid "Users who create licenses but don't rent much"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:344
+msgid "Room Rentals Statistics"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:352
+msgid "Room Usage Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:356
+msgid "Popular Rooms"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:564
+#: dashboard/templates/dashboard/widgets/inventory.html:582
+#: dashboard/templates/dashboard/widgets/inventory.html:604
+#: dashboard/templates/dashboard/widgets/inventory.html:623
+#: dashboard/templates/dashboard/widgets/users.html:231
+msgid "No data available"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:595
+#: dashboard/templates/dashboard/widgets/inventory.html:614
+#: dashboard/templates/dashboard/widgets/licenses.html:760
+#: dashboard/templates/dashboard/widgets/licenses.html:876
+#: dashboard/templates/dashboard/widgets/licenses.html:1590
+#: dashboard/templates/dashboard/widgets/licenses.html:1714
+#: dashboard/templates/dashboard/widgets/licenses.html:1823
+#: dashboard/templates/dashboard/widgets/projects.html:682
+#: dashboard/templates/dashboard/widgets/projects.html:798
+#: dashboard/templates/dashboard/widgets/projects.html:919
+#: dashboard/templates/dashboard/widgets/users.html:598
+#: dashboard/templates/dashboard/widgets/users.html:1208
+#: dashboard/widgets/inventory.py:237 dashboard/widgets/inventory.py:257
+msgid "Unknown"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:599
+msgid "rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:618
+msgid "licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:816
+msgid "Number of Items"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1170
+msgid "Rental Type"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1190
+#: dashboard/templates/dashboard/widgets/inventory.html:1434
+msgid "Number of Rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1346
+#: dashboard/templates/dashboard/widgets/inventory.html:1400
+msgid "Rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1397
+#: dashboard/templates/dashboard/widgets/inventory.html:1537
+msgid "Period"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1486
+#: dashboard/templates/dashboard/widgets/inventory.html:1540
+msgid "Room Rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1574
+msgid "Number of Room Rentals"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1624
+msgid "No room rentals found"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1778
+msgid "Inventory Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1829
+msgid "Page"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1841
+msgid "User Name"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1842
+msgid "User Email"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1843
+#: dashboard/templates/dashboard/widgets/inventory.html:1887
+msgid "Inventory Number"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1844
+msgid "Item Description"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1845
+#: dashboard/templates/dashboard/widgets/inventory.html:1889
+msgid "Manufacturer"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1847
+msgid "Quantity"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1892
+msgid "Available"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1893
+msgid "Condition"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:1938
+msgid "Inventory pagination"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2016
+msgid "Approved"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2018
+#: dashboard/templates/dashboard/widgets/licenses.html:74
+#: dashboard/templates/dashboard/widgets/licenses.html:106
+#: dashboard/templates/dashboard/widgets/licenses.html:1372
+#: dashboard/templates/dashboard/widgets/licenses.html:2181
+msgid "Pending"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2020
+msgid "Rejected"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2022
+msgid "Returned"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2073
+msgid "Exporting..."
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2121
+msgid "Room Rentals Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2123
+msgid "Chart Data"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2132
+#: dashboard/templates/dashboard/widgets/inventory.html:2138
+msgid "Label"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2132
+msgid "Value"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/inventory.html:2159
+msgid "Data exported successfully as"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:5
+msgid "Licenses Dashboard"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:66
+#: dashboard/templates/dashboard/widgets/projects.html:38
+msgid "All Categories"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:72
+msgid "All Statuses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:97
+msgid "Active Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:111
+#: dashboard/templates/dashboard/widgets/licenses.html:113
+#: dashboard/templates/dashboard/widgets/licenses.html:1237
+#: dashboard/templates/dashboard/widgets/licenses.html:1291
+msgid "New Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:124
+msgid "Avg Duration (min)"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:130
+#: dashboard/templates/dashboard/widgets/projects.html:64
+#: dashboard/templates/dashboard/widgets/projects.html:1754
+msgid "Youth Protection"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:136
+msgid "Media Library"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:142
+msgid "Saxony Exchange"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:152
+msgid "Licenses by Category"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:165
+msgid "Licenses by Media Authority"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:182
+msgid "Licenses by Gender"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:195
+msgid "Licenses by Age Group"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:212
+msgid "Licenses Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:229
+msgid "Confirmation Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:233
+msgid "of licenses are confirmed"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:240
+msgid "License Status Distribution"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:254
+msgid "Duration Distribution"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:267
+msgid "Youth Protection Categories"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:284
+msgid "Saxony-Anhalt Exchange"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:297
+msgid "Other States Exchange"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:961
+#: dashboard/templates/dashboard/widgets/licenses.html:1193
+#: dashboard/templates/dashboard/widgets/licenses.html:1553
+msgid "Number of Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:1325
+msgid "Number of New Licenses"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:1533
+msgid "Duration Range"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:1714
+#: dashboard/templates/dashboard/widgets/licenses.html:1823
+msgid "Allowed"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:1714
+#: dashboard/templates/dashboard/widgets/licenses.html:1823
+msgid "Not Allowed"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:2009
+msgid "License Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:2127
+msgid "License pagination"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/licenses.html:2179
+msgid "Expired"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:45
+msgid "Information"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:46
+msgid "Success"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:47
+msgid "Warning"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:48
+msgid "Danger"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:53
+#: dashboard/templates/dashboard/widgets/notifications.html:170
+#: dashboard/templates/dashboard/widgets/notifications.html:503
+#: dashboard/templates/dashboard/widgets/notifications.html:553
+#: dashboard/templates/dashboard/widgets/notifications.html:849
+msgid "Priority"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:56
+#: dashboard/templates/dashboard/widgets/notifications.html:986
+msgid "Low"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:57
+#: dashboard/templates/dashboard/widgets/notifications.html:984
+msgid "Medium"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:58
+#: dashboard/templates/dashboard/widgets/notifications.html:982
+msgid "High"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:87
+#: dashboard/templates/dashboard/widgets/notifications.html:89
+msgid "Total Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:90
+msgid "Click to view detailed list of all notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:94
+#: dashboard/templates/dashboard/widgets/notifications.html:96
+msgid "Active Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:97
+msgid "Click to view detailed list of active notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:101
+#: dashboard/templates/dashboard/widgets/notifications.html:103
+#: dashboard/templates/dashboard/widgets/notifications.html:967
+msgid "Currently Active"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:104
+msgid "Click to view detailed list of currently active notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:108
+msgid "Recent Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:110
+msgid "Recent (7 days)"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:111
+msgid "Click to view detailed list of recent notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:121
+msgid "Currently Active Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:137
+msgid "Notifications by Type"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:147
+msgid "Notifications by Priority"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:161
+msgid "Notification Management"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:174
+#: dashboard/templates/dashboard/widgets/notifications.html:853
+msgid "Created By"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:334
+msgid "No active notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:376
+msgid "No notifications found"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:566
+msgid "Priority Level"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:586
+msgid "Number of Notifications"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:668
+msgid "Are you sure you want to"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:668
+msgid "activate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:668
+msgid "deactivate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:668
+msgid "this notification?"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:683
+msgid "Notification status updated successfully"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:686
+#: dashboard/templates/dashboard/widgets/notifications.html:690
+msgid "Error updating notification:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:783
+msgid "Notification Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:813
+#: dashboard/templates/dashboard/widgets/users.html:1441
+msgid "Error:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:816
+#: dashboard/templates/dashboard/widgets/users.html:1444
+msgid "Error loading data:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:828
+#: dashboard/templates/dashboard/widgets/users.html:1469
+msgid "Total Records:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:831
+#: dashboard/templates/dashboard/widgets/users.html:1472
+msgid "Displayed:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:834
+msgid "Page:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:855
+msgid "Days Remaining"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/notifications.html:902
+msgid "Notification pagination"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:5
+msgid "Projects Dashboard"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:36
+msgid "Project Category"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:44
+#: dashboard/templates/dashboard/widgets/projects.html:848
+#: dashboard/templates/dashboard/widgets/projects.html:861
+#: dashboard/templates/dashboard/widgets/projects.html:1750
+msgid "Target Group"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:46
+msgid "All Target Groups"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:50
+#: dashboard/templates/dashboard/widgets/projects.html:969
+#: dashboard/templates/dashboard/widgets/projects.html:982
+#: dashboard/templates/dashboard/widgets/projects.html:1751
+msgid "Project Leader"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:52
+msgid "All Leaders"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:56
+#: dashboard/templates/dashboard/widgets/projects.html:1290
+#: dashboard/templates/dashboard/widgets/projects.html:1753
+msgid "External Venue"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:59
+msgid "External Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:60
+msgid "Internal Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:74
+#: dashboard/templates/dashboard/widgets/projects.html:1290
+#: dashboard/templates/dashboard/widgets/projects.html:1755
+msgid "Democracy Project"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:96
+msgid "TOTAL PROJECTS"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:100
+#: dashboard/templates/dashboard/widgets/projects.html:1718
+msgid "External Venue Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:102
+msgid "EXTERNAL VENUE"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:106
+#: dashboard/templates/dashboard/widgets/projects.html:1719
+msgid "Youth Protection Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:108
+msgid "YOUTH PROTECTION"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:112
+#: dashboard/templates/dashboard/widgets/projects.html:1720
+msgid "Democracy Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:114
+msgid "DEMOCRACY PROJECTS"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:120
+msgid "TOTAL PARTICIPANTS"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:126
+msgid "AVG PARTICIPANTS"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:136
+msgid "Projects by Category"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:149
+msgid "Projects by Target Group"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:166
+msgid "Top Project Leaders"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:179
+msgid "Participants by Age Groups"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:196
+msgid "Participants by Gender"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:209
+msgid "Project Characteristics"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:226
+msgid "Projects Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:883
+#: dashboard/templates/dashboard/widgets/projects.html:1004
+#: dashboard/templates/dashboard/widgets/projects.html:1494
+msgid "Number of Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1040
+#: dashboard/templates/dashboard/widgets/projects.html:1178
+msgid "Not Given"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1058
+#: dashboard/templates/dashboard/widgets/projects.html:1103
+msgid "Participants"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1133
+msgid "Number of Participants"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1290
+msgid "Youth Media Protection"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1367
+msgid "Rate"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1457
+#: dashboard/templates/dashboard/widgets/projects.html:1470
+msgid "Month"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1662
+msgid "Project Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1715
+msgid "All Projects"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1716
+msgid "Projects with Participants"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1717
+msgid "Projects by Average Participants"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1723
+msgid "Project Details"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/projects.html:1790
+msgid "Project pagination"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:64
+msgid "Member Status"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:66
+#: dashboard/templates/dashboard/widgets/users.html:74
+#: dashboard/widgets/filters.py:102 dashboard/widgets/filters.py:107
+msgid "All Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:67
+#: dashboard/widgets/filters.py:103
+msgid "Members Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:68
+#: dashboard/widgets/filters.py:104
+msgid "Non-Members Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:72
+msgid "Verification"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:75
+#: dashboard/widgets/filters.py:108
+msgid "Verified Only"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:76
+#: dashboard/widgets/filters.py:109
+msgid "Not Verified"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:98
+msgid "Male Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:104
+msgid "Female Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:116
+msgid "Member Users"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:129
+#: dashboard/templates/dashboard/widgets/users.html:206
+msgid "Users by Media Authority"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:142
+msgid "Age Distribution"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:159
+msgid "Gender Distribution"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:172
+msgid "Member vs Non-Member"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:189
+msgid "Registration Trend"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:216
+#: dashboard/templates/dashboard/widgets/users.html:252
+msgid "User Count"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:217
+#: dashboard/templates/dashboard/widgets/users.html:253
+msgid "Percentage"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:242
+msgid "Age Group Breakdown"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:954
+msgid "Non-Members"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1060
+#: dashboard/templates/dashboard/widgets/users.html:1114
+msgid "New Registrations"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1148
+msgid "Number of New Registrations"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1200
+msgid "Error updating charts:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1260
+msgid "updateStatisticsCards START"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1261
+msgid "data parameter:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1265
+msgid "data or basic_stats is invalid, skipping statistics update"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1266
+msgid "updateStatisticsCards END (early return)"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1278
+msgid "Elements to update:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1284
+msgid "Updated"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1284
+msgid "with value:"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1286
+msgid "Element with id"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1286
+msgid "not found"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1290
+msgid "updateStatisticsCards END"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1412
+msgid "Detail View"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1487
+msgid "Age"
+msgstr ""
+
+#: dashboard/templates/dashboard/widgets/users.html:1523
+msgid "User pagination"
+msgstr ""
+
+#: dashboard/views.py:32
+msgid "Users Statistics"
+msgstr ""
+
+#: dashboard/views.py:44
+msgid "Licenses Statistics"
+msgstr ""
+
+#: dashboard/views.py:55
+msgid "Contributions Statistics"
+msgstr ""
+
+#: dashboard/views.py:66
+msgid "Projects Statistics"
+msgstr ""
+
+#: dashboard/widgets/inventory.py:647 dashboard/widgets/inventory.py:661
+msgid "User {}"
+msgstr ""
+
+msgid "Doughnut Chart"
+msgstr ""
+
+msgid "Bar Chart"
+msgstr ""
+
+msgid "Horizontal Bar Chart"
+msgstr ""

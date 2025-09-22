@@ -30,6 +30,7 @@ from registration.views import PasswordResetView
 urlpatterns = [
     path("", views.home, name="home"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("admin-dashboard/", include("dashboard.urls", namespace="dashboard")),
     path("rental/", views.RentalDashboardView.as_view(), name="rental_dashboard"),
     path(
         "profile/reset/<uidb64>/<token>/",

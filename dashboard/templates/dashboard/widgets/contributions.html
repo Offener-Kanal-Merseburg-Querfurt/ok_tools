@@ -1,0 +1,1683 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Contributions Dashboard" %}{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Filters Section -->
+            <div class="filter-section">
+                <form id="filtersForm" method="GET">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="dateRange" class="form-label">{% trans "Date Range" %}</label>
+                            <select class="form-select" id="dateRange" name="days">
+                                <option value="7">{% trans "Last 7 days" %}</option>
+                                <option value="30">{% trans "Last 30 days" %}</option>
+                                <option value="90">{% trans "Last 90 days" %}</option>
+                                <option value="365">{% trans "Last year" %}</option>
+                                <option value="all">{% trans "All Time" %}</option>
+                                <option value="custom">{% trans "Custom Period" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="customStartDate" class="form-label">{% trans "Start Date" %}</label>
+                            <input type="date" class="form-control" id="customStartDate" name="start_date" style="display: none;">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="customEndDate" class="form-label">{% trans "End Date" %}</label>
+                            <input type="date" class="form-control" id="customEndDate" name="end_date" style="display: none;">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="mediaAuthority" class="form-label">{% trans "Media Authority" %}</label>
+                            <select class="form-select" id="mediaAuthority" name="media_authority">
+                                <option value="">{% trans "All Authorities" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label for="genderFilter" class="form-label">{% trans "Gender" %}</label>
+                            <select class="form-select" id="genderFilter" name="gender">
+                                <option value="">{% trans "All Genders" %}</option>
+                                <option value="m">{% trans "Male" %}</option>
+                                <option value="f">{% trans "Female" %}</option>
+                                <option value="d">{% trans "Diverse" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="ageGroupFilter" class="form-label">{% trans "Age Group" %}</label>
+                            <select class="form-select" id="ageGroupFilter" name="age_group">
+                                <option value="">{% trans "All Ages" %}</option>
+                                <option value="under_18">{% trans "Under 18" %}</option>
+                                <option value="18_25">{% trans "18-25" %}</option>
+                                <option value="26_35">{% trans "26-35" %}</option>
+                                <option value="36_50">{% trans "36-50" %}</option>
+                                <option value="over_50">{% trans "Over 50" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="liveFilter" class="form-label">{% trans "Live/Recorded" %}</label>
+                            <select class="form-select" id="liveFilter" name="live">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="true">{% trans "Live Only" %}</option>
+                                <option value="false">{% trans "Recorded Only" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="primaryFilter" class="form-label">{% trans "Type" %}</label>
+                            <select class="form-select" id="primaryFilter" name="primary">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="primary">{% trans "Primary Only" %}</option>
+                                <option value="repetition">{% trans "Repetitions Only" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">{% trans "Apply Filters" %}</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetFilters()">{% trans "Reset" %}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="total" data-title="{% trans 'Total Contributions' %}">
+                        <div class="stat-number" id="totalContributions">0</div>
+                        <div class="stat-label">{% trans "TOTAL CONTRIBUTIONS" %}</div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="live" data-title="{% trans 'Live Contributions' %}">
+                        <div class="stat-number" id="liveContributions">0</div>
+                        <div class="stat-label">{% trans "LIVE" %}</div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="recorded" data-title="{% trans 'Recorded Contributions' %}">
+                        <div class="stat-number" id="recordedContributions">0</div>
+                        <div class="stat-label">{% trans "RECORDED" %}</div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="unique" data-title="{% trans 'Unique Licenses' %}">
+                        <div class="stat-number" id="uniqueLicenses">0</div>
+                        <div class="stat-label">{% trans "UNIQUE LICENSES" %}</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row of statistics cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="primary" data-title="{% trans 'Primary Contributions' %}">
+                        <div class="stat-number" id="primaryLicenses">0</div>
+                        <div class="stat-label">{% trans "PRIMARY" %}</div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="archive" data-title="{% trans 'Archive Contributions' %}">
+                        <div class="stat-number" id="archiveLicenses">0</div>
+                        <div class="stat-label">{% trans "ARCHIVE" %}</div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-type="repetition" data-title="{% trans 'Repetition Contributions' %}">
+                        <div class="stat-number" id="repetitions">0</div>
+                        <div class="stat-label">{% trans "REPETITIONS" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="conversionRate">0%</div>
+                        <div class="stat-label">{% trans "CONVERSION RATE" %}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversion Metrics -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3 class="widget-title">{% trans "License to Contribution Conversion" %}</h3>
+                        </div>
+                        <div class="text-center">
+                            <div class="display-4 text-primary" id="conversionRateBig">0%</div>
+                            <p class="text-muted">{% trans "of licenses result in contributions" %}</p>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <div class="h5" id="totalLicenses">0</div>
+                                    <small class="text-muted">{% trans "Total Licenses" %}</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h5" id="licensesWithContributions">0</div>
+                                    <small class="text-muted">{% trans "With Contributions" %}</small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="h6" id="avgTimeToFirst">-</div>
+                                <small class="text-muted">{% trans "Avg. days from license to first contribution" %}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3 class="widget-title">{% trans "Live vs Recorded Distribution" %}</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="liveRecordedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Contributions by Media Authority" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('authorityChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="authorityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Contributions by Gender" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('genderChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Contributions by Age Group" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('ageChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="ageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Primary vs Repetitions" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('primaryRepetitionChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="primaryRepetitionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Contributions Trend -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Contributions Trend" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('trendChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p class="loading-text">{% trans "Loading data..." %}</p>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+<script>
+// Chart instances
+window.authorityChart = null;
+window.genderChart = null;
+window.ageChart = null;
+window.trendChart = null;
+window.liveRecordedChart = null;
+window.primaryRepetitionChart = null;
+
+// Initialize chart data with empty values
+window.chartData = {
+    contributionsByAuthority: [],
+    contributionsByGender: [],
+    contributionsByAge: {},
+    contributionsTrend: [],
+    basicStats: {},
+    liveVsRecorded: {},
+    primaryVsRepetitions: {},
+    conversionMetrics: {}
+};
+
+// Load filter data via AJAX
+async function loadFilterData() {
+    try {
+        const response = await fetch('/admin-dashboard/api/filters-data/');
+        const data = await response.json();
+
+        if (data.success && data.data && data.data.context) {
+            console.log('Filter data loaded:', data.data.context);
+
+            // Populate Media Authority options
+            const mediaAuthoritySelect = document.getElementById('mediaAuthority');
+            if (mediaAuthoritySelect && data.data.context.media_authorities) {
+                while (mediaAuthoritySelect.children.length > 1) {
+                    mediaAuthoritySelect.removeChild(mediaAuthoritySelect.lastChild);
+                }
+
+                data.data.context.media_authorities.forEach(authority => {
+                    const option = document.createElement('option');
+                    option.value = authority.name;
+                    option.textContent = authority.name;
+                    mediaAuthoritySelect.appendChild(option);
+                });
+            }
+        } else {
+            console.error('Failed to load filter data:', data);
+        }
+    } catch (error) {
+        console.error('Error loading filter data:', error);
+    }
+}
+
+// Load chart data via AJAX
+async function loadChartData() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const response = await fetch(`/admin-dashboard/api/contributions-statistics/?${urlParams.toString()}`);
+        const data = await response.json();
+
+        if (data.success && data.data) {
+            console.log('DEBUG: Received data:', data.data);
+            console.log('DEBUG: unified_metrics:', data.data.unified_metrics);
+
+            window.chartData = {
+                contributionsByAuthority: data.data.contributions_by_authority || [],
+                contributionsByGender: data.data.contributions_by_gender || [],
+                contributionsByAge: data.data.contributions_by_age || {},
+                contributionsTrend: data.data.contributions_trend || [],
+                basicStats: data.data.basic_stats || {},
+                liveVsRecorded: data.data.live_vs_recorded || {},
+                primaryVsRepetitions: data.data.primary_vs_repetitions || {},
+                conversionMetrics: data.data.conversion_metrics || {},
+                archiveMetrics: data.data.archive_metrics || {}
+            };
+
+            // Update statistics cards
+            updateStatisticsCards(data.data.unified_metrics);
+            updateConversionMetrics(data.data.conversion_metrics);
+
+
+
+            console.log('Chart data loaded successfully:', window.chartData);
+        } else {
+            console.error('API returned error or no data:', data);
+            window.chartData = {
+                contributionsByAuthority: [],
+                contributionsByGender: [],
+                contributionsByAge: {},
+                contributionsTrend: [],
+                basicStats: {},
+                liveVsRecorded: {},
+                primaryVsRepetitions: {},
+                conversionMetrics: {}
+            };
+        }
+    } catch (error) {
+        console.error('Error loading chart data:', error);
+        window.chartData = {
+            contributionsByAuthority: [],
+            contributionsByGender: [],
+            contributionsByAge: {},
+            contributionsTrend: [],
+            basicStats: {},
+            liveVsRecorded: {},
+            primaryVsRepetitions: {},
+            conversionMetrics: {}
+        };
+    }
+}
+
+// Update statistics cards
+window.updateStatisticsCards = function(unifiedMetrics) {
+    console.log('DEBUG: updateStatisticsCards called with:', unifiedMetrics);
+
+    if (!unifiedMetrics || typeof unifiedMetrics !== 'object') {
+        console.warn('unifiedMetrics is undefined or not an object, skipping statistics update');
+        return;
+    }
+
+    const elements = {
+        'totalContributions': unifiedMetrics.total_contributions || 0,
+        'liveContributions': unifiedMetrics.live_contributions || 0,
+        'recordedContributions': unifiedMetrics.recorded_contributions || 0,
+        'uniqueLicenses': unifiedMetrics.unique_licenses || 0,
+        'primaryLicenses': unifiedMetrics.primary_contributions || 0,
+        'archiveLicenses': unifiedMetrics.archive_licenses || 0,
+        'repetitions': unifiedMetrics.repetitions || 0,
+        'conversionRate': `${unifiedMetrics.conversion_rate || 0}%`
+    };
+
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+}
+
+// Update conversion metrics
+function updateConversionMetrics(conversionMetrics) {
+    if (!conversionMetrics || typeof conversionMetrics !== 'object') {
+        return;
+    }
+
+    const rateElement = document.getElementById('conversionRate');
+    const rateBigElement = document.getElementById('conversionRateBig');
+    const totalLicensesElement = document.getElementById('totalLicenses');
+    const licensesWithContributionsElement = document.getElementById('licensesWithContributions');
+    const avgTimeToFirstElement = document.getElementById('avgTimeToFirst');
+
+    if (rateElement) rateElement.textContent = `${conversionMetrics.conversion_rate || 0}%`;
+    if (rateBigElement) rateBigElement.textContent = `${conversionMetrics.conversion_rate || 0}%`;
+    if (totalLicensesElement) totalLicensesElement.textContent = conversionMetrics.total_licenses || 0;
+    if (licensesWithContributionsElement) licensesWithContributionsElement.textContent = conversionMetrics.licenses_with_contributions || 0;
+    if (avgTimeToFirstElement) {
+        avgTimeToFirstElement.textContent = conversionMetrics.avg_time_to_first_contribution || '-';
+    }
+}
+
+
+
+// Initialize filters from URL
+function initializeFiltersFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const days = urlParams.get('days');
+    const startDate = urlParams.get('start_date');
+    const endDate = urlParams.get('end_date');
+
+    if (days) {
+        const dateRangeSelect = document.getElementById('dateRange');
+        if (dateRangeSelect) {
+            dateRangeSelect.value = days;
+        }
+
+        if (days === 'custom' && startDate && endDate) {
+            const startInput = document.getElementById('customStartDate');
+            const endInput = document.getElementById('customEndDate');
+            if (startInput) startInput.value = startDate;
+            if (endInput) endInput.value = endDate;
+        }
+    }
+
+    // Set other filter values from URL
+    const filters = ['media_authority', 'gender', 'age_group', 'live', 'primary'];
+    filters.forEach(filter => {
+        const value = urlParams.get(filter);
+        if (value) {
+            const element = document.getElementById(filter === 'media_authority' ? 'mediaAuthority' : filter + 'Filter');
+            if (element) {
+                element.value = value;
+            }
+        }
+    });
+}
+
+function toggleCustomDateInputs() {
+    const dateRange = document.getElementById('dateRange').value;
+    const startDateInput = document.getElementById('customStartDate');
+    const endDateInput = document.getElementById('customEndDate');
+
+    if (dateRange === 'custom') {
+        startDateInput.style.display = 'block';
+        endDateInput.style.display = 'block';
+    } else {
+        startDateInput.style.display = 'none';
+        endDateInput.style.display = 'none';
+    }
+}
+
+function applyFilters() {
+    const form = document.getElementById('filtersForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (let [key, value] of formData.entries()) {
+        if (value) {
+            params.append(key, value);
+        }
+    }
+
+    window.history.pushState({}, '', window.location.pathname + '?' + params.toString());
+
+    loadChartData().then(function() {
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    }).catch(function(error) {
+        console.error('Error updating charts:', error);
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    });
+}
+
+function resetFilters() {
+    const form = document.getElementById('filtersForm');
+    form.reset();
+
+    window.history.pushState({}, '', window.location.pathname);
+
+    loadChartData().then(function() {
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    }).catch(function(error) {
+        console.error('Error updating charts:', error);
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    });
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filters from URL
+    initializeFiltersFromURL();
+
+    // Load filter data
+    loadFilterData();
+
+    // Add click handlers for stat cards
+    const statCards = document.querySelectorAll('.stat-card[data-type]');
+    statCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            const title = this.getAttribute('data-title');
+            showContributionDetailModal(type, title);
+        });
+
+        // Add hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+            this.style.boxShadow = '0 12px 20px rgba(0,0,0,0.15)';
+            this.style.borderColor = '#667eea';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
+            this.style.borderColor = 'rgba(0,0,0,0.05)';
+        });
+    });
+
+    // Add event listeners for form submission
+    const filtersForm = document.getElementById('filtersForm');
+    if (filtersForm) {
+        filtersForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+    }
+
+    // Add event listener for date range change
+    const dateRangeSelect = document.getElementById('dateRange');
+    if (dateRangeSelect) {
+        dateRangeSelect.addEventListener('change', function() {
+            toggleCustomDateInputs();
+        });
+    }
+
+    // Initialize custom date inputs visibility
+    toggleCustomDateInputs();
+
+    // Load chart data and initialize charts
+    loadChartData().then(function() {
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    }).catch(function(error) {
+        console.error('Error during initialization:', error);
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    });
+});
+
+// Make initializeCharts globally available
+window.initializeCharts = function() {
+    // Check if chartData is available
+    if (!window.chartData) {
+        console.warn('Chart data not available, initializing with empty data');
+        window.chartData = {
+            contributionsByAuthority: [],
+            contributionsByGender: [],
+            contributionsByAge: {},
+            contributionsTrend: [],
+            basicStats: {},
+            liveVsRecorded: {},
+            primaryVsRepetitions: {},
+            conversionMetrics: {}
+        };
+    }
+
+    // Destroy existing charts if they exist
+    if (window.authorityChart) window.authorityChart.destroy();
+    if (window.genderChart) window.genderChart.destroy();
+    if (window.ageChart) window.ageChart.destroy();
+    if (window.trendChart) window.trendChart.destroy();
+    if (window.liveRecordedChart) window.liveRecordedChart.destroy();
+    if (window.primaryRepetitionChart) window.primaryRepetitionChart.destroy();
+
+    // Authority Chart - Enhanced Bar Chart
+    const authorityCtx = document.getElementById('authorityChart');
+    if (authorityCtx) {
+        const authorityData = window.chartData.contributionsByAuthority || [];
+        const labels = authorityData.map(item => item.license__profile__media_authority__name || 'Unknown');
+        const data = authorityData.map(item => item.count);
+
+        window.authorityChart = new Chart(authorityCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{% trans "Contributions" %}',
+                    data: data,
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2,
+                    hoverBackgroundColor: 'rgba(102, 126, 234, 0.9)',
+                    hoverBorderColor: 'rgba(102, 126, 234, 1)',
+                    hoverBorderWidth: 3,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Media Authority" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Contributions" %}: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Media Authority" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Contributions" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                }
+            }
+        });
+    }
+
+    // Gender Chart - Enhanced Pie Chart
+    const genderCtx = document.getElementById('genderChart');
+    if (genderCtx) {
+        const maleData = window.chartData.contributionsByGender.find(item => item.license__profile__gender === 'm')?.count || 0;
+        const femaleData = window.chartData.contributionsByGender.find(item => item.license__profile__gender === 'f')?.count || 0;
+        const diverseData = window.chartData.contributionsByGender.find(item => item.license__profile__gender === 'd')?.count || 0;
+        const total = maleData + femaleData + diverseData;
+
+        window.genderChart = new Chart(genderCtx, {
+            type: 'pie',
+            data: {
+                labels: ['{% trans "Male" %}', '{% trans "Female" %}', '{% trans "Diverse" %}'],
+                datasets: [{
+                    data: [maleData, femaleData, diverseData],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 3,
+                    hoverBackgroundColor: [
+                        'rgba(255, 99, 132, 0.9)',
+                        'rgba(54, 162, 235, 0.9)',
+                        'rgba(255, 206, 86, 0.9)'
+                    ],
+                    hoverBorderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    hoverBorderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                radius: '85%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i];
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: `${label}: ${value} (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#FF6384',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `{% trans "Count" %}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+    }
+
+    // Age Chart - Enhanced Bar Chart
+    const ageCtx = document.getElementById('ageChart');
+    if (ageCtx) {
+        const ageData = window.chartData.contributionsByAge || {};
+        const labels = ['{% trans "Under 18" %}', '{% trans "18-25" %}', '{% trans "26-35" %}', '{% trans "36-50" %}', '{% trans "Over 50" %}'];
+        const data = [
+            ageData.under_18 || 0,
+            ageData['18_25'] || 0,
+            ageData['26_35'] || 0,
+            ageData['36_50'] || 0,
+            ageData.over_50 || 0
+        ];
+
+        window.ageChart = new Chart(ageCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{% trans "Contributions" %}',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    hoverBackgroundColor: 'rgba(75, 192, 192, 0.9)',
+                    hoverBorderColor: 'rgba(75, 192, 192, 1)',
+                    hoverBorderWidth: 3,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#4BC0C0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Age Group" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Contributions" %}: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Age Group" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Contributions" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                }
+            }
+        });
+    }
+
+    // Trend Chart - Enhanced Linear Chart
+    const trendCtx = document.getElementById('trendChart');
+    if (trendCtx) {
+        console.log('Creating enhanced trend chart with data:', window.chartData.contributionsTrend);
+
+        const trendData = Array.isArray(window.chartData.contributionsTrend) ? window.chartData.contributionsTrend : [];
+
+        window.trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: trendData.map(item => item.date || ''),
+                datasets: [{
+                    label: '{% trans "Total Contributions" %}',
+                    data: trendData.map(item => item.count || 0),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#667eea',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3,
+                    borderWidth: 3,
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Date" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Contributions" %}: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Date" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Contributions" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    }
+                }
+            }
+        });
+    }
+
+    // Live vs Recorded Chart - Enhanced Doughnut Chart
+    const liveRecordedCtx = document.getElementById('liveRecordedChart');
+    if (liveRecordedCtx) {
+        const liveData = window.chartData.liveVsRecorded.live || 0;
+        const recordedData = window.chartData.liveVsRecorded.recorded || 0;
+        const total = liveData + recordedData;
+
+        window.liveRecordedChart = new Chart(liveRecordedCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['{% trans "Live" %}', '{% trans "Recorded" %}'],
+                datasets: [{
+                    data: [liveData, recordedData],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(255, 159, 64, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(102, 126, 234, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 3,
+                    hoverBackgroundColor: [
+                        'rgba(102, 126, 234, 0.9)',
+                        'rgba(255, 159, 64, 0.9)'
+                    ],
+                    hoverBorderColor: [
+                        'rgba(102, 126, 234, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    hoverBorderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                radius: '80%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i];
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: `${label}: ${value} (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `{% trans "Count" %}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+    }
+
+    // Primary vs Repetitions Chart - Enhanced Pie Chart
+    const primaryRepetitionCtx = document.getElementById('primaryRepetitionChart');
+    if (primaryRepetitionCtx) {
+        const primaryData = window.chartData.primaryVsRepetitions.primary || 0;
+        const repetitionData = window.chartData.primaryVsRepetitions.repetition || 0;
+        const total = primaryData + repetitionData;
+
+        window.primaryRepetitionChart = new Chart(primaryRepetitionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['{% trans "Primary" %}', '{% trans "Repetitions" %}'],
+                datasets: [{
+                    data: [primaryData, repetitionData],
+                    backgroundColor: [
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 3,
+                    hoverBackgroundColor: [
+                        'rgba(153, 102, 255, 0.9)',
+                        'rgba(255, 159, 64, 0.9)'
+                    ],
+                    hoverBorderColor: [
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    hoverBorderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                radius: '85%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i];
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: `${label}: ${value} (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#9966FF',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `{% trans "Count" %}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Export functions
+window.exportChartData = function(chartId) {
+    const chart = getChartInstance(chartId);
+    if (chart) {
+        const data = chart.data;
+        const csv = convertToCSV(data);
+        downloadCSV(csv, `${chartId}_data.csv`);
+    }
+}
+
+window.getChartInstance = function(chartId) {
+    switch(chartId) {
+        case 'authorityChart': return window.authorityChart;
+        case 'genderChart': return window.genderChart;
+        case 'ageChart': return window.ageChart;
+        case 'trendChart': return window.trendChart;
+        case 'liveRecordedChart': return window.liveRecordedChart;
+        case 'primaryRepetitionChart': return window.primaryRepetitionChart;
+        default: return null;
+    }
+}
+
+window.convertToCSV = function(data) {
+    const labels = data.labels;
+    const values = data.datasets[0].data;
+
+    let csv = 'Label,Value\n';
+    for (let i = 0; i < labels.length; i++) {
+        csv += `"${labels[i]}",${values[i]}\n`;
+    }
+
+    return csv;
+}
+
+window.downloadCSV = function(csv, filename) {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+// Interactive navigation functionality for contributions
+// (Moved to main DOMContentLoaded event handler above)
+
+// Show contribution detail modal
+function showContributionDetailModal(type, title) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('contributionDetailModal');
+    if (!modal) {
+        modal = createContributionDetailModal();
+        document.body.appendChild(modal);
+    }
+
+    // Update modal title
+    const modalTitle = modal.querySelector('.modal-title');
+    modalTitle.textContent = title;
+
+    // Show loading state
+    const modalBody = modal.querySelector('.modal-body');
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">{% trans "Loading..." %}</span></div></div>';
+
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    // Load data
+    loadContributionDetailData(type, modalBody);
+}
+
+// Create contribution detail modal
+function createContributionDetailModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'contributionDetailModal';
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Contribution Detail View" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                    <button type="button" class="btn btn-primary" onclick="exportContributionDetailData()">{% trans "Export CSV" %}</button>
+                </div>
+            </div>
+        </div>
+    `;
+    return modal;
+}
+
+// Load contribution detail data
+async function loadContributionDetailData(type, modalBody, page = 1) {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('type', type);
+        urlParams.set('page', page);
+
+        const response = await fetch(`/admin-dashboard/api/contributions-detail/?${urlParams.toString()}`);
+        const data = await response.json();
+
+        if (data.success) {
+            displayContributionDetailData(data.data, modalBody, type, page);
+        } else {
+            modalBody.innerHTML = `<div class="alert alert-danger">{% trans "Error" %}: ${data.error}</div>`;
+        }
+    } catch (error) {
+        modalBody.innerHTML = `<div class="alert alert-danger">{% trans "Error loading data" %}: ${error.message}</div>`;
+    }
+}
+
+// Display contribution detail data
+function displayContributionDetailData(data, modalBody, type, currentPage) {
+    const { contributions, total_count, displayed_count, pagination } = data;
+
+    let html = `
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>{% trans "Total Records" %}:</strong> ${total_count || 0}
+                </div>
+                <div class="col-md-6">
+                    <strong>{% trans "Displayed" %}:</strong> ${displayed_count || 0}
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (contributions && contributions.length > 0) {
+        html += `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="contributionDetailTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "License Number" %}</th>
+                            <th>{% trans "License Title" %}</th>
+                            <th>{% trans "License Subtitle" %}</th>
+                            <th>{% trans "License Created" %}</th>
+                            <th>{% trans "License Confirmed" %}</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Category" %}</th>
+                            <th>{% trans "Broadcast Date" %}</th>
+                            <th>{% trans "Type" %}</th>
+                            <th>{% trans "License Duration" %}</th>
+                            <th>{% trans "Duration" %}</th>
+                            <th>{% trans "Media Authority" %}</th>
+                            <th>{% trans "City" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        contributions.forEach(contrib => {
+            const typeBadge = getTypeBadge(contrib.type);
+            const confirmedBadge = contrib.license_confirmed ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning">{% trans "No" %}</span>';
+
+            // Compare License Duration with Duration
+            const licenseDuration = contrib.license_duration || '';
+            const actualDuration = contrib.duration_minutes || '';
+
+            // Normalize both durations to HH:MM:SS format for comparison
+            const normalizeDuration = (duration) => {
+                if (!duration) return '';
+                // Convert to seconds first, then back to HH:MM:SS
+                const parts = duration.split(':');
+                if (parts.length === 3) {
+                    const hours = parseInt(parts[0], 10);
+                    const minutes = parseInt(parts[1], 10);
+                    const seconds = parseInt(parts[2], 10);
+                    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                    const h = Math.floor(totalSeconds / 3600);
+                    const m = Math.floor((totalSeconds % 3600) / 60);
+                    const s = totalSeconds % 60;
+                    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+                return duration;
+            };
+
+            const normalizedLicenseDuration = normalizeDuration(licenseDuration);
+            const normalizedActualDuration = normalizeDuration(actualDuration);
+            const isDurationMismatch = normalizedLicenseDuration && normalizedActualDuration && normalizedLicenseDuration !== normalizedActualDuration;
+            const licenseDurationStyle = isDurationMismatch ? 'style="color: red; font-weight: bold;"' : '';
+
+            html += `
+                <tr>
+                    <td>${contrib.license_number || ''}</td>
+                    <td>${contrib.license_title || ''}</td>
+                    <td>${contrib.license_subtitle || ''}</td>
+                    <td>${contrib.license_created_at || ''}</td>
+                    <td>${confirmedBadge}</td>
+                    <td>${contrib.name || ''}</td>
+                    <td>${contrib.category || ''}</td>
+                    <td>${contrib.broadcast_date || ''}</td>
+                    <td>${typeBadge}</td>
+                    <td ${licenseDurationStyle}>${licenseDuration}</td>
+                    <td>${actualDuration}</td>
+                    <td>${contrib.media_authority || ''}</td>
+                    <td>${contrib.city || ''}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination if available
+        if (pagination && pagination.total_pages > 1) {
+            html += createPaginationHTML(pagination, type, currentPage);
+        }
+    } else {
+        html += `
+            <div class="alert alert-info">
+                <h5>{% trans "No data found" %}</h5>
+                <p>{% trans "No contributions found for the selected criteria" %} ({% trans "type" %}: ${type}).</p>
+                <p>{% trans "This could be due to" %}:</p>
+                <ul>
+                    <li>{% trans "No contributions match the current filters" %}</li>
+                    <li>{% trans "No contributions of this type exist in the selected date range" %}</li>
+                    <li>{% trans "Database connection issues" %}</li>
+                </ul>
+            </div>
+        `;
+    }
+
+    modalBody.innerHTML = html;
+}
+
+// Create pagination HTML
+function createPaginationHTML(pagination, type, currentPage) {
+    const { total_pages, has_previous, has_next, start_index, end_index } = pagination;
+
+    let html = `
+        <nav aria-label="{% trans 'Contributions pagination' %}" class="mt-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted">
+                        {% trans "Showing" %} ${start_index} {% trans "to" %} ${end_index} {% trans "of" %} ${pagination.total_count || 0} {% trans "entries" %}
+                    </small>
+                </div>
+                <ul class="pagination pagination-sm mb-0">
+    `;
+
+    // Previous button
+    if (has_previous) {
+        html += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadContributionDetailData('${type}', document.querySelector('#contributionDetailModal .modal-body'), ${currentPage - 1}); return false;">
+                    {% trans "Previous" %}
+                </a>
+            </li>
+        `;
+    } else {
+        html += `
+            <li class="page-item disabled">
+                <span class="page-link">{% trans "Previous" %}</span>
+            </li>
+        `;
+    }
+
+    // Page numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(total_pages, currentPage + 2);
+
+    if (startPage > 1) {
+        html += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadContributionDetailData('${type}', document.querySelector('#contributionDetailModal .modal-body'), 1); return false;">1</a>
+            </li>
+        `;
+        if (startPage > 2) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === currentPage) {
+            html += `
+                <li class="page-item active">
+                    <span class="page-link">${i}</span>
+                </li>
+            `;
+        } else {
+            html += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="loadContributionDetailData('${type}', document.querySelector('#contributionDetailModal .modal-body'), ${i}); return false;">${i}</a>
+                </li>
+            `;
+        }
+    }
+
+    if (endPage < total_pages) {
+        if (endPage < total_pages - 1) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+        html += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadContributionDetailData('${type}', document.querySelector('#contributionDetailModal .modal-body'), ${total_pages}); return false;">${total_pages}</a>
+            </li>
+        `;
+    }
+
+    // Next button
+    if (has_next) {
+        html += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadContributionDetailData('${type}', document.querySelector('#contributionDetailModal .modal-body'), ${currentPage + 1}); return false;">
+                    {% trans "Next" %}
+                </a>
+            </li>
+        `;
+    } else {
+        html += `
+            <li class="page-item disabled">
+                <span class="page-link">{% trans "Next" %}</span>
+            </li>
+        `;
+    }
+
+    html += `
+                </ul>
+            </div>
+        </nav>
+    `;
+
+    return html;
+}
+
+// Get type badge HTML
+function getTypeBadge(type) {
+    switch(type) {
+        case 'Live':
+            return '<span class="badge bg-success">{% trans "Live" %}</span>';
+        case 'Recorded':
+            return '<span class="badge bg-info">{% trans "Recorded" %}</span>';
+        default:
+            return `<span class="badge bg-secondary">${type}</span>`;
+    }
+}
+
+// Export contribution detail data
+function exportContributionDetailData() {
+    const table = document.getElementById('contributionDetailTable');
+    if (table) {
+        const rows = table.querySelectorAll('tr');
+        const csv = window.convertTableToCSV(rows);
+        const filename = `contributions_detail_${new Date().toISOString().split('T')[0]}.csv`;
+        window.downloadCSV(csv, filename);
+    }
+}
+</script>
+{% endblock %}

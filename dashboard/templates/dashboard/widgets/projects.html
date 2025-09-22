@@ -1,0 +1,2090 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Projects Dashboard" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Filters Section -->
+            <div class="filter-section">
+                <form id="filtersForm" method="GET">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="dateRange" class="form-label">{% trans "Date Range" %}</label>
+                            <select class="form-select" id="dateRange" name="days">
+                                <option value="7">{% trans "Last 7 days" %}</option>
+                                <option value="30">{% trans "Last 30 days" %}</option>
+                                <option value="90">{% trans "Last 90 days" %}</option>
+                                <option value="365">{% trans "Last year" %}</option>
+                                <option value="all">{% trans "All Time" %}</option>
+                                <option value="custom">{% trans "Custom Period" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="customStartDate" class="form-label">{% trans "Start Date" %}</label>
+                            <input type="date" class="form-control" id="customStartDate" name="start_date" style="display: none;">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="customEndDate" class="form-label">{% trans "End Date" %}</label>
+                            <input type="date" class="form-control" id="customEndDate" name="end_date" style="display: none;">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="categoryFilter" class="form-label">{% trans "Project Category" %}</label>
+                            <select class="form-select" id="categoryFilter" name="category">
+                                <option value="">{% trans "All Categories" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label for="targetGroupFilter" class="form-label">{% trans "Target Group" %}</label>
+                            <select class="form-select" id="targetGroupFilter" name="target_group">
+                                <option value="">{% trans "All Target Groups" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="projectLeaderFilter" class="form-label">{% trans "Project Leader" %}</label>
+                            <select class="form-select" id="projectLeaderFilter" name="project_leader">
+                                <option value="">{% trans "All Leaders" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="externalVenueFilter" class="form-label">{% trans "External Venue" %}</label>
+                            <select class="form-select" id="externalVenueFilter" name="external_venue">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="true">{% trans "External Only" %}</option>
+                                <option value="false">{% trans "Internal Only" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="jugendmedienschutzFilter" class="form-label">{% trans "Youth Protection" %}</label>
+                            <select class="form-select" id="jugendmedienschutzFilter" name="jugendmedienschutz">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="true">{% trans "Yes" %}</option>
+                                <option value="false">{% trans "No" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label for="democracyProjectFilter" class="form-label">{% trans "Democracy Project" %}</label>
+                            <select class="form-select" id="democracyProjectFilter" name="democracy_project">
+                                <option value="">{% trans "All" %}</option>
+                                <option value="true">{% trans "Yes" %}</option>
+                                <option value="false">{% trans "No" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mt-4">
+                                <button type="button" class="btn btn-primary" id="applyFiltersBtn">{% trans "Apply Filters" %}</button>
+                                <button type="button" class="btn btn-secondary" onclick="window.resetProjectsFilters()">{% trans "Reset" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-2">
+                    <div class="stat-card" data-type="total" data-title="{% trans 'Total Projects' %}">
+                        <div class="stat-number" id="totalProjects">0</div>
+                        <div class="stat-label">{% trans "TOTAL PROJECTS" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stat-card" data-type="external" data-title="{% trans 'External Venue Projects' %}">
+                        <div class="stat-number" id="externalVenueProjects">0</div>
+                        <div class="stat-label">{% trans "EXTERNAL VENUE" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stat-card" data-type="youth_protection" data-title="{% trans 'Youth Protection Projects' %}">
+                        <div class="stat-number" id="jugendmedienschutzProjects">0</div>
+                        <div class="stat-label">{% trans "YOUTH PROTECTION" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stat-card" data-type="democracy" data-title="{% trans 'Democracy Projects' %}">
+                        <div class="stat-number" id="democracyProjects">0</div>
+                        <div class="stat-label">{% trans "DEMOCRACY PROJECTS" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stat-card stat-card-non-clickable">
+                        <div class="stat-number" id="totalParticipants">0</div>
+                        <div class="stat-label">{% trans "TOTAL PARTICIPANTS" %}</div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stat-card stat-card-non-clickable">
+                        <div class="stat-number" id="avgParticipants">0</div>
+                        <div class="stat-label">{% trans "AVG PARTICIPANTS" %}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Projects by Category" %}</h3>
+                            <div class="d-flex gap-2">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-secondary active" onclick="changeChartType('categoryChart', 'doughnut')" title="{% trans 'Doughnut Chart' %}">
+                                        <i class="bi bi-pie-chart"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="changeChartType('categoryChart', 'bar')" title="{% trans 'Bar Chart' %}">
+                                        <i class="bi bi-bar-chart"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="changeChartType('categoryChart', 'horizontalBar')" title="{% trans 'Horizontal Bar Chart' %}">
+                                        <i class="bi bi-bar-chart-steps"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('categoryChart')">
+                                    <i class="bi bi-download"></i> {% trans "Export" %}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 400px; overflow: auto; position: relative;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Projects by Target Group" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('targetGroupChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="targetGroupChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Top Project Leaders" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('leadersChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="leadersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Participants by Age Groups" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('ageGroupsChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="ageGroupsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 3 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Participants by Gender" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('genderChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Project Characteristics" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('characteristicsChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="characteristicsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Trend -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Projects Trend" %}</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="exportChartData('trendChart')">
+                                <i class="bi bi-download"></i> {% trans "Export" %}
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p class="loading-text">{% trans "Loading data..." %}</p>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+<script>
+// Chart instances
+window.categoryChart = null;
+window.targetGroupChart = null;
+window.leadersChart = null;
+window.ageGroupsChart = null;
+window.genderChart = null;
+window.characteristicsChart = null;
+window.trendChart = null;
+
+// Define applyFilters function early
+window.applyProjectsFilters = function() {
+
+
+    const form = document.getElementById('filtersForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (let [key, value] of formData.entries()) {
+        if (value) {
+            params.append(key, value);
+        }
+    }
+
+
+
+    window.history.pushState({}, '', window.location.pathname + '?' + params.toString());
+
+    loadChartData().then(function() {
+
+
+        // Update statistics cards
+        if (window.chartData && window.chartData.basicStats) {
+
+            updateStatisticsCards(window.chartData.basicStats);
+        }
+
+        // Update charts
+        if (window.initializeCharts) {
+
+            window.initializeCharts();
+        }
+    }).catch(function(error) {
+        console.error('Error updating charts:', error);
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    });
+
+
+};
+
+// Define resetFilters function early
+window.resetProjectsFilters = function() {
+    const form = document.getElementById('filtersForm');
+    form.reset();
+
+    window.history.pushState({}, '', window.location.pathname);
+
+    loadChartData().then(function() {
+        // Update statistics cards
+        if (window.chartData && window.chartData.basicStats) {
+            updateStatisticsCards(window.chartData.basicStats);
+        }
+
+        // Update charts
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    }).catch(function(error) {
+        console.error('Error updating charts:', error);
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    });
+};
+
+// Initialize chart data with empty values
+window.chartData = {
+    projectsByCategory: [],
+    projectsByTargetGroup: [],
+    projectsByLeader: [],
+    participantsStats: {},
+    demographicStats: {},
+    projectCharacteristics: {},
+    projectsTrend: [],
+    basicStats: {}
+};
+
+// Load filter data via AJAX
+async function loadFilterData() {
+    try {
+        const response = await fetch('/admin-dashboard/api/filters-data/').then(r => r.json());
+        const data = response;
+
+        if (data.success && data.data && data.data.context) {
+            console.log('Filter data loaded:', data.data.context);
+
+            // Populate Project Category options
+            const categorySelect = document.getElementById('categoryFilter');
+            if (categorySelect && data.data.context.project_categories) {
+                while (categorySelect.children.length > 1) {
+                    categorySelect.removeChild(categorySelect.lastChild);
+                }
+
+                data.data.context.project_categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+            }
+
+            // Populate Target Group options
+            const targetGroupSelect = document.getElementById('targetGroupFilter');
+            if (targetGroupSelect && data.data.context.target_groups) {
+                while (targetGroupSelect.children.length > 1) {
+                    targetGroupSelect.removeChild(targetGroupSelect.lastChild);
+                }
+
+                data.data.context.target_groups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.id;
+                    option.textContent = group.name;
+                    targetGroupSelect.appendChild(option);
+                });
+            }
+
+            // Populate Project Leader options
+            const projectLeaderSelect = document.getElementById('projectLeaderFilter');
+            if (projectLeaderSelect && data.data.context.project_leaders) {
+                while (projectLeaderSelect.children.length > 1) {
+                    projectLeaderSelect.removeChild(projectLeaderSelect.lastChild);
+                }
+
+                data.data.context.project_leaders.forEach(leader => {
+                    const option = document.createElement('option');
+                    option.value = leader.id;
+                    option.textContent = leader.name;
+                    projectLeaderSelect.appendChild(option);
+                });
+            }
+        } else {
+            console.error('Failed to load filter data:', data);
+        }
+    } catch (error) {
+        console.error('Error loading filter data:', error);
+    }
+}
+
+// Show/hide loading overlay
+function setLoadingState(loading) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.display = loading ? 'flex' : 'none';
+    }
+}
+
+// Load chart data via AJAX
+async function loadChartData() {
+
+    try {
+        setLoadingState(true);
+        const urlParams = new URLSearchParams(window.location.search);
+        const response = await fetch(`/admin-dashboard/api/projects-statistics/?${urlParams.toString()}`).then(r => r.json());
+        const data = response;
+
+        if (data.success && data.data) {
+
+
+            window.chartData = {
+                projectsByCategory: data.data.projects_by_category || [],
+                projectsByTargetGroup: data.data.projects_by_target_group || [],
+                projectsByLeader: data.data.projects_by_leader || [],
+                participantsStats: data.data.participants_stats || {},
+                demographicStats: data.data.demographic_stats || {},
+                projectCharacteristics: data.data.project_characteristics || {},
+                projectsTrend: data.data.projects_trend || [],
+                basicStats: data.data.basic_stats || {}
+            };
+
+
+
+            // Update statistics cards
+            updateStatisticsCards(data.data.basic_stats);
+
+
+        } else {
+            console.error('API returned error or no data:', data);
+            window.chartData = {
+                projectsByCategory: [],
+                projectsByTargetGroup: [],
+                projectsByLeader: [],
+                participantsStats: {},
+                demographicStats: {},
+                projectCharacteristics: {},
+                projectsTrend: [],
+                basicStats: {}
+            };
+        }
+    } catch (error) {
+        console.error('Error loading chart data:', error);
+        window.chartData = {
+            projectsByCategory: [],
+            projectsByTargetGroup: [],
+            projectsByLeader: [],
+            participantsStats: {},
+            demographicStats: {},
+            projectCharacteristics: {},
+            projectsTrend: [],
+            basicStats: {}
+        };
+    } finally {
+        setLoadingState(false);
+    }
+}
+
+// Update statistics cards
+window.updateStatisticsCards = function(basicStats) {
+
+
+    if (!basicStats || typeof basicStats !== 'object') {
+        console.warn('basicStats is undefined or not an object, skipping statistics update');
+        return;
+    }
+
+    const elements = {
+        'totalProjects': basicStats.total_projects || 0,
+        'totalParticipants': basicStats.total_participants || 0,
+        'avgParticipants': basicStats.avg_participants_per_project || 0,
+        'externalVenueProjects': basicStats.external_venue_projects || 0,
+        'jugendmedienschutzProjects': basicStats.jugendmedienschutz_projects || 0,
+        'democracyProjects': basicStats.democracy_projects || 0,
+    };
+
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+}
+
+// Initialize filters from URL
+function initializeFiltersFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const days = urlParams.get('days');
+    const startDate = urlParams.get('start_date');
+    const endDate = urlParams.get('end_date');
+
+    if (days) {
+        const dateRangeSelect = document.getElementById('dateRange');
+        if (dateRangeSelect) {
+            dateRangeSelect.value = days;
+        }
+
+        if (days === 'custom' && startDate && endDate) {
+            const startInput = document.getElementById('customStartDate');
+            const endInput = document.getElementById('customEndDate');
+            if (startInput) startInput.value = startDate;
+            if (endInput) endInput.value = endDate;
+        }
+    }
+
+    // Set other filter values from URL
+    const filters = ['category', 'target_group', 'project_leader', 'external_venue', 'jugendmedienschutz', 'democracy_project'];
+    filters.forEach(filter => {
+        const value = urlParams.get(filter);
+        if (value) {
+            const element = document.getElementById(filter + 'Filter');
+            if (element) {
+                element.value = value;
+            }
+        }
+    });
+}
+
+function toggleCustomDateInputs() {
+    const dateRange = document.getElementById('dateRange').value;
+    const startDateInput = document.getElementById('customStartDate');
+    const endDateInput = document.getElementById('customEndDate');
+
+    if (dateRange === 'custom') {
+        startDateInput.style.display = 'block';
+        endDateInput.style.display = 'block';
+    } else {
+        startDateInput.style.display = 'none';
+        endDateInput.style.display = 'none';
+    }
+}
+
+
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filters from URL
+    initializeFiltersFromURL();
+
+    // Load filter data
+    loadFilterData();
+
+    // Add event listeners for form submission
+    const filtersForm = document.getElementById('filtersForm');
+    if (filtersForm) {
+
+        filtersForm.addEventListener('submit', function(e) {
+
+            e.preventDefault();
+            window.applyProjectsFilters();
+        });
+    } else {
+        console.error('filtersForm not found');
+    }
+
+    // Add click event listener to Apply Filters button
+    const applyButton = document.getElementById('applyFiltersBtn');
+    if (applyButton) {
+
+        applyButton.addEventListener('click', function(e) {
+
+            e.preventDefault();
+
+            window.applyProjectsFilters();
+
+        });
+    } else {
+        console.error('Apply Filters button not found');
+    }
+
+    // Add event listener for date range change
+    const dateRangeSelect = document.getElementById('dateRange');
+    if (dateRangeSelect) {
+        dateRangeSelect.addEventListener('change', function() {
+            toggleCustomDateInputs();
+        });
+    }
+
+    // Initialize custom date inputs visibility
+    toggleCustomDateInputs();
+
+    // Load chart data and initialize charts
+    loadChartData().then(function() {
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    }).catch(function(error) {
+        console.error('Error during initialization:', error);
+        if (window.initializeCharts) {
+            window.initializeCharts();
+        }
+    });
+});
+
+// Make initializeCharts globally available
+window.initializeCharts = function() {
+
+
+    // Check if chartData is available
+    if (!window.chartData) {
+        console.warn('Chart data not available, initializing with empty data');
+        window.chartData = {
+            projectsByCategory: [],
+            projectsByTargetGroup: [],
+            projectsByLeader: [],
+            participantsStats: {},
+            demographicStats: {},
+            projectCharacteristics: {},
+            projectsTrend: [],
+            basicStats: {}
+        };
+    }
+
+
+
+    // Destroy and recreate all charts
+
+
+    // Destroy existing charts
+    if (window.categoryChart) {
+
+        window.categoryChart.destroy();
+        window.categoryChart = null;
+    }
+
+    if (window.targetGroupChart) {
+
+        window.targetGroupChart.destroy();
+        window.targetGroupChart = null;
+    }
+
+    if (window.leadersChart) {
+
+        window.leadersChart.destroy();
+        window.leadersChart = null;
+    }
+
+    if (window.ageGroupsChart) {
+
+        window.ageGroupsChart.destroy();
+        window.ageGroupsChart = null;
+    }
+
+    if (window.genderChart) {
+
+        window.genderChart.destroy();
+        window.genderChart = null;
+    }
+
+    if (window.characteristicsChart) {
+
+        window.characteristicsChart.destroy();
+        window.characteristicsChart = null;
+    }
+
+    if (window.trendChart) {
+
+        window.trendChart.destroy();
+        window.trendChart = null;
+    }
+
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded');
+        return;
+    }
+
+    // Category Chart - Enhanced Doughnut Chart
+    const categoryCtx = document.getElementById('categoryChart');
+    if (categoryCtx) {
+        const categoryData = window.chartData.projectsByCategory || [];
+        const labels = categoryData.map(item => item.project_category__name || '{% trans "Unknown" %}');
+        const data = categoryData.map(item => item.count);
+        const total = data.reduce((sum, value) => sum + value, 0);
+
+        // Generate extended color palette
+        const extendedColors = [
+            'rgba(255, 99, 132, 0.8)',   // Red
+            'rgba(54, 162, 235, 0.8)',   // Blue
+            'rgba(255, 206, 86, 0.8)',   // Yellow
+            'rgba(75, 192, 192, 0.8)',   // Teal
+            'rgba(153, 102, 255, 0.8)',  // Purple
+            'rgba(255, 159, 64, 0.8)',   // Orange
+            'rgba(199, 199, 199, 0.8)',  // Gray
+            'rgba(83, 102, 255, 0.8)',   // Indigo
+            'rgba(255, 99, 255, 0.8)',   // Pink
+            'rgba(99, 255, 132, 0.8)',   // Green
+            'rgba(255, 132, 99, 0.8)',   // Light Red
+            'rgba(132, 99, 255, 0.8)',   // Light Purple
+            'rgba(99, 132, 255, 0.8)',   // Light Blue
+            'rgba(255, 255, 99, 0.8)',   // Light Yellow
+            'rgba(99, 255, 255, 0.8)'    // Light Cyan
+        ];
+
+        const extendedBorderColors = extendedColors.map(color => color.replace('0.8', '1'));
+        const extendedHoverColors = extendedColors.map(color => color.replace('0.8', '0.9'));
+
+        // Adjust container height based on data amount
+        const chartContainer = categoryCtx.closest('.chart-container');
+        if (chartContainer) {
+            const dataCount = labels.length;
+            if (dataCount > 10) {
+                chartContainer.style.height = '600px';
+            } else if (dataCount > 5) {
+                chartContainer.style.height = '450px';
+            } else {
+                chartContainer.style.height = '400px';
+            }
+        }
+
+        window.categoryChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: extendedColors.slice(0, labels.length),
+                    borderColor: extendedBorderColors.slice(0, labels.length),
+                    borderWidth: 2,
+                    hoverBackgroundColor: extendedHoverColors.slice(0, labels.length),
+                    hoverBorderColor: extendedBorderColors.slice(0, labels.length),
+                    hoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                radius: '80%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i];
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: `${label}: ${value} (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#FF6384',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `{% trans "Count" %}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+    }
+
+    // Target Group Chart - Enhanced Bar Chart
+    const targetGroupCtx = document.getElementById('targetGroupChart');
+    if (targetGroupCtx) {
+        const targetGroupData = window.chartData.projectsByTargetGroup || [];
+        const labels = targetGroupData.map(item => item.target_group__name || '{% trans "Unknown" %}');
+        const data = targetGroupData.map(item => item.count);
+
+        window.targetGroupChart = new Chart(targetGroupCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{% trans "Projects" %}',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    hoverBackgroundColor: 'rgba(54, 162, 235, 0.9)',
+                    hoverBorderColor: 'rgba(54, 162, 235, 1)',
+                    hoverBorderWidth: 3,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#36A2EB',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Target Group" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Projects" %}: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Target Group" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Projects" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                }
+            }
+        });
+    }
+
+    // Leaders Chart - Enhanced Bar Chart
+    const leadersCtx = document.getElementById('leadersChart');
+    if (leadersCtx) {
+        const leadersData = window.chartData.projectsByLeader || [];
+        const labels = leadersData.map(item => item.project_leader__name || '{% trans "Unknown" %}');
+        const data = leadersData.map(item => item.count);
+
+        window.leadersChart = new Chart(leadersCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{% trans "Projects" %}',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    hoverBackgroundColor: 'rgba(75, 192, 192, 0.9)',
+                    hoverBorderColor: 'rgba(75, 192, 192, 1)',
+                    hoverBorderWidth: 3,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#4BC0C0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Project Leader" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Projects" %}: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Project Leader" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Projects" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                }
+            }
+        });
+    }
+
+    // Age Groups Chart - Enhanced Bar Chart
+    const ageGroupsCtx = document.getElementById('ageGroupsChart');
+    if (ageGroupsCtx) {
+        const ageStats = window.chartData.participantsStats.age_groups || {};
+        const labels = ['0-6', '7-10', '11-14', '15-18', '19-34', '35-50', '51-65', '65+', '{% trans "Not Given" %}'];
+        const data = [
+            ageStats.tn_0_bis_6 || 0,
+            ageStats.tn_7_bis_10 || 0,
+            ageStats.tn_11_bis_14 || 0,
+            ageStats.tn_15_bis_18 || 0,
+            ageStats.tn_19_bis_34 || 0,
+            ageStats.tn_35_bis_50 || 0,
+            ageStats.tn_51_bis_65 || 0,
+            ageStats.tn_ueber_65 || 0,
+            ageStats.tn_age_not_given || 0
+        ];
+
+        window.ageGroupsChart = new Chart(ageGroupsCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{% trans "Participants" %}',
+                    data: data,
+                    backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    hoverBackgroundColor: 'rgba(153, 102, 255, 0.9)',
+                    hoverBorderColor: 'rgba(153, 102, 255, 1)',
+                    hoverBorderWidth: 3,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#9966FF',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Age Group" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Participants" %}: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Age Group" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Participants" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                }
+            }
+        });
+    }
+
+    // Gender Chart - Enhanced Pie Chart
+    const genderCtx = document.getElementById('genderChart');
+    if (genderCtx) {
+        const genderStats = window.chartData.participantsStats.gender_groups || {};
+        const femaleData = genderStats.tn_female || 0;
+        const maleData = genderStats.tn_male || 0;
+        const diverseData = genderStats.tn_diverse || 0;
+        const notGivenData = genderStats.tn_gender_not_given || 0;
+        const total = femaleData + maleData + diverseData + notGivenData;
+
+        window.genderChart = new Chart(genderCtx, {
+            type: 'pie',
+            data: {
+                labels: ['{% trans "Female" %}', '{% trans "Male" %}', '{% trans "Diverse" %}', '{% trans "Not Given" %}'],
+                datasets: [{
+                    data: [femaleData, maleData, diverseData, notGivenData],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 3,
+                    hoverBackgroundColor: [
+                        'rgba(255, 99, 132, 0.9)',
+                        'rgba(54, 162, 235, 0.9)',
+                        'rgba(255, 206, 86, 0.9)',
+                        'rgba(75, 192, 192, 0.9)'
+                    ],
+                    hoverBorderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    hoverBorderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                radius: '85%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i];
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: `${label}: ${value} (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#FF6384',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `{% trans "Count" %}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+    }
+
+    // Characteristics Chart - Enhanced Doughnut Chart
+    const characteristicsCtx = document.getElementById('characteristicsChart');
+    if (characteristicsCtx) {
+        const characteristics = window.chartData.projectCharacteristics || {};
+        const externalData = characteristics.external_venue_rate || 0;
+        const youthData = characteristics.jugendmedienschutz_rate || 0;
+        const democracyData = characteristics.democracy_rate || 0;
+        const total = externalData + youthData + democracyData;
+
+        window.characteristicsChart = new Chart(characteristicsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['{% trans "External Venue" %}', '{% trans "Youth Media Protection" %}', '{% trans "Democracy Project" %}'],
+                datasets: [{
+                    data: [externalData, youthData, democracyData],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 3,
+                    hoverBackgroundColor: [
+                        'rgba(255, 99, 132, 0.9)',
+                        'rgba(54, 162, 235, 0.9)',
+                        'rgba(255, 206, 86, 0.9)'
+                    ],
+                    hoverBorderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    hoverBorderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                radius: '80%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i];
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: `${label}: ${value}% (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#FF6384',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `{% trans "Rate" %}: ${value}% (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+    }
+
+    // Trend Chart - Enhanced Linear Chart
+    const trendCtx = document.getElementById('trendChart');
+    if (trendCtx) {
+        console.log('Creating enhanced trend chart with data:', window.chartData.projectsTrend);
+
+        const trendData = Array.isArray(window.chartData.projectsTrend) ? window.chartData.projectsTrend : [];
+
+        window.trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: trendData.map(item => {
+                    if (item.month) {
+                        // Format date from YYYY-MM-DDTHH:MM:SSZ to YYYY-MM-DD
+                        const date = new Date(item.month);
+                        return date.toISOString().split('T')[0];
+                    }
+                    return '';
+                }),
+                datasets: [{
+                    label: '{% trans "Projects" %}',
+                    data: trendData.map(item => item.count || 0),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#667eea',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3,
+                    borderWidth: 3,
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return '{% trans "Month" %}: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return '{% trans "Projects" %}: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Month" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Number of Projects" %}',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        return context.dataIndex * 100;
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Export functions
+window.exportChartData = function(chartId) {
+    const chart = getChartInstance(chartId);
+    if (chart) {
+        const data = chart.data;
+        const csv = convertToCSV(data);
+        downloadCSV(csv, `${chartId}_data.csv`);
+    }
+}
+
+window.getChartInstance = function(chartId) {
+    switch(chartId) {
+        case 'categoryChart': return window.categoryChart;
+        case 'targetGroupChart': return window.targetGroupChart;
+        case 'leadersChart': return window.leadersChart;
+        case 'ageGroupsChart': return window.ageGroupsChart;
+        case 'genderChart': return window.genderChart;
+        case 'characteristicsChart': return window.characteristicsChart;
+        case 'trendChart': return window.trendChart;
+        default: return null;
+    }
+}
+
+window.convertToCSV = function(data) {
+    const labels = data.labels;
+    const values = data.datasets[0].data;
+
+    let csv = 'Label,Value\n';
+    for (let i = 0; i < labels.length; i++) {
+        csv += `"${labels[i]}",${values[i]}\n`;
+    }
+
+    return csv;
+}
+
+window.downloadCSV = function(csv, filename) {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+// Interactive navigation functionality for projects
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers to stat cards (only clickable ones)
+    const statCards = document.querySelectorAll('.stat-card[data-type]:not(.stat-card-non-clickable)');
+    statCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            const title = this.getAttribute('data-title');
+            showProjectDetailModal(type, title);
+        });
+
+        // Add hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+            this.style.boxShadow = '0 12px 20px rgba(0,0,0,0.15)';
+            this.style.borderColor = '#667eea';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
+            this.style.borderColor = 'rgba(0,0,0,0.05)';
+        });
+    });
+
+    // Style non-clickable cards
+    const nonClickableCards = document.querySelectorAll('.stat-card-non-clickable');
+    nonClickableCards.forEach(card => {
+        card.style.cursor = 'default';
+        card.style.opacity = '0.8';
+    });
+});
+
+// Show project detail modal
+function showProjectDetailModal(type, title) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('projectDetailModal');
+    if (!modal) {
+        modal = createProjectDetailModal();
+        document.body.appendChild(modal);
+    }
+
+    // Update modal title
+    const modalTitle = modal.querySelector('.modal-title');
+    modalTitle.textContent = title;
+
+    // Show loading state
+    const modalBody = modal.querySelector('.modal-body');
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">{% trans "Loading..." %}</span></div></div>';
+
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    // Store current type and modal reference for pagination
+    modal.currentType = type;
+    modal.currentModalBody = modalBody;
+
+    // Load data
+    loadProjectDetailData(type, modalBody);
+}
+
+// Load project page for pagination
+function loadProjectPage(type, page) {
+    const modal = document.getElementById('projectDetailModal');
+    if (modal && modal.currentModalBody) {
+        // Show loading state
+        modal.currentModalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">{% trans "Loading..." %}</span></div></div>';
+
+        // Load data for the specified page
+        loadProjectDetailData(type, modal.currentModalBody, page);
+    }
+}
+
+// Create project detail modal
+function createProjectDetailModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'projectDetailModal';
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Project Detail View" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                    <button type="button" class="btn btn-primary" onclick="exportProjectDetailData()">{% trans "Export CSV" %}</button>
+                </div>
+            </div>
+        </div>
+    `;
+    return modal;
+}
+
+// Load project detail data
+async function loadProjectDetailData(type, modalBody, page = 1) {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('type', type);
+        urlParams.set('page', page);
+        urlParams.set('per_page', 20);
+
+        const response = await fetch(`/admin-dashboard/api/projects-detail/?${urlParams.toString()}`);
+        const data = await response.json();
+
+        if (data.success) {
+            displayProjectDetailData(data.data, modalBody, type);
+        } else {
+            modalBody.innerHTML = `<div class="alert alert-danger">{% trans "Error" %}: ${data.error}</div>`;
+        }
+    } catch (error) {
+        modalBody.innerHTML = `<div class="alert alert-danger">{% trans "Error loading data" %}: ${error.message}</div>`;
+    }
+}
+
+// Display project detail data
+function displayProjectDetailData(data, modalBody, type) {
+    const {
+        projects,
+        total_count,
+        displayed_count,
+        current_page,
+        total_pages,
+        has_next,
+        has_previous,
+        next_page,
+        previous_page
+    } = data;
+
+    // Get type-specific title
+    const typeTitles = {
+        'total': '{% trans "All Projects" %}',
+        'participants': '{% trans "Projects with Participants" %}',
+        'average': '{% trans "Projects by Average Participants" %}',
+        'external': '{% trans "External Venue Projects" %}',
+        'youth_protection': '{% trans "Youth Protection Projects" %}',
+        'democracy': '{% trans "Democracy Projects" %}'
+    };
+
+    const typeTitle = typeTitles[type] || '{% trans "Project Details" %}';
+
+    let html = `
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>{% trans "Type" %}:</strong> ${typeTitle}
+                </div>
+                <div class="col-md-4">
+                    <strong>{% trans "Total Records" %}:</strong> ${total_count}
+                </div>
+                <div class="col-md-4">
+                    <strong>{% trans "Displayed" %}:</strong> ${displayed_count}
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (projects.length > 0) {
+        html += `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="projectDetailTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "Title" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Category" %}</th>
+                            <th>{% trans "Target Group" %}</th>
+                            <th>{% trans "Project Leader" %}</th>
+                            <th>{% trans "Total Participants" %}</th>
+                            <th>{% trans "External Venue" %}</th>
+                            <th>{% trans "Youth Protection" %}</th>
+                            <th>{% trans "Democracy Project" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        projects.forEach(project => {
+            const externalBadge = project.external_venue ? '<span class="badge bg-info">{% trans "Yes" %}</span>' : '<span class="badge bg-secondary">{% trans "No" %}</span>';
+            const youthBadge = project.jugendmedienschutz ? '<span class="badge bg-warning">{% trans "Yes" %}</span>' : '<span class="badge bg-secondary">{% trans "No" %}</span>';
+            const democracyBadge = project.democracy_project ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-secondary">{% trans "No" %}</span>';
+
+            html += `
+                <tr>
+                    <td>${project.title}</td>
+                    <td>${project.date}</td>
+                    <td>${project.category}</td>
+                    <td>${project.target_group}</td>
+                    <td>${project.project_leader}</td>
+                    <td>${project.total_participants}</td>
+                    <td>${externalBadge}</td>
+                    <td>${youthBadge}</td>
+                    <td>${democracyBadge}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination if there are multiple pages
+        if (total_pages > 1) {
+            html += `
+                <nav aria-label="{% trans "Project pagination" %}" class="mt-3">
+                    <ul class="pagination justify-content-center" id="projectPagination">
+            `;
+
+            // Previous button
+            if (has_previous) {
+                html += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadProjectPage('${type}', ${previous_page})">{% trans "Previous" %}</a>
+                    </li>
+                `;
+            } else {
+                html += `
+                    <li class="page-item disabled">
+                        <span class="page-link">{% trans "Previous" %}</span>
+                    </li>
+                `;
+            }
+
+            // Page numbers
+            const startPage = Math.max(1, current_page - 2);
+            const endPage = Math.min(total_pages, current_page + 2);
+
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === current_page) {
+                    html += `
+                        <li class="page-item active">
+                            <span class="page-link">${i}</span>
+                        </li>
+                    `;
+                } else {
+                    html += `
+                        <li class="page-item">
+                            <a class="page-link" href="#" onclick="loadProjectPage('${type}', ${i})">${i}</a>
+                        </li>
+                    `;
+                }
+            }
+
+            // Next button
+            if (has_next) {
+                html += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadProjectPage('${type}', ${next_page})">{% trans "Next" %}</a>
+                    </li>
+                `;
+            } else {
+                html += `
+                    <li class="page-item disabled">
+                        <span class="page-link">{% trans "Next" %}</span>
+                    </li>
+                `;
+            }
+
+            html += `
+                    </ul>
+                </nav>
+            `;
+        }
+    } else {
+        html += '<div class="alert alert-info">{% trans "No data found for the selected criteria." %}</div>';
+    }
+
+    modalBody.innerHTML = html;
+}
+
+// Convert table to CSV
+window.convertTableToCSV = function(rows) {
+    let csv = '';
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].querySelectorAll('td, th');
+        const row = [];
+        for (let j = 0; j < cells.length; j++) {
+            let cellText = cells[j].textContent.trim();
+            // Remove badge HTML and just get the text
+            cellText = cellText.replace(/^\s*/, '').replace(/\s*$/, '');
+            // Escape quotes
+            cellText = cellText.replace(/"/g, '""');
+            row.push('"' + cellText + '"');
+        }
+        csv += row.join(',') + '\n';
+    }
+    return csv;
+};
+
+// Export project detail data
+function exportProjectDetailData() {
+    const table = document.getElementById('projectDetailTable');
+    if (table) {
+        const rows = table.querySelectorAll('tr');
+        const csv = window.convertTableToCSV(rows);
+        const filename = `projects_detail_${new Date().toISOString().split('T')[0]}.csv`;
+        window.downloadCSV(csv, filename);
+    }
+}
+
+// Function to change chart type
+function changeChartType(chartId, newType) {
+    const chart = window[chartId];
+    if (!chart) return;
+
+    // Update button states
+    const buttonGroup = document.querySelector(`[onclick*="${chartId}"]`)?.closest('.btn-group');
+    if (buttonGroup) {
+        const buttons = buttonGroup.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.onclick && btn.onclick.toString().includes(newType)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // Generate extended color palette
+    const extendedColors = [
+        'rgba(255, 99, 132, 0.8)',   // Red
+        'rgba(54, 162, 235, 0.8)',   // Blue
+        'rgba(255, 206, 86, 0.8)',   // Yellow
+        'rgba(75, 192, 192, 0.8)',   // Teal
+        'rgba(153, 102, 255, 0.8)',  // Purple
+        'rgba(255, 159, 64, 0.8)',   // Orange
+        'rgba(199, 199, 199, 0.8)',  // Gray
+        'rgba(83, 102, 255, 0.8)',   // Indigo
+        'rgba(255, 99, 255, 0.8)',   // Pink
+        'rgba(99, 255, 132, 0.8)',   // Green
+        'rgba(255, 132, 99, 0.8)',   // Light Red
+        'rgba(132, 99, 255, 0.8)',   // Light Purple
+        'rgba(99, 132, 255, 0.8)',   // Light Blue
+        'rgba(255, 255, 99, 0.8)',   // Light Yellow
+        'rgba(99, 255, 255, 0.8)'    // Light Cyan
+    ];
+
+    const extendedBorderColors = extendedColors.map(color => color.replace('0.8', '1'));
+    const extendedHoverColors = extendedColors.map(color => color.replace('0.8', '0.9'));
+
+    // Get current data
+    const currentData = chart.data;
+    const labels = currentData.labels;
+    const data = currentData.datasets[0].data;
+    const total = data.reduce((sum, value) => sum + value, 0);
+
+    // Destroy current chart
+    chart.destroy();
+
+    // Create new chart with different type
+    const ctx = document.getElementById(chartId);
+
+    // Handle horizontal bar chart properly
+    const chartType = newType === 'horizontalBar' ? 'bar' : newType;
+    const isHorizontal = newType === 'horizontalBar';
+
+    // Adjust container height based on data amount
+    const chartContainer = ctx.closest('.chart-container');
+    if (chartContainer) {
+        const dataCount = labels.length;
+        if (dataCount > 10) {
+            chartContainer.style.height = isHorizontal ? '500px' : '600px';
+        } else if (dataCount > 5) {
+            chartContainer.style.height = '450px';
+        } else {
+            chartContainer.style.height = '400px';
+        }
+    }
+
+    const newChart = new Chart(ctx, {
+        type: chartType,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '{% trans "Projects" %}',
+                data: data,
+                backgroundColor: extendedColors.slice(0, labels.length),
+                borderColor: extendedBorderColors.slice(0, labels.length),
+                borderWidth: 2,
+                hoverBackgroundColor: extendedHoverColors.slice(0, labels.length),
+                hoverBorderColor: extendedBorderColors.slice(0, labels.length),
+                hoverBorderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: isHorizontal ? 'y' : 'x',
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
+            plugins: {
+                legend: {
+                    position: isHorizontal ? 'right' : 'bottom',
+                    maxHeight: 200,
+                    labels: {
+                        usePointStyle: true,
+                        padding: 8,
+                        font: {
+                            size: 9,
+                            weight: '500'
+                        },
+                        boxWidth: 10,
+                        boxHeight: 10,
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map((label, i) => {
+                                    const dataset = data.datasets[0];
+                                    const value = dataset.data[i];
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    // Truncate long labels for better display
+                                    const shortLabel = label.length > 25 ? label.substring(0, 22) + '...' : label;
+                                    return {
+                                        text: `${shortLabel}: ${value} (${percentage}%)`,
+                                        fillStyle: dataset.backgroundColor[i],
+                                        strokeStyle: dataset.borderColor[i],
+                                        lineWidth: dataset.borderWidth,
+                                        pointStyle: 'circle'
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#FF6384',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            const value = isHorizontal ? context.parsed.x : (context.parsed.y || context.parsed);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `${context.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            scales: chartType !== 'doughnut' ? {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        maxRotation: 45,
+                        minRotation: 0
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            } : {},
+            cutout: chartType === 'doughnut' ? '60%' : undefined,
+            radius: chartType === 'doughnut' ? '80%' : undefined
+        }
+    });
+
+    // Store reference
+    window[chartId] = newChart;
+}
+</script>
+{% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-25 21:13+0200\n"
+"POT-Creation-Date: 2025-09-21 10:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,68 +17,85 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: ok_tools/static/js/rental_dashboard.js:177
-#: rental/static/rental/js/admin_rental.js:2659
+#: rental/static/rental/js/admin_rental.js:2963
+#: static/js/rental_dashboard.js:177 static/rental/js/admin_rental.js:2659
 msgid "Error loading data"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:181
 #: ok_tools/static/js/rental_dashboard.js:1326
-#: rental/static/rental/js/admin_rental.js:1700
-#: rental/static/rental/js/admin_rental.js:1766
-#: rental/static/rental/js/admin_rental.js:2662
+#: rental/static/rental/js/admin_rental.js:2004
+#: rental/static/rental/js/admin_rental.js:2070
+#: rental/static/rental/js/admin_rental.js:2966
+#: static/js/rental_dashboard.js:181 static/js/rental_dashboard.js:1326
+#: static/rental/js/admin_rental.js:1700 static/rental/js/admin_rental.js:1766
+#: static/rental/js/admin_rental.js:2662
 msgid "Retry"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:187
+#: ok_tools/static/js/rental_dashboard.js:187 static/js/rental_dashboard.js:187
 msgid "Error loading data: "
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:214
 #: ok_tools/static/js/rental_dashboard.js:232
-#: rental/static/rental/js/admin_rental.js:160
-#: rental/static/rental/js/admin_rental.js:204
-#: rental/static/rental/js/admin_rental.js:225
-#: rental/static/rental/js/admin_rental.js:2712
-#: rental/static/rental/js/admin_rental.js:2729
-#: rental/static/rental/js/admin_rental.js:3468
+#: rental/static/rental/js/admin_rental.js:167
+#: rental/static/rental/js/admin_rental.js:211
+#: rental/static/rental/js/admin_rental.js:232
+#: rental/static/rental/js/admin_rental.js:3016
+#: rental/static/rental/js/admin_rental.js:3033
+#: rental/static/rental/js/admin_rental.js:3772
+#: static/js/rental_dashboard.js:214 static/js/rental_dashboard.js:232
+#: static/rental/js/admin_rental.js:160 static/rental/js/admin_rental.js:204
+#: static/rental/js/admin_rental.js:225 static/rental/js/admin_rental.js:2712
+#: static/rental/js/admin_rental.js:2729 static/rental/js/admin_rental.js:3468
 msgid "User"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:220
 #: ok_tools/static/js/rental_dashboard.js:221
-#: rental/static/rental/js/admin_rental.js:2718
-#: rental/static/rental/js/admin_rental.js:2719
+#: rental/static/rental/js/admin_rental.js:3022
+#: rental/static/rental/js/admin_rental.js:3023
+#: static/js/rental_dashboard.js:220 static/js/rental_dashboard.js:221
+#: static/rental/js/admin_rental.js:2718 static/rental/js/admin_rental.js:2719
 msgid "No"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:220
-#: rental/static/rental/js/admin_rental.js:2718
+#: rental/static/rental/js/admin_rental.js:3022
+#: static/js/rental_dashboard.js:220 static/rental/js/admin_rental.js:2718
 msgid "found"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:221
-#: rental/static/rental/js/admin_rental.js:2719
+#: rental/static/rental/js/admin_rental.js:3023
+#: static/js/rental_dashboard.js:221 static/rental/js/admin_rental.js:2719
 msgid "found for"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:266
-#: rental/static/rental/js/admin_rental.js:2809
+#: rental/static/rental/js/admin_rental.js:3113
+#: static/js/rental_dashboard.js:266 static/rental/js/admin_rental.js:2809
 msgid "days overdue"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:272
-#: rental/static/rental/js/admin_rental.js:2819
+#: rental/static/rental/js/admin_rental.js:3123
+#: static/js/rental_dashboard.js:272 static/rental/js/admin_rental.js:2819
 msgid "Purpose"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:276
-#: rental/static/rental/js/admin_rental.js:2829
+#: rental/static/rental/js/admin_rental.js:3133
+#: static/js/rental_dashboard.js:276 static/rental/js/admin_rental.js:2829
 msgid "Planned from"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:280
-#: rental/static/rental/js/admin_rental.js:2833
+#: rental/static/rental/js/admin_rental.js:3137
+#: static/js/rental_dashboard.js:280 static/rental/js/admin_rental.js:2833
 msgid "Planned until"
 msgstr ""
 
@@ -86,115 +103,158 @@ msgstr ""
 #: ok_tools/static/js/rental_dashboard.js:305
 #: ok_tools/static/js/rental_dashboard.js:400
 #: ok_tools/static/js/rental_dashboard.js:1487
-#: rental/static/rental/js/admin_rental.js:905
-#: rental/static/rental/js/admin_rental.js:2840
-#: rental/static/rental/js/admin_rental.js:2855
-#: rental/static/rental/js/admin_rental.js:3523
-#: rental/static/rental/js/admin_rental.js:3568
+#: rental/static/rental/js/admin_rental.js:964
+#: rental/static/rental/js/admin_rental.js:3144
+#: rental/static/rental/js/admin_rental.js:3159
+#: rental/static/rental/js/admin_rental.js:3827
+#: rental/static/rental/js/admin_rental.js:3872
 #: rental/static/rental/js/rental_stats.js:428
 #: rental/static/rental/js/rental_stats.js:543
 #: rental/static/rental/js/rental_stats.js:601
 #: rental/static/rental/js/rental_stats.js:609
+#: static/js/rental_dashboard.js:285 static/js/rental_dashboard.js:305
+#: static/js/rental_dashboard.js:400 static/js/rental_dashboard.js:1487
+#: static/rental/js/admin_rental.js:905 static/rental/js/admin_rental.js:2840
+#: static/rental/js/admin_rental.js:2855 static/rental/js/admin_rental.js:3523
+#: static/rental/js/admin_rental.js:3568 static/rental/js/rental_stats.js:428
+#: static/rental/js/rental_stats.js:543 static/rental/js/rental_stats.js:601
+#: static/rental/js/rental_stats.js:609
 msgid "Returned"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:296
-#: rental/static/rental/js/admin_rental.js:2847
+#: rental/static/rental/js/admin_rental.js:3151
 #: rental/static/rental/js/rental_stats.js:666
+#: static/js/rental_dashboard.js:296 static/rental/js/admin_rental.js:2847
+#: static/rental/js/rental_stats.js:666
 msgid "Equipment"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:296
 #: ok_tools/static/js/rental_dashboard.js:703
 #: ok_tools/static/js/rental_dashboard.js:980
-#: rental/static/rental/js/admin_rental.js:572
-#: rental/static/rental/js/admin_rental.js:1369
-#: rental/static/rental/js/admin_rental.js:2847
+#: rental/static/rental/js/admin_rental.js:631
+#: rental/static/rental/js/admin_rental.js:1204
+#: rental/static/rental/js/admin_rental.js:1673
+#: rental/static/rental/js/admin_rental.js:3151
 #: rental/static/rental/js/rental_stats.js:169
 #: rental/static/rental/js/rental_stats.js:177
 #: rental/static/rental/js/rental_stats.js:509
 #: rental/static/rental/js/rental_stats.js:517
+#: static/js/rental_dashboard.js:296 static/js/rental_dashboard.js:703
+#: static/js/rental_dashboard.js:980 static/rental/js/admin_rental.js:572
+#: static/rental/js/admin_rental.js:1369 static/rental/js/admin_rental.js:2847
+#: static/rental/js/rental_stats.js:169 static/rental/js/rental_stats.js:177
+#: static/rental/js/rental_stats.js:509 static/rental/js/rental_stats.js:517
 msgid "items"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:302
 #: ok_tools/static/js/rental_dashboard.js:1034
-#: rental/static/rental/js/admin_rental.js:1429
-#: rental/static/rental/js/admin_rental.js:2852
+#: rental/static/rental/js/admin_rental.js:1733
+#: rental/static/rental/js/admin_rental.js:3156
+#: static/js/rental_dashboard.js:302 static/js/rental_dashboard.js:1034
+#: static/rental/js/admin_rental.js:1429 static/rental/js/admin_rental.js:2852
 msgid "Item"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:303
-#: rental/static/rental/js/admin_rental.js:2853
-#: rental/static/rental/js/admin_rental.js:3833
-#: rental/static/rental/js/rental_detail.js:535
+#: rental/static/rental/js/admin_rental.js:3157
+#: rental/static/rental/js/admin_rental.js:4148
+#: rental/static/rental/js/rental_detail.js:547
+#: static/js/rental_dashboard.js:303 static/rental/js/admin_rental.js:2853
+#: static/rental/js/admin_rental.js:3833 static/rental/js/rental_detail.js:535
 msgid "Requested"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:304
 #: ok_tools/static/js/rental_dashboard.js:399
 #: ok_tools/static/js/rental_dashboard.js:1486
-#: rental/static/rental/js/admin_rental.js:2854
-#: rental/static/rental/js/admin_rental.js:3522
-#: rental/static/rental/js/admin_rental.js:3567
-#: rental/static/rental/js/admin_rental.js:3839
-#: rental/static/rental/js/rental_detail.js:541
+#: rental/static/rental/js/admin_rental.js:3158
+#: rental/static/rental/js/admin_rental.js:3826
+#: rental/static/rental/js/admin_rental.js:3871
+#: rental/static/rental/js/admin_rental.js:4154
+#: rental/static/rental/js/admin_rental.js:4416
+#: rental/static/rental/js/rental_detail.js:553
+#: rental/static/rental/js/rental_detail.js:810
 #: rental/static/rental/js/rental_stats.js:427
 #: rental/static/rental/js/rental_stats.js:542
+#: static/js/rental_dashboard.js:304 static/js/rental_dashboard.js:399
+#: static/js/rental_dashboard.js:1486 static/rental/js/admin_rental.js:2854
+#: static/rental/js/admin_rental.js:3522 static/rental/js/admin_rental.js:3567
+#: static/rental/js/admin_rental.js:3839 static/rental/js/rental_detail.js:541
+#: static/rental/js/rental_stats.js:427 static/rental/js/rental_stats.js:542
 msgid "Issued"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:306
-#: rental/static/rental/js/admin_rental.js:2856
-#: rental/static/rental/js/admin_rental.js:3118
+#: rental/static/rental/js/admin_rental.js:3160
+#: rental/static/rental/js/admin_rental.js:3422
+#: static/js/rental_dashboard.js:306 static/rental/js/admin_rental.js:2856
+#: static/rental/js/admin_rental.js:3118
 msgid "Outstanding"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:313
-#: rental/static/rental/js/admin_rental.js:703
-#: rental/static/rental/js/admin_rental.js:2866
-#: rental/static/rental/js/admin_rental.js:3111
-#: rental/static/rental/js/admin_rental.js:3819
+#: rental/static/rental/js/admin_rental.js:762
+#: rental/static/rental/js/admin_rental.js:3170
+#: rental/static/rental/js/admin_rental.js:3415
+#: rental/static/rental/js/admin_rental.js:4134
+#: static/js/rental_dashboard.js:313 static/rental/js/admin_rental.js:703
+#: static/rental/js/admin_rental.js:2866 static/rental/js/admin_rental.js:3111
+#: static/rental/js/admin_rental.js:3819
 msgid "Unknown item"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:343
-#: rental/static/rental/js/admin_rental.js:2906
+#: rental/static/rental/js/admin_rental.js:3210
 #: rental/static/rental/js/rental_stats.js:173
 #: rental/static/rental/js/rental_stats.js:513
 #: rental/static/rental/js/rental_stats.js:667
+#: static/js/rental_dashboard.js:343 static/rental/js/admin_rental.js:2906
+#: static/rental/js/rental_stats.js:173 static/rental/js/rental_stats.js:513
+#: static/rental/js/rental_stats.js:667
 msgid "Rooms"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:343
-#: rental/static/rental/js/admin_rental.js:2906
+#: rental/static/rental/js/admin_rental.js:3210
 #: rental/static/rental/js/rental_stats.js:170
 #: rental/static/rental/js/rental_stats.js:181
 #: rental/static/rental/js/rental_stats.js:510
 #: rental/static/rental/js/rental_stats.js:521
+#: static/js/rental_dashboard.js:343 static/rental/js/admin_rental.js:2906
+#: static/rental/js/rental_stats.js:170 static/rental/js/rental_stats.js:181
+#: static/rental/js/rental_stats.js:510 static/rental/js/rental_stats.js:521
 msgid "rooms"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:349
-#: rental/static/rental/js/admin_rental.js:2911
+#: rental/static/rental/js/admin_rental.js:3215
+#: static/js/rental_dashboard.js:349 static/rental/js/admin_rental.js:2911
 msgid "Room"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:350
 #: ok_tools/static/js/rental_dashboard.js:1599
-#: rental/static/rental/js/admin_rental.js:2183
-#: rental/static/rental/js/admin_rental.js:2912
+#: rental/static/rental/js/admin_rental.js:2487
+#: rental/static/rental/js/admin_rental.js:3216
+#: static/js/rental_dashboard.js:350 static/js/rental_dashboard.js:1599
+#: static/rental/js/admin_rental.js:2183 static/rental/js/admin_rental.js:2912
 msgid "Capacity"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:351
-#: rental/static/rental/js/admin_rental.js:2913
+#: rental/static/rental/js/admin_rental.js:3217
+#: static/js/rental_dashboard.js:351 static/rental/js/admin_rental.js:2913
 msgid "Booked people"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:352
-#: rental/static/rental/js/admin_rental.js:2914
-#: rental/static/rental/js/admin_rental.js:3136
+#: rental/static/rental/js/admin_rental.js:3218
+#: rental/static/rental/js/admin_rental.js:3440
+#: static/js/rental_dashboard.js:352 static/rental/js/admin_rental.js:2914
+#: static/rental/js/admin_rental.js:3136
 msgid "Notes"
 msgstr ""
 
@@ -204,93 +264,115 @@ msgstr ""
 #: ok_tools/static/js/rental_dashboard.js:1464
 #: ok_tools/static/js/rental_dashboard.js:1522
 #: ok_tools/static/js/rental_dashboard.js:1600
-#: rental/static/rental/js/admin_rental.js:1859
-#: rental/static/rental/js/admin_rental.js:1939
-#: rental/static/rental/js/admin_rental.js:2045
-#: rental/static/rental/js/admin_rental.js:2068
-#: rental/static/rental/js/admin_rental.js:2104
-#: rental/static/rental/js/admin_rental.js:2184
-#: rental/static/rental/js/admin_rental.js:2933
-#: rental/static/rental/js/admin_rental.js:2934
+#: rental/static/rental/js/admin_rental.js:2163
+#: rental/static/rental/js/admin_rental.js:2243
+#: rental/static/rental/js/admin_rental.js:2349
+#: rental/static/rental/js/admin_rental.js:2372
+#: rental/static/rental/js/admin_rental.js:2408
+#: rental/static/rental/js/admin_rental.js:2488
+#: rental/static/rental/js/admin_rental.js:3237
+#: rental/static/rental/js/admin_rental.js:3238
 #: rental/static/rental/js/rental_stats.js:158
 #: rental/static/rental/js/rental_stats.js:501
+#: static/js/rental_dashboard.js:364 static/js/rental_dashboard.js:365
+#: static/js/rental_dashboard.js:1418 static/js/rental_dashboard.js:1464
+#: static/js/rental_dashboard.js:1522 static/js/rental_dashboard.js:1600
+#: static/rental/js/admin_rental.js:1859 static/rental/js/admin_rental.js:1939
+#: static/rental/js/admin_rental.js:2045 static/rental/js/admin_rental.js:2068
+#: static/rental/js/admin_rental.js:2104 static/rental/js/admin_rental.js:2184
+#: static/rental/js/admin_rental.js:2933 static/rental/js/admin_rental.js:2934
+#: static/rental/js/rental_stats.js:158 static/rental/js/rental_stats.js:501
 msgid "people"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:388
+#: ok_tools/static/js/rental_dashboard.js:388 static/js/rental_dashboard.js:388
 msgid "Current Rentals"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:389
+#: ok_tools/static/js/rental_dashboard.js:389 static/js/rental_dashboard.js:389
 msgid "Returned Rentals"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:390
+#: ok_tools/static/js/rental_dashboard.js:390 static/js/rental_dashboard.js:390
 msgid "Expired Rentals"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:391
-#: rental/static/rental/js/admin_rental.js:3514
+#: rental/static/rental/js/admin_rental.js:3818
+#: static/js/rental_dashboard.js:391 static/rental/js/admin_rental.js:3514
 msgid "Rentals"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:397
 #: ok_tools/static/js/rental_dashboard.js:1484
-#: rental/static/rental/js/admin_rental.js:3520
-#: rental/static/rental/js/admin_rental.js:3565
+#: rental/static/rental/js/admin_rental.js:3824
+#: rental/static/rental/js/admin_rental.js:3869
+#: static/js/rental_dashboard.js:397 static/js/rental_dashboard.js:1484
+#: static/rental/js/admin_rental.js:3520 static/rental/js/admin_rental.js:3565
 msgid "Draft"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:398
 #: ok_tools/static/js/rental_dashboard.js:1485
-#: rental/static/rental/js/admin_rental.js:3521
-#: rental/static/rental/js/admin_rental.js:3566
-#: rental/static/rental/js/admin_rental.js:3875
-#: rental/static/rental/js/rental_detail.js:578
+#: rental/static/rental/js/admin_rental.js:3825
+#: rental/static/rental/js/admin_rental.js:3870
+#: rental/static/rental/js/admin_rental.js:4490
+#: rental/static/rental/js/rental_detail.js:885
 #: rental/static/rental/js/rental_stats.js:426
 #: rental/static/rental/js/rental_stats.js:541
 #: rental/static/rental/js/rental_stats.js:637
 #: rental/static/rental/js/rental_stats.js:660
+#: static/js/rental_dashboard.js:398 static/js/rental_dashboard.js:1485
+#: static/rental/js/admin_rental.js:3521 static/rental/js/admin_rental.js:3566
+#: static/rental/js/admin_rental.js:3875 static/rental/js/rental_detail.js:578
+#: static/rental/js/rental_stats.js:426 static/rental/js/rental_stats.js:541
+#: static/rental/js/rental_stats.js:637 static/rental/js/rental_stats.js:660
 msgid "Reserved"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:401
 #: ok_tools/static/js/rental_dashboard.js:1488
-#: rental/static/rental/js/admin_rental.js:3524
-#: rental/static/rental/js/admin_rental.js:3569
+#: rental/static/rental/js/admin_rental.js:3828
+#: rental/static/rental/js/admin_rental.js:3873
 #: rental/static/rental/js/rental_stats.js:429
 #: rental/static/rental/js/rental_stats.js:544
 #: rental/static/rental/js/rental_stats.js:644
+#: static/js/rental_dashboard.js:401 static/js/rental_dashboard.js:1488
+#: static/rental/js/admin_rental.js:3524 static/rental/js/admin_rental.js:3569
+#: static/rental/js/rental_stats.js:429 static/rental/js/rental_stats.js:544
+#: static/rental/js/rental_stats.js:644
 msgid "Cancelled"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:444
+#: ok_tools/static/js/rental_dashboard.js:444 static/js/rental_dashboard.js:444
 msgid "All Categories"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:456
-#: rental/static/rental/js/admin_rental.js:379
+#: rental/static/rental/js/admin_rental.js:438
+#: static/js/rental_dashboard.js:456 static/rental/js/admin_rental.js:379
 msgid "All Locations"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:556
+#: ok_tools/static/js/rental_dashboard.js:556 static/js/rental_dashboard.js:556
 msgid "Select dates to view availability"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:625
-#: rental/static/rental/js/admin_rental.js:482
+#: rental/static/rental/js/admin_rental.js:541
+#: static/js/rental_dashboard.js:625 static/rental/js/admin_rental.js:482
 msgid "Ungroup"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:629
+#: ok_tools/static/js/rental_dashboard.js:629 static/js/rental_dashboard.js:629
 msgid "Group by location"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:648
+#: ok_tools/static/js/rental_dashboard.js:648 static/js/rental_dashboard.js:648
 msgid "No available inventory for selected period"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:681
+#: ok_tools/static/js/rental_dashboard.js:681 static/js/rental_dashboard.js:681
 msgid "Unknown location"
 msgstr ""
 
@@ -299,327 +381,415 @@ msgstr ""
 #: ok_tools/static/js/rental_dashboard.js:1036
 #: ok_tools/static/js/rental_dashboard.js:1448
 #: ok_tools/static/js/rental_dashboard.js:1510
-#: rental/static/rental/js/admin_rental.js:604
-#: rental/static/rental/js/admin_rental.js:1372
-#: rental/static/rental/js/admin_rental.js:1431
-#: rental/static/rental/js/admin_rental.js:1949
-#: rental/static/rental/js/admin_rental.js:2029
-#: rental/static/rental/js/admin_rental.js:2052
-#: rental/static/rental/js/admin_rental.js:2092
+#: rental/static/rental/js/admin_rental.js:663
+#: rental/static/rental/js/admin_rental.js:1676
+#: rental/static/rental/js/admin_rental.js:1735
+#: rental/static/rental/js/admin_rental.js:2253
+#: rental/static/rental/js/admin_rental.js:2333
+#: rental/static/rental/js/admin_rental.js:2356
+#: rental/static/rental/js/admin_rental.js:2396
+#: rental/static/rental/js/admin_rental.js:4335
+#: rental/static/rental/js/rental_detail.js:729
 #: rental/static/rental/js/rental_stats.js:661
+#: static/js/rental_dashboard.js:735 static/js/rental_dashboard.js:983
+#: static/js/rental_dashboard.js:1036 static/js/rental_dashboard.js:1448
+#: static/js/rental_dashboard.js:1510 static/rental/js/admin_rental.js:604
+#: static/rental/js/admin_rental.js:1372 static/rental/js/admin_rental.js:1431
+#: static/rental/js/admin_rental.js:1949 static/rental/js/admin_rental.js:2029
+#: static/rental/js/admin_rental.js:2052 static/rental/js/admin_rental.js:2092
+#: static/rental/js/rental_stats.js:661
 msgid "Available"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:739
 #: ok_tools/static/js/rental_dashboard.js:799
-#: rental/static/rental/js/admin_rental.js:608
-#: rental/static/rental/js/admin_rental.js:669
-#: rental/static/rental/js/admin_rental.js:706
+#: rental/static/rental/js/admin_rental.js:667
+#: rental/static/rental/js/admin_rental.js:728
+#: rental/static/rental/js/admin_rental.js:765
+#: static/js/rental_dashboard.js:739 static/js/rental_dashboard.js:799
+#: static/rental/js/admin_rental.js:608 static/rental/js/admin_rental.js:669
+#: static/rental/js/admin_rental.js:706
 msgid "No category"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:742
-#: rental/static/rental/js/admin_rental.js:611
+#: rental/static/rental/js/admin_rental.js:670
+#: static/js/rental_dashboard.js:742 static/rental/js/admin_rental.js:611
 msgid "Owner"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:798
 #: ok_tools/static/js/rental_dashboard.js:1525
-#: rental/static/rental/js/admin_rental.js:668
-#: rental/static/rental/js/admin_rental.js:705
-#: rental/static/rental/js/admin_rental.js:2107
-#: rental/static/rental/js/admin_rental.js:2922
+#: rental/static/rental/js/admin_rental.js:727
+#: rental/static/rental/js/admin_rental.js:764
+#: rental/static/rental/js/admin_rental.js:2411
+#: rental/static/rental/js/admin_rental.js:3226
+#: static/js/rental_dashboard.js:798 static/js/rental_dashboard.js:1525
+#: static/rental/js/admin_rental.js:668 static/rental/js/admin_rental.js:705
+#: static/rental/js/admin_rental.js:2107 static/rental/js/admin_rental.js:2922
 msgid "Location not specified"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:813
+#: ok_tools/static/js/rental_dashboard.js:813 static/js/rental_dashboard.js:813
 msgid "Nothing selected"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:823
-#: rental/static/rental/js/admin_rental.js:696
-#: rental/static/rental/js/admin_rental.js:806
+#: rental/static/rental/js/admin_rental.js:755
+#: rental/static/rental/js/admin_rental.js:865
+#: static/js/rental_dashboard.js:823 static/rental/js/admin_rental.js:696
+#: static/rental/js/admin_rental.js:806
 msgid "items selected"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:853
-#: rental/static/rental/js/admin_rental.js:814
+#: rental/static/rental/js/admin_rental.js:873
+#: static/js/rental_dashboard.js:853 static/rental/js/admin_rental.js:814
 msgid "rooms selected"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:864
-#: rental/static/rental/js/admin_rental.js:826
+#: rental/static/rental/js/admin_rental.js:885
+#: static/js/rental_dashboard.js:864 static/rental/js/admin_rental.js:826
 msgid "Auto-return after scheduled time"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:955
-#: rental/static/rental/js/admin_rental.js:1344
+#: rental/static/rental/js/admin_rental.js:1648
+#: static/js/rental_dashboard.js:955 static/rental/js/admin_rental.js:1344
 msgid "Error loading equipment sets"
 msgstr ""
 
-#: ok_tools/static/js/rental_dashboard.js:966
+#: ok_tools/static/js/rental_dashboard.js:966 static/js/rental_dashboard.js:966
 msgid "No available sets"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:979
 #: ok_tools/static/js/rental_dashboard.js:1026
 #: ok_tools/static/js/rental_dashboard.js:1596
-#: rental/static/rental/js/admin_rental.js:1368
-#: rental/static/rental/js/admin_rental.js:1420
-#: rental/static/rental/js/admin_rental.js:2180
+#: rental/static/rental/js/admin_rental.js:1672
+#: rental/static/rental/js/admin_rental.js:1724
+#: rental/static/rental/js/admin_rental.js:2484
 #: rental/static/rental/js/rental_stats.js:777
+#: static/js/rental_dashboard.js:979 static/js/rental_dashboard.js:1026
+#: static/js/rental_dashboard.js:1596 static/rental/js/admin_rental.js:1368
+#: static/rental/js/admin_rental.js:1420 static/rental/js/admin_rental.js:2180
+#: static/rental/js/rental_stats.js:777
 msgid "No description"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1035
+#: static/js/rental_dashboard.js:1035
 msgid "Required"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1037
-#: rental/static/rental/js/admin_rental.js:204
-#: rental/static/rental/js/admin_rental.js:1432
-#: rental/static/rental/js/admin_rental.js:3874
-#: rental/static/rental/js/rental_detail.js:577
+#: rental/static/rental/js/admin_rental.js:211
+#: rental/static/rental/js/admin_rental.js:1736
+#: rental/static/rental/js/admin_rental.js:4489
+#: rental/static/rental/js/rental_detail.js:884
 #: rental/static/rental/js/rental_stats.js:778
+#: static/js/rental_dashboard.js:1037 static/rental/js/admin_rental.js:204
+#: static/rental/js/admin_rental.js:1432 static/rental/js/admin_rental.js:3874
+#: static/rental/js/rental_detail.js:577 static/rental/js/rental_stats.js:778
 msgid "Status"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1038
 #: ok_tools/static/js/rental_dashboard.js:1603
-#: rental/static/rental/js/admin_rental.js:1433
-#: rental/static/rental/js/admin_rental.js:2187
+#: rental/static/rental/js/admin_rental.js:1737
+#: rental/static/rental/js/admin_rental.js:2491
+#: static/js/rental_dashboard.js:1038 static/js/rental_dashboard.js:1603
+#: static/rental/js/admin_rental.js:1433 static/rental/js/admin_rental.js:2187
 msgid "Location"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1055
-#: rental/static/rental/js/admin_rental.js:1450
-#: rental/static/rental/js/admin_rental.js:3185
-#: rental/static/rental/js/rental_detail.js:398
+#: rental/static/rental/js/admin_rental.js:1754
+#: rental/static/rental/js/admin_rental.js:3489
+#: rental/static/rental/js/rental_detail.js:399
+#: static/js/rental_dashboard.js:1055 static/rental/js/admin_rental.js:1450
+#: static/rental/js/admin_rental.js:3185 static/rental/js/rental_detail.js:398
 msgid "Missing"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1072
-#: rental/static/rental/js/admin_rental.js:1468
+#: rental/static/rental/js/admin_rental.js:1772
+#: static/js/rental_dashboard.js:1072 static/rental/js/admin_rental.js:1468
 msgid "items in set"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1081
+#: static/js/rental_dashboard.js:1081
 msgid "Please select a set"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1116
+#: static/js/rental_dashboard.js:1116
 msgid "Set \""
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1157
 #: ok_tools/static/js/rental_dashboard.js:1313
 #: ok_tools/static/js/rental_dashboard.js:2231
-#: rental/static/rental/js/admin_rental.js:1597
-#: rental/static/rental/js/admin_rental.js:1687
-#: rental/static/rental/js/admin_rental.js:1753
-#: rental/static/rental/js/admin_rental.js:3423
+#: rental/static/rental/js/admin_rental.js:1901
+#: rental/static/rental/js/admin_rental.js:1991
+#: rental/static/rental/js/admin_rental.js:2057
+#: rental/static/rental/js/admin_rental.js:3727
 #: rental/static/rental/js/rental_stats.js:1082
+#: static/js/rental_dashboard.js:1157 static/js/rental_dashboard.js:1313
+#: static/js/rental_dashboard.js:2231 static/rental/js/admin_rental.js:1597
+#: static/rental/js/admin_rental.js:1687 static/rental/js/admin_rental.js:1753
+#: static/rental/js/admin_rental.js:3423 static/rental/js/rental_stats.js:1082
 msgid "Unknown error"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1161
-#: rental/static/rental/js/admin_rental.js:1601
+#: rental/static/rental/js/admin_rental.js:1905
+#: static/js/rental_dashboard.js:1161 static/rental/js/admin_rental.js:1601
 msgid "Error loading rooms"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1170
 #: ok_tools/static/js/rental_dashboard.js:1180
-#: rental/static/rental/js/admin_rental.js:1611
-#: rental/static/rental/js/admin_rental.js:1621
+#: rental/static/rental/js/admin_rental.js:1915
+#: rental/static/rental/js/admin_rental.js:1925
+#: static/js/rental_dashboard.js:1170 static/js/rental_dashboard.js:1180
+#: static/rental/js/admin_rental.js:1611 static/rental/js/admin_rental.js:1621
 msgid "All rooms"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1287
-#: rental/static/rental/js/admin_rental.js:1661
+#: rental/static/rental/js/admin_rental.js:1965
 #: rental/static/rental/js/rental_stats.js:341
+#: static/js/rental_dashboard.js:1287 static/rental/js/admin_rental.js:1661
+#: static/rental/js/rental_stats.js:341
 msgid "Loading calendar..."
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1323
-#: rental/static/rental/js/admin_rental.js:1697
+#: rental/static/rental/js/admin_rental.js:2001
+#: static/js/rental_dashboard.js:1323 static/rental/js/admin_rental.js:1697
 msgid "Error loading calendar"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1345
 #: ok_tools/static/js/rental_dashboard.js:1501
+#: static/js/rental_dashboard.js:1345 static/js/rental_dashboard.js:1501
 msgid "No available rooms"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1352
+#: static/js/rental_dashboard.js:1352
 msgid "No schedule"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1381
-#: rental/static/rental/js/admin_rental.js:1821
+#: rental/static/rental/js/admin_rental.js:2125
 #: rental/static/rental/js/rental_stats.js:446
+#: static/js/rental_dashboard.js:1381 static/rental/js/admin_rental.js:1821
+#: static/rental/js/rental_stats.js:446
 msgid "Time"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1451
-#: rental/static/rental/js/admin_rental.js:1928
-#: rental/static/rental/js/admin_rental.js:2032
-#: rental/static/rental/js/admin_rental.js:2055
+#: rental/static/rental/js/admin_rental.js:2232
+#: rental/static/rental/js/admin_rental.js:2336
+#: rental/static/rental/js/admin_rental.js:2359
+#: static/js/rental_dashboard.js:1451 static/rental/js/admin_rental.js:1928
+#: static/rental/js/admin_rental.js:2032 static/rental/js/admin_rental.js:2055
 msgid "Unknown user"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1452
-#: rental/static/rental/js/admin_rental.js:1929
-#: rental/static/rental/js/admin_rental.js:2033
-#: rental/static/rental/js/admin_rental.js:2056
+#: rental/static/rental/js/admin_rental.js:2233
+#: rental/static/rental/js/admin_rental.js:2337
+#: rental/static/rental/js/admin_rental.js:2360
+#: static/js/rental_dashboard.js:1452 static/rental/js/admin_rental.js:1929
+#: static/rental/js/admin_rental.js:2033 static/rental/js/admin_rental.js:2056
 msgid "No project"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1468
-#: rental/static/rental/js/admin_rental.js:2072
+#: rental/static/rental/js/admin_rental.js:2376
+#: static/js/rental_dashboard.js:1468 static/rental/js/admin_rental.js:2072
 msgid "Occupied"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1510
+#: static/js/rental_dashboard.js:1510
 msgid "Unavailable"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1548
-#: rental/static/rental/js/admin_rental.js:2132
+#: rental/static/rental/js/admin_rental.js:2436
+#: static/js/rental_dashboard.js:1548 static/rental/js/admin_rental.js:2132
 msgid "This room is not available for the selected period."
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1604
-#: rental/static/rental/js/admin_rental.js:2188
-#: rental/static/rental/js/admin_rental.js:2797
+#: rental/static/rental/js/admin_rental.js:2492
+#: rental/static/rental/js/admin_rental.js:3101
+#: static/js/rental_dashboard.js:1604 static/rental/js/admin_rental.js:2188
+#: static/rental/js/admin_rental.js:2797
 msgid "Not specified"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1610
-#: rental/static/rental/js/admin_rental.js:2194
+#: rental/static/rental/js/admin_rental.js:2498
+#: static/js/rental_dashboard.js:1610 static/rental/js/admin_rental.js:2194
 msgid "Start date"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1616
-#: rental/static/rental/js/admin_rental.js:2200
+#: rental/static/rental/js/admin_rental.js:2504
+#: static/js/rental_dashboard.js:1616 static/rental/js/admin_rental.js:2200
 msgid "Start time"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1638
-#: rental/static/rental/js/admin_rental.js:2222
+#: rental/static/rental/js/admin_rental.js:2526
+#: static/js/rental_dashboard.js:1638 static/rental/js/admin_rental.js:2222
 msgid "End date"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1638
-#: rental/static/rental/js/admin_rental.js:2222
+#: rental/static/rental/js/admin_rental.js:2526
+#: static/js/rental_dashboard.js:1638 static/rental/js/admin_rental.js:2222
 msgid "optional"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1642
-#: rental/static/rental/js/admin_rental.js:2226
+#: rental/static/rental/js/admin_rental.js:2530
+#: static/js/rental_dashboard.js:1642 static/rental/js/admin_rental.js:2226
 msgid "Select different end date"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1650
-#: rental/static/rental/js/admin_rental.js:2234
+#: rental/static/rental/js/admin_rental.js:2538
+#: static/js/rental_dashboard.js:1650 static/rental/js/admin_rental.js:2234
 msgid "End time"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1672
-#: rental/static/rental/js/admin_rental.js:2256
+#: rental/static/rental/js/admin_rental.js:2560
+#: static/js/rental_dashboard.js:1672 static/rental/js/admin_rental.js:2256
 msgid "Working hours"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1672
-#: rental/static/rental/js/admin_rental.js:2256
+#: rental/static/rental/js/admin_rental.js:2560
+#: static/js/rental_dashboard.js:1672 static/rental/js/admin_rental.js:2256
 msgid "Mo-Fr, 10:00-18:00"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1672
-#: rental/static/rental/js/admin_rental.js:2256
+#: rental/static/rental/js/admin_rental.js:2560
+#: static/js/rental_dashboard.js:1672 static/rental/js/admin_rental.js:2256
 msgid "(except for holidays)"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1899
-#: rental/static/rental/js/admin_rental.js:3640
+#: rental/static/rental/js/admin_rental.js:3944
+#: static/js/rental_dashboard.js:1899 static/rental/js/admin_rental.js:3640
 msgid "Room is available for the selected period."
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1912
-#: rental/static/rental/js/admin_rental.js:3653
-#: rental/static/rental/js/admin_rental.js:3712
+#: rental/static/rental/js/admin_rental.js:3957
+#: rental/static/rental/js/admin_rental.js:4016
+#: static/js/rental_dashboard.js:1912 static/rental/js/admin_rental.js:3653
+#: static/rental/js/admin_rental.js:3712
 msgid "Room is not available for the selected period."
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1914
-#: rental/static/rental/js/admin_rental.js:3655
-#: rental/static/rental/js/admin_rental.js:3710
+#: rental/static/rental/js/admin_rental.js:3959
+#: rental/static/rental/js/admin_rental.js:4014
+#: static/js/rental_dashboard.js:1914 static/rental/js/admin_rental.js:3655
+#: static/rental/js/admin_rental.js:3710
 msgid "Conflicts:"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1928
 #: ok_tools/static/js/rental_dashboard.js:1943
-#: rental/static/rental/js/admin_rental.js:3669
-#: rental/static/rental/js/admin_rental.js:3684
+#: rental/static/rental/js/admin_rental.js:3973
+#: rental/static/rental/js/admin_rental.js:3988
+#: static/js/rental_dashboard.js:1928 static/js/rental_dashboard.js:1943
+#: static/rental/js/admin_rental.js:3669 static/rental/js/admin_rental.js:3684
 msgid "Error checking room availability:"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1958
+#: static/js/rental_dashboard.js:1958
 msgid "Please select a room"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1970
-#: rental/static/rental/js/admin_rental.js:2480
+#: rental/static/rental/js/admin_rental.js:2784
+#: static/js/rental_dashboard.js:1970 static/rental/js/admin_rental.js:2480
 msgid "Please select start date and time"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1978
-#: rental/static/rental/js/admin_rental.js:2488
+#: rental/static/rental/js/admin_rental.js:2792
+#: static/js/rental_dashboard.js:1978 static/rental/js/admin_rental.js:2488
 msgid "Please select end date"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1989
-#: rental/static/rental/js/admin_rental.js:2499
+#: rental/static/rental/js/admin_rental.js:2803
+#: static/js/rental_dashboard.js:1989 static/rental/js/admin_rental.js:2499
 msgid "Please select time between 10:00 and 18:00"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:1998
-#: rental/static/rental/js/admin_rental.js:2508
+#: rental/static/rental/js/admin_rental.js:2812
+#: static/js/rental_dashboard.js:1998 static/rental/js/admin_rental.js:2508
 msgid "End time must be after start time"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2065
-#: rental/static/rental/js/admin_rental.js:2575
+#: rental/static/rental/js/admin_rental.js:2879
+#: static/js/rental_dashboard.js:2065 static/rental/js/admin_rental.js:2575
 msgid "Warning: The selected time is in the past. Please select a future time."
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2093
+#: static/js/rental_dashboard.js:2093
 msgid "Please enter project name"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2102
-#: rental/static/rental/js/admin_rental.js:1080
+#: rental/static/rental/js/admin_rental.js:1370
+#: static/js/rental_dashboard.js:2102 static/rental/js/admin_rental.js:1080
 msgid "Please select start and end dates"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2109
-#: rental/static/rental/js/admin_rental.js:1104
+#: rental/static/rental/js/admin_rental.js:1394
+#: static/js/rental_dashboard.js:2109 static/rental/js/admin_rental.js:1104
 msgid "Please select at least one item or room"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2139
+#: static/js/rental_dashboard.js:2139
 msgid "Rental successfully booked! ID: "
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2142
+#: static/js/rental_dashboard.js:2142
 msgid "Error: "
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2146
-#: rental/static/rental/js/admin_rental.js:1157
+#: rental/static/rental/js/admin_rental.js:1459
+#: static/js/rental_dashboard.js:2146 static/rental/js/admin_rental.js:1157
 msgid "Error creating rental"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2222
+#: static/js/rental_dashboard.js:2222
 msgid ""
 "Room is not available for the selected period.\n"
 "\n"
@@ -627,557 +797,811 @@ msgid ""
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2226
+#: static/js/rental_dashboard.js:2226
 msgid "Unknown conflict"
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2231
+#: static/js/rental_dashboard.js:2231
 msgid "Error checking room availability: "
 msgstr ""
 
 #: ok_tools/static/js/rental_dashboard.js:2235
-#: rental/static/rental/js/admin_rental.js:3716
+#: rental/static/rental/js/admin_rental.js:4020
+#: static/js/rental_dashboard.js:2235 static/rental/js/admin_rental.js:3716
 msgid "Error checking room availability. Please try again."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:144
+#: rental/static/rental/js/admin_rental.js:151
+#: static/rental/js/admin_rental.js:144
 msgid "No users found"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:155
-#: rental/static/rental/js/admin_rental.js:203
-#: rental/static/rental/js/admin_rental.js:220
-#: rental/static/rental/js/admin_rental.js:2923
+#: rental/static/rental/js/admin_rental.js:162
+#: rental/static/rental/js/admin_rental.js:210
+#: rental/static/rental/js/admin_rental.js:227
+#: rental/static/rental/js/admin_rental.js:1205
+#: rental/static/rental/js/admin_rental.js:3227
+#: static/rental/js/admin_rental.js:155 static/rental/js/admin_rental.js:203
+#: static/rental/js/admin_rental.js:220 static/rental/js/admin_rental.js:2923
 msgid "Unknown"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:157
-#: rental/static/rental/js/admin_rental.js:222
+#: rental/static/rental/js/admin_rental.js:164
+#: rental/static/rental/js/admin_rental.js:229
+#: static/rental/js/admin_rental.js:157 static/rental/js/admin_rental.js:222
 msgid "authorized"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:204
+#: rental/static/rental/js/admin_rental.js:211
+#: static/rental/js/admin_rental.js:204
 msgid "Authorized"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:222
+#: rental/static/rental/js/admin_rental.js:229
+#: static/rental/js/admin_rental.js:222
 msgid "Selected user"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:231
+#: rental/static/rental/js/admin_rental.js:238
+#: static/rental/js/admin_rental.js:231
 msgid "Change User"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:254
+#: rental/static/rental/js/admin_rental.js:261
+#: static/rental/js/admin_rental.js:254
 msgid "Select user"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:264
+#: rental/static/rental/js/admin_rental.js:271
+#: static/rental/js/admin_rental.js:264
 msgid "Start typing in the search field above to find users"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:315
+#: rental/static/rental/js/admin_rental.js:374
+#: static/rental/js/admin_rental.js:315
 msgid "Please select start and end dates to see accurate availability"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:355
+#: rental/static/rental/js/admin_rental.js:414
+#: static/rental/js/admin_rental.js:355
 msgid "All owners"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:367
+#: rental/static/rental/js/admin_rental.js:426
+#: static/rental/js/admin_rental.js:367
 msgid "All categories"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:486
+#: rental/static/rental/js/admin_rental.js:545
+#: static/rental/js/admin_rental.js:486
 msgid "Group by Location"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:503
+#: rental/static/rental/js/admin_rental.js:562
+#: static/rental/js/admin_rental.js:503
 msgid "No available inventory for this user"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:550
+#: rental/static/rental/js/admin_rental.js:609
+#: static/rental/js/admin_rental.js:550
 msgid "Unknown Location"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:690
+#: rental/static/rental/js/admin_rental.js:749
+#: static/rental/js/admin_rental.js:690
 msgid "No items selected"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:704
+#: rental/static/rental/js/admin_rental.js:763
+#: static/rental/js/admin_rental.js:704
 msgid "No number"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:840
+#: rental/static/rental/js/admin_rental.js:899
+#: static/rental/js/admin_rental.js:840
 msgid "No items or rooms selected"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:862
+#: rental/static/rental/js/admin_rental.js:921
+#: static/rental/js/admin_rental.js:862
 msgid "Rooms can only be reserved, not issued"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:867
+#: rental/static/rental/js/admin_rental.js:926
+#: static/rental/js/admin_rental.js:867
 msgid "Issue Immediately"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:897
+#: rental/static/rental/js/admin_rental.js:956
 #: rental/static/rental/js/rental_stats.js:744
 #: rental/static/rental/js/rental_stats.js:778
+#: static/rental/js/admin_rental.js:897 static/rental/js/rental_stats.js:744
+#: static/rental/js/rental_stats.js:778
 msgid "Active"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:913
+#: rental/static/rental/js/admin_rental.js:972
 #: rental/static/rental/js/rental_stats.js:622
+#: static/rental/js/admin_rental.js:913 static/rental/js/rental_stats.js:622
 msgid "Overdue"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:934
+#: rental/static/rental/js/admin_rental.js:993
+#: static/rental/js/admin_rental.js:934
 msgid "Error loading statistics:"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:971
-#: rental/static/rental/js/admin_rental.js:975
+#: rental/static/rental/js/admin_rental.js:1030
+#: rental/static/rental/js/admin_rental.js:1034
+#: static/rental/js/admin_rental.js:971 static/rental/js/admin_rental.js:975
 msgid "Return"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:971
+#: rental/static/rental/js/admin_rental.js:1030
+#: static/rental/js/admin_rental.js:971
 msgid "No active rentals"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:982
+#: rental/static/rental/js/admin_rental.js:1041
+#: static/rental/js/admin_rental.js:982
 msgid "Outstanding:"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:986
+#: rental/static/rental/js/admin_rental.js:1045
+#: static/rental/js/admin_rental.js:986
 msgid "Quick"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:991
+#: rental/static/rental/js/admin_rental.js:1050
+#: static/rental/js/admin_rental.js:991
 msgid "Detailed return with condition assessment"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:992
+#: rental/static/rental/js/admin_rental.js:1051
+#: static/rental/js/admin_rental.js:992
 msgid "Detailed"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1024
-#: rental/static/rental/js/admin_rental.js:3254
-#: rental/static/rental/js/rental_detail.js:333
+#: rental/static/rental/js/admin_rental.js:1083
+#: rental/static/rental/js/admin_rental.js:3558
+#: rental/static/rental/js/rental_detail.js:334
+#: static/rental/js/admin_rental.js:1024 static/rental/js/admin_rental.js:3254
+#: static/rental/js/rental_detail.js:333
 msgid "No items to return selected"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1028
+#: rental/static/rental/js/admin_rental.js:1087
+#: static/rental/js/admin_rental.js:1028
 msgid "How many items to return?"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1031
+#: rental/static/rental/js/admin_rental.js:1090
+#: static/rental/js/admin_rental.js:1031
 msgid "Invalid quantity"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1044
+#: rental/static/rental/js/admin_rental.js:1103
+#: static/rental/js/admin_rental.js:1044
 msgid "Return successful"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1048
+#: rental/static/rental/js/admin_rental.js:1107
+#: static/rental/js/admin_rental.js:1048
 msgid "Return error"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1052
-#: rental/static/rental/js/admin_rental.js:3288
-#: rental/static/rental/js/admin_rental.js:3408
-#: rental/static/rental/js/rental_detail.js:237
-#: rental/static/rental/js/rental_detail.js:363
-#: rental/static/rental/js/rental_detail.js:679
+#: rental/static/rental/js/admin_rental.js:1111
+#: rental/static/rental/js/admin_rental.js:3592
+#: rental/static/rental/js/admin_rental.js:3712
+#: rental/static/rental/js/rental_detail.js:238
+#: rental/static/rental/js/rental_detail.js:364
+#: rental/static/rental/js/rental_detail.js:1003
 #: rental/static/rental/js/rental_stats.js:707
 #: rental/static/rental/js/rental_stats.js:972
 #: rental/static/rental/js/rental_stats.js:1002
+#: static/rental/js/admin_rental.js:1052 static/rental/js/admin_rental.js:3288
+#: static/rental/js/admin_rental.js:3408 static/rental/js/rental_detail.js:237
+#: static/rental/js/rental_detail.js:363 static/rental/js/rental_detail.js:679
+#: static/rental/js/rental_stats.js:707 static/rental/js/rental_stats.js:972
+#: static/rental/js/rental_stats.js:1002
 msgid "Network error"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1060
-#: rental/static/rental/js/admin_rental.js:3080
-#: rental/static/rental/js/admin_rental.js:3295
-#: rental/static/rental/js/admin_rental.js:3724
+#: rental/static/rental/js/admin_rental.js:1119
+msgid "Please select at least one equipment item to save as template"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1124
+msgid "Enter template name:"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1130
+msgid "Enter template description (optional):"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1162
+msgid "Error saving template"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1175
+#: rental/static/rental/js/admin_rental.js:1179
+msgid "Error loading templates"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1191
+msgid "Load from Template"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1205
+#: rental/static/rental/js/admin_rental.js:3127
+#: rental/static/rental/js/rental_stats.js:190
+#: rental/static/rental/js/rental_stats.js:780
+#: static/rental/js/admin_rental.js:2823 static/rental/js/rental_stats.js:190
+#: static/rental/js/rental_stats.js:780
+msgid "Created by"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1210
+msgid "Load Template"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1213
+msgid "Delete"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1222
+#: rental/static/rental/js/admin_rental.js:3783
+#: static/rental/js/admin_rental.js:3479
+msgid "Close"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1298
+msgid "Template loaded"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1298
+msgid "items not available"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1299
+msgid "Template loaded successfully"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1306
+msgid "No items from this template are currently available"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1309
+#: rental/static/rental/js/admin_rental.js:1313
+msgid "Error loading template"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1319
+msgid ""
+"Are you sure you want to delete this template? This action cannot be undone."
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1334
+msgid "Template deleted successfully"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1342
+msgid "Error deleting template"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:1350
+#: rental/static/rental/js/admin_rental.js:3384
+#: rental/static/rental/js/admin_rental.js:3599
+#: rental/static/rental/js/admin_rental.js:4028
+#: static/rental/js/admin_rental.js:1060 static/rental/js/admin_rental.js:3080
+#: static/rental/js/admin_rental.js:3295 static/rental/js/admin_rental.js:3724
 msgid "Please select a user first"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1069
+#: rental/static/rental/js/admin_rental.js:1359
+#: static/rental/js/admin_rental.js:1069
 msgid "Please enter a project name"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1097
+#: rental/static/rental/js/admin_rental.js:1387
+#: static/rental/js/admin_rental.js:1097
 msgid "End date must be after start date"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1113
+#: rental/static/rental/js/admin_rental.js:1404
+#: static/rental/js/admin_rental.js:1113
 msgid ""
 "Rooms can only be reserved, not issued. They will automatically return after "
 "the scheduled time."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1146
+#: rental/static/rental/js/admin_rental.js:1448
+#: static/rental/js/admin_rental.js:1146
 msgid " Rooms will automatically return after the scheduled time."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1271
+#: rental/static/rental/js/admin_rental.js:1575
+#: static/rental/js/admin_rental.js:1271
 msgid "Do you really want to reset the entire form?"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1355
+#: rental/static/rental/js/admin_rental.js:1659
+#: static/rental/js/admin_rental.js:1355
 msgid "No sets available"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1430
+#: rental/static/rental/js/admin_rental.js:1734
+#: static/rental/js/admin_rental.js:1430
 msgid "Needed"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1450
+#: rental/static/rental/js/admin_rental.js:1754
+#: static/rental/js/admin_rental.js:1450
 msgid "OK"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1471
+#: rental/static/rental/js/admin_rental.js:1775
+#: static/rental/js/admin_rental.js:1471
 msgid "Detailed information is loading..."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1480
+#: rental/static/rental/js/admin_rental.js:1784
+#: static/rental/js/admin_rental.js:1480
 msgid "Please select a user and a set first"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1518
+#: rental/static/rental/js/admin_rental.js:1822
+#: static/rental/js/admin_rental.js:1518
 msgid "Error: Detailed information about the set is not available"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1729
+#: rental/static/rental/js/admin_rental.js:2033
+#: static/rental/js/admin_rental.js:1729
 msgid "Loading timeline..."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1763
+#: rental/static/rental/js/admin_rental.js:2067
+#: static/rental/js/admin_rental.js:1763
 msgid "Error loading timeline"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1785
-#: rental/static/rental/js/admin_rental.js:1892
-#: rental/static/rental/js/admin_rental.js:2083
+#: rental/static/rental/js/admin_rental.js:2089
+#: rental/static/rental/js/admin_rental.js:2196
+#: rental/static/rental/js/admin_rental.js:2387
+#: static/rental/js/admin_rental.js:1785 static/rental/js/admin_rental.js:1892
+#: static/rental/js/admin_rental.js:2083
 msgid "No rooms available"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:1792
+#: rental/static/rental/js/admin_rental.js:2096
 #: rental/static/rental/js/rental_stats.js:437
+#: static/rental/js/admin_rental.js:1792 static/rental/js/rental_stats.js:437
 msgid "No schedule available"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2092
+#: rental/static/rental/js/admin_rental.js:2396
+#: static/rental/js/admin_rental.js:2092
 msgid "Not available"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2468
+#: rental/static/rental/js/admin_rental.js:2772
+#: static/rental/js/admin_rental.js:2468
 msgid "Please select a user and a room first"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2697
+#: rental/static/rental/js/admin_rental.js:3001
+#: static/rental/js/admin_rental.js:2697
 msgid "Invalid data received"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2698
+#: rental/static/rental/js/admin_rental.js:3002
+#: static/rental/js/admin_rental.js:2698
 msgid "The server returned invalid data. Please try again."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2794
+#: rental/static/rental/js/admin_rental.js:3098
+#: static/rental/js/admin_rental.js:2794
 msgid "Unnamed rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2796
+#: rental/static/rental/js/admin_rental.js:3100
+#: static/rental/js/admin_rental.js:2796
 msgid "No purpose specified"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2809
+#: rental/static/rental/js/admin_rental.js:3113
+#: static/rental/js/admin_rental.js:2809
 msgid "expected"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2811
+#: rental/static/rental/js/admin_rental.js:3115
+#: static/rental/js/admin_rental.js:2811
 msgid "Show details"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2823
-#: rental/static/rental/js/rental_stats.js:190
-#: rental/static/rental/js/rental_stats.js:780
-msgid "Created by"
-msgstr ""
-
-#: rental/static/rental/js/admin_rental.js:2867
-#: rental/static/rental/js/admin_rental.js:3112
-#: rental/static/rental/js/admin_rental.js:3820
-#: rental/static/rental/js/admin_rental.js:3863
+#: rental/static/rental/js/admin_rental.js:3171
+#: rental/static/rental/js/admin_rental.js:3416
+#: rental/static/rental/js/admin_rental.js:4135
+#: rental/static/rental/js/admin_rental.js:4478
+#: static/rental/js/admin_rental.js:2867 static/rental/js/admin_rental.js:3112
+#: static/rental/js/admin_rental.js:3820 static/rental/js/admin_rental.js:3863
 msgid "N/A"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2889
+#: rental/static/rental/js/admin_rental.js:3193
+#: static/rental/js/admin_rental.js:2889
 msgid "Error rendering item"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2921
-#: rental/static/rental/js/admin_rental.js:3862
+#: rental/static/rental/js/admin_rental.js:3225
+#: rental/static/rental/js/admin_rental.js:4477
+#: static/rental/js/admin_rental.js:2921 static/rental/js/admin_rental.js:3862
 msgid "Unknown room"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:2942
+#: rental/static/rental/js/admin_rental.js:3246
+#: static/rental/js/admin_rental.js:2942
 msgid "Error rendering room"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3003
+#: rental/static/rental/js/admin_rental.js:3307
+#: static/rental/js/admin_rental.js:3003
 msgid "Issue Equipment from Reservation"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3013
+#: rental/static/rental/js/admin_rental.js:3317
+#: static/rental/js/admin_rental.js:3013
 msgid "Print rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3023
+#: rental/static/rental/js/admin_rental.js:3327
+#: static/rental/js/admin_rental.js:3023
 msgid "Extend rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3033
+#: rental/static/rental/js/admin_rental.js:3337
+#: static/rental/js/admin_rental.js:3033
 msgid "Cancel rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3042
+#: rental/static/rental/js/admin_rental.js:3346
+#: static/rental/js/admin_rental.js:3042
 msgid ""
 "Are you sure you want to cancel this rental? This action cannot be undone."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3059
+#: rental/static/rental/js/admin_rental.js:3363
+#: static/rental/js/admin_rental.js:3059
 msgid "Rental was successfully cancelled"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3069
-#: rental/static/rental/js/rental_detail.js:675
+#: rental/static/rental/js/admin_rental.js:3373
+#: rental/static/rental/js/rental_detail.js:999
+#: static/rental/js/admin_rental.js:3069 static/rental/js/rental_detail.js:675
 msgid "Error cancelling rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3073
+#: rental/static/rental/js/admin_rental.js:3377
+#: static/rental/js/admin_rental.js:3073
 msgid "Network error cancelling rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3094
-#: rental/static/rental/js/admin_rental.js:3309
-#: rental/static/rental/js/admin_rental.js:3738
+#: rental/static/rental/js/admin_rental.js:3398
+#: rental/static/rental/js/admin_rental.js:3613
+#: rental/static/rental/js/admin_rental.js:4042
+#: static/rental/js/admin_rental.js:3094 static/rental/js/admin_rental.js:3309
+#: static/rental/js/admin_rental.js:3738
 msgid "Rental not found"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3122
+#: rental/static/rental/js/admin_rental.js:3426
+#: rental/static/rental/js/admin_rental.js:4410
+#: rental/static/rental/js/rental_detail.js:804
+#: static/rental/js/admin_rental.js:3122
 msgid "Quantity"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3127
+#: rental/static/rental/js/admin_rental.js:3431
+#: static/rental/js/admin_rental.js:3127
 msgid "Condition"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3129
+#: rental/static/rental/js/admin_rental.js:3433
+#: static/rental/js/admin_rental.js:3129
 msgid "Excellent"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3130
+#: rental/static/rental/js/admin_rental.js:3434
+#: static/rental/js/admin_rental.js:3130
 msgid "Good"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3131
+#: rental/static/rental/js/admin_rental.js:3435
+#: static/rental/js/admin_rental.js:3131
 msgid "Fair"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3132
+#: rental/static/rental/js/admin_rental.js:3436
+#: static/rental/js/admin_rental.js:3132
 msgid "Poor"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3138
+#: rental/static/rental/js/admin_rental.js:3442
+#: static/rental/js/admin_rental.js:3138
 msgid "Notes about the condition..."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3145
+#: rental/static/rental/js/admin_rental.js:3449
+#: static/rental/js/admin_rental.js:3145
 msgid "Add problem"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3171
+#: rental/static/rental/js/admin_rental.js:3475
+#: static/rental/js/admin_rental.js:3171
 msgid "Error loading return modal"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3183
-#: rental/static/rental/js/rental_detail.js:396
+#: rental/static/rental/js/admin_rental.js:3487
+#: rental/static/rental/js/rental_detail.js:397
+#: static/rental/js/admin_rental.js:3183 static/rental/js/rental_detail.js:396
 msgid "Select problem"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3184
-#: rental/static/rental/js/rental_detail.js:397
+#: rental/static/rental/js/admin_rental.js:3488
+#: rental/static/rental/js/rental_detail.js:398
+#: static/rental/js/admin_rental.js:3184 static/rental/js/rental_detail.js:397
 msgid "Damaged"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3186
-#: rental/static/rental/js/rental_detail.js:399
+#: rental/static/rental/js/admin_rental.js:3490
+#: rental/static/rental/js/rental_detail.js:400
+#: static/rental/js/admin_rental.js:3186 static/rental/js/rental_detail.js:399
 msgid "Late return"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3187
-#: rental/static/rental/js/rental_detail.js:400
+#: rental/static/rental/js/admin_rental.js:3491
+#: rental/static/rental/js/rental_detail.js:401
+#: static/rental/js/admin_rental.js:3187 static/rental/js/rental_detail.js:400
 msgid "Other"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3192
-#: rental/static/rental/js/rental_detail.js:405
+#: rental/static/rental/js/admin_rental.js:3496
+#: rental/static/rental/js/rental_detail.js:406
+#: static/rental/js/admin_rental.js:3192 static/rental/js/rental_detail.js:405
 msgid "Minor"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3193
-#: rental/static/rental/js/rental_detail.js:406
+#: rental/static/rental/js/admin_rental.js:3497
+#: rental/static/rental/js/rental_detail.js:407
+#: static/rental/js/admin_rental.js:3193 static/rental/js/rental_detail.js:406
 msgid "Major"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3194
-#: rental/static/rental/js/rental_detail.js:407
+#: rental/static/rental/js/admin_rental.js:3498
+#: rental/static/rental/js/rental_detail.js:408
+#: static/rental/js/admin_rental.js:3194 static/rental/js/rental_detail.js:407
 msgid "Critical"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3205
-#: rental/static/rental/js/rental_detail.js:418
+#: rental/static/rental/js/admin_rental.js:3509
+#: rental/static/rental/js/rental_detail.js:419
+#: static/rental/js/admin_rental.js:3205 static/rental/js/rental_detail.js:418
 msgid "Description of the problem"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3276
-#: rental/static/rental/js/rental_detail.js:355
+#: rental/static/rental/js/admin_rental.js:3580
+#: rental/static/rental/js/rental_detail.js:356
+#: static/rental/js/admin_rental.js:3276 static/rental/js/rental_detail.js:355
 msgid "All items were returned. The rental is completed."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3284
-#: rental/static/rental/js/rental_detail.js:359
+#: rental/static/rental/js/admin_rental.js:3588
+#: rental/static/rental/js/rental_detail.js:360
+#: static/rental/js/admin_rental.js:3284 static/rental/js/rental_detail.js:359
 msgid "Error returning items"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3358
+#: rental/static/rental/js/admin_rental.js:3662
+#: static/rental/js/admin_rental.js:3358
 msgid "Error loading extension modal"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3367
-#: rental/static/rental/js/rental_detail.js:179
+#: rental/static/rental/js/admin_rental.js:3671
+#: rental/static/rental/js/rental_detail.js:180
+#: static/rental/js/admin_rental.js:3367 static/rental/js/rental_detail.js:179
 msgid "Please select a new end date"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3375
-#: rental/static/rental/js/rental_detail.js:207
+#: rental/static/rental/js/admin_rental.js:3679
+#: rental/static/rental/js/rental_detail.js:208
+#: static/rental/js/admin_rental.js:3375 static/rental/js/rental_detail.js:207
 msgid "Invalid date format"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3404
-#: rental/static/rental/js/rental_detail.js:233
+#: rental/static/rental/js/admin_rental.js:3708
+#: rental/static/rental/js/rental_detail.js:234
+#: static/rental/js/admin_rental.js:3404 static/rental/js/rental_detail.js:233
 msgid "Error extending rental"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3423
+#: rental/static/rental/js/admin_rental.js:3727
+#: static/rental/js/admin_rental.js:3423
 msgid "Error loading print information: "
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3451
+#: rental/static/rental/js/admin_rental.js:3755
+#: static/rental/js/admin_rental.js:3451
 msgid "No printable items in this rental found."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3461
+#: rental/static/rental/js/admin_rental.js:3765
+#: static/rental/js/admin_rental.js:3461
 msgid "Print rental forms"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3475
+#: rental/static/rental/js/admin_rental.js:3779
+#: static/rental/js/admin_rental.js:3475
 msgid ""
 "Rental forms will be opened in separate windows. Use the print function of "
 "the browser (Ctrl+P)."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3479
-msgid "Close"
-msgstr ""
-
-#: rental/static/rental/js/admin_rental.js:3505
+#: rental/static/rental/js/admin_rental.js:3809
+#: static/rental/js/admin_rental.js:3505
 msgid "Error loading print options"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3511
+#: rental/static/rental/js/admin_rental.js:3815
+#: static/rental/js/admin_rental.js:3511
 msgid "Active rentals"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3512
+#: rental/static/rental/js/admin_rental.js:3816
 #: rental/static/rental/js/rental_stats.js:1069
+#: static/rental/js/admin_rental.js:3512 static/rental/js/rental_stats.js:1069
 msgid "Returned rentals"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3513
+#: rental/static/rental/js/admin_rental.js:3817
+#: static/rental/js/admin_rental.js:3513
 msgid "Overdue rentals"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3533
+#: rental/static/rental/js/admin_rental.js:3837
 #: rental/static/rental/js/rental_stats.js:553
+#: static/rental/js/admin_rental.js:3533 static/rental/js/rental_stats.js:553
 msgid "Reserved (Auto-return)"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3535
+#: rental/static/rental/js/admin_rental.js:3839
 #: rental/static/rental/js/rental_stats.js:555
+#: static/rental/js/admin_rental.js:3535 static/rental/js/rental_stats.js:555
 msgid "Returned (Auto)"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3747
-#: rental/static/rental/js/rental_detail.js:436
+#: rental/static/rental/js/admin_rental.js:4051
+#: rental/static/rental/js/rental_detail.js:437
+#: static/rental/js/admin_rental.js:3747 static/rental/js/rental_detail.js:436
 msgid ""
 "This rental has no equipment items. Only equipment can be issued from "
 "reservation."
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3772
+#: rental/static/rental/js/admin_rental.js:4076
+#: static/rental/js/admin_rental.js:3772
 msgid "Error loading rental details"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3792
-#: rental/static/rental/js/rental_detail.js:492
+#: rental/static/rental/js/admin_rental.js:4096
+#: rental/static/rental/js/rental_detail.js:493
+#: static/rental/js/admin_rental.js:3792 static/rental/js/rental_detail.js:492
 msgid "Select staff member"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3888
+#: rental/static/rental/js/admin_rental.js:4121
+#: rental/static/rental/js/rental_detail.js:518
+msgid "Add Equipment"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4127
+#: rental/static/rental/js/rental_detail.js:526
+msgid "No equipment items in this rental."
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4159
+#: rental/static/rental/js/admin_rental.js:4421
+#: rental/static/rental/js/rental_detail.js:558
+#: rental/static/rental/js/rental_detail.js:815
+msgid "Remove item"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4232
+#: rental/static/rental/js/rental_detail.js:631
+msgid "Are you sure you want to remove this item from the issue?"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4285
+#: rental/static/rental/js/rental_detail.js:679
+msgid "Error loading available items"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4291
+#: rental/static/rental/js/rental_detail.js:685
+msgid "No items found."
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4389
+#: rental/static/rental/js/rental_detail.js:783
+msgid "This item is already in the issue list."
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4451
+#: rental/static/rental/js/rental_detail.js:845
+msgid "Item added"
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4470
+#: rental/static/rental/js/rental_detail.js:866
+msgid "No rooms in this rental."
+msgstr ""
+
+#: rental/static/rental/js/admin_rental.js:4503
+#: static/rental/js/admin_rental.js:3888
 msgid "No rental selected for processing"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3901
-#: rental/static/rental/js/rental_detail.js:599
+#: rental/static/rental/js/admin_rental.js:4516
+#: rental/static/rental/js/rental_detail.js:906
+#: static/rental/js/admin_rental.js:3901 static/rental/js/rental_detail.js:599
 msgid "Please fill in all required fields"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3937
-#: rental/static/rental/js/rental_detail.js:635
+#: rental/static/rental/js/admin_rental.js:4569
+#: rental/static/rental/js/rental_detail.js:959
+#: static/rental/js/admin_rental.js:3937 static/rental/js/rental_detail.js:635
 msgid "Rental successfully issued from reservation"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3953
-#: rental/static/rental/js/rental_detail.js:644
+#: rental/static/rental/js/admin_rental.js:4585
+#: rental/static/rental/js/rental_detail.js:968
+#: static/rental/js/admin_rental.js:3953 static/rental/js/rental_detail.js:644
 msgid "Error issuing rental from reservation"
 msgstr ""
 
-#: rental/static/rental/js/admin_rental.js:3957
-#: rental/static/rental/js/rental_detail.js:648
+#: rental/static/rental/js/admin_rental.js:4589
+#: rental/static/rental/js/rental_detail.js:972
+#: static/rental/js/admin_rental.js:3957 static/rental/js/rental_detail.js:648
 msgid "Network error processing issue from reservation"
 msgstr ""
 
-#: rental/static/rental/js/rental_detail.js:140
-#: rental/static/rental/js/rental_detail.js:144
-#: rental/static/rental/js/rental_detail.js:277
-#: rental/static/rental/js/rental_detail.js:297
+#: rental/static/rental/js/rental_detail.js:141
+#: rental/static/rental/js/rental_detail.js:145
+#: rental/static/rental/js/rental_detail.js:278
+#: rental/static/rental/js/rental_detail.js:298
+#: static/rental/js/rental_detail.js:140 static/rental/js/rental_detail.js:144
+#: static/rental/js/rental_detail.js:277 static/rental/js/rental_detail.js:297
 msgid "Save return"
 msgstr ""
 
-#: rental/static/rental/js/rental_detail.js:260
+#: rental/static/rental/js/rental_detail.js:261
+#: static/rental/js/rental_detail.js:260
 msgid "Exit return mode"
 msgstr ""
 
-#: rental/static/rental/js/rental_detail.js:305
+#: rental/static/rental/js/rental_detail.js:306
+#: static/rental/js/rental_detail.js:305
 msgid "No items selected for return"
 msgstr ""
 
-#: rental/static/rental/js/rental_detail.js:653
+#: rental/static/rental/js/rental_detail.js:977
+#: static/rental/js/rental_detail.js:653
 msgid "Are you sure you want to cancel this rental?"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:113
 #: rental/static/rental/js/rental_stats.js:264
+#: static/rental/js/rental_stats.js:113 static/rental/js/rental_stats.js:264
 msgid "Loading data..."
 msgstr ""
 
@@ -1187,10 +1611,14 @@ msgstr ""
 #: rental/static/rental/js/rental_stats.js:284
 #: rental/static/rental/js/rental_stats.js:405
 #: rental/static/rental/js/rental_stats.js:729
+#: static/rental/js/rental_stats.js:135 static/rental/js/rental_stats.js:136
+#: static/rental/js/rental_stats.js:283 static/rental/js/rental_stats.js:284
+#: static/rental/js/rental_stats.js:405 static/rental/js/rental_stats.js:729
 msgid "Error loading"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:144
+#: static/rental/js/rental_stats.js:144
 msgid "No rentals found"
 msgstr ""
 
@@ -1198,6 +1626,8 @@ msgstr ""
 #: rental/static/rental/js/rental_stats.js:160
 #: rental/static/rental/js/rental_stats.js:497
 #: rental/static/rental/js/rental_stats.js:503
+#: static/rental/js/rental_stats.js:154 static/rental/js/rental_stats.js:160
+#: static/rental/js/rental_stats.js:497 static/rental/js/rental_stats.js:503
 msgid "and"
 msgstr ""
 
@@ -1205,196 +1635,607 @@ msgstr ""
 #: rental/static/rental/js/rental_stats.js:160
 #: rental/static/rental/js/rental_stats.js:497
 #: rental/static/rental/js/rental_stats.js:503
+#: static/rental/js/rental_stats.js:154 static/rental/js/rental_stats.js:160
+#: static/rental/js/rental_stats.js:497 static/rental/js/rental_stats.js:503
 msgid "more"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:172
 #: rental/static/rental/js/rental_stats.js:512
 #: rental/static/rental/js/rental_stats.js:782
+#: static/rental/js/rental_stats.js:172 static/rental/js/rental_stats.js:512
+#: static/rental/js/rental_stats.js:782
 msgid "Items"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:191
+#: static/rental/js/rental_stats.js:191
 msgid "Type"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:205
+#: static/rental/js/rental_stats.js:205
 msgid "until"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:221
+#: static/rental/js/rental_stats.js:221
 msgid "rentals total"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:236
+#: static/rental/js/rental_stats.js:236
 msgid "Previous"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:247
+#: static/rental/js/rental_stats.js:247
 msgid "Next"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:279
+#: static/rental/js/rental_stats.js:279
 msgid "items found"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:292
 #: rental/static/rental/js/rental_stats.js:849
+#: static/rental/js/rental_stats.js:292 static/rental/js/rental_stats.js:849
 msgid "No items found"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:603
 #: rental/static/rental/js/rental_stats.js:623
+#: static/rental/js/rental_stats.js:603 static/rental/js/rental_stats.js:623
 msgid "days"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:603
 #: rental/static/rental/js/rental_stats.js:623
+#: static/rental/js/rental_stats.js:603 static/rental/js/rental_stats.js:623
 msgid "day"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:603
+#: static/rental/js/rental_stats.js:603
 msgid "overdue"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:611
+#: static/rental/js/rental_stats.js:611
 msgid "On time"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:629
+#: static/rental/js/rental_stats.js:629
 msgid "Pending"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:630
 #: rental/static/rental/js/rental_stats.js:638
+#: static/rental/js/rental_stats.js:630 static/rental/js/rental_stats.js:638
 msgid "Until"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:659
+#: static/rental/js/rental_stats.js:659
 msgid "Rented"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:668
+#: static/rental/js/rental_stats.js:668
 msgid "Mixed"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:677
+#: static/rental/js/rental_stats.js:677
 msgid "Wrong confirmation code"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:703
+#: static/rental/js/rental_stats.js:703
 msgid "Error executing action"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:716
+#: static/rental/js/rental_stats.js:716
 msgid "Loading sets..."
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:737
+#: static/rental/js/rental_stats.js:737
 msgid "No equipment sets found"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:745
 #: rental/static/rental/js/rental_stats.js:778
+#: static/rental/js/rental_stats.js:745 static/rental/js/rental_stats.js:778
 msgid "Inactive"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:779
+#: static/rental/js/rental_stats.js:779
 msgid "Created"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:803
+#: static/rental/js/rental_stats.js:803
 msgid "Create Equipment Set"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:814
+#: static/rental/js/rental_stats.js:814
 msgid "Enter a search term..."
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:825
+#: static/rental/js/rental_stats.js:825
 msgid "Enter at least 2 characters..."
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:841
+#: static/rental/js/rental_stats.js:841
 msgid "Search error"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:872
+#: static/rental/js/rental_stats.js:872
 msgid "This item is already in the set"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:894
+#: static/rental/js/rental_stats.js:894
 msgid "No items added"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:936
+#: static/rental/js/rental_stats.js:936
 msgid "Name is required"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:941
+#: static/rental/js/rental_stats.js:941
 msgid "At least one item must be added"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:967
+#: static/rental/js/rental_stats.js:967
 msgid "Error saving"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:977
+#: static/rental/js/rental_stats.js:977
 msgid "Are you sure you want to delete the set"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:995
+#: static/rental/js/rental_stats.js:995
 msgid "Select a set to see details"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:997
+#: static/rental/js/rental_stats.js:997
 msgid "Error deleting"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1009
+#: static/rental/js/rental_stats.js:1009
 msgid ""
 "Are you sure you want to automatically expire all expired room reservations "
 "and rentals?"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1039
+#: static/rental/js/rental_stats.js:1039
 msgid "Processing..."
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1065
+#: static/rental/js/rental_stats.js:1065
 msgid "Successfully expired"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1067
+#: static/rental/js/rental_stats.js:1067
 msgid "Total"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1068
+#: static/rental/js/rental_stats.js:1068
 msgid "Auto-returned reservations"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1092
+#: static/rental/js/rental_stats.js:1092
 msgid "Error"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1101
+#: static/rental/js/rental_stats.js:1101
 msgid "Expire rooms"
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1115
+#: static/rental/js/rental_stats.js:1115
 msgid ""
 "All inventory quantities (reserved/rented) will be set to 0. This action "
 "cannot be undone."
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1118
+#: static/rental/js/rental_stats.js:1118
 msgid ""
 "All active rentals will be cancelled and inventory quantities reset. This "
 "action cannot be undone."
 msgstr ""
 
 #: rental/static/rental/js/rental_stats.js:1121
+#: static/rental/js/rental_stats.js:1121
 msgid ""
 "ALL rental data will be deleted and inventory reset. This action CANNOT be "
 "undone!"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:45
+#, javascript-format
+msgid "Available %s"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:49
+#, javascript-format
+msgid ""
+"Choose %s by selecting them and then select the \"Choose\" arrow button."
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:61
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:66 static/admin/js/SelectFilter2.js:126
+msgid "Filter"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:73
+#, javascript-format
+msgid "Choose all %s"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:85
+#, javascript-format
+msgid "Choose selected %s"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:93
+#, javascript-format
+msgid "Remove selected %s"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:105
+#, javascript-format
+msgid "Chosen %s"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:109
+#, javascript-format
+msgid ""
+"Remove %s by selecting them and then select the \"Remove\" arrow button."
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:121
+#, javascript-format
+msgid "Type into this box to filter down the list of selected %s."
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:142
+msgid "(click to clear)"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:146
+#, javascript-format
+msgid "Remove all %s"
+msgstr ""
+
+#: static/admin/js/SelectFilter2.js:240
+#, javascript-format
+msgid "%s selected option not visible"
+msgid_plural "%s selected options not visible"
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/admin/js/actions.js:67
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/admin/js/actions.js:161
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static/admin/js/actions.js:174
+msgid ""
+"You have selected an action, but you haven’t saved your changes to "
+"individual fields yet. Please click OK to save. You’ll need to re-run the "
+"action."
+msgstr ""
+
+#: static/admin/js/actions.js:175
+msgid ""
+"You have selected an action, and you haven’t made any changes on individual "
+"fields. You’re probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:13
+#: static/admin/js/admin/DateTimeShortcuts.js:110
+msgid "Now"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:14
+msgid "Midnight"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:15
+msgid "6 a.m."
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:16
+msgid "Noon"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:17
+msgid "6 p.m."
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:78
+#, javascript-format
+msgid "Note: You are %s hour ahead of server time."
+msgid_plural "Note: You are %s hours ahead of server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:86
+#, javascript-format
+msgid "Note: You are %s hour behind server time."
+msgid_plural "Note: You are %s hours behind server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:128
+msgid "Choose a Time"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:158
+msgid "Choose a time"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:175
+#: static/admin/js/admin/DateTimeShortcuts.js:333
+msgid "Cancel"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:238
+#: static/admin/js/admin/DateTimeShortcuts.js:318
+msgid "Today"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:255
+msgid "Choose a Date"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:312
+msgid "Yesterday"
+msgstr ""
+
+#: static/admin/js/admin/DateTimeShortcuts.js:324
+msgid "Tomorrow"
+msgstr ""
+
+#: static/admin/js/calendar.js:11
+msgid "January"
+msgstr ""
+
+#: static/admin/js/calendar.js:12
+msgid "February"
+msgstr ""
+
+#: static/admin/js/calendar.js:13
+msgid "March"
+msgstr ""
+
+#: static/admin/js/calendar.js:14
+msgid "April"
+msgstr ""
+
+#: static/admin/js/calendar.js:15
+msgid "May"
+msgstr ""
+
+#: static/admin/js/calendar.js:16
+msgid "June"
+msgstr ""
+
+#: static/admin/js/calendar.js:17
+msgid "July"
+msgstr ""
+
+#: static/admin/js/calendar.js:18
+msgid "August"
+msgstr ""
+
+#: static/admin/js/calendar.js:19
+msgid "September"
+msgstr ""
+
+#: static/admin/js/calendar.js:20
+msgid "October"
+msgstr ""
+
+#: static/admin/js/calendar.js:21
+msgid "November"
+msgstr ""
+
+#: static/admin/js/calendar.js:22
+msgid "December"
+msgstr ""
+
+#: static/admin/js/calendar.js:25
+msgctxt "abbrev. month January"
+msgid "Jan"
+msgstr ""
+
+#: static/admin/js/calendar.js:26
+msgctxt "abbrev. month February"
+msgid "Feb"
+msgstr ""
+
+#: static/admin/js/calendar.js:27
+msgctxt "abbrev. month March"
+msgid "Mar"
+msgstr ""
+
+#: static/admin/js/calendar.js:28
+msgctxt "abbrev. month April"
+msgid "Apr"
+msgstr ""
+
+#: static/admin/js/calendar.js:29
+msgctxt "abbrev. month May"
+msgid "May"
+msgstr ""
+
+#: static/admin/js/calendar.js:30
+msgctxt "abbrev. month June"
+msgid "Jun"
+msgstr ""
+
+#: static/admin/js/calendar.js:31
+msgctxt "abbrev. month July"
+msgid "Jul"
+msgstr ""
+
+#: static/admin/js/calendar.js:32
+msgctxt "abbrev. month August"
+msgid "Aug"
+msgstr ""
+
+#: static/admin/js/calendar.js:33
+msgctxt "abbrev. month September"
+msgid "Sep"
+msgstr ""
+
+#: static/admin/js/calendar.js:34
+msgctxt "abbrev. month October"
+msgid "Oct"
+msgstr ""
+
+#: static/admin/js/calendar.js:35
+msgctxt "abbrev. month November"
+msgid "Nov"
+msgstr ""
+
+#: static/admin/js/calendar.js:36
+msgctxt "abbrev. month December"
+msgid "Dec"
+msgstr ""
+
+#: static/admin/js/calendar.js:39
+msgid "Sunday"
+msgstr ""
+
+#: static/admin/js/calendar.js:40
+msgid "Monday"
+msgstr ""
+
+#: static/admin/js/calendar.js:41
+msgid "Tuesday"
+msgstr ""
+
+#: static/admin/js/calendar.js:42
+msgid "Wednesday"
+msgstr ""
+
+#: static/admin/js/calendar.js:43
+msgid "Thursday"
+msgstr ""
+
+#: static/admin/js/calendar.js:44
+msgid "Friday"
+msgstr ""
+
+#: static/admin/js/calendar.js:45
+msgid "Saturday"
+msgstr ""
+
+#: static/admin/js/calendar.js:48
+msgctxt "abbrev. day Sunday"
+msgid "Sun"
+msgstr ""
+
+#: static/admin/js/calendar.js:49
+msgctxt "abbrev. day Monday"
+msgid "Mon"
+msgstr ""
+
+#: static/admin/js/calendar.js:50
+msgctxt "abbrev. day Tuesday"
+msgid "Tue"
+msgstr ""
+
+#: static/admin/js/calendar.js:51
+msgctxt "abbrev. day Wednesday"
+msgid "Wed"
+msgstr ""
+
+#: static/admin/js/calendar.js:52
+msgctxt "abbrev. day Thursday"
+msgid "Thur"
+msgstr ""
+
+#: static/admin/js/calendar.js:53
+msgctxt "abbrev. day Friday"
+msgid "Fri"
+msgstr ""
+
+#: static/admin/js/calendar.js:54
+msgctxt "abbrev. day Saturday"
+msgid "Sat"
+msgstr ""
+
+#: static/admin/js/calendar.js:57
+msgctxt "one letter Sunday"
+msgid "S"
+msgstr ""
+
+#: static/admin/js/calendar.js:58
+msgctxt "one letter Monday"
+msgid "M"
+msgstr ""
+
+#: static/admin/js/calendar.js:59
+msgctxt "one letter Tuesday"
+msgid "T"
+msgstr ""
+
+#: static/admin/js/calendar.js:60
+msgctxt "one letter Wednesday"
+msgid "W"
+msgstr ""
+
+#: static/admin/js/calendar.js:61
+msgctxt "one letter Thursday"
+msgid "T"
+msgstr ""
+
+#: static/admin/js/calendar.js:62
+msgctxt "one letter Friday"
+msgid "F"
+msgstr ""
+
+#: static/admin/js/calendar.js:63
+msgctxt "one letter Saturday"
+msgid "S"
 msgstr ""

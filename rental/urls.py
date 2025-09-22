@@ -17,6 +17,7 @@ from .views import api_create_equipment_set
 from .views import api_create_rental
 from .views import api_create_rental_user
 from .views import api_delete_equipment_set
+from .views import api_delete_template
 from .views import api_expire_room_rentals
 from .views import api_extend_rental
 from .views import api_get_all_equipment_sets
@@ -34,15 +35,18 @@ from .views import api_get_room_schedule_user
 from .views import api_get_rooms
 from .views import api_get_rooms_user
 from .views import api_get_staff_users
+from .views import api_get_templates
 from .views import api_get_user_inventory
 from .views import api_get_user_inventory_simple
 from .views import api_get_user_rental_details
 from .views import api_get_user_rental_details_by_id
 from .views import api_get_user_stats
 from .views import api_issue_from_reservation
+from .views import api_load_template
 from .views import api_reset_rental_system
 from .views import api_return_items
 from .views import api_return_rental_items
+from .views import api_save_template
 from .views import api_search_inventory_items
 from .views import api_search_users
 from .views import api_user_active_items
@@ -92,6 +96,10 @@ urlpatterns = [
     path('api/issue-from-reservation/', api_issue_from_reservation, name='api_issue_from_reservation'),
     path('api/get-staff-users/', api_get_staff_users, name='api_get_staff_users'),
     path('api/return-rental-items/', api_return_rental_items, name='api_return_rental_items'),
+    path('api/save-template/', api_save_template, name='api_save_template'),
+    path('api/get-templates/', api_get_templates, name='api_get_templates'),
+    path('api/load-template/<int:template_id>/', api_load_template, name='api_load_template'),
+    path('api/delete-template/<int:template_id>/', api_delete_template, name='api_delete_template'),
 
     # Stats API endpoints
     path('api/reset-rental-system/', api_reset_rental_system, name='api_reset_rental_system'),

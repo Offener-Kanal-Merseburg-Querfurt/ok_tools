@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Bind calendar and timeline events
       this.bindCalendarEvents();
 
+      // Set minimum dates to prevent past date selection
+      this.setMinimumDates();
+
       // Load filter options for owners, categories and locations
       this.loadFilterOptions();
 
@@ -65,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (startDateField) {
         startDateField.disabled = false;
         startDateField.addEventListener('change', this.debounce(() => {
+          this.syncEndDateCalendar();
           this.loadInventoryIfPeriodSelected();
         }, 300));
       }
@@ -84,8 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const showSetsBtn = document.getElementById('showSetsBtn');
       if (showSetsBtn) showSetsBtn.addEventListener('click', this.showEquipmentSets.bind(this));
 
+      const loadTemplateBtn = document.getElementById('loadTemplateBtn');
+      if (loadTemplateBtn) loadTemplateBtn.addEventListener('click', () => this.showTemplatesModal());
+
       const saveDraftBtn = document.getElementById('saveDraftBtn');
-      if (saveDraftBtn) saveDraftBtn.addEventListener('click', () => this.createRental('draft'));
+      if (saveDraftBtn) saveDraftBtn.addEventListener('click', () => this.saveAsTemplate());
 
       const addSetToRentalBtn = document.getElementById('addSetToRentalBtn');
       if (addSetToRentalBtn) addSetToRentalBtn.addEventListener('click', this.addSetToRental.bind(this));
@@ -299,6 +306,58 @@ document.addEventListener('DOMContentLoaded', function() {
       const startDate = document.querySelector('[name="start_date"]')?.value;
       const endDate = document.querySelector('[name="end_date"]')?.value;
       return Boolean(startDate && endDate);
+    }
+
+    // Sync end date calendar to show the same month as start date
+    syncEndDateCalendar() {
+      const startDateField = document.querySelector('input[name="start_date"]');
+      const endDateField = document.querySelector('input[name="end_date"]');
+
+      if (!startDateField || !endDateField) return;
+
+      const startDateValue = startDateField.value;
+      if (!startDateValue) return;
+
+      // Get current date and time
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+      // Set minimum date for end date to be the maximum of start date or current date
+      const minDate = startDateValue > currentDateTime ? startDateValue : currentDateTime;
+      endDateField.min = minDate;
+
+      // For datetime-local inputs, we need to trigger the calendar to show the same month
+      // This is done by temporarily focusing and blurring the field
+      if (endDateField.type === 'datetime-local') {
+        endDateField.focus();
+        endDateField.blur();
+      }
+    }
+
+    // Set minimum date to prevent selecting past dates
+    setMinimumDates() {
+      const startDateField = document.querySelector('input[name="start_date"]');
+      const endDateField = document.querySelector('input[name="end_date"]');
+
+      if (!startDateField || !endDateField) return;
+
+      // Get current date and time in the format required by datetime-local input
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+      // Set minimum date to current date/time for both fields
+      startDateField.min = currentDateTime;
+      endDateField.min = currentDateTime;
     }
 
     // Show hint instead of inventory list
@@ -1053,6 +1112,237 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
+    async saveAsTemplate() {
+      try {
+        // Validate that items are selected
+        if (!this.selectedItems || this.selectedItems.length === 0) {
+          alert(gettext('Please select at least one equipment item to save as template'));
+          return;
+        }
+
+        // Get template name
+        const templateName = prompt(gettext('Enter template name:'));
+        if (!templateName || templateName.trim() === '') {
+          return;
+        }
+
+        // Get template description
+        const templateDescription = prompt(gettext('Enter template description (optional):')) || '';
+
+        // Prepare template data
+        const templateData = {
+          name: templateName.trim(),
+          description: templateDescription.trim(),
+          items: this.selectedItems.map(item => ({
+            inventory_item_id: item.inventory_id,
+            quantity: item.quantity || 1
+          }))
+        };
+
+        // Send request
+        const response = await fetch(URLS.saveTemplate, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': CSRF_TOKEN
+          },
+          body: JSON.stringify(templateData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert(gettext(`Template "${templateName}" saved successfully!`));
+          // Don't reset form - user might want to continue working
+        } else {
+          alert(gettext(`Error: ${result.error}`));
+        }
+      } catch (error) {
+        console.error('Error saving template:', error);
+        alert(gettext('Error saving template'));
+      }
+    }
+
+    async showTemplatesModal() {
+      try {
+        // Fetch available templates
+        const response = await fetch(URLS.getTemplates);
+        const data = await response.json();
+
+        if (data.success) {
+          this.renderTemplatesModal(data.templates);
+        } else {
+          alert(gettext('Error loading templates'));
+        }
+      } catch (error) {
+        console.error('Error loading templates:', error);
+        alert(gettext('Error loading templates'));
+      }
+    }
+
+    renderTemplatesModal(templates) {
+      // Create modal HTML
+      const modalHtml = `
+        <div class="modal fade" id="templatesModal" tabindex="-1" aria-labelledby="templatesModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="templatesModalLabel">
+                  <i class="fas fa-folder-open me-2"></i>${gettext('Load from Template')}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  ${templates.map(template => `
+                    <div class="col-md-6 mb-3">
+                      <div class="card template-card" data-template-id="${template.id}">
+                        <div class="card-body">
+                          <h6 class="card-title">${template.name}</h6>
+                          <p class="card-text text-muted">${template.description || ''}</p>
+                          <small class="text-muted">
+                            ${template.items_count} ${gettext('items')} •
+                            ${gettext('Created by')}: ${template.created_by_name || gettext('Unknown')}
+                          </small>
+                        </div>
+                        <div class="card-footer">
+                          <button class="btn btn-primary btn-sm load-template-btn me-2" data-template-id="${template.id}">
+                            <i class="fas fa-download me-1"></i>${gettext('Load Template')}
+                          </button>
+                          <button class="btn btn-danger btn-sm delete-template-btn" data-template-id="${template.id}">
+                            <i class="fas fa-trash me-1"></i>${gettext('Delete')}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${gettext('Close')}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Remove existing modal if any
+      const existingModal = document.getElementById('templatesModal');
+      if (existingModal) {
+        existingModal.remove();
+      }
+
+      // Add modal to body
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('templatesModal'));
+      modal.show();
+
+      // Add event listeners for load buttons
+      document.querySelectorAll('.load-template-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const templateId = e.target.dataset.templateId;
+          this.loadTemplate(templateId);
+        });
+      });
+
+      // Add event listeners for delete buttons
+      document.querySelectorAll('.delete-template-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const templateId = e.target.dataset.templateId;
+          this.deleteTemplate(templateId);
+        });
+      });
+    }
+
+    async loadTemplate(templateId) {
+      try {
+        const response = await fetch(`${URLS.loadTemplate}${templateId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          // Check availability and add available items
+          const availableItems = [];
+          const unavailableItems = [];
+
+          for (const item of data.template.items) {
+            // For now, assume all items are available
+            // TODO: Check actual availability based on dates
+            availableItems.push({
+              inventory_id: item.inventory_item.id,
+              description: item.inventory_item.description,
+              inventory_number: item.inventory_item.inventory_number,
+              quantity: item.quantity,
+              category: item.inventory_item.category?.name || '',
+              location: item.inventory_item.location?.name || ''
+            });
+          }
+
+          // Add available items to selection
+          if (availableItems.length > 0) {
+            // Clear current selection
+            this.selectedItems = [];
+
+            // Add template items
+            availableItems.forEach(item => {
+              this.selectedItems.push(item);
+            });
+
+            // Update UI
+            this.updateSelectedItemsUI();
+            this.updateActionButtons();
+
+            // Show success message
+            const message = unavailableItems.length > 0
+              ? `${gettext('Template loaded')}. ${unavailableItems.length} ${gettext('items not available')}`
+              : gettext('Template loaded successfully');
+            alert(message);
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('templatesModal'));
+            modal.hide();
+          } else {
+            alert(gettext('No items from this template are currently available'));
+          }
+        } else {
+          alert(gettext('Error loading template'));
+        }
+      } catch (error) {
+        console.error('Error loading template:', error);
+        alert(gettext('Error loading template'));
+      }
+    }
+
+    async deleteTemplate(templateId) {
+      try {
+        if (!confirm(gettext('Are you sure you want to delete this template? This action cannot be undone.'))) {
+          return;
+        }
+
+        const response = await fetch(`${URLS.deleteTemplate}${templateId}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRFToken': CSRF_TOKEN,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert(gettext('Template deleted successfully'));
+          // Refresh the templates modal
+          this.showTemplatesModal();
+        } else {
+          alert(gettext(`Error: ${result.error}`));
+        }
+      } catch (error) {
+        console.error('Error deleting template:', error);
+        alert(gettext('Error deleting template'));
+      }
+    }
+
     async createRental(action='reserved') {
       try {
         // Validate user selection
@@ -1106,13 +1396,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // For rooms, always use 'reserved' status since they auto-return
+        // Exception: drafts remain as drafts even with rooms
         let finalAction = action;
-        if (this.selectedRooms && this.selectedRooms.length > 0) {
+        if (this.selectedRooms && this.selectedRooms.length > 0 && action !== 'draft') {
           finalAction = 'reserved';
           if (action === 'issued') {
             alert(gettext('Rooms can only be reserved, not issued. They will automatically return after the scheduled time.'));
           }
         }
+
+        // Get notes
+        const notes = document.getElementById('rentalNotes')?.value.trim() || '';
 
         // Prepare rental data
         const rentalData = {
@@ -1124,7 +1418,8 @@ document.addEventListener('DOMContentLoaded', function() {
           action: finalAction,
           items: this.selectedItems || [],
           rooms: this.selectedRooms || [],
-          rental_type: this.getRentalType()
+          rental_type: this.getRentalType(),
+          notes: notes
         };
 
 
@@ -1141,8 +1436,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const result = await response.json();
 
         if (result.success) {
-          const actionText = finalAction === 'issued' ? 'issued' : 'reserved';
-          const roomNote = this.selectedRooms && this.selectedRooms.length > 0 ?
+          let actionText;
+          if (finalAction === 'issued') {
+            actionText = 'issued';
+          } else if (finalAction === 'draft') {
+            actionText = 'saved as draft';
+          } else {
+            actionText = 'reserved';
+          }
+          const roomNote = this.selectedRooms && this.selectedRooms.length > 0 && finalAction !== 'draft' ?
             gettext(' Rooms will automatically return after the scheduled time.') : '';
           alert(gettext(`Rental successfully ${actionText}! ID: ${result.rental_id}${roomNote}`));
           this.resetForm();
@@ -1188,6 +1490,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // Clear form fields
       document.querySelector('[name="project_name"]').value = '';
       document.querySelector('[name="purpose"]').value = '';
+      const rentalNotes = document.getElementById('rentalNotes');
+      if (rentalNotes) rentalNotes.value = '';
 
       // Reset date fields (require manual selection again)
       this.clearDateFields();
@@ -2995,8 +3299,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       let buttons = '';
 
-      // Issue from Reservation button for reserved rentals with equipment
-      if (rental.status === 'reserved' && rental.items && rental.items.length > 0) {
+      // Issue from Reservation button for draft/reserved rentals with equipment
+      if ((rental.status === 'draft' || rental.status === 'reserved') && rental.items && rental.items.length > 0) {
         buttons += `
           <button class="btn btn-sm btn-outline-warning issue-from-reservation-btn me-1"
                   data-rental-id="${rental.id}"
@@ -3808,12 +4112,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('issueItemsList');
         if (!container) return;
 
+        let html = '';
+
+        // Add button to add new items
+        html += `
+            <div class="mb-3">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="addItemToIssueBtn">
+                    <i class="fas fa-plus me-1"></i>${gettext('Add Equipment')}
+                </button>
+            </div>
+        `;
+
         if (!rental.items || rental.items.length === 0) {
-            container.innerHTML = '<p class="text-muted">No equipment items in this rental.</p>';
+            html += `<p class="text-muted">${gettext('No equipment items in this rental.')}</p>`;
+            container.innerHTML = html;
             return;
         }
 
-        let html = '';
         rental.items.forEach(item => {
             const itemInfo = item.inventory_item || item;
             const description = itemInfo.description || itemInfo.inventory_number || gettext('Unknown item');
@@ -3822,22 +4137,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const quantityIssued = item.quantity_issued || 0;
 
             html += `
-                <div class="card mb-2">
+                <div class="card mb-2" data-rental-item-id="${item.id}">
                     <div class="card-body p-2">
                         <div class="row align-items-center">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <strong>${description}</strong><br>
                                 <small class="text-muted">[${inventoryNumber}]</small>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label form-label-sm">${gettext('Requested')}:</label>
                                 <input type="number" class="form-control form-control-sm issue-quantity"
                                        data-item-id="${item.id}" data-requested="${quantityRequested}"
                                        value="${quantityIssued || quantityRequested}" min="0" max="${quantityRequested}">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label form-label-sm">${gettext('Issued')}:</label>
                                 <span class="badge ${quantityIssued > 0 ? 'bg-success' : 'bg-warning'}">${quantityIssued || 0}</span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn"
+                                        data-item-id="${item.id}" title="${gettext('Remove item')}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -3845,6 +4166,300 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         container.innerHTML = html;
+
+        // Add event listeners
+        this.attachIssueItemEventListeners();
+    }
+
+    attachIssueItemEventListeners() {
+        // Remove existing event listeners first to prevent duplicates
+        const addItemBtn = document.getElementById('addItemToIssueBtn');
+        if (addItemBtn) {
+            // Clone the button to remove all event listeners
+            const newBtn = addItemBtn.cloneNode(true);
+            addItemBtn.parentNode.replaceChild(newBtn, addItemBtn);
+
+            // Add fresh event listener
+            newBtn.addEventListener('click', () => {
+                this.showAddItemModal();
+            });
+        }
+
+        // Remove existing event listeners for remove buttons and add fresh ones
+        document.querySelectorAll('.remove-item-btn').forEach(btn => {
+            // Clone the button to remove all event listeners
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+
+            // Add fresh event listener
+            newBtn.addEventListener('click', (e) => {
+                const itemId = e.currentTarget.dataset.itemId;
+                this.removeItemFromIssue(itemId);
+            });
+        });
+    }
+
+    showAddItemModal() {
+        // Show the add item modal
+        const modal = new bootstrap.Modal(document.getElementById('addItemModal'));
+        modal.show();
+
+        // Load available items
+        this.loadAvailableItems();
+
+        // Add event listeners for search
+        const searchInput = document.getElementById('addItemSearch');
+        const searchBtn = document.getElementById('searchItemsBtn');
+
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.loadAvailableItems();
+                }, 300);
+            });
+        }
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                this.loadAvailableItems();
+            });
+        }
+    }
+
+    removeItemFromIssue(itemId) {
+        if (confirm(gettext('Are you sure you want to remove this item from the issue?'))) {
+            // Try to find the item by both selectors (existing rental items and new inventory items)
+            let itemCard = document.querySelector(`[data-rental-item-id="${itemId}"]`);
+            if (!itemCard) {
+                itemCard = document.querySelector(`[data-inventory-item-id="${itemId}"]`);
+            }
+
+            if (itemCard) {
+                itemCard.remove();
+
+                // Update the currentIssueRental data only for existing rental items
+                if (this.currentIssueRental && this.currentIssueRental.items) {
+                    this.currentIssueRental.items = this.currentIssueRental.items.filter(item => item.id != itemId);
+                }
+            } else {
+                console.error('Could not find item card for item ID:', itemId);
+            }
+        }
+    }
+
+    async loadAvailableItems() {
+        try {
+            const searchInput = document.getElementById('addItemSearch');
+            const itemsContainer = document.getElementById('addItemItemsList');
+
+            if (!searchInput || !itemsContainer) return;
+
+            const query = searchInput.value || '';
+
+            // Get dates from the issue modal
+            const startDate = document.getElementById('issueStartDate').value;
+            const endDate = document.getElementById('issueEndDate').value;
+
+            // Build URL with parameters
+            let url = `${URLS.searchInventory}?q=${encodeURIComponent(query)}`;
+            if (startDate && endDate) {
+                url += `&start_date=${startDate}&end_date=${endDate}`;
+            }
+
+            // Use the existing search API
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.items) {
+                this.renderAvailableItems(data.items, itemsContainer);
+            }
+
+        } catch (error) {
+            console.error('Error loading available items:', error);
+            alert(gettext('Error loading available items'));
+        }
+    }
+
+    renderAvailableItems(items, container) {
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p class="text-muted">${gettext('No items found.')}</p>`;
+            return;
+        }
+
+        // Group items by category
+        const groupedItems = {};
+        items.forEach(item => {
+            const category = item.category || 'Other';
+            if (!groupedItems[category]) {
+                groupedItems[category] = [];
+            }
+            groupedItems[category].push(item);
+        });
+
+        let html = '';
+        Object.keys(groupedItems).sort().forEach((category, index) => {
+            const categoryId = `category-${index}`;
+            html += `
+                <div class="mb-3">
+                    <h6 class="text-primary border-bottom pb-1 d-flex justify-content-between align-items-center"
+                        style="cursor: pointer;"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#${categoryId}"
+                        aria-expanded="true">
+                        <span>${category}</span>
+                        <i class="fas fa-chevron-down collapse-icon"></i>
+                    </h6>
+                    <div class="collapse show" id="${categoryId}">
+                        <div class="row">
+            `;
+
+            groupedItems[category].forEach(item => {
+                const availableQty = item.available_quantity || 0;
+                html += `
+                    <div class="col-md-6 mb-2">
+                        <div class="card">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${item.description}</strong><br>
+                                        <small class="text-muted">[${item.inventory_number}]</small><br>
+                                        <small class="text-info">${item.location}</small><br>
+                                        <small class="text-success">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            ${gettext('Available')}: ${availableQty}
+                                        </small>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-success btn-sm add-item-btn"
+                                            data-item-id="${item.id}" data-item-name="${item.description}"
+                                            ${availableQty <= 0 ? 'disabled' : ''}>
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Add event listeners for add buttons
+        container.querySelectorAll('.add-item-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const itemId = e.currentTarget.dataset.itemId;
+                const itemName = e.currentTarget.dataset.itemName;
+                this.addItemToIssue(itemId, itemName);
+            });
+        });
+
+        // Add event listeners for collapse toggle icons
+        container.querySelectorAll('[data-bs-toggle="collapse"]').forEach(trigger => {
+            const target = document.querySelector(trigger.getAttribute('data-bs-target'));
+            const icon = trigger.querySelector('.collapse-icon');
+
+            if (target && icon) {
+                target.addEventListener('show.bs.collapse', () => {
+                    icon.style.transform = 'rotate(180deg)';
+                });
+
+                target.addEventListener('hide.bs.collapse', () => {
+                    icon.style.transform = 'rotate(0deg)';
+                });
+            }
+        });
+    }
+
+    addItemToIssue(itemId, itemName) {
+        // Check if item is already in the issue
+        const existingItem = document.querySelector(`[data-inventory-item-id="${itemId}"]`);
+        if (existingItem) {
+            alert(gettext('This item is already in the issue list.'));
+            return;
+        }
+
+        // Add item to the issue items list
+        const itemsList = document.getElementById('issueItemsList');
+        if (!itemsList) return;
+
+        // Find the add button and insert before it
+        const addButton = itemsList.querySelector('#addItemToIssueBtn');
+        if (!addButton) return;
+
+        const newItemHtml = `
+            <div class="card mb-2" data-inventory-item-id="${itemId}">
+                <div class="card-body p-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <strong>${itemName}</strong><br>
+                            <small class="text-muted">[${itemId}]</small>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label form-label-sm">${gettext('Quantity')}:</label>
+                            <input type="number" class="form-control form-control-sm issue-quantity"
+                                   data-item-id="${itemId}" data-requested="1"
+                                   value="1" min="1" max="1">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label form-label-sm">${gettext('Issued')}:</label>
+                            <span class="badge bg-warning">0</span>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn"
+                                    data-item-id="${itemId}" title="${gettext('Remove item')}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Insert the new item before the add button
+        addButton.insertAdjacentHTML('beforebegin', newItemHtml);
+
+        // Re-attach event listeners
+        this.attachIssueItemEventListeners();
+
+        // Disable the add button for this item
+        const itemAddButton = document.querySelector(`[data-item-id="${itemId}"].add-item-btn`);
+        if (itemAddButton) {
+            itemAddButton.disabled = true;
+            itemAddButton.innerHTML = '<i class="fas fa-check"></i>';
+            itemAddButton.className = 'btn btn-success btn-sm';
+        }
+
+        // Show success message using the parameter
+        // Create temporary success notification
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>${gettext('Item added')}:</strong> ${itemName}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Auto-remove notification after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
     }
 
     renderIssueRooms(rental) {
@@ -3852,7 +4467,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!container) return;
 
         if (!rental.room_rentals || rental.room_rentals.length === 0) {
-            container.innerHTML = '<p class="text-muted">No rooms in this rental.</p>';
+            container.innerHTML = `<p class="text-muted">${gettext('No rooms in this rental.')}</p>`;
             return;
         }
 
@@ -3902,13 +4517,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Collect item quantities
+            // Collect item quantities and new items
             const itemQuantities = {};
+            const newItems = [];
             const quantityInputs = document.querySelectorAll('.issue-quantity');
+
             quantityInputs.forEach(input => {
                 const itemId = input.dataset.itemId;
                 const quantity = parseInt(input.value) || 0;
-                itemQuantities[itemId] = quantity;
+
+                // Check if this is a new item (not in original rental)
+                const itemCard = input.closest('.card');
+                const isNewItem = itemCard && itemCard.hasAttribute('data-inventory-item-id');
+
+                if (isNewItem && quantity > 0) {
+                    // This is a new item to be added
+                    newItems.push({
+                        inventory_id: itemId,
+                        quantity: quantity
+                    });
+                } else if (!isNewItem) {
+                    // This is an existing rental item
+                    itemQuantities[itemId] = quantity;
+                }
             });
 
             // Prepare data for API
@@ -3918,7 +4549,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 end_date: `${endDate}T${endTime}`,
                 created_by: createdBy,
                 notes: notes,
-                item_quantities: itemQuantities
+                item_quantities: itemQuantities,
+                new_items: newItems
             };
 
             // Send request to API

@@ -191,6 +191,14 @@
                 padding: 1rem;
             }
         }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+        [data-bs-toggle="collapse"]:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -251,7 +259,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-tools me-2"></i>{% trans "Actions" %}</h5>
                             <div class="btn-group" role="group">
-                                {% if rental.status == 'reserved' and rental.items.all %}
+                                {% if rental.status == 'draft' or rental.status == 'reserved' and rental.items.all %}
                                 <button class="btn btn-outline-warning" id="issueFromReservationBtn">
                                     <i class="fas fa-box-open me-1"></i>{% trans "Issue Equipment from Reservation" %}
                                 </button>
@@ -691,6 +699,46 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Add Item Modal -->
+            <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addItemModalLabel">
+                                <i class="fas fa-plus me-2"></i>{% trans "Add Equipment to Issue" %}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="addItemSearch" class="form-label">{% trans "Search by inventory number or description" %}</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="addItemSearch" placeholder="{% trans 'Search...' %}">
+                                    <button class="btn btn-outline-secondary" type="button" id="searchItemsBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="addItemItemsList" style="max-height: 500px; overflow-y: auto;">
+                                <div class="text-center p-3">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    <small class="ms-2">{% trans 'Loading available items...' %}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="text-start me-auto">
+                                <small class="text-info">
+                                    <i class="fas fa-info-circle me-1"></i>{% trans "Click '+' to add items. Modal stays open for multiple selections." %}
+                                </small>
+                            </div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
 
         {% endif %}
@@ -714,6 +762,7 @@
          data-cancel-url="{% url 'rental:api_cancel_rental' %}"
          data-issue-from-reservation-url="{% url 'rental:api_issue_from_reservation' %}"
          data-get-staff-users-url="{% url 'rental:api_get_staff_users' %}"
+         data-search-inventory-url="{% url 'rental:api_search_inventory' %}"
          style="display: none;">
     </div>
 

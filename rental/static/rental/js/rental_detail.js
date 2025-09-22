@@ -23,7 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     returnItems: dataElement.dataset.returnUrl || '',
                     cancelRental: dataElement.dataset.cancelUrl || '',
                     issueFromReservation: dataElement.dataset.issueFromReservationUrl || '',
-                    getStaffUsers: dataElement.dataset.getStaffUsersUrl || ''
+                    getStaffUsers: dataElement.dataset.getStaffUsersUrl || '',
+                    searchInventory: dataElement.dataset.searchInventoryUrl || ''
                 };
             } else {
                 this.rentalId = 0;
@@ -508,14 +509,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('issueItemsList');
             if (!container) return;
 
+            let html = '';
+
+            // Add button to add new items
+            html += `
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="addItemToIssueBtn">
+                        <i class="fas fa-plus me-1"></i>${gettext('Add Equipment')}
+                    </button>
+                </div>
+            `;
+
             // Get items from the page
             const itemCards = document.querySelectorAll('#itemsList .item-card');
             if (itemCards.length === 0) {
-                container.innerHTML = '<p class="text-muted">No equipment items in this rental.</p>';
+                html += `<p class="text-muted">${gettext('No equipment items in this rental.')}</p>`;
+                container.innerHTML = html;
                 return;
             }
 
-            let html = '';
             itemCards.forEach(itemCard => {
                 const itemId = itemCard.dataset.itemId;
                 const description = itemCard.querySelector('h6').textContent;
@@ -524,22 +536,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 const quantityIssued = parseInt(itemCard.querySelector('.col-4:nth-child(2) strong').textContent);
 
                 html += `
-                    <div class="card mb-2">
+                    <div class="card mb-2" data-rental-item-id="${itemId}">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <strong>${description}</strong><br>
                                     <small class="text-muted">[${inventoryNumber}]</small>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="form-label form-label-sm">${gettext('Requested')}:</label>
                                     <input type="number" class="form-control form-control-sm issue-quantity"
                                            data-item-id="${itemId}" data-requested="${quantityRequested}"
                                            value="${quantityIssued || quantityRequested}" min="0" max="${quantityRequested}">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="form-label form-label-sm">${gettext('Issued')}:</label>
                                     <span class="badge ${quantityIssued > 0 ? 'bg-success' : 'bg-warning'}">${quantityIssued || 0}</span>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn"
+                                            data-item-id="${itemId}" title="${gettext('Remove item')}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -547,6 +565,295 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             container.innerHTML = html;
+
+            // Add event listeners
+            this.attachIssueItemEventListeners();
+        }
+
+        attachIssueItemEventListeners() {
+            // Remove existing event listeners first to prevent duplicates
+            const addItemBtn = document.getElementById('addItemToIssueBtn');
+            if (addItemBtn) {
+                // Clone the button to remove all event listeners
+                const newBtn = addItemBtn.cloneNode(true);
+                addItemBtn.parentNode.replaceChild(newBtn, addItemBtn);
+
+                // Add fresh event listener
+                newBtn.addEventListener('click', () => {
+                    this.showAddItemModal();
+                });
+            }
+
+            // Remove existing event listeners for remove buttons and add fresh ones
+            document.querySelectorAll('.remove-item-btn').forEach(btn => {
+                // Clone the button to remove all event listeners
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+
+                // Add fresh event listener
+                newBtn.addEventListener('click', (e) => {
+                    const itemId = e.currentTarget.dataset.itemId;
+                    this.removeItemFromIssue(itemId);
+                });
+            });
+        }
+
+        showAddItemModal() {
+            // Show the add item modal
+            const modal = new bootstrap.Modal(document.getElementById('addItemModal'));
+            modal.show();
+
+            // Load available items
+            this.loadAvailableItems();
+
+            // Add event listeners for search
+            const searchInput = document.getElementById('addItemSearch');
+            const searchBtn = document.getElementById('searchItemsBtn');
+
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        this.loadAvailableItems();
+                    }, 300);
+                });
+            }
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => {
+                    this.loadAvailableItems();
+                });
+            }
+        }
+
+        removeItemFromIssue(itemId) {
+            if (confirm(gettext('Are you sure you want to remove this item from the issue?'))) {
+                // Try to find the item by both selectors (existing rental items and new inventory items)
+                let itemCard = document.querySelector(`[data-rental-item-id="${itemId}"]`);
+                if (!itemCard) {
+                    itemCard = document.querySelector(`[data-inventory-item-id="${itemId}"]`);
+                }
+
+                if (itemCard) {
+                    itemCard.remove();
+                } else {
+                    console.error('Could not find item card for item ID:', itemId);
+                }
+            }
+        }
+
+        async loadAvailableItems() {
+            try {
+                const searchInput = document.getElementById('addItemSearch');
+                const itemsContainer = document.getElementById('addItemItemsList');
+
+                if (!searchInput || !itemsContainer) return;
+
+                const query = searchInput.value || '';
+
+                // Get dates from the issue modal
+                const startDate = document.getElementById('issueStartDate').value;
+                const endDate = document.getElementById('issueEndDate').value;
+
+                // Build URL with parameters
+                let url = `${this.urls.searchInventory}?q=${encodeURIComponent(query)}`;
+                if (startDate && endDate) {
+                    url += `&start_date=${startDate}&end_date=${endDate}`;
+                }
+
+                // Use the existing search API
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.items) {
+                    this.renderAvailableItems(data.items, itemsContainer);
+                }
+
+            } catch (error) {
+                console.error('Error loading available items:', error);
+                alert(gettext('Error loading available items'));
+            }
+        }
+
+        renderAvailableItems(items, container) {
+            if (!items || items.length === 0) {
+                container.innerHTML = `<p class="text-muted">${gettext('No items found.')}</p>`;
+                return;
+            }
+
+            // Group items by category
+            const groupedItems = {};
+            items.forEach(item => {
+                const category = item.category || 'Other';
+                if (!groupedItems[category]) {
+                    groupedItems[category] = [];
+                }
+                groupedItems[category].push(item);
+            });
+
+            let html = '';
+            Object.keys(groupedItems).sort().forEach((category, index) => {
+                const categoryId = `category-${index}`;
+                html += `
+                    <div class="mb-3">
+                        <h6 class="text-primary border-bottom pb-1 d-flex justify-content-between align-items-center"
+                            style="cursor: pointer;"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#${categoryId}"
+                            aria-expanded="true">
+                            <span>${category}</span>
+                            <i class="fas fa-chevron-down collapse-icon"></i>
+                        </h6>
+                        <div class="collapse show" id="${categoryId}">
+                            <div class="row">
+                `;
+
+                groupedItems[category].forEach(item => {
+                    const availableQty = item.available_quantity || 0;
+                    html += `
+                        <div class="col-md-6 mb-2">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>${item.description}</strong><br>
+                                            <small class="text-muted">[${item.inventory_number}]</small><br>
+                                            <small class="text-info">${item.location}</small><br>
+                                            <small class="text-success">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                ${gettext('Available')}: ${availableQty}
+                                            </small>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-success btn-sm add-item-btn"
+                                                data-item-id="${item.id}" data-item-name="${item.description}"
+                                                ${availableQty <= 0 ? 'disabled' : ''}>
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Add event listeners for add buttons
+            container.querySelectorAll('.add-item-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const itemId = e.currentTarget.dataset.itemId;
+                    const itemName = e.currentTarget.dataset.itemName;
+                    this.addItemToIssue(itemId, itemName);
+                });
+            });
+
+            // Add event listeners for collapse toggle icons
+            container.querySelectorAll('[data-bs-toggle="collapse"]').forEach(trigger => {
+                const target = document.querySelector(trigger.getAttribute('data-bs-target'));
+                const icon = trigger.querySelector('.collapse-icon');
+
+                if (target && icon) {
+                    target.addEventListener('show.bs.collapse', () => {
+                        icon.style.transform = 'rotate(180deg)';
+                    });
+
+                    target.addEventListener('hide.bs.collapse', () => {
+                        icon.style.transform = 'rotate(0deg)';
+                    });
+                }
+            });
+        }
+
+        addItemToIssue(itemId, itemName) {
+            // Check if item is already in the issue
+            const existingItem = document.querySelector(`[data-inventory-item-id="${itemId}"]`);
+            if (existingItem) {
+                alert(gettext('This item is already in the issue list.'));
+                return;
+            }
+
+            // Add item to the issue items list
+            const itemsList = document.getElementById('issueItemsList');
+            if (!itemsList) return;
+
+            // Find the add button and insert before it
+            const addButton = itemsList.querySelector('#addItemToIssueBtn');
+            if (!addButton) return;
+
+            const newItemHtml = `
+                <div class="card mb-2" data-inventory-item-id="${itemId}">
+                    <div class="card-body p-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
+                                <strong>${itemName}</strong><br>
+                                <small class="text-muted">[${itemId}]</small>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label form-label-sm">${gettext('Quantity')}:</label>
+                                <input type="number" class="form-control form-control-sm issue-quantity"
+                                       data-item-id="${itemId}" data-requested="1"
+                                       value="1" min="1" max="1">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label form-label-sm">${gettext('Issued')}:</label>
+                                <span class="badge bg-warning">0</span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn"
+                                        data-item-id="${itemId}" title="${gettext('Remove item')}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Insert the new item before the add button
+            addButton.insertAdjacentHTML('beforebegin', newItemHtml);
+
+            // Re-attach event listeners
+            this.attachIssueItemEventListeners();
+
+            // Disable the add button for this item
+            const itemAddButton = document.querySelector(`[data-item-id="${itemId}"].add-item-btn`);
+            if (itemAddButton) {
+                itemAddButton.disabled = true;
+                itemAddButton.innerHTML = '<i class="fas fa-check"></i>';
+                itemAddButton.className = 'btn btn-success btn-sm';
+            }
+
+            // Show success message using the parameter
+            // Create temporary success notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>${gettext('Item added')}:</strong> ${itemName}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto-remove notification after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
         }
 
         renderIssueRooms() {
@@ -556,7 +863,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get rooms from the page
             const roomCards = document.querySelectorAll('#roomsList .item-card');
             if (roomCards.length === 0) {
-                container.innerHTML = '<p class="text-muted">No rooms in this rental.</p>';
+                container.innerHTML = `<p class="text-muted">${gettext('No rooms in this rental.')}</p>`;
                 return;
             }
 
@@ -600,13 +907,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // Collect item quantities
+                // Collect item quantities and new items
                 const itemQuantities = {};
+                const newItems = [];
                 const quantityInputs = document.querySelectorAll('.issue-quantity');
+
                 quantityInputs.forEach(input => {
                     const itemId = input.dataset.itemId;
                     const quantity = parseInt(input.value) || 0;
-                    itemQuantities[itemId] = quantity;
+
+                    // Check if this is a new item (not in original rental)
+                    const itemCard = input.closest('.card');
+                    const isNewItem = itemCard && itemCard.hasAttribute('data-inventory-item-id');
+
+                    if (isNewItem && quantity > 0) {
+                        // This is a new item to be added
+                        newItems.push({
+                            inventory_id: itemId,
+                            quantity: quantity
+                        });
+                    } else if (!isNewItem) {
+                        // This is an existing rental item
+                        itemQuantities[itemId] = quantity;
+                    }
                 });
 
                 // Prepare data for API
@@ -616,7 +939,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     end_date: `${endDate}T${endTime}`,
                     created_by: createdBy,
                     notes: notes,
-                    item_quantities: itemQuantities
+                    item_quantities: itemQuantities,
+                    new_items: newItems
                 };
 
                 // Send request to API

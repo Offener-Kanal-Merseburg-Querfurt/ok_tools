@@ -1,0 +1,1164 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Main Dashboard" %}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="{% static 'dashboard/css/dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshAllData()">
+                        <i class="bi bi-arrow-clockwise"></i> {% trans "Refresh" %}
+                    </button>
+                    <button class="btn btn-primary" onclick="exportAllData()">
+                        <i class="bi bi-download"></i> {% trans "Export All" %}
+                    </button>
+            </div>
+        </div>
+
+            <!-- Filters Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3 class="widget-title">{% trans "Filters" %}</h3>
+                    </div>
+                        <div class="p-4">
+                            <form id="filtersForm" method="GET">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="dateRange" class="form-label">{% trans "Date Range" %}</label>
+                                        <select class="form-select" id="dateRange" name="days">
+                                <option value="7">{% trans "Last 7 days" %}</option>
+                                <option value="30" selected>{% trans "Last 30 days" %}</option>
+                                <option value="90">{% trans "Last 90 days" %}</option>
+                                <option value="365">{% trans "Last year" %}</option>
+                                            <option value="custom">{% trans "Custom period" %}</option>
+                            </select>
+                        </div>
+                                    <div class="col-md-2">
+                                        <label for="customStartDate" class="form-label">{% trans "Start Date" %}</label>
+                                        <input type="date" class="form-control" id="customStartDate" name="start_date" style="display: none;">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="customEndDate" class="form-label">{% trans "End Date" %}</label>
+                                        <input type="date" class="form-control" id="customEndDate" name="end_date" style="display: none;">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="mediaAuthority" class="form-label">{% trans "Media Authority" %}</label>
+                                        <select class="form-select" id="mediaAuthority" name="media_authority">
+                                <option value="">{% trans "All Authorities" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="genderFilter" class="form-label">{% trans "Gender" %}</label>
+                                        <select class="form-select" id="genderFilter" name="gender">
+                                <option value="">{% trans "All Genders" %}</option>
+                                <option value="m">{% trans "Male" %}</option>
+                                <option value="f">{% trans "Female" %}</option>
+                                <option value="d">{% trans "Diverse" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="ageGroupFilter" class="form-label">{% trans "Age Group" %}</label>
+                                        <select class="form-select" id="ageGroupFilter" name="age_group">
+                                <option value="">{% trans "All Ages" %}</option>
+                                <option value="under_18">{% trans "Under 18" %}</option>
+                                <option value="18_25">{% trans "18-25" %}</option>
+                                <option value="26_35">{% trans "26-35" %}</option>
+                                <option value="36_50">{% trans "36-50" %}</option>
+                                <option value="over_50">{% trans "Over 50" %}</option>
+                            </select>
+                        </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-funnel"></i> {% trans "Apply Filters" %}
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">
+                                                <i class="bi bi-arrow-clockwise"></i> {% trans "Reset" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">-</div>
+                        <div class="stat-label">{% trans "Total Users" %}</div>
+                        <div class="stat-change text-success" id="usersChange">
+                            <i class="bi bi-arrow-up"></i> <span id="usersChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalLicenses">-</div>
+                        <div class="stat-label">{% trans "Total Licenses" %}</div>
+                        <div class="stat-change text-success" id="licensesChange">
+                            <i class="bi bi-arrow-up"></i> <span id="licensesChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalContributions">-</div>
+                        <div class="stat-label">{% trans "Total Contributions" %}</div>
+                        <div class="stat-change text-success" id="contributionsChange">
+                            <i class="bi bi-arrow-up"></i> <span id="contributionsChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalProjects">-</div>
+                        <div class="stat-label">{% trans "Total Projects" %}</div>
+                        <div class="stat-change text-success" id="projectsChange">
+                            <i class="bi bi-arrow-up"></i> <span id="projectsChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Row of Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="conversionRate">-</div>
+                        <div class="stat-label">{% trans "Conversion Rate" %}</div>
+                        <div class="stat-change text-info" id="conversionChange">
+                            <i class="bi bi-arrow-up"></i> <span id="conversionChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalParticipants">-</div>
+                        <div class="stat-label">{% trans "Total Participants" %}</div>
+                        <div class="stat-change text-success" id="participantsChange">
+                            <i class="bi bi-arrow-up"></i> <span id="participantsChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgParticipants">-</div>
+                        <div class="stat-label">{% trans "Avg Participants" %}</div>
+                        <div class="stat-change text-info" id="avgParticipantsChange">
+                            <i class="bi bi-arrow-up"></i> <span id="avgParticipantsChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="externalVenueRate">-</div>
+                        <div class="stat-label">{% trans "External Venue Rate" %}</div>
+                        <div class="stat-change text-warning" id="externalVenueChange">
+                            <i class="bi bi-arrow-up"></i> <span id="externalVenueChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third Row of Stats - Inventory -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalInventoryItems">-</div>
+                        <div class="stat-label">{% trans "Total Inventory Items" %}</div>
+                        <div class="stat-change text-primary" id="inventoryChange">
+                            <i class="bi bi-arrow-up"></i> <span id="inventoryChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="rentedItems">-</div>
+                        <div class="stat-label">{% trans "Rented Items" %}</div>
+                        <div class="stat-change text-warning" id="rentedChange">
+                            <i class="bi bi-arrow-up"></i> <span id="rentedChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalRentals">-</div>
+                        <div class="stat-label">{% trans "Total Rentals" %}</div>
+                        <div class="stat-change text-info" id="totalRentalsChange">
+                            <i class="bi bi-arrow-up"></i> <span id="totalRentalsChangeValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeRentals">-</div>
+                        <div class="stat-label">{% trans "Active Rentals" %}</div>
+                        <div class="stat-change text-success" id="activeRentalsChange">
+                            <i class="bi bi-arrow-up"></i> <span id="activeRentalsChangeValue">0%</span>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                        <div class="col-12">
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3 class="widget-title">{% trans "Quick Actions" %}</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:users' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-people fs-1 mb-2"></i>
+                                        <span>{% trans "Users Analytics" %}</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:licenses' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-file-earmark-text fs-1 mb-2"></i>
+                                        <span>{% trans "Licenses Analytics" %}</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:contributions' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-broadcast fs-1 mb-2"></i>
+                                        <span>{% trans "Contributions Analytics" %}</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:projects' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-folder fs-1 mb-2"></i>
+                                        <span>{% trans "Projects Analytics" %}</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:inventory' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-box fs-1 mb-2"></i>
+                                        <span>{% trans "Inventory & Rental Analytics" %}</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:notifications' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-bell fs-1 mb-2"></i>
+                                        <span>{% trans "System Notifications" %}</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/admin-dashboard/funnel/" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-funnel fs-1 mb-2"></i>
+                                        <span>{% trans "Funnel Analytics" %}</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                                        <i class="bi bi-gear fs-1 mb-2"></i>
+                                        <span>{% trans "Admin Panel" %}</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Recent Users" %}</h3>
+                            <a href="{% url 'dashboard:users' %}" class="btn btn-sm btn-outline-primary">{% trans "View All" %}</a>
+                        </div>
+                        <div class="p-4">
+                            <div id="recentUsersList">
+                                <div class="text-center text-muted">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                                        <span class="visually-hidden">{% trans "Loading..." %}</span>
+                                    </div>
+                                    {% trans "Loading recent users..." %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header d-flex justify-content-between align-items-center">
+                            <h3 class="widget-title">{% trans "Recent Licenses" %}</h3>
+                            <a href="{% url 'dashboard:licenses' %}" class="btn btn-sm btn-outline-primary">{% trans "View All" %}</a>
+                        </div>
+                        <div class="p-4">
+                            <div id="recentLicensesList">
+                                <div class="text-center text-muted">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                                        <span class="visually-hidden">{% trans "Loading..." %}</span>
+                                    </div>
+                                    {% trans "Loading recent licenses..." %}
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- System Status -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                            <h3 class="widget-title">{% trans "System Status" %}</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-6" data-service="database">
+                                    <div class="system-status-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="status-indicator-container me-3">
+                                                <div class="status-indicator bg-success"></div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="status-title">{% trans "Database" %}</div>
+                                                <div class="status-message">{% trans "Loading..." %}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" data-service="api_services">
+                                    <div class="system-status-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="status-indicator-container me-3">
+                                                <div class="status-indicator bg-success"></div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="status-title">{% trans "API Services" %}</div>
+                                                <div class="status-message">{% trans "Loading..." %}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" data-service="file_storage">
+                                    <div class="system-status-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="status-indicator-container me-3">
+                                                <div class="status-indicator bg-success"></div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="status-title">{% trans "File Storage" %}</div>
+                                                <div class="status-message">{% trans "Loading..." %}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" data-service="email_service">
+                                    <div class="system-status-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="status-indicator-container me-3">
+                                                <div class="status-indicator bg-success"></div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="status-title">{% trans "Email Service" %}</div>
+                                                <div class="status-message">{% trans "Loading..." %}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <h3 class="widget-title">{% trans "Quick Stats" %}</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="quick-stat-item">
+                                        <div class="stat-icon bg-primary">
+                                            <i class="bi bi-person-check"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-number text-primary" id="activeUsers">-</div>
+                                            <div class="stat-label">{% trans "Active Users" %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="quick-stat-item">
+                                        <div class="stat-icon bg-success">
+                                            <i class="bi bi-check-circle"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-number text-success" id="confirmedLicenses">-</div>
+                                            <div class="stat-label">{% trans "Confirmed Licenses" %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="quick-stat-item">
+                                        <div class="stat-icon bg-info">
+                                            <i class="bi bi-broadcast"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-number text-info" id="liveContributions">-</div>
+                                            <div class="stat-label">{% trans "Live Contributions" %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="quick-stat-item">
+                                        <div class="stat-icon bg-warning">
+                                            <i class="bi bi-clock"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-number text-warning" id="pendingLicenses">-</div>
+                                            <div class="stat-label">{% trans "Pending Licenses" %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-change {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.status-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-indicator-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.system-status-item {
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.system-status-item:hover {
+    background: #ffffff;
+    border-color: #dee2e6;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.status-title {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.status-message {
+    font-size: 12px;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+.status-indicator.bg-success {
+    background-color: #28a745 !important;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.status-indicator.bg-warning {
+    background-color: #ffc107 !important;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+.status-indicator.bg-danger {
+    background-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+/* Quick Stats Styles */
+.quick-stat-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.quick-stat-item:hover {
+    background: #ffffff;
+    border-color: #dee2e6;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.stat-icon i {
+    font-size: 20px;
+    color: white;
+}
+
+.stat-icon.bg-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+.stat-icon.bg-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+}
+
+.stat-icon.bg-info {
+    background: linear-gradient(135deg, #17a2b8, #117a8b);
+}
+
+.stat-icon.bg-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+}
+
+.stat-content {
+    flex-grow: 1;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.recent-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.recent-item:last-child {
+    border-bottom: none;
+}
+
+.recent-item .item-title {
+    font-weight: 500;
+    color: #495057;
+}
+
+.recent-item .item-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+</style>
+
+<script>
+// Global variables for dashboard data
+let dashboardData = {};
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Main dashboard initialized');
+
+    // Force hide loading overlay on page load
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        console.log('Forced overlay to be hidden on page load');
+    }
+
+    // Initialize filters
+    initializeFiltersFromURL();
+    loadFilterData();
+    loadDashboardData();
+
+    // Initialize filter event listeners
+    const dateRange = document.getElementById('dateRange');
+    if (dateRange) {
+        dateRange.addEventListener('change', function() {
+            // Use local function
+            toggleCustomDateInputs();
+        });
+    }
+
+    const filtersForm = document.getElementById('filtersForm');
+    if (filtersForm) {
+        filtersForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+    }
+
+    // Auto-refresh every 5 minutes
+    setInterval(loadDashboardData, 300000);
+});
+
+// Load all dashboard data
+async function loadDashboardData() {
+    try {
+        // Show loading state
+        setLoadingState(document.body, true);
+
+        // Get current filter parameters
+        const params = new URLSearchParams(window.location.search);
+
+        // Load data from all APIs with filters
+        const [usersData, licensesData, contributionsData, projectsData, inventoryData, recentUsersData, recentLicensesData, systemStatusData, quickStatsData] = await Promise.all([
+            fetch(`/admin-dashboard/api/users-statistics/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/licenses-statistics/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/contributions-statistics/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/projects-statistics/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/inventory-statistics/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/recent-users/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/recent-licenses/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/system-status/`).then(r => r.json()).catch(e => ({success: false, error: e.message})),
+            fetch(`/admin-dashboard/api/quick-stats/?${params}`).then(r => r.json()).catch(e => ({success: false, error: e.message}))
+        ]);
+
+        // Log any API errors
+        if (!usersData.success) console.error('Users API error:', usersData.error);
+        if (!licensesData.success) console.error('Licenses API error:', licensesData.error);
+        if (!contributionsData.success) console.error('Contributions API error:', contributionsData.error);
+        if (!projectsData.success) console.error('Projects API error:', projectsData.error);
+        if (!inventoryData.success) console.error('Inventory API error:', inventoryData.error);
+        if (!recentUsersData.success) console.error('Recent Users API error:', recentUsersData.error);
+        if (!recentLicensesData.success) console.error('Recent Licenses API error:', recentLicensesData.error);
+        if (!systemStatusData.success) console.error('System Status API error:', systemStatusData.error);
+        if (!quickStatsData.success) console.error('Quick Stats API error:', quickStatsData.error);
+
+        dashboardData = {
+            users: usersData.success ? usersData.data : {},
+            licenses: licensesData.success ? licensesData.data : {},
+            contributions: contributionsData.success ? contributionsData.data : {},
+            projects: projectsData.success ? projectsData.data : {},
+            inventory: inventoryData.success ? inventoryData.data : {},
+            recentUsers: recentUsersData.success ? recentUsersData.data : {},
+            recentLicenses: recentLicensesData.success ? recentLicensesData.data : {},
+            systemStatus: systemStatusData.success ? systemStatusData.data : {},
+            quickStats: quickStatsData.success ? quickStatsData.data : {}
+        };
+
+        updateDashboardStats();
+        updateRecentActivity();
+        updateSystemStatus();
+        updateQuickStats();
+
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        if (typeof showNotification === 'function') {
+            showNotification('Failed to load dashboard data', 'error');
+        }
+    } finally {
+        // Hide loading state
+        setLoadingState(document.body, false);
+    }
+}
+
+// Update dashboard statistics
+function updateDashboardStats() {
+    const { users, licenses, contributions, projects, inventory } = dashboardData;
+
+    // Update main stats
+    if (users.basic_stats) {
+        document.getElementById('totalUsers').textContent = users.basic_stats.total_users || 0;
+        document.getElementById('activeUsers').textContent = users.basic_stats.verified_users || 0;
+    }
+
+    if (licenses.basic_stats) {
+        document.getElementById('totalLicenses').textContent = licenses.basic_stats.total_licenses || 0;
+        document.getElementById('confirmedLicenses').textContent = licenses.basic_stats.confirmed_licenses || 0;
+        document.getElementById('pendingLicenses').textContent = licenses.basic_stats.pending_licenses || 0;
+    }
+
+    if (contributions.basic_stats) {
+        document.getElementById('totalContributions').textContent = contributions.basic_stats.total_contributions || 0;
+        document.getElementById('liveContributions').textContent = contributions.basic_stats.live_contributions || 0;
+    }
+
+    if (contributions.conversion_metrics) {
+        document.getElementById('conversionRate').textContent = `${contributions.conversion_metrics.conversion_rate || 0}%`;
+    }
+
+    // Update projects stats
+    if (projects.basic_stats) {
+        document.getElementById('totalProjects').textContent = projects.basic_stats.total_projects || 0;
+        document.getElementById('totalParticipants').textContent = projects.basic_stats.total_participants || 0;
+        document.getElementById('avgParticipants').textContent = projects.basic_stats.avg_participants_per_project || 0;
+    }
+
+    if (projects.project_characteristics) {
+        document.getElementById('externalVenueRate').textContent = `${projects.project_characteristics.external_venue_rate || 0}%`;
+    }
+
+    // Update inventory stats
+    if (inventory.basic_stats) {
+        document.getElementById('totalInventoryItems').textContent = inventory.basic_stats.total_items || 0;
+        document.getElementById('rentedItems').textContent = inventory.basic_stats.rented_items || 0;
+        document.getElementById('totalRentals').textContent = inventory.basic_stats.total_rentals || 0;
+        document.getElementById('activeRentals').textContent = inventory.basic_stats.active_rentals || 0;
+    }
+
+    // Calculate changes (placeholder - would need historical data)
+    updateChangeIndicators();
+}
+
+// Update change indicators
+function updateChangeIndicators() {
+    // This would calculate actual changes from historical data
+    // For now, using placeholder values
+    const changes = {
+        users: Math.random() > 0.5 ? 5 : -2,
+        licenses: Math.random() > 0.5 ? 8 : -3,
+        contributions: Math.random() > 0.5 ? 12 : -5,
+        projects: Math.random() > 0.5 ? 3 : -1,
+        participants: Math.random() > 0.5 ? 15 : -5,
+        avgParticipants: Math.random() > 0.5 ? 2 : -1,
+        externalVenue: Math.random() > 0.5 ? 5 : -2,
+        conversion: Math.random() > 0.5 ? 2 : -1
+    };
+
+    Object.entries(changes).forEach(([key, change]) => {
+        const element = document.getElementById(`${key}ChangeValue`);
+        const icon = document.querySelector(`#${key}Change i`);
+
+        if (element && icon) {
+            element.textContent = `${Math.abs(change)}%`;
+            icon.className = change > 0 ? 'bi bi-arrow-up' : 'bi bi-arrow-down';
+            document.getElementById(`${key}Change`).className =
+                `stat-change ${change > 0 ? 'text-success' : 'text-danger'}`;
+        }
+    });
+}
+
+// Update recent activity
+function updateRecentActivity() {
+    const { recentUsers } = dashboardData;
+
+    // Update Recent Users widget
+    const recentUsersContainer = document.getElementById('recentUsersList');
+
+    if (recentUsers && recentUsers.activities && recentUsers.activities.length > 0) {
+        const recentUsersHtml = recentUsers.activities.map(activity => `
+            <div class="recent-item">
+                <div class="d-flex align-items-center">
+                    <i class="bi ${activity.icon} text-${activity.color} me-2"></i>
+                    <div class="flex-grow-1">
+                        <div class="item-title">${activity.title}</div>
+                        <div class="item-meta">${activity.time_ago}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        recentUsersContainer.innerHTML = recentUsersHtml;
+    } else if (recentUsers && recentUsers.activities && recentUsers.activities.length === 0) {
+        // Show empty state if no activities found
+        recentUsersContainer.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-hourglass-split fs-1"></i>
+                <p>{% trans "No recent user activities found" %}</p>
+            </div>
+        `;
+    } else {
+        // Show error state if API failed
+        recentUsersContainer.innerHTML = `
+            <div class="text-center text-danger py-4">
+                <i class="bi bi-exclamation-triangle fs-1"></i>
+                <p>{% trans "Failed to load recent activities" %}</p>
+            </div>
+        `;
+    }
+
+    // Update Recent Licenses widget
+    const { recentLicenses } = dashboardData;
+    const recentLicensesContainer = document.getElementById('recentLicensesList');
+
+    if (recentLicenses && recentLicenses.activities && recentLicenses.activities.length > 0) {
+        const recentLicensesHtml = recentLicenses.activities.map(activity => `
+            <div class="recent-item">
+                <div class="d-flex align-items-center">
+                    <i class="bi ${activity.icon} text-${activity.color} me-2"></i>
+                    <div class="flex-grow-1">
+                        <div class="item-title">${activity.title}</div>
+                        <div class="item-meta">${activity.time_ago}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        recentLicensesContainer.innerHTML = recentLicensesHtml;
+    } else if (recentLicenses && recentLicenses.activities && recentLicenses.activities.length === 0) {
+        // Show empty state if no activities found
+        recentLicensesContainer.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-file-earmark-text fs-1"></i>
+                <p>{% trans "No recent license activities found" %}</p>
+            </div>
+        `;
+    } else {
+        // Show error state if API failed
+        recentLicensesContainer.innerHTML = `
+            <div class="text-center text-danger py-4">
+                <i class="bi bi-exclamation-triangle fs-1"></i>
+                <p>{% trans "Failed to load recent license activities" %}</p>
+            </div>
+        `;
+    }
+}
+
+// Update system status
+function updateSystemStatus() {
+    const { systemStatus } = dashboardData;
+
+    if (systemStatus && systemStatus.checks) {
+        // Update each status indicator
+        const statusMapping = {
+            'database': 'Database',
+            'api_services': 'API Services',
+            'file_storage': 'File Storage',
+            'email_service': 'Email Service'
+        };
+
+        Object.entries(statusMapping).forEach(([key, displayName]) => {
+            const check = systemStatus.checks[key];
+            if (check) {
+                const indicator = document.querySelector(`[data-service="${key}"] .status-indicator`);
+                const title = document.querySelector(`[data-service="${key}"] .status-title`);
+                const message = document.querySelector(`[data-service="${key}"] .status-message`);
+
+                if (indicator && title && message) {
+                    // Update status indicator color
+                    indicator.className = 'status-indicator';
+                    if (check.status === 'healthy') {
+                        indicator.classList.add('bg-success');
+                    } else if (check.status === 'warning') {
+                        indicator.classList.add('bg-warning');
+                    } else if (check.status === 'error') {
+                        indicator.classList.add('bg-danger');
+                    }
+
+                    // Update title and message
+                    title.textContent = displayName;
+                    message.textContent = check.message;
+                }
+            }
+        });
+
+        // Update overall status if available
+        if (systemStatus.overall_status) {
+            console.log(`System Status: ${systemStatus.overall_status} - ${systemStatus.overall_message}`);
+        }
+    } else {
+        // Show error state if no data
+        const statusIndicators = document.querySelectorAll('.status-indicator');
+        statusIndicators.forEach(indicator => {
+            indicator.className = 'status-indicator bg-danger';
+        });
+
+        const statusMessages = document.querySelectorAll('.status-message');
+        statusMessages.forEach(message => {
+            message.textContent = 'Status check failed';
+        });
+    }
+}
+
+// Update quick stats
+function updateQuickStats() {
+    const { quickStats } = dashboardData;
+
+    if (quickStats) {
+        // Update Active Users
+        const activeUsersElement = document.getElementById('activeUsers');
+        if (activeUsersElement && quickStats.active_users) {
+            activeUsersElement.textContent = quickStats.active_users.value;
+        }
+
+        // Update Confirmed Licenses
+        const confirmedLicensesElement = document.getElementById('confirmedLicenses');
+        if (confirmedLicensesElement && quickStats.confirmed_licenses) {
+            confirmedLicensesElement.textContent = quickStats.confirmed_licenses.value;
+        }
+
+        // Update Live Contributions
+        const liveContributionsElement = document.getElementById('liveContributions');
+        if (liveContributionsElement && quickStats.live_contributions) {
+            liveContributionsElement.textContent = quickStats.live_contributions.value;
+        }
+
+        // Update Pending Licenses
+        const pendingLicensesElement = document.getElementById('pendingLicenses');
+        if (pendingLicensesElement && quickStats.pending_licenses) {
+            pendingLicensesElement.textContent = quickStats.pending_licenses.value;
+        }
+    } else {
+        // Show error state if no data
+        const statElements = document.querySelectorAll('#activeUsers, #confirmedLicenses, #liveContributions, #pendingLicenses');
+        statElements.forEach(element => {
+            element.textContent = '-';
+        });
+    }
+}
+
+// Refresh all data
+function refreshAllData() {
+    loadDashboardData();
+    if (typeof showNotification === 'function') {
+        showNotification('Dashboard data refreshed', 'success');
+    }
+}
+
+// Export all data
+function exportAllData() {
+    const data = {
+        timestamp: new Date().toISOString(),
+        dashboard: dashboardData
+    };
+
+    const content = JSON.stringify(data, null, 2);
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dashboard_export_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    if (typeof showNotification === 'function') {
+        showNotification('{% trans "Dashboard data exported" %}', 'success');
+    }
+}
+
+// Initialize filters from URL parameters
+function initializeFiltersFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Set date range
+    const days = urlParams.get('days');
+    if (days) {
+        document.getElementById('dateRange').value = days;
+    }
+
+    // Set custom dates if present
+    const startDate = urlParams.get('start_date');
+    const endDate = urlParams.get('end_date');
+    if (startDate) {
+        document.getElementById('customStartDate').value = startDate;
+    }
+    if (endDate) {
+        document.getElementById('customEndDate').value = endDate;
+    }
+
+    // Set other filters
+    const mediaAuthority = urlParams.get('media_authority');
+    if (mediaAuthority) {
+        document.getElementById('mediaAuthority').value = mediaAuthority;
+    }
+
+    const gender = urlParams.get('gender');
+    if (gender) {
+        document.getElementById('genderFilter').value = gender;
+    }
+
+    const ageGroup = urlParams.get('age_group');
+    if (ageGroup) {
+        document.getElementById('ageGroupFilter').value = ageGroup;
+    }
+
+    // Toggle custom date inputs
+    toggleCustomDateInputs();
+}
+
+// Load filter data (Media Authorities)
+async function loadFilterData() {
+            try {
+                const response = await fetch('/admin-dashboard/api/filters-data/');
+                const data = await response.json();
+
+        if (data.success && data.data.context.media_authorities) {
+            const mediaAuthoritySelect = document.getElementById('mediaAuthority');
+            const currentValue = mediaAuthoritySelect.value;
+
+            // Clear existing options except the first one
+            mediaAuthoritySelect.innerHTML = '<option value="">{% trans "All Authorities" %}</option>';
+
+            // Add new options
+            data.data.context.media_authorities.forEach(authority => {
+                    const option = document.createElement('option');
+                    option.value = authority.name;
+                    option.textContent = authority.name;
+                    mediaAuthoritySelect.appendChild(option);
+                });
+
+            // Restore current value
+            if (currentValue) {
+                mediaAuthoritySelect.value = currentValue;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading filter data:', error);
+    }
+}
+
+// Custom apply filters function for main dashboard
+function applyFilters() {
+    const form = document.getElementById('filtersForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (let [key, value] of formData.entries()) {
+                if (value) {
+            params.append(key, value);
+        }
+    }
+
+    // Update URL without page reload
+    window.history.pushState({}, '', window.location.pathname + '?' + params.toString());
+
+    // Reload data
+    loadDashboardData();
+
+    if (typeof showNotification === 'function') {
+        showNotification('{% trans "Filters applied" %}', 'success');
+    }
+}
+
+// Custom reset filters function for main dashboard
+function resetFilters() {
+    const form = document.getElementById('filtersForm');
+    form.reset();
+
+    // Update URL
+    window.history.pushState({}, '', window.location.pathname);
+
+    // Reload data
+    loadDashboardData();
+
+    if (typeof showNotification === 'function') {
+        showNotification('{% trans "Filters reset" %}', 'success');
+    }
+}
+
+// Custom set loading state function for main dashboard
+function setLoadingState(elementOrLoading, loadingOrMessage) {
+
+    // Support both calling conventions:
+    // 1. setLoadingState(element, loading) - from main.html
+    // 2. setLoadingState(loading, message) - for compatibility
+
+    let loading, message;
+
+    if (typeof elementOrLoading === 'boolean') {
+        // Called as setLoadingState(loading, message) for compatibility
+        loading = elementOrLoading;
+        message = loadingOrMessage;
+    } else {
+        // Called as setLoadingState(element, loading) from main.html
+        // Handle case where loadingOrMessage might be string "false"
+        if (loadingOrMessage === 'false' || loadingOrMessage === false) {
+            loading = false;
+        } else if (loadingOrMessage === 'true' || loadingOrMessage === true) {
+            loading = true;
+        } else {
+            loading = !!loadingOrMessage; // Convert to boolean
+        }
+        message = null;
+    }
+
+    // Use the loading overlay from base.html
+    const overlay = document.getElementById('loadingOverlay');
+    const text = overlay ? overlay.querySelector('.loading-text') : null;
+
+    if (overlay) {
+        if (loading) {
+            overlay.classList.add('active');
+            if (text && message) {
+                text.textContent = message;
+            }
+        } else {
+            overlay.classList.remove('active');
+        }
+    } else {
+        // Fallback to body opacity if no overlay
+        const element = typeof elementOrLoading === 'boolean' ? document.body : elementOrLoading;
+        if (loading) {
+            element.style.opacity = '0.5';
+            element.style.pointerEvents = 'none';
+        } else {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
+    }
+}
+
+// Custom toggle custom date inputs function for main dashboard
+function toggleCustomDateInputs() {
+    const dateRange = document.getElementById('dateRange');
+    const startDateInput = document.getElementById('customStartDate');
+    const endDateInput = document.getElementById('customEndDate');
+
+    if (dateRange && startDateInput && endDateInput) {
+        if (dateRange.value === 'custom') {
+            startDateInput.style.display = 'block';
+            endDateInput.style.display = 'block';
+        } else {
+            startDateInput.style.display = 'none';
+            endDateInput.style.display = 'none';
+        }
+    }
+}
+</script>
+{% endblock %}
