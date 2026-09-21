@@ -11,7 +11,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from openpyxl import Workbook
 
 from inventory.models import (
-    InventoryItem, Location, Manufacturer, Organization, Category,
+    InventoryItem, InventoryUnit, Location, Manufacturer, Organization, Category,
     InventoryImport, Inspection, InspectionImport, AuditLog
 )
 from inventory.services.inventory_service import InventoryService
@@ -58,7 +58,6 @@ class InventoryServiceTestCase(TestCase):
         self.inventory_item = InventoryItem.objects.create(
             inventory_number='OK-001',
             description='Test Item',
-            serial_number='SN01',  # Fixed to match actual model field value
             manufacturer=self.manufacturer,
             category=self.category,
             location=self.location,
@@ -66,8 +65,6 @@ class InventoryServiceTestCase(TestCase):
             status='in_stock',
             owner=self.organization,
             inventory_number_owner='OWNER-001',
-            purchase_date=timezone.now().date(),
-            purchase_cost=100.0,
             available_for_rent=True,
             reserved_quantity=1,
             rented_quantity=1
@@ -121,7 +118,8 @@ class InventoryServiceTestCase(TestCase):
         self.assertEqual(item_data['id'], self.inventory_item.id)
         self.assertEqual(item_data['inventory_number'], 'OK-001')
         self.assertEqual(item_data['description'], 'Test Item')
-        self.assertEqual(item_data['serial_number'], 'SN01')
+        # Without devices the item has no serial numbers.
+        self.assertEqual(item_data['serial_number'], '')
         self.assertEqual(item_data['manufacturer'], 'Test Manufacturer')
         self.assertEqual(item_data['category'], 'Test Category')
         self.assertEqual(item_data['location'], 'Test Location')
@@ -144,7 +142,8 @@ class InventoryServiceTestCase(TestCase):
         self.assertIsNone(result)
     
     def test_create_inventory_item(self):
-        """Test creating an inventory item."""
+        """Test creating an inventory item with a single device."""
+        purchase_date = timezone.now().date()
         result = self.inventory_service.create_inventory_item(
             inventory_number='OK-002',
             description='New Item',
@@ -152,11 +151,11 @@ class InventoryServiceTestCase(TestCase):
             manufacturer=self.manufacturer,
             category=self.category,
             location=self.location,
-            quantity=10,
+            quantity=1,
             status='in_stock',
             owner=self.organization,
             inventory_number_owner='OWNER-002',
-            purchase_date=timezone.now().date(),
+            purchase_date=purchase_date,
             purchase_cost=200.0,
             available_for_rent=True
         )
@@ -165,17 +164,41 @@ class InventoryServiceTestCase(TestCase):
         self.assertIsInstance(result, InventoryItem)
         self.assertEqual(result.inventory_number, 'OK-002')
         self.assertEqual(result.description, 'New Item')
-        self.assertEqual(result.serial_number, 'SN002')
         self.assertEqual(result.manufacturer, self.manufacturer)
         self.assertEqual(result.category, self.category)
         self.assertEqual(result.location, self.location)
-        self.assertEqual(result.quantity, 10)
+        self.assertEqual(result.quantity, 1)
         self.assertEqual(result.status, 'in_stock')
         self.assertEqual(result.owner, self.organization)
         self.assertEqual(result.inventory_number_owner, 'OWNER-002')
-        self.assertEqual(result.purchase_cost, 200.0)
         self.assertTrue(result.available_for_rent)
-    
+
+        unit = result.units.get()
+        self.assertEqual(unit.serial_number, 'SN002')
+        self.assertEqual(unit.purchase_date, purchase_date)
+        self.assertEqual(unit.purchase_cost, 200.0)
+        self.assertEqual(result.serial_numbers, 'SN002')
+
+    def test_create_inventory_item_with_one_device_per_serial_number(self):
+        """A serial number column listing the whole quantity yields devices."""
+        result = self.inventory_service.create_inventory_item(
+            inventory_number='OK-003', location=self.location,
+            quantity=2, serial_number='NX01088, NX01184')
+
+        self.assertEqual(
+            [u.serial_number for u in result.units.all()], ['NX01088', 'NX01184'])
+        self.assertEqual(result.quantity, 2)
+
+    def test_create_inventory_item_keeps_unassignable_data_in_notes(self):
+        """One serial number for ten pieces is not guessed onto devices."""
+        result = self.inventory_service.create_inventory_item(
+            inventory_number='OK-004', location=self.location,
+            quantity=10, serial_number='ULFS30KB60B')
+
+        self.assertFalse(result.units.exists())
+        self.assertEqual(result.quantity, 10)
+        self.assertIn('ULFS30KB60B', result.notes)
+
     def test_update_inventory_item(self):
         """Test updating an inventory item."""
         # Test with existing item
@@ -343,7 +366,9 @@ class InventoryServiceTestCase(TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], self.inventory_item)
         
-        # Test search by serial number
+        # Test search by a device's serial number
+        InventoryUnit.objects.create(item=self.inventory_item, serial_number='SN01')
+        InventoryUnit.objects.create(item=self.inventory_item, serial_number='SN01-B')
         result = self.inventory_service.search_inventory_items(query='SN01')
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], self.inventory_item)

@@ -1,0 +1,38 @@
+{% extends "admin/change_form.html" %}
+{% comment %}
+Inventory item change form. The devices and their inspections come right after
+the first fieldset (the item itself), before ownership, notes and photos, so a
+device's serial number, status, purchase information and inspections can be
+read and edited in one place instead of across the whole page.
+{% endcomment %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  /* Keep the device and inspection tables compact: one line per device. */
+  .inline-group .tabular td input[type="text"],
+  .inline-group .tabular td input[type="number"] { width: 100%; box-sizing: border-box; min-width: 7em; }
+  .inline-group .tabular td.field-purchase_date input { width: 7.5em; min-width: 0; }
+  .inline-group .tabular td.field-last_inspection { white-space: nowrap; }
+  .inline-group .tabular td.field-last_inspection small { color: var(--body-quiet-color); }
+  /* Each row already shows the serial number; drop the repeated object title
+     Django puts above every saved row. */
+  .inline-group .tabular td.original p { display: none; }
+  .inline-group .tabular tr.has_original td { padding-top: 8px; }
+</style>
+{% endblock %}
+
+{% block field_sets %}
+{% for fieldset in adminform %}{% if forloop.first %}
+  {% include "admin/includes/fieldset.html" with heading_level=2 prefix="fieldset" id_prefix=0 id_suffix=forloop.counter0 %}
+{% endif %}{% endfor %}
+
+{% for inline_admin_formset in inline_admin_formsets %}
+  {% include inline_admin_formset.opts.template %}
+{% endfor %}
+
+{% for fieldset in adminform %}{% if not forloop.first %}
+  {% include "admin/includes/fieldset.html" with heading_level=2 prefix="fieldset" id_prefix=0 id_suffix=forloop.counter0 %}
+{% endif %}{% endfor %}
+{% endblock %}
+
+{% block inline_field_sets %}{% endblock %}

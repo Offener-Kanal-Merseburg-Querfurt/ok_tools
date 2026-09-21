@@ -333,6 +333,32 @@ class InspectionImportTest(TestCase):
         self.assertEqual(inspection2.result, "Failed")
         self.assertEqual(inspection2.target_part, "cable")
     
+    def _import_csv(self, *rows):
+        header = "inspection_number,inspection_date,inventory_number,manufacturer,device_type,room,result,target_part\n"
+        file_obj = SimpleUploadedFile(
+            "test.csv", (header + "".join(rows)).encode('utf-8'), content_type="text/csv")
+        return inspection_import(request=None, file=file_obj, import_obj=None)
+
+    def test_inspection_import_assigns_the_single_device(self):
+        """An item with one device: the imported inspection is of that device."""
+        unit = self.inventory_item.units.create(serial_number='SN-1')
+
+        self._import_csv("INS-010,2024-01-15,OK-001,,,,Passed,device\n")
+
+        self.assertEqual(Inspection.objects.get(inspection_number='INS-010').unit, unit)
+
+    def test_inspection_import_keeps_the_device_chosen_among_several(self):
+        """With several devices the import neither guesses nor clears one."""
+        self.inventory_item.units.create(serial_number='SN-1')
+        second = self.inventory_item.units.create(serial_number='SN-2')
+        self._import_csv("INS-011,2024-01-15,OK-001,,,,Passed,device\n")
+        self.assertIsNone(Inspection.objects.get(inspection_number='INS-011').unit)
+
+        Inspection.objects.filter(inspection_number='INS-011').update(unit=second)
+        self._import_csv("INS-011,2024-02-15,OK-001,,,,Passed,device\n")
+
+        self.assertEqual(Inspection.objects.get(inspection_number='INS-011').unit, second)
+
     def test_inspection_import_xlsx_success(self):
         """Test importing inspections from a valid XLSX file."""
         import openpyxl

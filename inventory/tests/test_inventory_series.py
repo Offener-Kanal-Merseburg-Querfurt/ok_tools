@@ -142,13 +142,15 @@ class CopyItemsActionTest(TestCase):
 
     def test_copy_carries_over_descriptive_fields(self):
         """Test that descriptive fields are duplicated onto the copy."""
-        self._item('OK-000001', description='Tripod', serial_number='SN-1',
-                   available_for_rent=True)
+        item = self._item('OK-000001', description='Tripod',
+                          available_for_rent=True)
+        item.units.create(serial_number='SN-1')
         self.admin.copy_items_action(
             self.request, InventoryItem.objects.all())
         copy = InventoryItem.objects.get(inventory_number='OK-000002')
         self.assertEqual(copy.description, 'Tripod')
-        self.assertEqual(copy.serial_number, 'SN-1')
+        # Devices are physical objects of the source item and stay there.
+        self.assertFalse(copy.units.exists())
         self.assertTrue(copy.available_for_rent)
         self.assertEqual(copy.location, self.location)
 

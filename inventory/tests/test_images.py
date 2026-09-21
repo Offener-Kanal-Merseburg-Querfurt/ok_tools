@@ -82,3 +82,39 @@ def test_delete_thumbnail_removes_every_variant(photo):
 
     assert not thumb.exists()
     assert not preview.exists()
+
+
+@pytest.mark.parametrize('url_name', [
+    'inventory:item_image', 'inventory:item_image_thumb', 'inventory:item_image_preview'])
+def test_rental_user_sees_photos_of_rentable_items(photo, client, django_user_model, url_name):
+    """The user rental dashboard shows these photos, so no staff login is needed."""
+    from django.urls import reverse
+    photo.item.available_for_rent = True
+    photo.item.save()
+    client.force_login(django_user_model.objects.create_user(
+        email='renter@example.com', password='pw'))
+
+    resp = client.get(reverse(url_name, args=[photo.pk]))
+
+    assert resp.status_code == 200
+    assert resp['Content-Type'] == 'image/jpeg'
+
+
+def test_rental_user_cannot_see_photos_of_items_not_for_rent(photo, client, django_user_model):
+    from django.urls import reverse
+    photo.item.available_for_rent = False
+    photo.item.save()
+    client.force_login(django_user_model.objects.create_user(
+        email='renter@example.com', password='pw'))
+
+    resp = client.get(reverse('inventory:item_image_thumb', args=[photo.pk]))
+
+    assert resp.status_code == 404
+
+
+def test_anonymous_photo_request_goes_to_the_user_login(photo, client):
+    from django.urls import reverse
+    resp = client.get(reverse('inventory:item_image_thumb', args=[photo.pk]))
+
+    assert resp.status_code == 302
+    assert '/admin/login/' not in resp['Location']

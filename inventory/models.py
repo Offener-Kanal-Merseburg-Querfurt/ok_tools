@@ -234,12 +234,14 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
     STATUS_RENTED = "rented"
     STATUS_WRITTEN_OFF = "written_off"
     STATUS_DEFECT = "defect"
+    STATUS_RETIRED = "retired"
 
     STATUS_CHOICES = [
         (STATUS_IN_STOCK, _("In stock")),
         (STATUS_RENTED, _("Rented")),
         (STATUS_WRITTEN_OFF, _("Written off")),
         (STATUS_DEFECT, _("Defect")),
+        (STATUS_RETIRED, _("Retired")),
     ]
 
     inventory_number = models.CharField(
@@ -251,12 +253,6 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
         blank=True,
         null=True,
         verbose_name=_("Description")
-    )
-    serial_number = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name=_("Serial Number")
     )
     manufacturer = models.ForeignKey(
         Manufacturer,
@@ -280,7 +276,12 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
         verbose_name=_("Location")
     )
     quantity = models.PositiveIntegerField(
-        verbose_name=_("Quantity")
+        default=1,
+        verbose_name=_("Quantity"),
+        help_text=_(
+            "Once devices are listed for this item, the quantity is the "
+            "number of devices in stock and is updated automatically."
+        ),
     )
     status = models.CharField(
         max_length=50,
@@ -301,18 +302,6 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
         null=True,
         verbose_name=_("Inventory Number Owner"),
         help_text=_("Enter the inventory number of the owner of the item.")
-    )
-    purchase_date = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name=_("Purchase Date")
-    )
-    purchase_cost = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        blank=True,
-        null=True,
-        verbose_name=_("Purchase Cost")
     )
     date_added = models.DateField(
         auto_now_add=True,
@@ -370,9 +359,61 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
     # Removed: object_type_display helper
 
     @property
-    def formatted_purchase_date(self) -> str:
-        """Return purchase date in a readable format."""
-        return self.purchase_date.strftime("%Y-%m-%d") if self.purchase_date else _("Not specified")
+    def serial_numbers(self) -> str:
+        """Return the serial numbers of the devices still in the stock."""
+        return ', '.join(
+            unit.serial_number for unit in self.units.all()
+            if unit.serial_number and unit.status not in InventoryUnit.STATUS_GONE
+        )
+
+    def sync_from_units(self) -> bool:
+        """Derive quantity and status from the devices listed for this item.
+
+        The quantity is the number of devices in stock, so defective, written
+        off and retired devices are not offered for rent. The status is "in
+        stock" while any device is, otherwise "defect" if any device is
+        defective, and the way the remaining devices left the stock ("written
+        off" before "retired") once none is left. Items without devices keep
+        their manually entered quantity and status. Returns whether anything
+        changed.
+        """
+        statuses = list(self.units.values_list('status', flat=True))
+        if not statuses:
+            return False
+
+        quantity = statuses.count(self.STATUS_IN_STOCK)
+        if quantity:
+            status = self.STATUS_IN_STOCK
+        elif self.STATUS_DEFECT in statuses:
+            status = self.STATUS_DEFECT
+        else:
+            status = next(
+                (gone for gone in InventoryUnit.STATUS_GONE if gone in statuses),
+                self.STATUS_WRITTEN_OFF,
+            )
+
+        changes = {
+            field: {'old': str(getattr(self, field)), 'new': str(value)}
+            for field, value in (('quantity', quantity), ('status', status))
+            if getattr(self, field) != value
+        }
+        if not changes:
+            return False
+
+        # A queryset update keeps the item's post_save audit handler from
+        # logging the admin form's edits a second time; this change is logged
+        # on its own below.
+        type(self).objects.filter(pk=self.pk).update(quantity=quantity, status=status)
+        self.quantity = quantity
+        self.status = status
+        AuditLog.objects.create(
+            model_name="InventoryItem",
+            object_id=str(self.pk),
+            action="updated",
+            changes=changes,
+            user=get_current_user(),
+        )
+        return True
 
     def save(self, *args, **kwargs):
         """Save the model and update original state for tracking changes."""
@@ -383,6 +424,89 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
                 for field in self._meta.fields
             })
         super().save(*args, **kwargs)
+
+
+class InventoryUnit(models.Model):
+    """One physical device filed under an inventory number.
+
+    Several identical devices can share an inventory number. Each keeps its own
+    serial number, purchase information, status and inspections, while the
+    item holds what they have in common (description, category, location).
+    """
+
+    STATUS_IN_STOCK = InventoryItem.STATUS_IN_STOCK
+    STATUS_DEFECT = InventoryItem.STATUS_DEFECT
+    STATUS_WRITTEN_OFF = InventoryItem.STATUS_WRITTEN_OFF
+    STATUS_RETIRED = InventoryItem.STATUS_RETIRED
+
+    # Devices that left the stock for good, in the order the item falls back
+    # on them once no device is in stock or defective.
+    STATUS_GONE = (STATUS_WRITTEN_OFF, STATUS_RETIRED)
+
+    # Renting is counted per item, not per device, so "rented" is not a
+    # device status.
+    STATUS_CHOICES = [
+        (STATUS_IN_STOCK, _("In stock")),
+        (STATUS_DEFECT, _("Defect")),
+        (STATUS_WRITTEN_OFF, _("Written off")),
+        (STATUS_RETIRED, _("Retired")),
+    ]
+
+    item = models.ForeignKey(
+        InventoryItem,
+        on_delete=models.CASCADE,
+        related_name='units',
+        verbose_name=_("Inventory Item"),
+    )
+    serial_number = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("Serial Number"),
+    )
+    status = models.CharField(
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default=STATUS_IN_STOCK,
+        verbose_name=_("Status"),
+    )
+    purchase_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name=_("Purchase Date"),
+    )
+    purchase_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        verbose_name=_("Purchase Cost"),
+    )
+    notes = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("Note"),
+    )
+
+    class Meta:
+        """Meta options for InventoryUnit."""
+
+        verbose_name = _("Device")
+        verbose_name_plural = _("Devices")
+        ordering = ['item', 'id']
+
+    def __str__(self):
+        """Return the serial number, or a numbered placeholder without one."""
+        label = self.serial_number or _("Device %(id)s") % {'id': self.pk or '–'}
+        return f"{label} [{self.item.inventory_number}]"
+
+
+@receiver(post_save, sender=InventoryUnit)
+@receiver(post_delete, sender=InventoryUnit)
+def inventory_unit_changed_handler(sender, instance, **kwargs):
+    """Keep the item's quantity and status in line with its devices."""
+    item = InventoryItem.objects.filter(pk=instance.item_id).first()
+    if item is not None:
+        item.sync_from_units()
 
 
 class InventoryImageConfig(models.Model):
@@ -925,6 +1049,15 @@ class Inspection(models.Model):
         blank=True,
         related_name="inspections",
         verbose_name=_("Inventory Item")
+    )
+    unit = models.ForeignKey(
+        InventoryUnit,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inspections",
+        verbose_name=_("Device"),
+        help_text=_("The device of the item that was inspected."),
     )
 
     manufacturer = models.CharField(max_length=255, blank=True, verbose_name=_("Manufacturer"))

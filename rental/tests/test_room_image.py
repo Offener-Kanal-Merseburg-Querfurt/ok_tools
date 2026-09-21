@@ -62,10 +62,25 @@ class ServeRoomImageTests(TestCase):
         # Longest edge capped at the inventory thumbnail size (400px).
         self.assertLessEqual(max(thumb.size), 400)
 
-    def test_anonymous_is_redirected_to_login(self):
+    def test_anonymous_is_redirected_to_the_user_login(self):
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 302)
-        self.assertIn('/admin/login/', resp['Location'])
+        self.assertNotIn('/admin/login/', resp['Location'])
+
+    def test_rental_user_sees_photos_of_active_rooms(self):
+        self.client.force_login(User.objects.create_user(
+            email='roomrenter@example.com', password='pw'))
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp['Content-Type'], 'image/jpeg')
+
+    def test_rental_user_cannot_see_photos_of_inactive_rooms(self):
+        self.room.is_active = False
+        self.room.save()
+        self.client.force_login(User.objects.create_user(
+            email='roomrenter@example.com', password='pw'))
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 404)
 
     def test_missing_image_row_returns_404(self):
         self.client.force_login(self.staff)

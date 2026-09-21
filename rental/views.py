@@ -4763,17 +4763,21 @@ class PrintPickListView(StaffRequiredMixin, TemplateView):
         return context
 
 
-@staff_member_required
+@login_required
 def serve_room_image(request, image_id):
     """Stream a room photo through Django instead of a static ``/media/`` URL.
 
     In the split deployment nginx runs on a separate VM and cannot see the
     application's ``MEDIA_ROOT``, so ``/media/room_photos/...`` 404s there. This
     view is proxied to the app VM and reads the file locally, exactly like the
-    inventory item photos (see ``inventory.views.serve_item_image``). Restricted
-    to staff, matching every page where room photos appear.
+    inventory item photos (see ``inventory.views.serve_item_image``). Staff see
+    every photo; other signed-in users only photos of active rooms, which the
+    user rental dashboard offers them.
     """
-    room_image = get_object_or_404(RoomImage, pk=image_id)
+    room_images = RoomImage.objects.all()
+    if not request.user.is_staff:
+        room_images = room_images.filter(room__is_active=True)
+    room_image = get_object_or_404(room_images, pk=image_id)
 
     # Calendars and admin previews ask for a small cached thumbnail so the page
     # does not download full-resolution room photos for a 34px tile.

@@ -97,6 +97,9 @@ def inventory_import(request, file, import_obj):
     # Lists to accumulate items for batch operations
     items_to_create = []
     items_to_update = []
+    # Serial, purchase and status data per item, recorded on its devices once
+    # the batches have saved the items.
+    device_data = []
     
     try:
         wb = load_workbook(file)
@@ -166,6 +169,7 @@ def inventory_import(request, file, import_obj):
                     _('in Betrieb'): 'in_stock',
                     _('defekt'): 'defect',
                     _('ausgemustert'): 'written_off',
+                    _('ausgesondert'): 'retired',
                     _('verliehen'): 'rented',
                     _('Ausleihe'): 'rented'
                 }
@@ -220,17 +224,20 @@ def inventory_import(request, file, import_obj):
                     
                     # Update fields that might have changed
                     existing_item.description = description
-                    existing_item.serial_number = serial_number
                     existing_item.manufacturer = manufacturer
                     existing_item.location = loc_obj
                     existing_item.quantity = quantity
                     existing_item.status = status
                     existing_item.owner = owner
                     existing_item.inventory_number_owner = inventory_number_owner
-                    existing_item.purchase_date = purchase_date
-                    existing_item.purchase_cost = purchase_cost
                     
                     items_to_update.append(existing_item)
+                    device_data.append((existing_item, {
+                        'serial_number': serial_number,
+                        'purchase_date': purchase_date,
+                        'purchase_cost': purchase_cost,
+                        'status': status,
+                    }))
                     updated_counter += 1
                     
                     # Process batch if it reaches the batch size
@@ -242,7 +249,6 @@ def inventory_import(request, file, import_obj):
                     item = InventoryItem(
                         inventory_number=inventory_number,
                         description=description,
-                        serial_number=serial_number,
                         manufacturer=manufacturer,
                         location=loc_obj,
                         quantity=quantity,
@@ -250,11 +256,15 @@ def inventory_import(request, file, import_obj):
                         # object_type removed
                         owner=owner,
                         inventory_number_owner=inventory_number_owner,
-                        purchase_date=purchase_date,
-                        purchase_cost=purchase_cost
                     )
                     
                     items_to_create.append(item)
+                    device_data.append((item, {
+                        'serial_number': serial_number,
+                        'purchase_date': purchase_date,
+                        'purchase_cost': purchase_cost,
+                        'status': status,
+                    }))
                     created_counter += 1
                     
                     # Process batch if it reaches the batch size
@@ -277,6 +287,17 @@ def inventory_import(request, file, import_obj):
         
         if items_to_update:
             _process_update_batch(items_to_update)
+
+        for item, data in device_data:
+            if item.pk is None:
+                continue  # Creating the item failed; the error is logged.
+            try:
+                InventoryService.apply_device_data(item, **data)
+            except Exception as e:
+                error_logs.append(_('%(number)s: %(error)s') % {
+                    'number': item.inventory_number,
+                    'error': str(e),
+                })
 
         # If there are errors, create Excel file
         if error_details:
@@ -351,9 +372,8 @@ def _process_update_batch(items_to_update):
     try:
         # Define the fields to update - only include fields that might change
         update_fields = [
-            'description', 'serial_number', 'manufacturer', 'location',
+            'description', 'manufacturer', 'location',
             'quantity', 'status', 'owner', 'inventory_number_owner',
-            'purchase_date', 'purchase_cost'
         ]
         
         # Use bulk_update for efficient batch updates

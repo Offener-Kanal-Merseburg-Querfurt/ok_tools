@@ -24,7 +24,7 @@ class InventoryItemViewSet(viewsets.ReadOnlyModelViewSet):
     
     def get_queryset(self):
         """Get queryset with optional filtering for user access."""
-        queryset = InventoryItem.objects.all()
+        queryset = InventoryItem.objects.prefetch_related('units')
         
         # Apply filters based on user access if user_id is provided
         user_id = self.request.query_params.get('user_id', None)

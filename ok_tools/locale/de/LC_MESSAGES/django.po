@@ -1027,6 +1027,11 @@ msgstr "ausgemustert"
 
 #: inventory/inventory_import.py:169
 #: inventory/services/inventory_service.py:892
+msgid "ausgesondert"
+msgstr "ausgesondert"
+
+#: inventory/inventory_import.py:169
+#: inventory/services/inventory_service.py:892
 msgid "verliehen"
 msgstr "verliehen"
 
@@ -1171,6 +1176,10 @@ msgstr "Ausgebucht"
 #: inventory/models.py:242
 msgid "Defect"
 msgstr "Defekt"
+
+#: inventory/models.py:243
+msgid "Retired"
+msgstr "Ausgesondert"
 
 #: inventory/models.py:303
 msgid "Enter the inventory number of the owner of the item."
@@ -6679,3 +6688,50 @@ msgstr "Um 90° drehen"
 #: inventory/templates/admin/inventory/barcode_modal.html
 msgid "for printers with portrait media"
 msgstr "für Drucker mit hochformatigem Medium"
+
+#: inventory/models.py inventory/admin.py
+msgid "Device"
+msgstr "Gerät"
+
+#: inventory/models.py inventory/admin.py
+msgid "Devices"
+msgstr "Geräte"
+
+#: inventory/models.py inventory/admin.py
+#, python-format
+msgid "Device %(id)s"
+msgstr "Gerät %(id)s"
+
+#: inventory/models.py
+msgid "Note"
+msgstr "Notiz"
+
+#: inventory/models.py
+msgid ""
+"Once devices are listed for this item, the quantity is the number of devices "
+"in stock and is updated automatically."
+msgstr ""
+"Sobald Geräte erfasst sind, ist die Menge die Anzahl der Geräte auf Lager und "
+"wird automatisch aktualisiert."
+
+#: inventory/models.py
+msgid "The device of the item that was inspected."
+msgstr "Das geprüfte Gerät dieses Artikels."
+
+#: inventory/admin.py
+msgid "Last inspection"
+msgstr "Letzte Prüfung"
+
+#: inventory/admin.py
+msgid "Ownership & Reservations"
+msgstr "Eigentum & Reservierungen"
+
+#: inventory/admin.py
+msgid ""
+"Several devices can share this inventory number. Each has its own serial "
+"number, status, purchase information and inspections in the tables below; "
+"quantity and status of the item follow the devices."
+msgstr ""
+"Unter dieser Inventarnummer können mehrere Geräte geführt werden. Jedes hat "
+"in den Tabellen unten eigene Seriennummer, Status, Kaufinformationen und "
+"Prüfungen; Menge und Status des Artikels ergeben sich aus den Geräten."

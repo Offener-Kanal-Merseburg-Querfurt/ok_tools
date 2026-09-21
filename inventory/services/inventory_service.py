@@ -22,14 +22,16 @@ import csv
 import re
 
 from ..models import (
-    InventoryItem, InventorySeries, Location, Manufacturer, Organization,
-    Category, Inspection, AuditLog
+    InventoryItem, InventorySeries, InventoryUnit, Location, Manufacturer,
+    Organization, Category, Inspection, AuditLog
 )
 
 logger = logging.getLogger('django')
 WS_NAME = _('Inventory')
 IGNORED_PREFIXES = [_('Test'), _('Sample')]
 REQUIRED_INSPECTION_FIELDS: Set[str] = {"inspection_number", "inspection_date"}
+# Separators between several serial numbers written into one field ("A, B").
+SERIAL_SEPARATORS = re.compile(r'\s*[,;\n]+\s*')
 
 
 class InventoryService:
@@ -50,7 +52,7 @@ class InventoryService:
         """
         items = InventoryItem.objects.select_related(
             'manufacturer', 'category', 'location', 'owner'
-        ).all()
+        ).prefetch_related('units')
         
         result = []
         for item in items:
@@ -58,7 +60,7 @@ class InventoryService:
                 'id': item.id,
                 'inventory_number': item.inventory_number,
                 'description': item.description,
-                'serial_number': item.serial_number,
+                'serial_number': item.serial_numbers,
                 'manufacturer': item.manufacturer.name if item.manufacturer else None,
                 'category': item.category.name if item.category else None,
                 'location': item.location.full_path if item.location else None,
@@ -235,7 +237,6 @@ class InventoryService:
         item = InventoryItem.objects.create(
             inventory_number=inventory_number,
             description=description,
-            serial_number=serial_number,
             manufacturer=manufacturer,
             category=category,
             location=location,
@@ -243,12 +244,87 @@ class InventoryService:
             status=status,
             owner=owner,
             inventory_number_owner=inventory_number_owner,
+            available_for_rent=available_for_rent
+        )
+        InventoryService.apply_device_data(
+            item,
+            serial_number=serial_number,
             purchase_date=purchase_date,
             purchase_cost=purchase_cost,
-            available_for_rent=available_for_rent
+            status=status,
         )
         
         return item
+
+    @staticmethod
+    def split_serial_numbers(raw: Optional[str]) -> List[str]:
+        """Split a field listing several serial numbers ("A, B") into a list."""
+        return [s for s in SERIAL_SEPARATORS.split((raw or '').strip()) if s]
+
+    @staticmethod
+    def apply_device_data(
+        item: InventoryItem,
+        serial_number: Optional[str] = None,
+        purchase_date=None,
+        purchase_cost=None,
+        status: Optional[str] = None,
+    ) -> None:
+        """Record flat serial, purchase and status data on an item's devices.
+
+        Sources such as the Excel import describe an item with one serial
+        number column. The data is mapped onto devices the same way the
+        ``0045_inventoryunit`` migration moved existing items:
+
+        * An item with a single device gets that device updated.
+        * An item with several devices gets a device for each serial number
+          that is not listed yet.
+        * An item without devices gets one device when its quantity is 1, or
+          one per serial number when the column lists exactly that many.
+          Anything else cannot be assigned without guessing and is appended to
+          the item's notes.
+
+        Afterwards the item's quantity and status follow its devices.
+        """
+        raw_serial = (serial_number or '').strip()
+        serials = InventoryService.split_serial_numbers(raw_serial)
+        unit_status = status if status in (
+            InventoryUnit.STATUS_DEFECT, *InventoryUnit.STATUS_GONE,
+        ) else InventoryUnit.STATUS_IN_STOCK
+        purchase = {'purchase_date': purchase_date, 'purchase_cost': purchase_cost}
+
+        units = list(item.units.all())
+        if len(units) == 1:
+            unit = units[0]
+            unit.serial_number = raw_serial
+            unit.status = unit_status
+            unit.purchase_date = purchase_date
+            unit.purchase_cost = purchase_cost
+            unit.save()
+        elif units:
+            known = {unit.serial_number for unit in units}
+            for serial in serials:
+                if serial not in known:
+                    InventoryUnit.objects.create(
+                        item=item, serial_number=serial, status=unit_status, **purchase)
+        elif item.quantity == 1 or (serials and len(serials) == item.quantity):
+            for serial in ([raw_serial] if item.quantity == 1 else serials):
+                InventoryUnit.objects.create(
+                    item=item, serial_number=serial, status=unit_status, **purchase)
+        else:
+            parts = []
+            if raw_serial:
+                parts.append(f'{_("Serial Number")}: {raw_serial}')
+            if purchase_date:
+                parts.append(f'{_("Purchase Date")}: {purchase_date}')
+            if purchase_cost is not None:
+                parts.append(f'{_("Purchase Cost")}: {purchase_cost}')
+            note = '; '.join(parts)
+            notes = (item.notes or '').rstrip()
+            if note and note not in notes:
+                item.notes = f'{notes}\n{note}' if notes else note
+                InventoryItem.objects.filter(pk=item.pk).update(notes=item.notes)
+
+        item.sync_from_units()
     
     @staticmethod
     def update_inventory_item(
@@ -490,8 +566,8 @@ class InventoryService:
             items = items.filter(
                 Q(inventory_number__icontains=query) |
                 Q(description__icontains=query) |
-                Q(serial_number__icontains=query)
-            )
+                Q(units__serial_number__icontains=query)
+            ).distinct()
         
         if manufacturer_id:
             items = items.filter(manufacturer_id=manufacturer_id)
@@ -833,6 +909,7 @@ class InventoryService:
                         _('in Betrieb'): 'in_stock',
                         _('defekt'): 'defect',
                         _('ausgemustert'): 'written_off',
+                        _('ausgesondert'): 'retired',
                         _('verliehen'): 'rented',
                         _('Ausleihe'): 'rented'
                     }
@@ -896,18 +973,22 @@ class InventoryService:
                         continue
 
                     # Create record
-                    InventoryItem.objects.create(
+                    item = InventoryItem.objects.create(
                         inventory_number=inventory_number,
                         description=description,
-                        serial_number=serial_number,
                         manufacturer=manufacturer,
                         location=loc_obj,
                         quantity=quantity,
                         status=status,
                         owner=owner,
                         inventory_number_owner=inventory_number_owner,
+                    )
+                    InventoryService.apply_device_data(
+                        item,
+                        serial_number=serial_number,
                         purchase_date=purchase_date,
-                        purchase_cost=purchase_cost
+                        purchase_cost=purchase_cost,
+                        status=status,
                     )
                     created_counter += 1
 
@@ -1142,6 +1223,12 @@ class InventoryService:
                         "result": row_data.get("result", "").strip(),
                         "target_part": row_data.get("target_part", "device").strip() or "device",
                     }
+                    # An item with a single device: the inspection is of that device.
+                    # With several, which one was inspected is chosen in the admin, so an
+                    # existing assignment is left alone.
+                    units = list(item.units.all()[:2]) if item else []
+                    if len(units) == 1:
+                        defaults["unit"] = units[0]
 
                     obj, is_created = Inspection.objects.get_or_create(
                         inspection_number=inspection_number,

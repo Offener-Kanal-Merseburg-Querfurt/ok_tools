@@ -16,7 +16,7 @@ class InspectionInlineForm(forms.ModelForm):
         """Meta options for InspectionInlineForm."""
 
         model = Inspection
-        fields = ("inspection_number", "target_part", "inspection_date", "result")
+        fields = ("unit", "inspection_number", "target_part", "inspection_date", "result")
 
     def __init__(self, *args, **kwargs):
         """Initialize the form."""
@@ -51,6 +51,7 @@ class InspectionInlineForm(forms.ModelForm):
         if existing:
             self.instance = existing
         self.instance.inspection_number = number
+        self.instance.unit = self.cleaned_data.get("unit")
         self.instance.target_part = self.cleaned_data["target_part"]
         self.instance.inspection_date = self.cleaned_data["inspection_date"]
         self.instance.result = self.cleaned_data["result"]

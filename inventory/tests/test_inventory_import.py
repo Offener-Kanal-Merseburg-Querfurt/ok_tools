@@ -308,29 +308,33 @@ class InventoryImportTest(TestCase):
             item1 = items[0]
             self.assertEqual(item1.inventory_number, "OK-001")
             self.assertEqual(item1.description, "Laptop Test")
-            self.assertEqual(item1.serial_number, "SN001")
             self.assertEqual(item1.manufacturer.name, "Dell")
             self.assertEqual(item1.location, self.location_room)
             self.assertEqual(item1.quantity, 1)
             self.assertEqual(item1.status, 'in_stock')
             self.assertEqual(item1.owner.name, "Test Org")  # The owner gets created automatically by _create_or_skip function with the value from the file
             self.assertEqual(item1.inventory_number_owner, "OWNER-001")  # This should match the value from the test data
-            self.assertEqual(item1.purchase_date, date(2024, 1, 15))
-            self.assertEqual(item1.purchase_cost, 100.00)
+            # A single piece becomes one device carrying the row's data.
+            unit1 = item1.units.get()
+            self.assertEqual(unit1.serial_number, "SN001")
+            self.assertEqual(unit1.purchase_date, date(2024, 1, 15))
+            self.assertEqual(unit1.purchase_cost, 100.00)
             
             # Check second item
             item2 = items[1]
             self.assertEqual(item2.inventory_number, "OK-002")
             self.assertEqual(item2.description, "Monitor Test")
-            self.assertEqual(item2.serial_number, "SN002")
             self.assertEqual(item2.manufacturer.name, "HP")
             self.assertEqual(item2.location, self.location_room)
             self.assertEqual(item2.quantity, 2)
             self.assertEqual(item2.status, 'in_stock')  # The status should be 'in_stock' as per the actual function behavior
             self.assertEqual(item2.owner.name, "Test Org 2")
             self.assertEqual(item2.inventory_number_owner, "OWNER-002")
-            self.assertEqual(item2.purchase_date, date(2024, 2, 20))
-            self.assertEqual(item2.purchase_cost, 500.00)
+            # One serial number for two pieces cannot be assigned to devices,
+            # so it is kept in the notes and the quantity stays manual.
+            self.assertFalse(item2.units.exists())
+            self.assertIn("SN002", item2.notes)
+            self.assertIn("2024-02-20", item2.notes)
         finally:
             # Clean up
             os.unlink(temp_file_path)
@@ -348,15 +352,17 @@ class InventoryImportTest(TestCase):
         existing_item = InventoryItem.objects.create(
             inventory_number='OK-001',
             description='Old Description',
-            serial_number='OLD-SN001',
             manufacturer=existing_manufacturer,
             location=existing_location,
             quantity=1,
             status='in_stock',
             owner=existing_org,
             inventory_number_owner='OLD-OWNER-001',
+        )
+        existing_item.units.create(
+            serial_number='OLD-SN001',
             purchase_date=date(2023, 1, 1),
-            purchase_cost=500.00
+            purchase_cost=500.00,
         )
         
         # Create workbook and worksheet
@@ -412,14 +418,16 @@ class InventoryImportTest(TestCase):
             
             # Verify that the item was updated
             self.assertEqual(existing_item.description, "New Description")
-            self.assertEqual(existing_item.serial_number, "NEW-SN001")
             self.assertEqual(existing_item.manufacturer.name, "New Manufacturer")
-            self.assertEqual(existing_item.quantity, 5)
+            # The item has one device, so the quantity follows it, not the row.
+            self.assertEqual(existing_item.quantity, 1)
             self.assertEqual(existing_item.status, 'in_stock')  # The status should remain 'in_stock' as per the actual function behavior
             self.assertEqual(existing_item.owner.name, "New Organization")  # The owner name comes from the owner field in the import
             self.assertEqual(existing_item.inventory_number_owner, "NEW-OWNER-001")
-            self.assertEqual(existing_item.purchase_date, date(2024, 6, 15))
-            self.assertEqual(existing_item.purchase_cost, 1500.00)
+            unit = existing_item.units.get()
+            self.assertEqual(unit.serial_number, "NEW-SN001")
+            self.assertEqual(unit.purchase_date, date(2024, 6, 15))
+            self.assertEqual(unit.purchase_cost, 1500.00)
         finally:
             # Clean up
             os.unlink(temp_file_path)

@@ -4,8 +4,8 @@ ok_tools
 
 A universal set of tools to support administrative tasks for community media organizations. Originally developed for the Offener Kanal system of Medienanstalt Sachsen-Anhalt, now configurable for any organization.
 
-**Current Version**: 4.53.1
-**Last Updated**: 19 September 2026
+**Current Version**: 4.54.0
+**Last Updated**: 21 September 2026
 
 Features
 ========
@@ -126,8 +126,9 @@ Features
   - Excel import (XLSX) with batch processing
   - Inspection import from CSV/XLSX files
   - Manufacturer, category, and organization tracking
-  - Serial number and inventory number management
-  - Status tracking (in stock, rented, written off, defect)
+  - Several devices per inventory number, each with its own serial number,
+    status, purchase information and inspections
+  - Status tracking (in stock, rented, written off, defect, retired)
   - Quantity management with reserved/rented tracking
   - Audit logging for inventory changes
   - Owner-based access control

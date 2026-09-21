@@ -5,6 +5,7 @@ from .models import InventoryImageConfig
 from .models import InventoryItemImage
 from .services import InventoryService
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.http import FileResponse
 from django.http import Http404
 from django.http import HttpResponse
@@ -23,15 +24,28 @@ def export_inventory_items(request):
     return response
 
 
-@staff_member_required
+def _get_visible_image(request, image_id):
+    """Return the item photo ``request.user`` may see, or raise 404.
+
+    Staff see every photo. Other signed-in users only see photos of items that
+    are offered for rent, because the rental dashboard shows those to them.
+    """
+    images = InventoryItemImage.objects.all()
+    if not request.user.is_staff:
+        images = images.filter(item__available_for_rent=True)
+    return get_object_or_404(images, pk=image_id)
+
+
+@login_required
 def serve_item_image(request, image_id):
     """Stream an inventory item photo from the mounted folder.
 
     The photos folder lives outside ``MEDIA_ROOT`` so Django does not serve it
-    directly. Access is restricted to staff and the resolved path is validated
-    to stay inside the configured base directory (guards against traversal).
+    directly. Access requires a login (see ``_get_visible_image``) and the
+    resolved path is validated to stay inside the configured base directory
+    (guards against traversal).
     """
-    image = get_object_or_404(InventoryItemImage, pk=image_id)
+    image = _get_visible_image(request, image_id)
 
     base_dir = InventoryImageConfig.get_config().get_base_dir()
     if base_dir is None:
@@ -53,14 +67,14 @@ def serve_item_image(request, image_id):
     )
 
 
-@staff_member_required
+@login_required
 def serve_item_image_thumbnail(request, image_id):
     """Stream a small cached thumbnail for an inventory item photo.
 
     Falls back to the original file if a thumbnail cannot be produced (e.g.
     Pillow unavailable), so the gallery always renders something.
     """
-    image = get_object_or_404(InventoryItemImage, pk=image_id)
+    image = _get_visible_image(request, image_id)
 
     thumb_path = ensure_thumbnail(image)
     if thumb_path is None:
@@ -70,7 +84,7 @@ def serve_item_image_thumbnail(request, image_id):
     return FileResponse(open(thumb_path, 'rb'), content_type='image/jpeg')
 
 
-@staff_member_required
+@login_required
 def serve_item_image_preview(request, image_id):
     """Stream a downscaled preview for the lightbox.
 
@@ -78,7 +92,7 @@ def serve_item_image_preview(request, image_id):
     on a full screen, so the modal opens quickly. Falls back to the original
     when a preview cannot be produced.
     """
-    image = get_object_or_404(InventoryItemImage, pk=image_id)
+    image = _get_visible_image(request, image_id)
 
     preview_path = ensure_preview(image)
     if preview_path is None:

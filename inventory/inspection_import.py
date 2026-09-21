@@ -210,6 +210,12 @@ def inspection_import(
                     "result": row_data.get("result", "").strip(),
                     "target_part": row_data.get("target_part", "device").strip() or "device",
                 }
+                # An item with a single device: the inspection is of that device.
+                # With several, which one was inspected is chosen in the admin, so an
+                # existing assignment is left alone.
+                units = list(item.units.all()[:2]) if item else []
+                if len(units) == 1:
+                    defaults["unit"] = units[0]
 
                 obj, is_created = Inspection.objects.get_or_create(
                     inspection_number=inspection_number,

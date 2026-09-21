@@ -306,8 +306,8 @@
 {% for issue in item.issues.all %}
 <br><small style="color:#c00;">⚠ {{ issue.get_issue_type_display }} — {{ issue.description }}</small>
 {% endfor %}
-                            {% if item.inventory_item.serial_number %}
-                            <br><small>S/N: {{ item.inventory_item.serial_number }}</small>
+                            {% if item.inventory_item.serial_numbers %}
+                            <br><small>S/N: {{ item.inventory_item.serial_numbers }}</small>
                             {% endif %}
                         </div>
                         {% empty %}

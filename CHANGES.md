@@ -1,6 +1,25 @@
 CHANGELOG
 =========
 
+2026-09-21 (Version 4.54.0)
+==========================
+
+* **inventory: An inventory number holds several devices**
+  * ``InventoryUnit`` is one physical device: serial number, status, purchase date and cost, a note. Serial number, purchase date and cost moved off ``InventoryItem`` onto it, and migration ``0045_inventoryunit`` carries the existing data over — one device per item, or one per serial number where an item listed several and its quantity says so.
+  * An item's quantity and status follow its devices: the quantity is the number in stock, the status is "in stock" while any device is, "defect" while any is defective, and the way the rest left the stock once none is left. Items without devices keep the quantity and status entered by hand.
+  * The item's change form shows the devices and their inspections right under the first fieldset, with quantity and status displayed but not editable while devices exist. An inspection names the device it belongs to, chosen from that item's devices.
+  * The Excel export keeps its serial number, purchase date and purchase cost columns, now listing the devices' values. The item import writes the devices instead of the item, and the inspection import assigns an inspection to the device when the item has exactly one.
+  * The rental API gains a ``units`` list per item; ``serial_number`` stays as the joined serial numbers of the devices still in the stock, so the wizard and the print forms read as before.
+
+* **inventory: A device can be retired ("Ausgesondert")**
+  * A fourth device status beside in stock, defect and written off, for devices sorted out rather than written off the books. An item whose devices are all retired is retired too; a mix of written off and retired stays written off. ``ausgesondert`` in the status column of an import is recognised.
+
+* **inventory, rental: Item and room photos need a login, not staff rights**
+  * The photo views were staff only, so the item and room pictures on the rental wizard and the user dashboard stayed blank for the people they are meant for. A signed-in user now sees photos of items offered for rent and of active rooms; staff still see all of them.
+
+* **rental: The wizard's item photos open again**
+  * ``openImageLightbox`` in ``wizard.jsx`` is a classic script's top-level function, so it replaced the global of the same name and called itself until the tab froze. It is named ``openPhotoLightbox`` now.
+
 2026-09-19 (Version 4.53.1)
 ==========================
 

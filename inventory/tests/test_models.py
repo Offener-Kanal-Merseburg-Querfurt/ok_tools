@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from registration.models import OKUser
 from inventory.models import (
     Manufacturer, Organization, Category, Location, InventoryItem, 
-    InventoryImport, AuditLog, Inspection, InspectionImport
+    InventoryImport, InventoryUnit, AuditLog, Inspection, InspectionImport
 )
 
 
@@ -144,7 +144,6 @@ class InventoryItemModelTest(TestCase):
         item = InventoryItem.objects.create(
             inventory_number='OK-001',
             description='Test Item',
-            serial_number='SN01',
             manufacturer=self.manufacturer,
             category=self.category,
             location=self.location,
@@ -152,14 +151,11 @@ class InventoryItemModelTest(TestCase):
             status='in_stock',
             owner=self.organization,
             inventory_number_owner='OWNER-001',
-            purchase_date=date.today(),
-            purchase_cost=100.0,
             available_for_rent=True
         )
         
         self.assertEqual(item.inventory_number, 'OK-001')
         self.assertEqual(item.description, 'Test Item')
-        self.assertEqual(item.serial_number, 'SN01')
         self.assertEqual(item.manufacturer, self.manufacturer)
         self.assertEqual(item.category, self.category)
         self.assertEqual(item.location, self.location)
@@ -167,7 +163,6 @@ class InventoryItemModelTest(TestCase):
         self.assertEqual(item.status, 'in_stock')
         self.assertEqual(item.owner, self.organization)
         self.assertEqual(item.inventory_number_owner, 'OWNER-001')
-        self.assertEqual(item.purchase_cost, 100.0)
         self.assertTrue(item.available_for_rent)
         self.assertEqual(item.reserved_quantity, 0)
         self.assertEqual(item.rented_quantity, 0)
@@ -211,23 +206,55 @@ class InventoryItemModelTest(TestCase):
         item.save()
         self.assertFalse(item.is_in_stock())
     
-    def test_inventory_item_formatted_purchase_date(self):
-        """Test formatted_purchase_date property."""
+    def _item_with_units(self, *statuses, quantity=1):
         item = InventoryItem.objects.create(
-            inventory_number='OK-005',
-            location=self.location,
-            quantity=1,
-            status='in_stock',
-            owner=self.organization,
-            purchase_date=date(2023, 1, 15)
-        )
-        self.assertEqual(item.formatted_purchase_date, '2023-01-15')
-        
-        item.purchase_date = None
-        item.save()
-        # Account for localization
-        expected_values = ['Not specified', 'Nicht angegeben']
-        self.assertIn(item.formatted_purchase_date, expected_values)
+            inventory_number='OK-005', location=self.location,
+            quantity=quantity, owner=self.organization)
+        for index, status in enumerate(statuses):
+            InventoryUnit.objects.create(
+                item=item, serial_number=f'SN-{index}', status=status)
+        item.refresh_from_db()
+        return item
+
+    def test_devices_set_the_quantity_to_those_in_stock(self):
+        """Defective and written-off devices are not offered for rent."""
+        item = self._item_with_units('in_stock', 'in_stock', 'defect', 'written_off')
+        self.assertEqual(item.quantity, 2)
+        self.assertEqual(item.status, 'in_stock')
+
+    def test_item_is_defect_when_no_device_is_in_stock(self):
+        item = self._item_with_units('defect', 'written_off')
+        self.assertEqual(item.quantity, 0)
+        self.assertEqual(item.status, 'defect')
+
+    def test_item_is_written_off_when_every_device_is(self):
+        item = self._item_with_units('written_off')
+        self.assertEqual(item.status, 'written_off')
+
+    def test_item_is_retired_when_every_device_is(self):
+        item = self._item_with_units('retired', 'retired')
+        self.assertEqual(item.quantity, 0)
+        self.assertEqual(item.status, 'retired')
+
+    def test_written_off_devices_outweigh_retired_ones(self):
+        item = self._item_with_units('retired', 'written_off')
+        self.assertEqual(item.status, 'written_off')
+
+    def test_deleting_a_device_updates_the_quantity(self):
+        item = self._item_with_units('in_stock', 'in_stock')
+        item.units.first().delete()
+        item.refresh_from_db()
+        self.assertEqual(item.quantity, 1)
+
+    def test_items_without_devices_keep_their_manual_quantity(self):
+        item = self._item_with_units(quantity=7)
+        self.assertFalse(item.sync_from_units())
+        self.assertEqual(item.quantity, 7)
+
+    def test_serial_numbers_skip_devices_that_left_the_stock(self):
+        item = self._item_with_units(
+            'in_stock', 'written_off', 'defect', 'retired')
+        self.assertEqual(item.serial_numbers, 'SN-0, SN-2')
 
 
 class InventoryImportModelTest(TestCase):

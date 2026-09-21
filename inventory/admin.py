@@ -8,6 +8,7 @@ from .models import InventoryImport
 from .models import InventoryItem
 from .models import InventoryItemImage
 from .models import InventorySeries
+from .models import InventoryUnit
 from .models import Location
 from .models import Manufacturer
 from .models import Organization
@@ -57,7 +58,7 @@ class InventoryResource(ModelResource):
 
     inventory_number = Field(attribute='inventory_number', column_name=_('Inventory Number'))
     description = Field(attribute='description', column_name=_('Description'))
-    serial_number = Field(attribute='serial_number', column_name=_('Serial Number'))
+    serial_number = Field(column_name=_('Serial Number'))
     manufacturer = Field(attribute='manufacturer__name', column_name=_('Manufacturer'))
     category = Field(attribute='category__name', column_name=_('Category'))
     location = Field(attribute='location', column_name=_('Location'))
@@ -65,12 +66,8 @@ class InventoryResource(ModelResource):
     status = Field(attribute='status', column_name=_('Status'))
     owner = Field(attribute='owner__name', column_name=_('Owner'))
     inventory_number_owner = Field(attribute='inventory_number_owner', column_name=_('Inventory Number Owner'))
-
-    purchase_date = Field(
-        attribute='purchase_date',
-        column_name=_('Purchase Date'),
-        widget=DateWidget(format='%Y-%m-%d')
-    )
+    purchase_date = Field(column_name=_('Purchase Date'))
+    purchase_cost = Field(column_name=_('Purchase Cost'))
 
     class Meta:
         """Meta options for InventoryResource."""
@@ -92,6 +89,64 @@ class InventoryResource(ModelResource):
             'purchase_cost'
         )
 
+    # Serial and purchase data live on the item's devices. Each column lists
+    # the devices' values in device order, one value for a single device.
+    def dehydrate_serial_number(self, item):
+        """Return the serial numbers of the item's devices in use."""
+        return item.serial_numbers
+
+    def dehydrate_purchase_date(self, item):
+        """Return the devices' purchase dates."""
+        return ', '.join(
+            unit.purchase_date.strftime('%Y-%m-%d')
+            for unit in item.units.all() if unit.purchase_date)
+
+    def dehydrate_purchase_cost(self, item):
+        """Return the devices' purchase costs."""
+        return ', '.join(
+            str(unit.purchase_cost)
+            for unit in item.units.all() if unit.purchase_cost is not None)
+
+
+class InventoryUnitInline(admin.TabularInline):
+    """One row per device: serial number, status, purchase and inspection."""
+
+    model = InventoryUnit
+    fields = (
+        'serial_number', 'status', 'purchase_date', 'purchase_cost',
+        'last_inspection', 'notes',
+    )
+    readonly_fields = ('last_inspection',)
+    verbose_name = _('Device')
+    verbose_name_plural = _('Devices')
+
+    def get_queryset(self, request):
+        """Load the devices' inspections for the "last inspection" column."""
+        return super().get_queryset(request).prefetch_related('inspections')
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """Offer an empty row only while the item has no devices yet."""
+        if obj is not None and obj.pk and obj.units.exists():
+            return 0
+        return 1
+
+    @admin.display(description=_('Last inspection'))
+    def last_inspection(self, unit):
+        """Return the newest inspection of the device, or a dash."""
+        if unit is None or not unit.pk:
+            return '—'
+        inspections = sorted(
+            unit.inspections.all(), key=lambda i: i.inspection_date, reverse=True)
+        if not inspections:
+            return '—'
+        latest = inspections[0]
+        return format_html(
+            '{}<br><small>{}{}</small>',
+            latest.inspection_date.strftime('%d.%m.%Y'),
+            latest.inspection_number,
+            f' · {latest.result}' if latest.result else '',
+        )
+
 
 class InspectionInline(admin.TabularInline):
     """Inline admin for Inspection model."""
@@ -99,7 +154,30 @@ class InspectionInline(admin.TabularInline):
     model = Inspection
     form = InspectionInlineForm
     extra = 1
-    fields = ("inspection_number", "target_part", "inspection_date", "result")
+    fields = ("unit", "inspection_number", "target_part", "inspection_date", "result")
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """Offer only this item's devices, labelled by serial number."""
+        formset = super().get_formset(request, obj, **kwargs)
+        field = formset.form.base_fields.get('unit')
+        if field is not None:
+            field.queryset = (
+                InventoryUnit.objects.filter(item=obj)
+                if obj is not None and obj.pk else InventoryUnit.objects.none()
+            )
+            field.label_from_instance = unit_label
+            # The widget's add/change links would open the separate device
+            # admin; devices are edited in the table above.
+            field.widget.can_add_related = False
+            field.widget.can_change_related = False
+            field.widget.can_delete_related = False
+            field.widget.can_view_related = False
+        return formset
+
+
+def unit_label(unit):
+    """Return a short label for a device in a select: its serial number."""
+    return unit.serial_number or _('Device %(id)s') % {'id': unit.pk}
 
 
 @admin.register(Location)
@@ -142,7 +220,7 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
         'status', 'owner', 'photo_preview', 'available_for_rent'
     )
     search_fields = [
-        'inventory_number', 'description', 'serial_number',
+        'inventory_number', 'description', 'units__serial_number',
         'manufacturer__name', 'category__name', 'owner__name', 'inventory_number_owner',
         'location__name',
     ]
@@ -151,7 +229,7 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
         AutocompleteFilterFactory(_('Category'), 'category'),
         AutocompleteFilterFactory(_('Owner'), 'owner'),
         AutocompleteFilterFactory(_('Location'), 'location'),
-        ('purchase_date', admin.DateFieldListFilter),
+        ('units__purchase_date', admin.DateFieldListFilter),
         'status', 'available_for_rent',
     ]
     autocomplete_fields = ('manufacturer', 'category', 'owner', 'location')
@@ -228,29 +306,42 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
         }
 
     def get_readonly_fields(self, request, obj=None):
-        """Return readonly fields depending on item status."""
+        """Return readonly fields depending on item status and devices.
+
+        With devices listed, quantity and status follow them (see
+        ``InventoryItem.sync_from_units``), so they are shown but not edited.
+        """
         fields = self.readonly_fields + ('photo_gallery',)
-        if obj and obj.status == InventoryItem.STATUS_RENTED:
+        if obj and obj.pk and obj.units.exists():
+            fields = fields + ('quantity', 'status')
+        elif obj and obj.status == InventoryItem.STATUS_RENTED:
             fields = fields + ('status',)
         return fields
 
+    # The change form (admin/inventory/inventoryitem/change_form.html) shows
+    # the first fieldset, then the devices and inspections, then the rest, so
+    # everything about the physical devices is together near the top.
     fieldsets = (
-        (_('Identification'), {
-            'fields': ('inventory_number', 'description', 'serial_number')
+        (_('Inventory Item'), {
+            'fields': (
+                ('inventory_number', 'status', 'quantity'),
+                'description',
+                ('manufacturer', 'category'),
+                ('location', 'available_for_rent'),
+            ),
+            'description': _(
+                'Several devices can share this inventory number. Each has its '
+                'own serial number, status, purchase information and '
+                'inspections in the tables below; quantity and status of the '
+                'item follow the devices.'
+            ),
         }),
-        (_('Classification'), {
-            'fields': ('manufacturer', 'category', 'location', 'status')
-        }),
-        (_('Ownership & Inventory'), {
-            'fields': ('owner', 'inventory_number_owner')
-        }),
-        (_('Quantity & Availability'), {
-            'fields': ('quantity', 'available_for_rent', 'reserved_quantity', 'rented_quantity'),
+        (_('Ownership & Reservations'), {
+            'fields': (
+                ('owner', 'inventory_number_owner'),
+                ('reserved_quantity', 'rented_quantity'),
+            ),
             'description': _('Reserved and rented quantities are calculated automatically.')
-        }),
-        (_('Purchase Information'), {
-            'fields': ('purchase_date', 'purchase_cost'),
-            'classes': ('collapse',),
         }),
         (_('Notes'), {
             'fields': ('notes',),
@@ -265,7 +356,7 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
         }),
     )
 
-    inlines = [InspectionInline]
+    inlines = [InventoryUnitInline, InspectionInline]
 
     # PERFORMANCE OPTIMIZATION: Reduce N+1 queries in list view
     def get_queryset(self, request):
@@ -275,7 +366,7 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
             'category',
             'location',
             'owner'
-        ).prefetch_related('images')
+        ).prefetch_related('images', 'units')
 
     def get_list_display(self, request):
         """Show the photo column only while photos are enabled in settings.
@@ -386,6 +477,10 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         """Customize form fields for InventoryItem."""
         form = super().get_form(request, obj, **kwargs)
+        # Short text areas keep the device table visible without scrolling.
+        for name in ('description', 'notes'):
+            if name in form.base_fields:
+                form.base_fields[name].widget.attrs['rows'] = 2
         if 'status' in form.base_fields:
             if not (obj and obj.status == InventoryItem.STATUS_RENTED):
                 original_choices = form.base_fields['status'].choices
@@ -612,9 +707,23 @@ class InventoryImportAdmin(admin.ModelAdmin):
 class InspectionAdmin(admin.ModelAdmin):
     """Admin interface for Inspection model."""
 
-    list_display = ("inspection_number", "inventory_item", "target_part", "inspection_date", "result")
-    search_fields = ("inspection_number", "inventory_item__inventory_number")
+    list_display = ("inspection_number", "inventory_item", "unit", "target_part", "inspection_date", "result")
+    list_select_related = ("inventory_item", "unit__item")
+    search_fields = ("inspection_number", "inventory_item__inventory_number", "unit__serial_number")
     list_filter = ("target_part",)
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Offer only the devices of the inspection's item."""
+        form = super().get_form(request, obj, **kwargs)
+        field = form.base_fields.get('unit')
+        if field is not None:
+            item = obj.inventory_item if obj is not None else None
+            field.queryset = (
+                InventoryUnit.objects.filter(item=item)
+                if item is not None else InventoryUnit.objects.none()
+            )
+            field.label_from_instance = unit_label
+        return form
 
 
 @admin.register(InspectionImport)
