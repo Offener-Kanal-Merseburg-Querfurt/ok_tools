@@ -150,6 +150,17 @@
   .export-details .error-list .error-reason {
     color: #721c24;
   }
+  .export-details .running-list {
+    background: #fffdf3;
+    border-color: #ffeeba;
+  }
+  .export-details .running-list li {
+    border-bottom-color: #ffeeba;
+  }
+  .export-details .running-list .error-id,
+  .export-details .running-list .error-reason {
+    color: #856404;
+  }
   .export-error-banner {
     background: #fff5f5;
     border: 1px solid #f5c6cb;
@@ -364,6 +375,32 @@
           <h2>{% translate "Cover auto-generated (no cover existed)" %}</h2>
           <p>{% translate "These licenses had no cover, so one was generated automatically during export." %}</p>
           <div class="id-list">{{ run.details.covers_generated|join:", " }}</div>
+        {% endif %}
+
+        {% if run.details.already_running %}
+          <h2>{% translate "Skipped – already being exported" %}</h2>
+          <p>{% translate "Another export task was still uploading these items, so they were left alone instead of being uploaded twice at the same time." %}</p>
+          <ul class="error-list running-list">
+            {% for item in run.details.already_running %}
+              <li>
+                <span class="error-id">{{ item.id }}</span>
+                <span class="error-reason">{% translate "task" %} {{ item.task_id }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if run.details.source_fallbacks %}
+          <h2>{% translate "Read from a different storage location" %}</h2>
+          <p>{% translate "The usual source did not respond fast enough, so a byte-identical copy on another location was used." %}</p>
+          <ul class="error-list running-list">
+            {% for item_id, note in run.details.source_fallbacks.items %}
+              <li>
+                <span class="error-id">{{ item_id }}</span>
+                <span class="error-reason">{{ note }}</span>
+              </li>
+            {% endfor %}
+          </ul>
         {% endif %}
 
         {% if run.details.failed %}

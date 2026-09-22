@@ -110,6 +110,25 @@ class ExchangeConfigAdmin(admin.ModelAdmin):
                 'Thumbnail storage path is used only when "Upload Thumbnail Enabled" is checked.'
             ),
         }),
+        (_('Export robustness'), {
+            'fields': (
+                'copy_chunk_size_mb',
+                'copy_stall_timeout_seconds',
+                'export_tmp_cleanup_hours',
+                'export_source_failover_enabled',
+                'export_source_min_read_mbps',
+                'export_lock_enabled',
+            ),
+            'classes': ('collapse',),
+            'description': _(
+                'Safeguards against an unresponsive storage: copies run in chunks '
+                'with a stall watchdog, leftover .tmp_ files are swept, an '
+                'unreachable source is replaced by a byte-identical copy on '
+                'another location, and the same item cannot be exported twice at '
+                'the same time. The defaults are sensible; change them only if an '
+                'export is being aborted or kept waiting too often.'
+            ),
+        }),
     )
     
     readonly_fields = ['exchange_feed_link']

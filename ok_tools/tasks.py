@@ -238,4 +238,31 @@ def cleanup_stale_task_results_task(older_than_minutes=60):
             "Stale task cleanup finished: %s orphaned, %s closed.",
             summary['orphaned'], summary['closed'],
         )
+    summary['export_locks_released'] = _release_orphaned_export_locks(summary)
     return summary
+
+
+def _release_orphaned_export_locks(summary):
+    """Free austausch export locks whose owning task no longer exists.
+
+    The locks outlive a hard-killed worker, so without this a license stays
+    un-exportable until its TTL runs out. Nothing is released when no worker
+    answered the inspect ping — every task would look dead.
+    """
+    if summary.get('skipped'):
+        return 0
+    try:
+        from austausch.services.export_locks import release_orphaned_locks
+        from ok_tools.celery_health import get_live_task_ids
+    except ImportError:
+        # austausch is only installed with MEDIA_FILES_ENABLED.
+        return 0
+
+    try:
+        released = release_orphaned_locks(get_live_task_ids())
+    except Exception:
+        logger.exception("Could not release orphaned export locks.")
+        return 0
+    if released:
+        logger.info("Released %s orphaned export lock(s).", released)
+    return released

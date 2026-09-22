@@ -395,7 +395,59 @@ class ExchangeConfig(models.Model):
         verbose_name=_('Thumbnail Storage Path'),
         help_text=_('Local directory where cover images are stored. Used when "Upload Thumbnail Enabled" is on. Matching by number at start of filename (e.g. 12345_cover.jpg). Supported: .jpg, .jpeg, .png, .webp.')
     )
-    
+
+    # Copy robustness settings (network share export)
+    copy_chunk_size_mb = models.PositiveIntegerField(
+        default=8,
+        verbose_name=_('Copy Chunk Size (MB)'),
+        help_text=_(
+            'Video files are copied to the network share in chunks of this size. '
+            'Smaller chunks report progress more finely but cost throughput; '
+            'larger ones make the stall watchdog coarser. 8 MB is a good default.'
+        ),
+    )
+    copy_stall_timeout_seconds = models.PositiveIntegerField(
+        default=300,
+        verbose_name=_('Copy Stall Timeout (seconds)'),
+        help_text=_(
+            'Abort a copy that has written no byte for this long. Protects the '
+            'Celery worker from hanging forever on an unresponsive share.'
+        ),
+    )
+    export_tmp_cleanup_hours = models.PositiveIntegerField(
+        default=24,
+        verbose_name=_('Export Temp File Cleanup (hours)'),
+        help_text=_(
+            'Before each export, delete leftover .tmp_ files in the export '
+            'directory older than this. Set to 0 to disable.'
+        ),
+    )
+    export_source_failover_enabled = models.BooleanField(
+        default=True,
+        verbose_name=_('Export Source Failover'),
+        help_text=_(
+            'When the same video exists on several storage locations, read it '
+            'from a reachable one instead of always from the highest-quality '
+            'location. Only byte-identical copies are considered.'
+        ),
+    )
+    export_source_min_read_mbps = models.FloatField(
+        default=1.0,
+        verbose_name=_('Minimum Source Read Speed (MB/s)'),
+        help_text=_(
+            'A storage location reading slower than this is treated as dead and '
+            'skipped as an export source.'
+        ),
+    )
+    export_lock_enabled = models.BooleanField(
+        default=True,
+        verbose_name=_('Prevent Concurrent Export of the Same Item'),
+        help_text=_(
+            'Skip items that another export task is already uploading, instead '
+            'of letting two workers write the same file at once.'
+        ),
+    )
+
     class Meta:
         verbose_name = _('Exchange Configuration')
         verbose_name_plural = _('Exchange Configuration')

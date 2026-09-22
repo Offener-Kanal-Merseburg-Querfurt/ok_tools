@@ -6,7 +6,6 @@ import json
 import logging
 import os
 import re
-import shutil
 import tempfile
 import unicodedata
 from pathlib import Path
@@ -16,6 +15,7 @@ from django.db import models
 from django.utils import timezone
 
 from ..models import ExchangeConfig, ExportedLicense
+from .file_copy import CopyStalledError, copy_with_progress, sweep_stale_tmp_files
 from .nextcloud_exchange_service import NextcloudExchangeService
 
 logger = logging.getLogger('django')
@@ -89,11 +89,18 @@ class ExportToServerService:
         self.destination = getattr(self.config, 'export_destination', 'nextcloud')
         self.service = NextcloudExchangeService(self.config) if self.destination == 'nextcloud' else None
         self._progress_callback = None
+        # Reason of the last failed copy, so the report can say *why* instead
+        # of a flat 'Video upload failed'.
+        self._last_copy_error: Optional[str] = None
+        # Per-item cover outcome ('existing'|'generated'|None), keyed by license number.
+        self._cover_status_by_number: Dict[int, Optional[str]] = {}
+        # Per-item note on the read source, filled by _select_export_source.
+        self._source_note_by_item: Dict[int, str] = {}
 
     def set_progress_callback(self, callback):
-        """Set callback for progress updates during file uploads.
+        """Set callback for progress updates during file uploads/copies.
 
-        Callback receives: (chunk_num, total_chunks, percent)
+        Callback receives: (chunk_num, total_chunks, percent, speed_mbps).
         """
         self._progress_callback = callback
 
@@ -173,26 +180,181 @@ class ExportToServerService:
                     pass
             return False
 
-    @staticmethod
-    def _copy_file_atomic(source_path: str, target_path: str) -> bool:
-        """Copy file atomically using temporary file and replace."""
+    def _copy_chunk_size(self) -> int:
+        """Copy chunk size in bytes, from config."""
+        megabytes = getattr(self.config, 'copy_chunk_size_mb', None) or 8
+        return max(1, int(megabytes)) * 1024 * 1024
+
+    def _copy_stall_timeout(self) -> float:
+        """Seconds without a written byte after which a copy is aborted."""
+        return float(getattr(self.config, 'copy_stall_timeout_seconds', None) or 300)
+
+    def _copy_file_atomic(self, source_path: str, target_path: str) -> bool:
+        """Copy a file into place atomically, in chunks, under a watchdog.
+
+        ``shutil.copy2`` would hand the whole transfer to the kernel and take
+        the worker down with an unresponsive share; see
+        :mod:`austausch.services.file_copy`.
+        """
+        self._last_copy_error = None
         tmp_path = None
         target_dir = os.path.dirname(target_path)
         try:
             os.makedirs(target_dir, exist_ok=True)
             with tempfile.NamedTemporaryFile(dir=target_dir, prefix='.tmp_', delete=False) as tmp:
                 tmp_path = tmp.name
-            shutil.copy2(source_path, tmp_path)
+            copy_with_progress(
+                source_path,
+                tmp_path,
+                progress_callback=self._progress_callback,
+                chunk_size=self._copy_chunk_size(),
+                stall_timeout=self._copy_stall_timeout(),
+            )
             os.replace(tmp_path, target_path)
             return True
-        except Exception:
+        except CopyStalledError as error:
+            self._last_copy_error = f'Copy stalled: {error}'
+            logger.error('Copy stalled %s -> %s: %s', source_path, target_path, error)
+        except Exception as error:
+            self._last_copy_error = str(error)
             logger.exception('Failed to atomically copy file %s -> %s', source_path, target_path)
-            if tmp_path and os.path.exists(tmp_path):
-                try:
-                    os.unlink(tmp_path)
-                except OSError:
-                    pass
-            return False
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+        return False
+
+    def _sweep_leftover_tmp_files(self) -> None:
+        """Remove .tmp_ files left behind by earlier killed copies.
+
+        A copy aborted by the watchdog — or by a SIGKILL that lands while the
+        worker is stuck in I/O — never reaches its cleanup handler. Without
+        this the share silently fills with partial multi-gigabyte files.
+        """
+        if self.destination != 'network_share':
+            return
+        hours = getattr(self.config, 'export_tmp_cleanup_hours', None)
+        hours = 24 if hours is None else int(hours)
+        if hours <= 0:
+            return
+        removed = sweep_stale_tmp_files(
+            self._network_share_export_dir(), older_than_seconds=hours * 3600)
+        if removed:
+            logger.info('Export cleanup: removed %s stale .tmp_ file(s)', removed)
+
+    def _min_source_read_mbps(self) -> float:
+        """Read speed below which a storage location counts as dead."""
+        from media_files.storage_health import DEFAULT_MIN_READ_MBPS
+
+        configured = getattr(self.config, 'export_source_min_read_mbps', None)
+        return float(DEFAULT_MIN_READ_MBPS if configured is None else configured)
+
+    def _identical_versions(self, primary):
+        """Return the versions of ``primary`` that hold byte-identical content.
+
+        Size (and checksum, where both sides have one) is what makes a copy
+        interchangeable for export. A different render of the same programme
+        is a different file and must never be substituted silently.
+        """
+        candidates = [primary]
+        if not primary.file_size:
+            return candidates
+        try:
+            versions = primary.get_all_versions()
+        except Exception:
+            logger.exception('Could not list versions of VideoFile %s', primary.pk)
+            return candidates
+
+        for version in versions:
+            if version.pk == primary.pk or not version.storage_location:
+                continue
+            if version.file_size != primary.file_size:
+                continue
+            if primary.checksum and version.checksum and primary.checksum != version.checksum:
+                continue
+            candidates.append(version)
+        return candidates
+
+    def _select_export_source(self, primary, item_id):
+        """Pick a reachable copy to read the video from.
+
+        ``get_quality_score`` puts ARCHIVE 500 million points ahead of PLAYOUT,
+        so the primary version is always the archive copy — correct as an
+        answer to "which version is the best", useless as an answer to "which
+        copy can I actually read right now". This picks the read source only:
+        byte-identical candidates ranked by measured storage health, each one
+        verified with a short timed read before it is used.
+
+        Returns ``(video_file, note)`` where ``note`` is ``None`` when the
+        primary was used, or ``(None, reason)`` when nothing is reachable.
+        """
+        from media_files.storage_health import health_state
+        from media_files.storage_health import probe_read_speed
+        from media_files.storage_health import record_read_speed
+
+        min_mbps = self._min_source_read_mbps()
+        if getattr(self.config, 'export_source_failover_enabled', True):
+            candidates = self._identical_versions(primary)
+        else:
+            # Failover off: still verify the primary really reads, so the
+            # report can tell "file is gone" from "storage is not answering".
+            candidates = [primary]
+
+        def rank(video_file):
+            state = health_state(video_file.storage_location, min_mbps=min_mbps)
+            # Known-good first, never-measured next, known-bad last; the
+            # primary wins ties so nothing changes while everything is healthy.
+            health_rank = {True: 2, None: 1, False: 0}[state]
+            return (
+                health_rank,
+                video_file.storage_location.last_read_mbps or 0.0,
+                1 if video_file.pk == primary.pk else 0,
+            )
+
+        candidates.sort(key=rank, reverse=True)
+
+        rejected = []
+        for candidate in candidates:
+            path = candidate.full_path
+            if not os.path.isfile(path):
+                rejected.append(f'{candidate.storage_location.storage_type} (file missing)')
+                continue
+            read_mbps = probe_read_speed(path)
+            try:
+                record_read_speed(candidate.storage_location, read_mbps)
+            except Exception:
+                logger.exception('Could not record read speed for storage %s',
+                                 candidate.storage_location)
+            if read_mbps is None:
+                rejected.append(f'{candidate.storage_location.storage_type} (no response)')
+                continue
+            if read_mbps < min_mbps:
+                rejected.append(
+                    f'{candidate.storage_location.storage_type} '
+                    f'(read {read_mbps:.2f} MB/s, below threshold)')
+                continue
+
+            if candidate.pk == primary.pk:
+                if rejected:
+                    logger.info(
+                        'export source: %s at %.2f MB/s (skipped: %s)',
+                        candidate.storage_location.storage_type, read_mbps,
+                        ', '.join(rejected))
+                return candidate, None
+
+            note = (
+                f'{candidate.storage_location.storage_type} '
+                f'({read_mbps:.2f} MB/s) instead of '
+                f'{primary.storage_location.storage_type}'
+            )
+            if rejected:
+                note += f' — skipped: {", ".join(rejected)}'
+            logger.warning('export source: %s', note)
+            self._source_note_by_item[item_id] = note
+            return candidate, note
+
+        return None, '; '.join(rejected) or 'no readable copy'
 
     def _build_windows_files_txt_entry(self, filename: str) -> str:
         """Build files.txt line using configured windows root path."""
@@ -226,6 +388,7 @@ class ExportToServerService:
 
     def _upload_or_copy_file(self, local_path: str, remote_base_path: str, file_name: str) -> bool:
         """Upload to Nextcloud or copy to network share based on destination."""
+        self._last_copy_error = None
         if self.destination == 'nextcloud':
             remote_path = f'{remote_base_path}{file_name}'
             return self.service.upload_file_direct(local_path, remote_path, self._progress_callback)
@@ -311,11 +474,16 @@ class ExportToServerService:
             'skipped_no_pdf': [],
             # License numbers whose cover was auto-generated because none existed.
             'covers_generated': [],
+            # Per-item note on where the video was read from, when it was not
+            # the primary version (keyed by item id).
+            'source_fallbacks': {},
         }
-        # Per-item cover outcome ('existing'|'generated'|None), keyed by license number.
-        self._cover_status_by_number: Dict[int, Optional[str]] = {}
+        self._cover_status_by_number = {}
+        self._source_note_by_item = {}
         if not self._validate_destination(selected_ids, report):
             return report
+
+        self._sweep_leftover_tmp_files()
 
         total = len(selected_ids)
         for idx, item_id in enumerate(selected_ids, start=1):
@@ -325,6 +493,9 @@ class ExportToServerService:
 
             try:
                 status, out_id, reason = self._export_one(item_id, mode)
+                source_note = self._source_note_by_item.pop(item_id, None)
+                if source_note:
+                    report['source_fallbacks'][str(item_id)] = source_note
                 if status == 'success':
                     report['success_count'] += 1
                     report['success_ids'].append(out_id)
@@ -455,14 +626,19 @@ class ExportToServerService:
                 logger.exception('Failed to create network share directory %s', remote_base_path)
                 return ('failure', item_id, 'Failed to create network share directory')
 
-        video_local = video_file.full_path
-        if not os.path.isfile(video_local):
-            logger.error('Video file not found: %s', video_local)
-            return ('failure', item_id, 'Video file not found')
+        # Read from a copy that actually answers; keep the primary version's
+        # name so the exported file is the same whichever copy we read.
+        source_file, source_note = self._select_export_source(video_file, item_id)
+        if source_file is None:
+            logger.error(
+                'License %s: no readable copy of the video (%s)', number, source_note)
+            return ('failure', item_id, f'Video source unreachable: {source_note}')
 
+        video_local = source_file.full_path
         video_remote_name = _safe_filename(video_file.filename)
         if not self._upload_or_copy_file(video_local, remote_base_path, video_remote_name):
-            return ('failure', item_id, 'Video upload failed')
+            reason = self._last_copy_error or 'Video upload failed'
+            return ('failure', item_id, reason)
 
         # JSON metadata
         meta_data = LicenseMetadataSerializer(license_obj).data

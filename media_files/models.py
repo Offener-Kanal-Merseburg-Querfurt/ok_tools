@@ -88,6 +88,22 @@ class StorageLocation(models.Model):
         verbose_name=_('Scan Schedule'),
         help_text=_('Cron-style schedule for automatic scanning (optional)'),
     )
+    last_health_check = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('Last Health Check'),
+        help_text=_('When the read speed of this location was last measured.'),
+    )
+    last_read_mbps = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name=_('Last Read Speed (MB/s)'),
+        help_text=_(
+            'Read speed measured by the last health check. Empty means the '
+            'location did not answer at all. Used to pick a reachable source '
+            'when the same video exists on several locations.'
+        ),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('Created at')

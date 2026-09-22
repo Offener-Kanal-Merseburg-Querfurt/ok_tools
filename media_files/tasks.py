@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @shared_task(name="media_files.tasks.run_auto_scan")
 def run_auto_scan_task(**kwargs):
-    """Run the auto_scan management command."""
+    """Run the auto_scan management command and refresh storage read speeds."""
     logger.info("Starting auto_scan task...")
     
     args = []
@@ -35,6 +35,20 @@ def run_auto_scan_task(**kwargs):
         args.extend(["--storage-type", kwargs["storage_type"]])
     
     call_command("auto_scan", *args)
+
+    # Measure how fast each location actually reads, so the export source
+    # picker does not have to measure on the hot path — and so a storage
+    # degrading quietly shows up here instead of during an incident.
+    if kwargs.get("skip_health_check"):
+        logger.info("Finished auto_scan task (health check skipped).")
+        return
+
+    from media_files.storage_health import refresh_all_storage_health
+
+    try:
+        refresh_all_storage_health()
+    except Exception:
+        logger.exception("Storage health refresh failed after auto_scan.")
     logger.info("Finished auto_scan task.")
 
 

@@ -377,11 +377,14 @@ class StorageLocationAdmin(admin.ModelAdmin):
 
     list_display = [
         'name', 'storage_type', 'path', 'is_active',
-        'scan_enabled', 'video_count_display', 'updated_at'
+        'scan_enabled', 'video_count_display', 'read_health_display', 'updated_at'
     ]
     list_filter = ['storage_type', 'is_active', 'scan_enabled']
     search_fields = ['name', 'path']
-    readonly_fields = ['created_at', 'updated_at', 'video_count_info']
+    readonly_fields = [
+        'created_at', 'updated_at', 'video_count_info',
+        'last_health_check', 'last_read_mbps',
+    ]
     change_list_template = 'admin/media_files/storagelocation/change_list.html'
     delete_confirmation_template = 'admin/media_files/storagelocation/delete_confirmation.html'
     
@@ -392,12 +395,40 @@ class StorageLocationAdmin(admin.ModelAdmin):
         (_('Scanning'), {
             'fields': ('scan_enabled', 'scan_schedule')
         }),
+        (_('Read health'), {
+            'fields': ('last_read_mbps', 'last_health_check'),
+            'description': _(
+                'Measured by the hourly auto-scan and by every export that reads '
+                'from this location. A location that reads too slowly is skipped '
+                'as an export source in favour of an identical copy elsewhere.'
+            ),
+        }),
         (_('Information'), {
             'fields': ('video_count_info', 'created_at', 'updated_at')
         }),
     )
     
     actions = ['scan_storage', 'test_connection']
+
+    def read_health_display(self, obj):
+        """Show the last measured read speed, colour-coded."""
+        from media_files.storage_health import health_state
+
+        if not obj.last_health_check:
+            return format_html('<span style="color:#999;">{}</span>', _('not measured'))
+        state = health_state(obj)
+        if state is None:
+            label = _('stale')
+            colour = '#999'
+        elif state:
+            label = f'{obj.last_read_mbps:.1f} MB/s'
+            colour = '#2e7d32'
+        else:
+            label = (f'{obj.last_read_mbps:.2f} MB/s'
+                     if obj.last_read_mbps is not None else _('no response'))
+            colour = '#ba2121'
+        return format_html('<span style="color:{};">{}</span>', colour, label)
+    read_health_display.short_description = _('Read speed')
     
     def get_urls(self):
         """Add custom URLs for storage management."""

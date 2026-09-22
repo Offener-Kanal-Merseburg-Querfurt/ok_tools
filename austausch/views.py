@@ -547,11 +547,15 @@ def export_to_server_step2(request):
             return redirect(reverse('austausch:export_to_server_step1'))
 
     from .models import ExchangeConfig
+    from .services.export_locks import locked_item_ids
     from contributions.models import ContributionManager
 
     config = ExchangeConfig.get_config()
     cover_enabled, cover_dir = _cover_settings()
     already_exported = _get_already_exported_license_numbers()
+    # Items another export task is uploading right now: shown greyed out so
+    # the user does not queue a second copy of the same file.
+    running_items = locked_item_ids(mode)
     items = []
     if mode == 'contributions':
         qs = (
@@ -579,8 +583,9 @@ def export_to_server_step2(request):
                 if c.broadcast_date
                 else ''
             )
+            item_id = c.pk
             items.append({
-                'item_id': c.pk,
+                'item_id': item_id,
                 'license_number': lic.number,
                 'broadcast_date_display': broadcast_date_display,
                 'title': lic.title or '',
@@ -593,6 +598,7 @@ def export_to_server_step2(request):
                 'has_cover': _license_has_cover(lic.number, cover_dir),
                 'cover_url': (reverse('admin:licenses_license_cover_candidates', args=[lic.number]) if cover_enabled else None),
                 'video_url': video_url,
+                'running_task_id': running_items.get(str(item_id)),
             })
     else:
         qs = License.objects.filter(number__in=ids).select_related('profile').order_by('number')
@@ -605,8 +611,9 @@ def export_to_server_step2(request):
             profile = getattr(lic, 'profile', None)
             profile_display = str(profile).strip() if profile else ''
             video_url = reverse('admin:media_files_videofile_change', args=[video.id])
+            item_id = lic.number
             items.append({
-                'item_id': lic.number,
+                'item_id': item_id,
                 'license_number': lic.number,
                 'broadcast_date_display': '',  # No contribution in License/Planung mode
                 'title': lic.title or '',
@@ -619,6 +626,7 @@ def export_to_server_step2(request):
                 'has_cover': _license_has_cover(lic.number, cover_dir),
                 'cover_url': (reverse('admin:licenses_license_cover_candidates', args=[lic.number]) if cover_enabled else None),
                 'video_url': video_url,
+                'running_task_id': running_items.get(str(item_id)),
             })
 
     if not items:

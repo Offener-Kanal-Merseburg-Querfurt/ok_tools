@@ -479,6 +479,10 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
     Export selected contributions or licenses to Nextcloud (video, PDF, JSON, optional thumbnail).
     Saves result to ExportToServerRun for user-visible report.
 
+    Items another export task is already uploading are locked out and reported
+    separately rather than exported a second time in parallel; see
+    :mod:`austausch.services.export_locks`.
+
     Args:
         selected_ids: List of contribution IDs (mode='contributions') or license numbers (mode='licenses').
         mode: 'contributions' or 'licenses'.
@@ -487,7 +491,9 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
     Returns:
         dict: success_count, failure_count, skipped_no_pdf_count, details, run_id.
     """
+    from .models import ExchangeConfig
     from .models import ExportToServerRun
+    from .services.export_locks import ExportItemLocks
     from licenses.tasks import refresh_license_mediathek_url
 
     User = get_user_model()
@@ -527,10 +533,22 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
             }
         )
 
+    lock_enabled = getattr(ExchangeConfig.get_config(), 'export_lock_enabled', True)
+
     try:
-        service = ExportToServerService(user=user)
-        service.set_progress_callback(file_upload_callback)
-        report = service.run(selected_ids=selected_ids, mode=mode, progress_callback=progress_callback)
+        with ExportItemLocks(mode, selected_ids, self.request.id,
+                             enabled=lock_enabled) as locks:
+            if locks.busy:
+                logger.warning(
+                    'Export %s: %s item(s) skipped, already being exported',
+                    self.request.id, len(locks.busy))
+            service = ExportToServerService(user=user)
+            service.set_progress_callback(file_upload_callback)
+            report = service.run(
+                selected_ids=locks.acquired_ids,
+                mode=mode,
+                progress_callback=progress_callback,
+            )
         run.success_count = report['success_count']
         run.failure_count = report['failure_count']
         run.skipped_no_pdf_count = report['skipped_no_pdf_count']
@@ -542,6 +560,8 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
             'failed': report['failed'],
             'skipped_no_pdf': report['skipped_no_pdf'],
             'covers_generated': report.get('covers_generated', []),
+            'source_fallbacks': report.get('source_fallbacks', {}),
+            'already_running': locks.busy,
         }
         run.completed_at = timezone.now()
         run.save()

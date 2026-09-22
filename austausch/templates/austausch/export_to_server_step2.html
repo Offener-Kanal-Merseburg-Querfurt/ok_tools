@@ -157,6 +157,24 @@
   .short-header {
     font-size: 11px !important;
   }
+  .export-step2-table tr.row-running {
+    background: #f4f4f4;
+    color: #888;
+  }
+  .export-step2-table tr.row-running .title-cell {
+    font-style: italic;
+  }
+  .running-tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    background: #fff3cd;
+    color: #856404;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
 </style>
 
 <div class="export-container">
@@ -174,6 +192,9 @@
     </p>
     <p class="export-description">
       {% translate "Exported per item: video, PDF (required), JSON metadata, optional thumbnail. Only items with video are listed; items without PDF are skipped during upload." %}
+    </p>
+    <p class="export-description">
+      {% translate "Greyed-out rows are already being uploaded by another export task and cannot be selected." %}
     </p>
 
     <form method="post" action="" class="export-form">
@@ -200,9 +221,18 @@
               </thead>
               <tbody>
                 {% for item in items %}
-                <tr>
-                  <td><input type="checkbox" name="selected_ids" value="{{ item.item_id }}" class="item-cb" checked></td>
-                  <td>{{ item.license_number }}</td>
+                <tr{% if item.running_task_id %} class="row-running"{% endif %}>
+                  <td>
+                    {% if item.running_task_id %}
+                      <input type="checkbox" disabled title="{% translate 'Already being exported by another task' %}">
+                    {% else %}
+                      <input type="checkbox" name="selected_ids" value="{{ item.item_id }}" class="item-cb" checked>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{ item.license_number }}
+                    {% if item.running_task_id %}<span class="running-tag" title="{{ item.running_task_id }}">{% translate "exporting…" %}</span>{% endif %}
+                  </td>
                   <td>{{ item.broadcast_date_display|default:"—" }}</td>
                   <td class="title-cell" title="{{ item.title }}">{{ item.title }}</td>
                   <td>{{ item.profile_display }}</td>

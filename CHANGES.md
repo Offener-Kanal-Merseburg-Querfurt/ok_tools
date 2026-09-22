@@ -1,6 +1,26 @@
 CHANGELOG
 =========
 
+2026-09-22 (Version 4.55.0)
+==========================
+
+* **austausch: An unresponsive storage can no longer take the export worker with it**
+  * The video copy to the network share no longer goes through ``shutil.copy2``. That call hands the whole transfer to the kernel, so a CIFS server that stops answering parks the worker in uninterruptible sleep — no timeout, no log line, no way to revoke the task, and a finite ``--concurrency`` that a few such exports exhaust completely.
+  * ``austausch.services.file_copy`` copies chunk by chunk (8 MB by default) in a child process whose byte counter the parent watches. A copy that writes nothing for five minutes is killed and the task fails with "Copy stalled", minutes after the storage died instead of days later. A watchdog *thread* cannot do this — only killing the process holding the stuck ``read()`` works.
+  * Every chunk reports progress, so the export screen now shows the real percentage and MB/s of the copy. Until now the network-share branch never called the progress callback at all and the bar jumped straight to "100% · 1 of 1".
+  * Leftover ``.tmp_`` files older than a day are swept from the export directory before each run. A killed copy never reaches its cleanup handler, so each one used to leave gigabytes behind on a share that is already 96% full.
+  * The report distinguishes a missing video file from a storage that does not answer. Both used to read "Video file not found".
+
+* **austausch: The same license cannot be exported twice at the same time**
+  * Pressing "Start upload" again queued a second task with identical arguments; both workers then went after the same source file and wrote two different ``.tmp_`` files into the same directory. Items are now locked per export mode in Redis for the duration of the task.
+  * A locked item is not an error: it is reported as "already being exported by task …" beside the existing failed and skipped-no-PDF categories, and its row on the confirm screen is greyed out with an "exporting…" tag.
+  * The lock takes a short TTL that a heartbeat renews while the task runs, so it neither expires mid-copy nor blocks a license for a day after a crash. Locks whose owning task no longer exists are released by the periodic ``ok_tools.tasks.cleanup_stale_task_results_task``.
+
+* **media_files, austausch: Read from a storage that answers, not from the best one on paper**
+  * ``get_quality_score`` puts ARCHIVE 500 million points ahead of PLAYOUT, which no bitrate can outweigh, so the export always read from the archive — even when a byte-identical copy sat on the playout NAS reading at 136 MB/s. The global quality ranking is unchanged; the export now picks its *read source* separately.
+  * Only byte-identical candidates count (same file size, and same checksum where both have one), so a different render is never substituted. They are ranked by measured storage health and each one is verified with a short timed read before it is used; the choice is logged, and a fallback is listed in the export report.
+  * ``StorageLocation`` gained ``last_read_mbps`` and ``last_health_check``, measured by the hourly ``media_files.tasks.run_auto_scan`` and by every export that reads from a location, and shown in the admin. ``os.path.isfile`` cannot tell a healthy share from a hung one — on the incident behind this change ``stat`` returned instantly while ``read`` crawled at 0.03 MB/s for three days.
+
 2026-09-21 (Version 4.54.0)
 ==========================
 
