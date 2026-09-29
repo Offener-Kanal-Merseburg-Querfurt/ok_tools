@@ -24,6 +24,7 @@ from planung.serializers import MediaItemSerializer
 from planung.serializers import ScheduleItemSerializer
 from planung.serializers import _author_name
 from planung.serializers import _duration_seconds
+from planung.serializers import _sender_name
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -51,6 +52,31 @@ def _get_video_file_model():
         return None
 
 
+def _media_item(vf, license_obj) -> dict:
+    """Build one GET /api/v1/media item from a video file and its license."""
+    cat_name = ""
+    year = None
+    age_rating = ""
+    if license_obj:
+        cat = getattr(license_obj, "category", None)
+        cat_name = getattr(cat, "name", "") or ""
+        created_at = getattr(license_obj, "created_at", None)
+        year = created_at.year if created_at else None
+        raw_rating = getattr(license_obj, "youth_protection_category", "") or ""
+        age_rating = _AGE_RATING_MAP.get(raw_rating, "")
+    return {
+        "id": str(vf.number),
+        "filename": vf.filename,
+        "title": getattr(license_obj, "title", "") or "" if license_obj else "",
+        "author": _author_name(license_obj) if license_obj else "",
+        "description": getattr(license_obj, "description", "") or "" if license_obj else "",
+        "year": year,
+        "category": cat_name,
+        "age_rating": age_rating,
+        "sender": _sender_name(license_obj) if license_obj else "",
+    }
+
+
 class MediaListView(APIView):
     """GET /api/v1/media — Return media metadata for playout pull.
 
@@ -58,7 +84,8 @@ class MediaListView(APIView):
         updated_since  — ISO 8601 datetime, return only records modified after this
         filename       — Comma-separated filenames, return only matching records
 
-    Response: {"items": [{id, filename, title, author, description, year, category, age_rating}, ...]}
+    Response: {"items": [{id, filename, title, author, description, year,
+    category, age_rating, sender}, ...]} — one item per filename.
     """
 
     authentication_classes = [PlayoutApiKeyAuthentication]
@@ -76,7 +103,11 @@ class MediaListView(APIView):
         qs = (
             VideoFile.objects
             .filter(is_available=True, is_preview=False)
-            .select_related("license", "license__profile", "license__category")
+            .select_related(
+                "license",
+                "license__profile__media_authority",
+                "license__category",
+            )
         )
 
         if updated_since:
@@ -93,32 +124,30 @@ class MediaListView(APIView):
             if filenames:
                 qs = qs.filter(filename__in=filenames)
 
-        qs = qs[:2000]
+        qs = qs.order_by("number", "filename", "pk")[:2000]
+        video_files = list(qs)
 
-        items = []
-        for vf in qs:
-            license_obj = getattr(vf, "license", None)
-            cat_name = ""
-            year = None
-            age_rating = ""
-            if license_obj:
-                cat = getattr(license_obj, "category", None)
-                cat_name = getattr(cat, "name", "") or ""
-                created_at = getattr(license_obj, "created_at", None)
-                year = created_at.year if created_at else None
-                raw_rating = getattr(license_obj, "youth_protection_category", "") or ""
-                age_rating = _AGE_RATING_MAP.get(raw_rating, "")
-            item = {
-                "id": str(vf.number),
-                "filename": vf.filename,
-                "title": getattr(license_obj, "title", "") or "" if license_obj else "",
-                "author": _author_name(license_obj) if license_obj else "",
-                "description": getattr(license_obj, "description", "") or "" if license_obj else "",
-                "year": year,
-                "category": cat_name,
-                "age_rating": age_rating,
-            }
-            items.append(item)
+        # Only one copy of a file carries the OneToOne license link; copies in
+        # other storages or versions share the number, so resolve by number.
+        licenses_by_number = {
+            lic.number: lic
+            for lic in License.objects.filter(
+                number__in={vf.number for vf in video_files}
+            ).select_related("profile__media_authority", "category")
+        }
+
+        items_by_filename = {}
+        for vf in video_files:
+            license_obj = vf.license or licenses_by_number.get(vf.number)
+            existing = items_by_filename.get(vf.filename)
+            if existing is not None and (existing[1] is not None or license_obj is None):
+                continue
+            items_by_filename[vf.filename] = (vf, license_obj)
+
+        items = [
+            _media_item(vf, license_obj)
+            for vf, license_obj in items_by_filename.values()
+        ]
 
         serializer = MediaItemSerializer(items, many=True)
         return Response({"items": serializer.data})

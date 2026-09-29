@@ -162,6 +162,44 @@ class TestMediaListView:
         assert item["year"] == lic.created_at.year
         assert item["category"] == lic.category.name
         assert item["age_rating"] == ""
+        assert item["sender"] == lic.profile.media_authority.name
+
+    @override_settings(MEDIA_FILES_ENABLED=True)
+    def test_sender_is_owner_media_authority(self, api_client, license_with_video):
+        from registration.models import MediaAuthority
+
+        lic, vf = license_with_video
+        dessau = MediaAuthority.objects.create(name="OK Dessau")
+        lic.profile.media_authority = dessau
+        lic.profile.save()
+        response = api_client.get(f"/api/v1/media?filename={vf.filename}")
+        assert response.json()["items"][0]["sender"] == "OK Dessau"
+
+    @override_settings(MEDIA_FILES_ENABLED=True)
+    def test_copy_in_other_storage_yields_one_filled_item(self, api_client, license_with_video):
+        from media_files.models import StorageLocation
+        from media_files.models import VideoFile
+
+        lic, vf = license_with_video
+        archive = StorageLocation.objects.create(
+            name="Test Archive",
+            storage_type="ARCHIVE",
+            path="/mnt/archive/",
+        )
+        VideoFile.objects.create(
+            number=lic.number,
+            filename=vf.filename,
+            storage_location=archive,
+            file_path=vf.filename,
+            duration=timedelta(minutes=30),
+        )
+        assert VideoFile.objects.filter(filename=vf.filename).count() == 2
+
+        response = api_client.get(f"/api/v1/media?filename={vf.filename}")
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["id"] == str(lic.number)
+        assert items[0]["title"] == lic.title
 
     @override_settings(MEDIA_FILES_ENABLED=True)
     def test_filter_by_updated_since(self, api_client, license_with_video):

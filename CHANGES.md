@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+2026-09-29 (Version 4.56.0)
+==========================
+
+* **planung: Ondea learns which broadcaster a programme comes from**
+  * Every media item sent to the playout now carries ``sender`` — the media authority set in the license owner's profile (e.g. "OK Dessau"). It is included in the pull endpoint ``GET /api/v1/media`` and in both pushes from the calendar-weeks page ("Send media metadata" and "Send schedule"). Exchange programmes could only be recognised from their description text until now.
+  * ``GET /api/v1/media`` returns one item per filename. A file with copies in several storages or versions shares its number, but only one copy carries the license link, so each other copy came out as a second item with the same ``id`` and empty fields. The license is now resolved by number and the filled item wins.
+  * ``year`` is unchanged: it is the year the license was created in OK Tools, not a production year.
+
 2026-09-22 (Version 4.55.0)
 ==========================
 

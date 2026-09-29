@@ -18,6 +18,13 @@ def _author_name(license_obj: License) -> str:
     return f"{first_name} {last_name}".strip()
 
 
+def _sender_name(license_obj: License) -> str:
+    """Return the broadcaster set in the license owner's profile."""
+    profile = getattr(license_obj, "profile", None)
+    media_authority = getattr(profile, "media_authority", None) if profile else None
+    return getattr(media_authority, "name", "") or "" if media_authority else ""
+
+
 def _duration_seconds(license_obj: License) -> int | None:
     """Return license duration in seconds."""
     duration = getattr(license_obj, "duration", None)
@@ -37,6 +44,11 @@ class MediaItemSerializer(serializers.Serializer):
     year = serializers.IntegerField(allow_null=True, default=None)
     category = serializers.CharField(allow_blank=True, default="")
     age_rating = serializers.CharField(allow_blank=True, default="")
+    sender = serializers.CharField(
+        allow_blank=True,
+        default="",
+        help_text="Broadcaster (media authority) of the license owner",
+    )
 
 
 class MediaListResponseSerializer(serializers.Serializer):

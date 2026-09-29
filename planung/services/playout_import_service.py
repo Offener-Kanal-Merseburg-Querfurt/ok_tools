@@ -7,6 +7,7 @@ from django.apps import apps
 from licenses.models import License
 from licenses.models import YouthProtectionCategory
 from planung.models import PlanungConfig
+from planung.serializers import _sender_name
 from requests import RequestException
 from typing import Any
 import logging
@@ -124,6 +125,7 @@ def _build_item(license_obj: License, video_file: Any) -> dict[str, Any] | None:
         "title": getattr(license_obj, "title", "") or "",
         "description": getattr(license_obj, "description", "") or "",
         "author": _author_name(license_obj),
+        "sender": _sender_name(license_obj),
         "language": _language_code(),
         "category_name": getattr(category, "name", "") if category else "",
         "tags": _tags(license_obj),
@@ -160,7 +162,7 @@ def build_playout_import_items(plan_items: list[dict[str, Any]]) -> list[dict[st
 
     licenses = License.objects.filter(number__in=license_numbers).select_related(
         "category",
-        "profile",
+        "profile__media_authority",
     )
     licenses_by_number = {license_obj.number: license_obj for license_obj in licenses}
 
@@ -403,7 +405,7 @@ def build_playout_schedule_payload(
 
     if license_numbers:
         licenses = License.objects.filter(number__in=license_numbers).select_related(
-            "category", "profile",
+            "category", "profile__media_authority",
         )
         licenses_by_number = {lic.number: lic for lic in licenses}
         try:
@@ -480,6 +482,10 @@ def build_playout_schedule_payload(
         author = _author_name(license_obj)
         if author:
             item["author"] = author
+
+        sender = _sender_name(license_obj)
+        if sender:
+            item["sender"] = sender
 
         tags = _tags(license_obj)
         if tags:

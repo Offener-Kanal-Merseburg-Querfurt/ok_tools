@@ -269,3 +269,35 @@ def test__planung__playout_schedule_endpoint(client, staff_user, license_obj):
     body = response.json()
     assert body["configured"] is True
     assert body["created"] == 1
+
+
+@pytest.mark.django_db
+def test__planung__playout_payloads_carry_owner_sender(license_obj):
+    """Schedule and metadata pushes send the sender from the owner's profile."""
+    from datetime import date
+    from media_files.models import StorageLocation
+    from media_files.models import VideoFile
+    from planung.services.playout_import_service import build_playout_import_items
+    from planung.services.playout_import_service import build_playout_schedule_payload
+    from registration.models import MediaAuthority
+
+    profile = license_obj.profile
+    profile.media_authority = MediaAuthority.objects.create(name="OK Dessau")
+    profile.save()
+    storage = StorageLocation.objects.create(
+        name="Sender Playout", storage_type="PLAYOUT", path="/mnt/playout/",
+    )
+    VideoFile.objects.create(
+        number=license_obj.number,
+        filename="sender_clip.mp4",
+        storage_location=storage,
+        file_path="sender_clip.mp4",
+        duration=timedelta(minutes=20),
+    )
+    plan_items = [{"number": license_obj.number, "start": "18:00:00", "duration": 1200}]
+
+    schedule = build_playout_schedule_payload(date(2026, 2, 10), plan_items, draft=False, planned=True)
+    metadata = build_playout_import_items(plan_items)
+
+    assert schedule["items"][0]["sender"] == "OK Dessau"
+    assert metadata[0]["sender"] == "OK Dessau"
