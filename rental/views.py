@@ -280,7 +280,7 @@ def serialize_item(rental_item):
         'name': inventory_item.description or '',
         'num': inventory_item.inventory_number or '',
         'cat': category.name if category else '',
-        'loc': inventory_item.location.name if inventory_item.location else '',
+        'loc': inventory_item.location.full_path if inventory_item.location else '',
         'owner': inventory_item.owner.name if inventory_item.owner else '',
         'notes': rental_item.notes or '',
         'qty_requested': rental_item.quantity_requested,
