@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+2026-10-02 (Version 4.57.0)
+==========================
+
+* **inventory: Track which items carry their barcode label**
+  * ``InventoryItem.barcode_attached`` is a checkbox in the change form, next to the location and "available for rental". The admin list shows it as a column and has a filter for it, so the items still waiting for a label are one click away.
+  * Two bulk actions mark the selected items as labelled or not labelled.
+  * A copied item starts unlabelled: it gets a new inventory number, so its label still has to be printed and stuck on.
+
+* **inventory: New items come with an inventory number**
+  * The add form is prefilled with the next free number, continuing the series of the most recently added item, or the first active series when there are no items yet. The number can still be changed before saving.
+  * A number passed in the URL is kept. Two people opening the form at once get the same suggestion; the second save is then rejected by the unique constraint.
+
 2026-09-29 (Version 4.56.0)
 ==========================
 

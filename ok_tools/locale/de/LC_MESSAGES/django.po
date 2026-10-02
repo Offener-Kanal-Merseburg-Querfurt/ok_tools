@@ -6735,3 +6735,23 @@ msgstr ""
 "Unter dieser Inventarnummer können mehrere Geräte geführt werden. Jedes hat "
 "in den Tabellen unten eigene Seriennummer, Status, Kaufinformationen und "
 "Prüfungen; Menge und Status des Artikels ergeben sich aus den Geräten."
+
+msgid "Barcode label attached"
+msgstr "Barcode-Etikett aufgeklebt"
+
+msgid "Check once the barcode label is stuck on the device."
+msgstr "Ankreuzen, sobald das Barcode-Etikett auf dem Gerät klebt."
+
+msgid "Mark barcode label as attached"
+msgstr "Barcode-Etikett als aufgeklebt markieren"
+
+msgid "Mark barcode label as missing"
+msgstr "Barcode-Etikett als fehlend markieren"
+
+#, python-format
+msgid "%(count)d item(s) marked as labelled."
+msgstr "%(count)d Artikel als etikettiert markiert."
+
+#, python-format
+msgid "%(count)d item(s) marked as not labelled."
+msgstr "%(count)d Artikel als nicht etikettiert markiert."

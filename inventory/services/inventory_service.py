@@ -150,6 +150,32 @@ class InventoryService:
         return bool(re.match(r'^\d+', number[len(series.prefix):]))
 
     @staticmethod
+    def suggest_new_inventory_number() -> Optional[str]:
+        """
+        Return the next free number for a newly created inventory item.
+
+        The series of the most recently added item is used, so a series of
+        new items continues where the last one left off. Without such an item
+        the first active series is used.
+
+        Returns:
+            str or None: Suggested number, None if no series is configured
+        """
+        latest = InventoryItem.objects.order_by('-id').first()
+        series = (
+            InventoryService.match_series(latest.inventory_number)
+            if latest is not None else None
+        )
+        if series is None:
+            series = (
+                InventorySeries.objects.filter(active=True)
+                .order_by('prefix').first()
+            )
+        if series is None:
+            return None
+        return InventoryService.generate_next_inventory_number(series.prefix)
+
+    @staticmethod
     def generate_next_inventory_number(source_number: str) -> str:
         """
         Return the next free inventory number in the source number's series.

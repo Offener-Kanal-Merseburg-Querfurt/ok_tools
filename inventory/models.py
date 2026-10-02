@@ -312,6 +312,11 @@ class InventoryItem(ExportModelOperationsMixin('inventory_item'), models.Model):
         verbose_name=_("Available for Rental"),
         help_text=_("Check if this item is available for rental.")
     )
+    barcode_attached = models.BooleanField(
+        default=False,
+        verbose_name=_("Barcode label attached"),
+        help_text=_("Check once the barcode label is stuck on the device.")
+    )
     notes = models.TextField(
         blank=True,
         null=True,

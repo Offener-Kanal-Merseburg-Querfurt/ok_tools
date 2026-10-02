@@ -7162,3 +7162,23 @@ msgstr ""
 #, python-format
 msgid "Welcome back, %(name)s!"
 msgstr ""
+
+msgid "Barcode label attached"
+msgstr "Barcode label attached"
+
+msgid "Check once the barcode label is stuck on the device."
+msgstr "Check once the barcode label is stuck on the device."
+
+msgid "Mark barcode label as attached"
+msgstr "Mark barcode label as attached"
+
+msgid "Mark barcode label as missing"
+msgstr "Mark barcode label as missing"
+
+#, python-format
+msgid "%(count)d item(s) marked as labelled."
+msgstr "%(count)d item(s) marked as labelled."
+
+#, python-format
+msgid "%(count)d item(s) marked as not labelled."
+msgstr "%(count)d item(s) marked as not labelled."

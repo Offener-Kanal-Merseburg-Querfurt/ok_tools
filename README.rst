@@ -4,7 +4,7 @@ ok_tools
 
 A universal set of tools to support administrative tasks for community media organizations. Originally developed for the Offener Kanal system of Medienanstalt Sachsen-Anhalt, now configurable for any organization.
 
-**Current Version**: 4.56.0
+**Current Version**: 4.57.0
 **Last Updated**: 29 September 2026
 
 Features
@@ -128,6 +128,9 @@ Features
   - Manufacturer, category, and organization tracking
   - Several devices per inventory number, each with its own serial number,
     status, purchase information and inspections
+  - New items are prefilled with the next free inventory number
+  - Barcode label checkbox with a list filter and bulk actions to track
+    which items are labelled
   - Status tracking (in stock, rented, written off, defect, retired)
   - Quantity management with reserved/rented tracking
   - Audit logging for inventory changes

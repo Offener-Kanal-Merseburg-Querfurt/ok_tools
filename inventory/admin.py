@@ -217,7 +217,8 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
     readonly_fields = ('reserved_quantity', 'rented_quantity')
     list_display = (
         'inventory_number', 'description', 'category', 'location', 'quantity',
-        'status', 'owner', 'photo_preview', 'available_for_rent'
+        'status', 'owner', 'photo_preview', 'available_for_rent',
+        'barcode_attached',
     )
     search_fields = [
         'inventory_number', 'description', 'units__serial_number',
@@ -230,24 +231,65 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
         AutocompleteFilterFactory(_('Owner'), 'owner'),
         AutocompleteFilterFactory(_('Location'), 'location'),
         ('units__purchase_date', admin.DateFieldListFilter),
-        'status', 'available_for_rent',
+        'status', 'available_for_rent', 'barcode_attached',
     ]
     autocomplete_fields = ('manufacturer', 'category', 'owner', 'location')
     # Newest first, so freshly added or copied items are visible right away
     # instead of sorting to the last page by inventory number. date_added is a
     # DateField, so id breaks ties between items added on the same day.
     ordering = ('-date_added', '-id')
-    actions = ['copy_items_action', 'print_barcodes_action', 'rescan_photos_action']
+    actions = [
+        'copy_items_action', 'print_barcodes_action',
+        'mark_barcode_attached_action', 'mark_barcode_missing_action',
+        'rescan_photos_action',
+    ]
 
     # Not carried over to a copy: identity, the booking counters and the status,
-    # which describe the source item only. Photos are deliberately absent too -
-    # they are indexed from a folder named after the inventory number, so the
-    # copy gets its own once scan_inventory_images runs. Inspections belong to
+    # which describe the source item only. The copy has a new number, so its
+    # barcode label still has to be printed and stuck on. Photos are
+    # deliberately absent too - they are indexed from a folder named after the
+    # inventory number, so the copy gets its own once scan_inventory_images
+    # runs. Inspections belong to
     # the physical item that was inspected and are not copied either.
     COPY_EXCLUDED_FIELDS = frozenset({
         'id', 'inventory_number', 'date_added', 'status',
-        'reserved_quantity', 'rented_quantity',
+        'reserved_quantity', 'rented_quantity', 'barcode_attached',
     })
+
+    def get_changeform_initial_data(self, request):
+        """Prefill a new item with the next free inventory number."""
+        initial = super().get_changeform_initial_data(request)
+        if not initial.get('inventory_number'):
+            number = InventoryService.suggest_new_inventory_number()
+            if number:
+                initial['inventory_number'] = number
+        return initial
+
+    @admin.action(
+        description=_('Mark barcode label as attached'),
+        permissions=['change'],
+    )
+    def mark_barcode_attached_action(self, request, queryset):
+        """Record that the selected items carry their barcode label."""
+        updated = queryset.update(barcode_attached=True)
+        self.message_user(
+            request,
+            _('%(count)d item(s) marked as labelled.') % {'count': updated},
+            level=messages.SUCCESS,
+        )
+
+    @admin.action(
+        description=_('Mark barcode label as missing'),
+        permissions=['change'],
+    )
+    def mark_barcode_missing_action(self, request, queryset):
+        """Record that the selected items still need a barcode label."""
+        updated = queryset.update(barcode_attached=False)
+        self.message_user(
+            request,
+            _('%(count)d item(s) marked as not labelled.') % {'count': updated},
+            level=messages.SUCCESS,
+        )
 
     @admin.action(
         description=_('Copy selected inventory items'),
@@ -327,7 +369,7 @@ class InventoryItemAdmin(ExportMixin, admin.ModelAdmin):
                 ('inventory_number', 'status', 'quantity'),
                 'description',
                 ('manufacturer', 'category'),
-                ('location', 'available_for_rent'),
+                ('location', 'available_for_rent', 'barcode_attached'),
             ),
             'description': _(
                 'Several devices can share this inventory number. Each has its '

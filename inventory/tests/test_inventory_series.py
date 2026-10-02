@@ -176,3 +176,86 @@ class CopyItemsActionTest(TestCase):
         numbers = InventoryItem.objects.values_list(
             'inventory_number', flat=True)
         self.assertEqual(len(set(numbers)), 6)
+
+    def test_copy_still_needs_a_barcode_label(self):
+        """Test that the copy is not marked as labelled like its source."""
+        item = self._item('OK-000001', barcode_attached=True)
+        self.admin.copy_items_action(
+            self.request, InventoryItem.objects.filter(pk=item.pk))
+        copy = InventoryItem.objects.get(inventory_number='OK-000002')
+        self.assertFalse(copy.barcode_attached)
+
+
+class SuggestNewInventoryNumberTest(TestCase):
+    """New items are prefilled with the next number of the latest series."""
+
+    def setUp(self):
+        """Create a location and an admin instance."""
+        self.location = Location.objects.create(name='Room 1')
+        self.admin = InventoryItemAdmin(InventoryItem, AdminSite())
+
+    def _item(self, number):
+        """Create an inventory item with the given number."""
+        return InventoryItem.objects.create(
+            inventory_number=number, location=self.location, quantity=1)
+
+    def test_continues_series_of_latest_item(self):
+        """Test that the series of the most recently added item is used."""
+        InventorySeries.objects.create(
+            prefix='INV-', description='Borrowed', padding=4)
+        self._item('OK-000007')
+        self._item('INV-0003')
+        self.assertEqual(
+            InventoryService.suggest_new_inventory_number(), 'INV-0004')
+
+    def test_without_items_uses_first_active_series(self):
+        """Test that an empty inventory starts the first active series."""
+        self.assertEqual(
+            InventoryService.suggest_new_inventory_number(), 'OK-000001')
+
+    def test_without_series_suggests_nothing(self):
+        """Test that no number is suggested when no series is active."""
+        InventorySeries.objects.update(active=False)
+        self.assertIsNone(InventoryService.suggest_new_inventory_number())
+
+    def test_add_form_is_prefilled(self):
+        """Test that the admin add form gets the suggested number."""
+        self._item('OK-000041')
+        request = RequestFactory().get('/')
+        initial = self.admin.get_changeform_initial_data(request)
+        self.assertEqual(initial['inventory_number'], 'OK-000042')
+
+    def test_number_from_url_is_kept(self):
+        """Test that a number passed in the URL is not overwritten."""
+        request = RequestFactory().get('/', {'inventory_number': 'OK-000500'})
+        initial = self.admin.get_changeform_initial_data(request)
+        self.assertEqual(initial['inventory_number'], 'OK-000500')
+
+
+class BarcodeAttachedActionTest(TestCase):
+    """The bulk actions set and clear the barcode label flag."""
+
+    def setUp(self):
+        """Build an admin instance and a request carrying messages."""
+        location = Location.objects.create(name='Room 1')
+        self.admin = InventoryItemAdmin(InventoryItem, AdminSite())
+        self.request = RequestFactory().post('/')
+        setattr(self.request, 'session', 'session')
+        setattr(self.request, '_messages', FallbackStorage(self.request))
+        for number in ('OK-000001', 'OK-000002'):
+            InventoryItem.objects.create(
+                inventory_number=number, location=location, quantity=1)
+
+    def test_mark_and_unmark(self):
+        """Test that the flag is set and cleared for the selected items."""
+        self.admin.mark_barcode_attached_action(
+            self.request, InventoryItem.objects.all())
+        self.assertEqual(
+            InventoryItem.objects.filter(barcode_attached=True).count(), 2)
+        self.admin.mark_barcode_missing_action(
+            self.request,
+            InventoryItem.objects.filter(inventory_number='OK-000001'))
+        self.assertEqual(
+            list(InventoryItem.objects.filter(barcode_attached=True)
+                 .values_list('inventory_number', flat=True)),
+            ['OK-000002'])
