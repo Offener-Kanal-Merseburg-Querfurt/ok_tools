@@ -10,10 +10,12 @@ from celery import shared_task
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.utils import timezone
 from licenses.models import License
 from licenses.services.peertube_service import compute_lookup_eta
 from licenses.services.peertube_service import compute_publish_time_for_license
+from typing import Dict
 import logging
 import os
 
@@ -61,32 +63,41 @@ def enrich_with_oktools_metadata(contribution_id):
     return metadata
 
 
-def get_channels_list(config):
+def get_channels(config, service) -> Dict[str, str]:
     """
-    Get list of channels to sync.
+    Get channels to sync.
+
+    Channels are discovered in ExchangeConfig.channel_search_roots. A
+    non-empty channels_list restricts them to the listed names; listed
+    channels that were not discovered keep the folder from
+    exchange_folder_pattern, as before discovery existed.
     
     Args:
         config: ExchangeConfig instance
+        service: NextcloudExchangeService instance
         
     Returns:
-        List of channel names
+        {channel name: exchange folder path}
     """
-    if config.channels_list:
-        # Parse comma-separated list
-        channels = [ch.strip() for ch in config.channels_list.split(',') if ch.strip()]
-        if channels:
-            return channels
-    
-    # TODO: Auto-discover channels from Nextcloud folder structure
-    # For now, return empty list if not configured
-    logger.warning("No channels configured in ExchangeConfig.channels_list")
-    return []
+    found = service.discover_channels()
+    wanted = config.get_channels_list()
+    if wanted:
+        found = {
+            channel: found.get(channel)
+            or config.exchange_folder_pattern.format(channel=channel).strip('/')
+            for channel in wanted
+        }
+    excluded = config.get_excluded_channels()
+    return {channel: path for channel, path in found.items() if channel not in excluded}
 
 
 @shared_task(name='austausch.tasks.sync_exchange_folders', bind=True)
-def sync_exchange_folders_task(self):
+def sync_exchange_folders_task(self, full=False):
     """
     Periodic task to scan Nextcloud exchange folders.
+
+    With full=True all date folders are scanned and the lookback limit is
+    ignored (one-off catch-up after adding a channel).
     
     Schedule is managed via django-celery-beat admin interface:
     /admin/django_celery_beat/periodictask/ (task name: "sync_exchange_folders")
@@ -114,7 +125,7 @@ def sync_exchange_folders_task(self):
         raise  # Re-raise to ensure task result is marked as FAILURE
     
     # Get list of channels
-    channels = get_channels_list(config)
+    channels = get_channels(config, service)
     if not channels:
         logger.warning("No channels to sync")
         # Try to list available folders for debugging
@@ -127,16 +138,21 @@ def sync_exchange_folders_task(self):
         return {'status': 'skipped', 'reason': 'no_channels'}
     
     # Calculate lookback date
-    lookback_date = timezone.now() - timedelta(days=config.sync_lookback_days)
+    lookback_date = None if full else timezone.now() - timedelta(days=config.sync_lookback_days)
     
     total_items = 0
     new_items = 0
     updated_items = 0
     
-    for channel in channels:
+    failed_channels = []
+    for channel, folder_path in channels.items():
         try:
-            logger.info(f"Syncing exchange folder for channel: {channel}")
-            items = service.list_exchange_folder(channel)
+            logger.info(f"Syncing exchange folder for channel: {channel} ({folder_path})")
+            items = service.list_exchange_folder(
+                channel,
+                date_folders=[] if full else None,
+                folder_path=folder_path,
+            )
             
             # Group files by base name to find related .meta.json files
             files_by_base = {}
@@ -219,7 +235,7 @@ def sync_exchange_folders_task(self):
                         if latest_modified is None or modified_date > latest_modified:
                             latest_modified = modified_date
                             
-                if latest_modified and latest_modified < lookback_date:
+                if lookback_date and latest_modified and latest_modified < lookback_date:
                     logger.debug(f"Skipping old package: {package_key} (latest modified: {latest_modified})")
                     continue
                 
@@ -264,28 +280,38 @@ def sync_exchange_folders_task(self):
                 
                 # Create or update ExchangeItem (one per package)
                 # Use video file path as unique identifier, or PDF if no video
-                exchange_item, created = ExchangeItem.objects.update_or_create(
-                    file_path=main_file['path'],
-                    channel=channel,
-                    defaults={
-                        'contribution_id': contribution_id,
-                        'filename': main_file['filename'],
-                        'file_size': main_file['size'],
-                        'file_type': NextcloudExchangeService.detect_file_type(main_file['filename']),
-                        'pdf_path': pdf_path,  # Store PDF path as part of package
-                        'thumbnail_path': thumbnail_path,  # Store thumbnail path if available
-                        'is_oktools_managed': contribution_id is not None,
-                        'is_legacy': contribution_id is None,
-                        'title': final_title,
-                        'description': final_description,
-                        'duration': final_duration,
-                        'sendeverantwortung': final_sender,
-                        'allow_exchange': meta_data.get('allow_exchange', False),
-                        'allow_exchange_other_states': meta_data.get('allow_exchange_other_states', False),
-                        'bundesland': meta_data.get('bundesland', ''),
-                        'bundesland_code': meta_data.get('bundesland_code', ''),
-                    }
-                )
+                # One broken package (e.g. a bad meta.json value) must not
+                # cost the rest of the channel.
+                try:
+                    with transaction.atomic():
+                        exchange_item, created = ExchangeItem.objects.update_or_create(
+                            file_path=main_file['path'],
+                            channel=channel,
+                            defaults={
+                                'contribution_id': contribution_id,
+                                'filename': main_file['filename'],
+                                'file_size': main_file['size'],
+                                'file_type': NextcloudExchangeService.detect_file_type(main_file['filename']),
+                                'pdf_path': pdf_path,  # Store PDF path as part of package
+                                'thumbnail_path': thumbnail_path,  # Store thumbnail path if available
+                                'is_oktools_managed': contribution_id is not None,
+                                'is_legacy': contribution_id is None,
+                                'title': final_title,
+                                'description': final_description,
+                                'duration': final_duration,
+                                'sendeverantwortung': final_sender,
+                                'allow_exchange': meta_data.get('allow_exchange', False),
+                                'allow_exchange_other_states': meta_data.get('allow_exchange_other_states', False),
+                                'bundesland': meta_data.get('bundesland', ''),
+                                'bundesland_code': meta_data.get('bundesland_code', ''),
+                            }
+                        )
+                except Exception as e:
+                    logger.warning(
+                        f"Skipping package {package_key} in channel {channel}: {e}",
+                        exc_info=True,
+                    )
+                    continue
                 
                 if created:
                     new_items += 1
@@ -296,14 +322,16 @@ def sync_exchange_folders_task(self):
         
         except Exception as e:
             logger.error(f"Error syncing channel {channel}: {e}", exc_info=True)
-            raise  # Re-raise to ensure task result is marked as FAILURE
+            failed_channels.append(channel)
+            continue
     
     result = {
         'status': 'completed',
         'total_items': total_items,
         'new_items': new_items,
         'updated_items': updated_items,
-        'channels_processed': len(channels)
+        'channels_processed': len(channels),
+        'failed_channels': failed_channels,
     }
     
     logger.info(
@@ -311,6 +339,9 @@ def sync_exchange_folders_task(self):
         f"{new_items} new, {updated_items} updated"
     )
     
+    if failed_channels:
+        # The other channels are synced; still mark the task as FAILURE.
+        raise RuntimeError(f"Sync failed for channels: {', '.join(failed_channels)}")
     return result
 
 

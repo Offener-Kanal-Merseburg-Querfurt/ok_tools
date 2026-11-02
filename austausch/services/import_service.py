@@ -882,7 +882,7 @@ class ImportService:
             repetitions_allowed=False,
             media_authority_exchange_allowed_other_states=meta_data.get('allow_exchange_other_states', False),
             youth_protection_necessary=meta_data.get('youth_protection_necessary', False),
-            youth_protection_category=meta_data.get('youth_protection_category', 'none'),
+            youth_protection_category=meta_data.get('youth_protection_category') or 'none',
             is_screen_board=False,
             infoblock=False,
             confirmed=False,

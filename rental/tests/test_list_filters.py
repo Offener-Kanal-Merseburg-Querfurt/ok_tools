@@ -222,3 +222,22 @@ class RentalListFilterTests(TestCase):
             'sort': ['time'],
             'direction': ['asc'],
         })
+
+    def test_search_by_profile_name_email_and_id(self):
+        anna = self._user('anna@x.com')
+        anna.profile.first_name = 'Anna'
+        anna.profile.last_name = 'Schmidt'
+        anna.profile.save()
+        anna_rental = self._rental(anna, project='Doku')
+        other = self._rental(self._user('bob@x.com'), project='Film')
+
+        def found(q):
+            return set(self._queryset(q=q).values_list('pk', flat=True))
+
+        self.assertEqual(found('Anna'), {anna_rental.pk})
+        self.assertEqual(found('schmi'), {anna_rental.pk})
+        self.assertEqual(found('Anna Schmidt'), {anna_rental.pk})
+        self.assertEqual(found('Anna Film'), set())
+        self.assertEqual(found('bob@'), {other.pk})
+        self.assertEqual(found(str(other.pk)), {other.pk})
+        self.assertEqual(found(f'#{anna_rental.pk}'), {anna_rental.pk})

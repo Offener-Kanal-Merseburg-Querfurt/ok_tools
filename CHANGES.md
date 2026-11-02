@@ -1,6 +1,25 @@
 CHANGELOG
 =========
 
+2026-11-02 (Version 4.62.0)
+==========================
+
+* **austausch: Exchange channels are discovered automatically**
+  * ``ExchangeConfig`` gained ``channel_search_roots`` (one folder per line, default ``/``) and ``excluded_channels``. Every folder named like the exchange folder pattern (e.g. ``<channel> - Austausch``) in these roots is synced, so a new channel in ``BVBM`` or in the root needs no manual list entry. ``channels_list`` still works and now restricts the discovered channels.
+  * The channel name is stored without the search root (``h1 - Fernsehen aus Hannover``, not ``BVBM/…``), so feed, channel filter, same-state exceptions and channel auth are unchanged.
+  * Date folders are read from one listing of the exchange folder instead of probing every day of ``sync_date_folders_days`` (1–5 requests per channel instead of ~40). Files lying directly in an exchange folder without a date folder are synced too.
+  * New admin actions "Discover channels" and "Full sync (all date folders)", and ``manage.py sync_exchange --discover`` / ``--full``. A full sync scans every date folder once and ignores the lookback limit.
+* **austausch: ``null`` values in meta.json no longer become "None"**
+  * ``null`` in ``bundesland``, ``bundesland_code``, ``youthProtectionCategory`` and other text fields is stored as an empty string. ``bundesland_code: null`` used to abort the whole sync with a too-long value. A data migration clears the "None" values already stored.
+  * A failing channel no longer stops the other channels, and one broken package no longer costs the rest of its channel. The task still ends as FAILURE and lists ``failed_channels``.
+* **planung: ``age_rating`` distinguishes "0+" from "not rated"**
+  * ``GET /api/v1/media`` returns ``"0+"`` when youth protection is answered "Nein", ``"12+"``/``"16+"``/``"18+"`` for "Ja" with a category, and ``null`` when it is "Unbekannt" (or "Ja" without a category). The empty string is no longer sent.
+* **rental: Booking page follows the configured working hours**
+  * Picking a date fills in that day's opening time (or the current time if today is already open) instead of the current clock time, and the closing time from the settings instead of a fixed 18:00. A Monday booking made at 11:27 used to start at 11:27 although Monday opens at 13:00, and the server rejected it.
+  * The hours of the chosen days are shown below the period fields, and a period outside them is reported with the day's hours before anything is sent.
+* **rental: Rental admin search finds users by name**
+  * The search on ``/rental/admin/`` matches the profile first and last name (it looked at the empty user name fields, so only e-mail worked), every word must match ("Anna Schmidt", "schmi"), and a number finds the rental with that ID.
+
 2026-10-27 (Version 4.61.1)
 ==========================
 

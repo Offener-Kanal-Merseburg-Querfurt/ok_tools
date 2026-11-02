@@ -92,6 +92,41 @@ class TestNextcloudExchangeService(TestCase):
         self.assertTrue(metadata['allow_exchange'])
         self.assertTrue(metadata['allow_exchange_other_states'])
 
+    def _parse(self, payload):
+        """Run parse_meta_json on payload as if downloaded from Nextcloud."""
+        def _write_download(_remote_path, local_path):
+            with open(local_path, 'w', encoding='utf-8') as target_file:
+                json.dump(payload, target_file)
+            return True
+
+        with patch.object(self.service, 'download_file', side_effect=_write_download):
+            return self.service.parse_meta_json('/remote/test.meta.json')
+
+    def test_parse_meta_json_missing_bundesland_gives_empty_strings(self):
+        metadata = self._parse({'name': 'No state'})
+
+        self.assertEqual(metadata['bundesland'], '')
+        self.assertEqual(metadata['bundesland_code'], '')
+
+    def test_parse_meta_json_null_values_give_empty_strings(self):
+        metadata = self._parse({
+            'name': None,
+            'description': None,
+            'bundesland': None,
+            'bundesland_code': None,
+            'youthProtectionCategory': None,
+            'thumbnail': None,
+        })
+
+        for key in ('title', 'description', 'bundesland', 'bundesland_code',
+                    'youth_protection_category', 'thumbnail'):
+            self.assertEqual(metadata[key], '', key)
+
+    def test_parse_meta_json_normalizes_bundesland_code(self):
+        metadata = self._parse({'bundesland_code': ' st '})
+
+        self.assertEqual(metadata['bundesland_code'], 'ST')
+
 
 def test_is_exchange_allowed_for_viewer_uses_bundesland_code_rules():
     payload = {

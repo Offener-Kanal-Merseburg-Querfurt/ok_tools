@@ -56,6 +56,42 @@ class ExchangeConfigAdmin(admin.ModelAdmin):
     exchange_feed_link.short_description = _('Exchange Feed UI')
     
     list_display = ['nextcloud_base_url', 'sync_lookback_days', 'sync_date_folders_days', 'exchange_feed_link']
+    actions = ['discover_channels_action', 'full_sync_action']
+
+    def discover_channels_action(self, request, queryset):
+        """Show the channels the next sync would process."""
+        from .services.nextcloud_exchange_service import NextcloudExchangeService
+        from .tasks import get_channels
+        config = ExchangeConfig.get_config()
+        try:
+            channels = get_channels(config, NextcloudExchangeService(config))
+        except Exception as e:
+            self.message_user(
+                request, _('Channel discovery failed: {}').format(e), level='ERROR')
+            return
+        if not channels:
+            self.message_user(request, _('No channels found.'), level='WARNING')
+            return
+        self.message_user(
+            request,
+            _('{} channels found: {}').format(
+                len(channels),
+                '; '.join(f'{c} ({p})' for c, p in sorted(channels.items())),
+            ),
+            level='SUCCESS',
+        )
+    discover_channels_action.short_description = _('Discover channels')
+
+    def full_sync_action(self, request, queryset):
+        """Queue one sync of all date folders, without age limits."""
+        from .tasks import sync_exchange_folders_task
+        sync_exchange_folders_task.delay(full=True)
+        self.message_user(
+            request,
+            _('Full sync of all date folders has been queued.'),
+            level='SUCCESS',
+        )
+    full_sync_action.short_description = _('Full sync (all date folders)')
     fieldsets = (
         (_('Quick Links'), {
             'fields': ('exchange_feed_link',),
@@ -71,7 +107,9 @@ class ExchangeConfigAdmin(admin.ModelAdmin):
             'fields': (
                 'sync_lookback_days',
                 'sync_date_folders_days',
+                'channel_search_roots',
                 'channels_list',
+                'excluded_channels',
                 'same_state_channel_exceptions',
             ),
             'description': _(

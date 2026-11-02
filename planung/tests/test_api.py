@@ -161,8 +161,39 @@ class TestMediaListView:
         assert "description" in item
         assert item["year"] == lic.created_at.year
         assert item["category"] == lic.category.name
-        assert item["age_rating"] == ""
+        assert item["age_rating"] == "0+"
         assert item["sender"] == lic.profile.media_authority.name
+
+    @pytest.mark.parametrize("necessary, category, expected", [
+        (False, "none", "0+"),
+        (None, "none", None),
+        (True, "from_12", "12+"),
+        (True, "from_18", "18+"),
+        (True, "none", None),
+    ])
+    @override_settings(MEDIA_FILES_ENABLED=True)
+    def test_age_rating(self, api_client, license_with_video, necessary, category, expected):
+        lic, _vf = license_with_video
+        License.objects.filter(pk=lic.pk).update(
+            youth_protection_necessary=necessary,
+            youth_protection_category=category,
+        )
+
+        item = api_client.get("/api/v1/media").json()["items"][0]
+
+        assert item["age_rating"] == expected
+
+    @override_settings(MEDIA_FILES_ENABLED=True)
+    def test_age_rating_change_is_seen_by_updated_since(self, api_client, license_with_video):
+        lic, _vf = license_with_video
+        since = now()
+        lic.youth_protection_necessary = True
+        lic.youth_protection_category = "from_16"
+        lic.save()
+
+        response = api_client.get("/api/v1/media", {"updated_since": since.isoformat()})
+
+        assert [item["age_rating"] for item in response.json()["items"]] == ["16+"]
 
     @override_settings(MEDIA_FILES_ENABLED=True)
     def test_sender_is_owner_media_authority(self, api_client, license_with_video):

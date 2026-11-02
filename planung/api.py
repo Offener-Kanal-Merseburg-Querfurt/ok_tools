@@ -45,11 +45,25 @@ import logging
 logger = logging.getLogger(__name__)
 
 _AGE_RATING_MAP = {
-    "none": "",
     "from_12": "12+",
     "from_16": "16+",
     "from_18": "18+",
 }
+
+
+def _age_rating(license_obj):
+    """Age rating for playout: "0+", "12+".."18+", or None if not rated.
+
+    "Youth protection necessary" = No means checked without restrictions;
+    unknown (or Yes without a category) means not rated yet.
+    """
+    necessary = getattr(license_obj, "youth_protection_necessary", None)
+    if necessary is False:
+        return "0+"
+    if necessary:
+        category = getattr(license_obj, "youth_protection_category", None)
+        return _AGE_RATING_MAP.get(category)
+    return None
 
 
 def _get_video_file_model():
@@ -64,14 +78,13 @@ def _media_item(vf, license_obj) -> dict:
     """Build one GET /api/v1/media item from a video file and its license."""
     cat_name = ""
     year = None
-    age_rating = ""
+    age_rating = None
     if license_obj:
         cat = getattr(license_obj, "category", None)
         cat_name = getattr(cat, "name", "") or ""
         created_at = getattr(license_obj, "created_at", None)
         year = created_at.year if created_at else None
-        raw_rating = getattr(license_obj, "youth_protection_category", "") or ""
-        age_rating = _AGE_RATING_MAP.get(raw_rating, "")
+        age_rating = _age_rating(license_obj)
     return {
         "id": str(vf.number) if vf else "",
         "filename": vf.filename if vf else None,

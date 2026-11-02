@@ -320,7 +320,24 @@ class ExchangeConfig(models.Model):
     channels_list = models.TextField(
         blank=True,
         verbose_name=_('Channels List'),
-        help_text=_('Comma-separated list of channel names to sync (optional, can be auto-discovered)')
+        help_text=_(
+            'Comma-separated list of channel names to sync. Optional: when set, '
+            'only these of the discovered channels are synced.'
+        )
+    )
+    channel_search_roots = models.TextField(
+        blank=True,
+        default='/',
+        verbose_name=_('Channel search roots'),
+        help_text=_(
+            'Nextcloud folders to search for exchange folders (see Exchange '
+            'Folder Pattern), one per line. "/" = root. Example: "/" and "BVBM".'
+        )
+    )
+    excluded_channels = models.TextField(
+        blank=True,
+        verbose_name=_('Excluded channels'),
+        help_text=_('Channel names to skip, comma- or newline-separated.')
     )
     same_state_channel_exceptions = models.TextField(
         blank=True,
@@ -490,6 +507,30 @@ class ExchangeConfig(models.Model):
                 normalized.add(name)
         return normalized
     
+    def get_channels_list(self) -> list[str]:
+        """Explicitly configured channel names (comma-separated)."""
+        return [ch.strip() for ch in (self.channels_list or '').split(',') if ch.strip()]
+
+    def get_channel_search_roots(self) -> list[str]:
+        """Search roots as folder paths, '' for the Nextcloud root."""
+        roots = []
+        for line in (self.channel_search_roots or '').splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            root = line.strip('/')
+            if root not in roots:
+                roots.append(root)
+        return roots or ['']
+
+    def get_excluded_channels(self) -> set[str]:
+        raw_value = self.excluded_channels or ''
+        return {
+            chunk.strip()
+            for chunk in raw_value.replace(',', '\n').splitlines()
+            if chunk.strip()
+        }
+
     @classmethod
     def get_config(cls):
         """Get the singleton config instance, create if doesn't exist."""

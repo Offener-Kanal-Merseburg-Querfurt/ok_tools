@@ -505,11 +505,11 @@ msgstr "Kanalliste"
 
 #: austausch/models.py:323
 msgid ""
-"Comma-separated list of channel names to sync (optional, can be auto-"
-"discovered)"
+"Comma-separated list of channel names to sync. Optional: when set, only "
+"these of the discovered channels are synced."
 msgstr ""
-"Kommagetrennte Liste von Kanalnamen zum Synchronisieren (optional, kann "
-"automatisch erkannt werden)"
+"Kommagetrennte Liste von Kanalnamen zum Synchronisieren. Optional: wenn "
+"gesetzt, werden nur diese der gefundenen Kanäle synchronisiert."
 
 #: austausch/models.py:327
 msgid "Same-State Channel Exceptions"
@@ -1573,3 +1573,37 @@ msgstr ""
 "Abgebrochen: Der Worker, der diesen Export ausgeführt hat, existiert nicht "
 "mehr."
 
+msgid "Channel search roots"
+msgstr "Suchordner für Kanäle"
+
+msgid ""
+"Nextcloud folders to search for exchange folders (see Exchange Folder "
+"Pattern), one per line. \"/\" = root. Example: \"/\" and \"BVBM\"."
+msgstr ""
+"Nextcloud-Ordner, in denen nach Austauschordnern gesucht wird (siehe "
+"Austauschordner-Muster), einer pro Zeile. \"/\" = Stammordner. Beispiel: "
+"\"/\" und \"BVBM\"."
+
+msgid "Excluded channels"
+msgstr "Ausgeschlossene Kanäle"
+
+msgid "Channel names to skip, comma- or newline-separated."
+msgstr "Zu überspringende Kanalnamen, durch Komma oder Zeilenumbruch getrennt."
+
+msgid "Channel discovery failed: {}"
+msgstr "Kanalsuche fehlgeschlagen: {}"
+
+msgid "No channels found."
+msgstr "Keine Kanäle gefunden."
+
+msgid "{} channels found: {}"
+msgstr "{} Kanäle gefunden: {}"
+
+msgid "Discover channels"
+msgstr "Kanäle suchen"
+
+msgid "Full sync of all date folders has been queued."
+msgstr "Vollständige Synchronisierung aller Datumsordner wurde eingeplant."
+
+msgid "Full sync (all date folders)"
+msgstr "Vollständige Synchronisierung (alle Datumsordner)"

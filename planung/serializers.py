@@ -46,7 +46,11 @@ class MediaItemSerializer(serializers.Serializer):
     description = serializers.CharField(allow_blank=True, default="")
     year = serializers.IntegerField(allow_null=True, default=None)
     category = serializers.CharField(allow_blank=True, default="")
-    age_rating = serializers.CharField(allow_blank=True, default="")
+    age_rating = serializers.CharField(
+        allow_null=True,
+        default=None,
+        help_text='"0+" (checked, no restriction), "12+", "16+", "18+"; null if not rated yet',
+    )
     sender = serializers.CharField(
         allow_blank=True,
         default="",

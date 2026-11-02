@@ -4609,3 +4609,21 @@ msgstr ""
 #~ msgid "Monthly statistics will appear here when data is available"
 #~ msgstr ""
 #~ "Monatliche Statistiken werden hier angezeigt, sobald Daten verfügbar sind"
+
+msgid "%(day)s: %(start)s–%(end)s"
+msgstr "%(day)s: %(start)s–%(end)s"
+
+msgid "%(day)s closed"
+msgstr "%(day)s geschlossen"
+
+msgid "The rental is closed on %(day)s. Please choose another start day."
+msgstr "Am %(day)s ist die Ausleihe geschlossen. Bitte wählen Sie einen anderen Starttag."
+
+msgid "The rental is closed on %(day)s. Please choose another return day."
+msgstr "Am %(day)s ist die Ausleihe geschlossen. Bitte wählen Sie einen anderen Rückgabetag."
+
+msgid "The start time is outside the working hours (%(hours)s)."
+msgstr "Die Startzeit liegt außerhalb der Öffnungszeiten (%(hours)s)."
+
+msgid "The end time is outside the working hours (%(hours)s)."
+msgstr "Die Endzeit liegt außerhalb der Öffnungszeiten (%(hours)s)."

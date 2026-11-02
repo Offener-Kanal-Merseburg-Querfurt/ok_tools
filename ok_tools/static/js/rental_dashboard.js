@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setupDateFieldConstraints(startDateField, null);
                 startDateField.addEventListener('change', this.debounce(() => {
                     this.ensureDateTimeDefaults();
+                    this.updateWorkingHoursHint();
                     if (endDateField && startDateField.value) {
                         this.setupDateFieldConstraints(endDateField, startDateField.value);
                     }
@@ -81,11 +82,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setupDateFieldConstraints(endDateField, startDateField?.value || null);
                 endDateField.addEventListener('change', this.debounce(() => {
                     this.ensureDateTimeDefaults();
+                    this.updateWorkingHoursHint();
                     this.loadInventoryIfPeriodSelected();
                 }, 300));
             }
 
             this.ensureDateTimeDefaults();
+            this.updateWorkingHoursHint();
 
             // Filter event listeners
             const inventorySearch = document.getElementById('inventorySearch');
@@ -162,6 +165,97 @@ document.addEventListener('DOMContentLoaded', function() {
             return `${datePart}T${defaultTime}`;
         }
 
+        // Working hours of the day of a "YYYY-MM-DD" string, keyed like
+        // RENTAL_WORKING_HOURS (0 = Monday). Null if unknown.
+        getDayWorkingHours(datePart) {
+            if (!datePart || typeof RENTAL_WORKING_HOURS === 'undefined') return null;
+            const date = new Date(`${datePart.slice(0, 10)}T00:00:00`);
+            if (Number.isNaN(date.getTime())) return null;
+            return RENTAL_WORKING_HOURS[String((date.getDay() + 6) % 7)] || null;
+        }
+
+        getTodayDateString() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        // Opening time of the day; for today the current time if already open.
+        getDefaultStartTime(datePart) {
+            const hours = this.getDayWorkingHours(datePart);
+            const currentTime = this.getCurrentTimeHHMM();
+            if (!hours || !hours.enabled) return currentTime;
+            if (datePart.slice(0, 10) === this.getTodayDateString()
+                    && currentTime > hours.start && currentTime < hours.end) {
+                return currentTime;
+            }
+            return hours.start;
+        }
+
+        getDefaultEndTime(datePart) {
+            const hours = this.getDayWorkingHours(datePart);
+            return hours && hours.enabled ? hours.end : '18:00';
+        }
+
+        // Mirrors rental.working_hours.validate_working_hours_period, so the
+        // user sees the problem before the server rejects the request.
+        getWorkingHoursError(startValue, endValue) {
+            if (!startValue || !endValue || typeof RENTAL_WORKING_HOURS === 'undefined') return null;
+            const startHours = this.getDayWorkingHours(startValue);
+            const endHours = this.getDayWorkingHours(endValue);
+            if (!startHours || !endHours) return null;
+            const startTime = startValue.slice(11, 16);
+            const endTime = endValue.slice(11, 16);
+            const describe = (hours) => interpolate(
+                gettext('%(day)s: %(start)s–%(end)s'),
+                { day: hours.label, start: hours.start, end: hours.end }, true);
+
+            if (!startHours.enabled) {
+                return interpolate(gettext('The rental is closed on %(day)s. Please choose another start day.'),
+                    { day: startHours.label }, true);
+            }
+            if (!endHours.enabled) {
+                return interpolate(gettext('The rental is closed on %(day)s. Please choose another return day.'),
+                    { day: endHours.label }, true);
+            }
+            if (startTime < startHours.start || startTime >= startHours.end) {
+                return interpolate(gettext('The start time is outside the working hours (%(hours)s).'),
+                    { hours: describe(startHours) }, true);
+            }
+            if (endTime < endHours.start || endTime > endHours.end) {
+                return interpolate(gettext('The end time is outside the working hours (%(hours)s).'),
+                    { hours: describe(endHours) }, true);
+            }
+            return null;
+        }
+
+        // Show the hours of the chosen days below the period fields.
+        updateWorkingHoursHint() {
+            const hint = document.getElementById('workingHoursHint');
+            if (!hint) return;
+            const startValue = document.querySelector('input[name="start_date"]')?.value || '';
+            const endValue = document.querySelector('input[name="end_date"]')?.value || '';
+            const describeDay = (value) => {
+                const hours = this.getDayWorkingHours(value);
+                if (!hours) return '';
+                return hours.enabled
+                    ? `${hours.label} ${hours.start}–${hours.end}`
+                    : interpolate(gettext('%(day)s closed'), { day: hours.label }, true);
+            };
+            const days = [...new Set([describeDay(startValue), describeDay(endValue)].filter(Boolean))];
+            const error = this.getWorkingHoursError(startValue, endValue);
+
+            hint.textContent = '';
+            if (days.length) {
+                hint.append(`${gettext('Working hours')}: ${days.join(', ')}`);
+            }
+            if (error) {
+                const warning = document.createElement('div');
+                warning.className = 'text-danger';
+                warning.textContent = error;
+                hint.append(warning);
+            }
+        }
+
         ensureDateTimeDefaults() {
             const startDateField = document.querySelector('input[name="start_date"]');
             const endDateField = document.querySelector('input[name="end_date"]');
@@ -174,14 +268,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const currentTime = this.getCurrentTimeHHMM();
-
             if (startRaw && !startRaw.includes('T')) {
-                startDateField.value = this.buildDateTimeValue(startRaw, currentTime);
+                startDateField.value = this.buildDateTimeValue(startRaw, this.getDefaultStartTime(startRaw));
             }
 
             if (endRaw && !endRaw.includes('T')) {
-                endDateField.value = this.buildDateTimeValue(endRaw, '18:00');
+                endDateField.value = this.buildDateTimeValue(endRaw, this.getDefaultEndTime(endRaw));
             }
 
             const startValue = startDateField.value;
@@ -191,12 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const startDate = new Date(startDateTimeValue);
                 if (Number.isNaN(startDate.getTime())) return '';
                 const startDatePart = startDateTimeValue.slice(0, 10);
-                const afterWorkday = (startDate.getHours() > 18) || (startDate.getHours() === 18 && startDate.getMinutes() > 0);
+                const afterWorkday = startDateTimeValue.slice(11, 16) >= this.getDefaultEndTime(startDatePart);
                 if (afterWorkday && !allowSameDayDefault) {
                     return '';
                 }
                 const targetDate = afterWorkday ? this.addDaysToDateString(startDatePart, 1) : startDatePart;
-                return this.buildDateTimeValue(targetDate, '18:00');
+                return this.buildDateTimeValue(targetDate, this.getDefaultEndTime(targetDate));
             };
 
             if (startValue && !endValue) {
@@ -219,11 +311,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (endDateTime <= startDateTime) {
                 endDateField.value = computeDefaultEndFromStart(startDateField.value);
 
-                // Safety fallback: if start is already after 18:00, force next day end.
+                // Safety fallback: if start is already after closing time, force next day end.
                 const correctedEnd = new Date(endDateField.value);
                 if (!Number.isNaN(correctedEnd.getTime()) && correctedEnd <= startDateTime) {
                     const nextDay = this.addDaysToDateString(startDateField.value.slice(0, 10), 1);
-                    endDateField.value = this.buildDateTimeValue(nextDay, '18:00');
+                    endDateField.value = this.buildDateTimeValue(nextDay, this.getDefaultEndTime(nextDay));
                 }
             }
         }
@@ -793,15 +885,14 @@ const status = (rental.status || '').toLowerCase();
             const endHintField = grid.querySelector('input[name="end_date_hint"]');
             const startMainField = document.querySelector('input[name="start_date"]');
             const endMainField = document.querySelector('input[name="end_date"]');
-            const currentTime = this.getCurrentTimeHHMM();
-            
             if (startHintField && startMainField) {
                 startHintField.value = (startMainField.value || '').slice(0, 10);
                 this.setupDateFieldConstraints(startHintField, null);
                 startHintField.addEventListener('change', (e) => {
                     if (startMainField) {
                         if (e.target.value) {
-                            startMainField.value = `${e.target.value}T${currentTime}`;
+                            startMainField.value = this.buildDateTimeValue(
+                                e.target.value, this.getDefaultStartTime(e.target.value));
                         }
                         if (endMainField && e.target.value) {
                             this.setupDateFieldConstraints(endMainField, e.target.value);
@@ -822,7 +913,8 @@ const status = (rental.status || '').toLowerCase();
                 endHintField.addEventListener('change', (e) => {
                     if (endMainField) {
                         if (e.target.value) {
-                            endMainField.value = `${e.target.value}T18:00`;
+                            endMainField.value = this.buildDateTimeValue(
+                                e.target.value, this.getDefaultEndTime(e.target.value));
                         }
                         this.ensureDateTimeDefaults();
                         endMainField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -2327,6 +2419,13 @@ const status = (rental.status || '').toLowerCase();
 
                 if (!startDate || !endDate) {
                     alert(gettext('Please select start and end dates'));
+                    return;
+                }
+
+                const workingHoursError = this.getWorkingHoursError(startDate, endDate);
+                if (workingHoursError) {
+                    this.updateWorkingHoursHint();
+                    alert(workingHoursError);
                     return;
                 }
 

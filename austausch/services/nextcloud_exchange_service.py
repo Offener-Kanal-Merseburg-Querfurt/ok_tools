@@ -22,6 +22,11 @@ from .metadata_normalizer import normalize_exchange_metadata
 logger = logging.getLogger('django')
 
 
+def _clean_str(value) -> str:
+    """str() that maps None (JSON null) to '' instead of 'None'."""
+    return '' if value is None else str(value).strip()
+
+
 class NextcloudExchangeService:
     """Service for WebDAV operations on exchange folders."""
     
@@ -262,55 +267,115 @@ class NextcloudExchangeService:
         Returns:
             List of folder names
         """
+        return self.list_subfolders('')
+
+    def _propfind_children(self, folder_url: str, folder_path: str) -> Optional[List[Dict]]:
+        """
+        Depth-1 PROPFIND of a folder.
+
+        Returns:
+            Direct children (files and folders, see _parse_propfind_response),
+            or None if the folder does not exist or cannot be read.
+        """
         try:
             response = requests.request(
                 'PROPFIND',
-                self.webdav_url.rstrip('/'),
+                folder_url,
                 auth=self._get_auth(),
-                headers={
-                    'Depth': '1',
-                },
+                headers={'Depth': '1'},
                 timeout=30
             )
-            
-            if response.status_code == 207:
-                folders = []
-                root = ET.fromstring(response.text)
-                for response_elem in root.findall(f'.//{self.DAV_NS}response'):
-                    href_elem = response_elem.find(f'{self.DAV_NS}href')
-                    if href_elem is None:
-                        continue
-                    
-                    href = href_elem.text
-                    if not href:
-                        continue
-                    
-                    # Extract folder name
-                    if self.webdav_path in href:
-                        relative_path = href.split(self.webdav_path, 1)[1]
-                        if relative_path and relative_path != '/':
-                            folder_name = relative_path.strip('/').split('/')[0]
-                            # Decode URL-encoded folder name for display
-                            from urllib.parse import unquote
-                            decoded_name = unquote(folder_name)
-                            if decoded_name and decoded_name not in folders:
-                                folders.append(decoded_name)
-                
-                return folders
-            return []
         except Exception as e:
-            logger.error(f"Error listing root folders: {e}", exc_info=True)
-            return []
-    
-    def list_exchange_folder(self, channel: str, date_folders: Optional[List[str]] = None) -> List[Dict]:
+            logger.debug(f"Error listing {folder_url}: {e}")
+            return None
+        if response.status_code != 207:
+            if response.status_code != 404:
+                logger.warning(
+                    f"Unexpected response for {folder_path or '/'}: {response.status_code}"
+                )
+            return None
+        return self._parse_propfind_response(response.text, folder_path, include_dirs=True)
+
+    def list_subfolders(self, path: str = '') -> List[str]:
+        """Names of direct subfolders of path (Depth 1), '' = root."""
+        folder_path = path.strip('/')
+        folder_url = self.webdav_url.rstrip('/')
+        if folder_path:
+            folder_url += '/' + '/'.join(quote(part, safe='') for part in folder_path.split('/'))
+        children = self._propfind_children(folder_url, folder_path) or []
+        return [child['filename'] for child in children if child['is_dir']]
+
+    def discover_channels(self) -> Dict[str, str]:
+        """
+        Find exchange folders in the configured search roots.
+
+        Returns:
+            {channel name: folder path}, e.g.
+            {'OK Dessau': 'OK Dessau - Austausch',
+             'h1 - Fernsehen aus Hannover': 'BVBM/h1 - Fernsehen aus Hannover - Austausch'}
+            The channel name never contains the search root, so ExchangeItem.channel
+            stays the plain channel name. A name found in two roots is taken
+            from the first one.
+        """
+        pattern = self.config.exchange_folder_pattern
+        if '{channel}' not in pattern or '/' in pattern.strip('/'):
+            logger.warning(f"Cannot discover channels with exchange folder pattern '{pattern}'")
+            return {}
+        prefix, suffix = pattern.strip('/').split('{channel}', 1)
+
+        found: Dict[str, str] = {}
+        for root in self.config.get_channel_search_roots():
+            for name in self.list_subfolders(root):
+                if not (name.startswith(prefix) and name.endswith(suffix)):
+                    continue
+                channel = name[len(prefix):len(name) - len(suffix)].strip()
+                if channel:
+                    found.setdefault(channel, f'{root}/{name}'.strip('/'))
+        return found
+
+    @staticmethod
+    def select_date_folders(names: List[str], days: Optional[int]) -> List[str]:
+        """
+        Keep folder names of the form YYYY_MM_DD, newest first.
+
+        Args:
+            names: Folder names
+            days: Keep only folders of the last `days` days (1 = today only);
+                  None keeps all of them.
+        """
+        from django.utils import timezone
+        oldest = None
+        if days is not None:
+            oldest = timezone.localdate() - timedelta(days=max(days, 1) - 1)
+        selected = []
+        for name in names:
+            if not re.fullmatch(r'\d{4}_\d{2}_\d{2}', name):
+                continue
+            try:
+                folder_date = datetime.strptime(name, '%Y_%m_%d').date()
+            except ValueError:
+                continue
+            if oldest is None or folder_date >= oldest:
+                selected.append(name)
+        return sorted(selected, reverse=True)
+
+    def list_exchange_folder(
+        self,
+        channel: str,
+        date_folders: Optional[List[str]] = None,
+        folder_path: Optional[str] = None,
+    ) -> List[Dict]:
         """
         List files in exchange folder for a channel.
         
         Args:
             channel: Channel name
             date_folders: Optional list of date folder names (e.g., ['2025_12_05', '2025_12_06'])
-                         If None, will scan today's and yesterday's folders.
-                         If empty list, will scan all subfolders recursively.
+                         If None, scans the existing date folders of the last
+                         sync_date_folders_days days.
+                         If empty list, scans all existing date folders.
+            folder_path: Exchange folder path (e.g. from discover_channels).
+                         If None, it is built from exchange_folder_pattern.
             
         Returns:
             List of file metadata dictionaries with keys:
@@ -319,128 +384,75 @@ class NextcloudExchangeService:
             - size: File size in bytes
             - modified: Last modified datetime
             - is_dir: Whether it's a directory
+        Files lying directly in the exchange folder (no date folder) are
+        always included.
         """
-        # Build exchange folder path
-        exchange_folder = self.config.exchange_folder_pattern.format(channel=channel)
-        folder_path = exchange_folder.strip('/')
+        if folder_path is None:
+            folder_path = self.config.exchange_folder_pattern.format(channel=channel)
+        folder_path = folder_path.strip('/')
         logger.debug(f"Looking for exchange folder: '{folder_path}' for channel: '{channel}'")
-        
-        # Determine which date folders to scan
-        if date_folders is None:
-            # Default: scan recent date folders based on config
-            from django.utils import timezone
-            days_to_scan = getattr(self.config, 'sync_date_folders_days', 2)
-            today = timezone.now().date()
-            date_folders = []
-            for i in range(days_to_scan):
-                date = today - timedelta(days=i)
-                date_folders.append(date.strftime('%Y_%m_%d'))
-            logger.debug(f"Scanning {days_to_scan} recent date folders: {date_folders}")
-        
-        # URL encode the path to handle spaces and special characters
-        from urllib.parse import quote
-        path_parts = folder_path.split('/')
-        encoded_parts = [quote(part, safe='') for part in path_parts]
-        encoded_base_path = '/'.join(encoded_parts)
-        
+
+        encoded_base_path = '/'.join(quote(part, safe='') for part in folder_path.split('/'))
+
         # Try multiple locations: user files, GroupFolders
         locations_to_try = [
-            (self.webdav_url, folder_path, encoded_base_path, "user files"),
-            (self.groupfolders_url, folder_path, encoded_base_path, "GroupFolders"),
+            (self.webdav_url, "user files"),
+            (self.groupfolders_url, "GroupFolders"),
         ]
-        
+
         all_files = []
-        
-        for base_url, path, enc_base_path, location_type in locations_to_try:
-            base_full_url = f"{base_url.rstrip('/')}/{enc_base_path}"
+        scanned_folders: List[str] = []
+
+        for base_url, location_type in locations_to_try:
+            base_full_url = f"{base_url.rstrip('/')}/{encoded_base_path}"
             logger.debug(f"Trying {location_type}: {base_full_url}")
-            
-            # First check if base folder exists
-            try:
-                check_response = requests.request(
-                    'PROPFIND',
-                    base_full_url,
-                    auth=self._get_auth(),
-                    headers={'Depth': '0'},
-                    timeout=10
-                )
-                if check_response.status_code != 207:
-                    logger.debug(f"Base folder not found in {location_type}: {path}")
-                    continue
-            except Exception as e:
-                logger.debug(f"Error checking base folder in {location_type}: {e}")
+
+            # One Depth-1 listing tells which date folders exist, instead of
+            # probing every possible date.
+            children = self._propfind_children(base_full_url, folder_path)
+            if children is None:
+                logger.debug(f"Base folder not found in {location_type}: {folder_path}")
                 continue
-            
-            # If date_folders is empty list, do recursive scan of all subfolders
-            if date_folders == []:
-                try:
-                    response = requests.request(
-                        'PROPFIND',
-                        base_full_url,
-                        auth=self._get_auth(),
-                        headers={'Depth': 'infinity'},
-                        timeout=60
-                    )
-                    if response.status_code == 207:
-                        logger.info(f"Found exchange folder in {location_type}: {folder_path} (recursive scan)")
-                        files = self._parse_propfind_response(response.text, folder_path)
-                        all_files.extend(files)
-                        break  # Found in this location, no need to try others
-                except Exception as e:
-                    logger.debug(f"Error in recursive scan: {e}", exc_info=True)
+
+            all_files.extend(child for child in children if not child['is_dir'])
+            existing = [child['filename'] for child in children if child['is_dir']]
+            if date_folders is None:
+                scanned_folders = self.select_date_folders(
+                    existing, getattr(self.config, 'sync_date_folders_days', 2))
+            elif date_folders == []:
+                scanned_folders = self.select_date_folders(existing, None)
+            else:
+                scanned_folders = [name for name in date_folders if name in existing]
+
+            for date_folder in scanned_folders:
+                date_folder_url = f"{base_full_url}/{quote(date_folder, safe='')}"
+                files = self._propfind_children(date_folder_url, f"{folder_path}/{date_folder}")
+                if files is None:
                     continue
-            
-            # Scan specific date folders
-            for date_folder in date_folders:
-                date_folder_encoded = quote(date_folder, safe='')
-                date_folder_url = f"{base_full_url}/{date_folder_encoded}"
-                
-                try:
-                    response = requests.request(
-                        'PROPFIND',
-                        date_folder_url,
-                        auth=self._get_auth(),
-                        headers={'Depth': '1'},  # Only direct children of date folder
-                        timeout=30
-                    )
-                    
-                    if response.status_code == 207:
-                        logger.debug(f"Found date folder: {date_folder} in {location_type}")
-                        # Parse response, but adjust base_path to include date folder
-                        date_folder_path = f"{folder_path}/{date_folder}"
-                        files = self._parse_propfind_response(response.text, date_folder_path)
-                        all_files.extend(files)
-                    elif response.status_code == 404:
-                        logger.debug(f"Date folder not found: {date_folder} in {location_type}")
-                    else:
-                        logger.warning(
-                            f"Unexpected response for date folder {date_folder}: "
-                            f"{response.status_code}"
-                        )
-                except Exception as e:
-                    logger.debug(f"Error scanning date folder {date_folder}: {e}")
-                    continue
-            
-            # If we found files in this location, no need to try others
-            if all_files:
-                logger.info(f"Found {len(all_files)} files in {location_type} for channel {channel}")
-                break
+                all_files.extend(f for f in files if not f['is_dir'])
+
+            # Base folder found in this location, no need to try others
+            logger.info(f"Found {len(all_files)} files in {location_type} for channel {channel}")
+            break
         
         if not all_files:
             logger.warning(
                 f"No files found in exchange folder: {folder_path}. "
-                f"Scanned date folders: {date_folders}"
+                f"Scanned date folders: {scanned_folders}"
             )
         
         return all_files
     
-    def _parse_propfind_response(self, xml_content: str, base_path: str) -> List[Dict]:
+    def _parse_propfind_response(
+        self, xml_content: str, base_path: str, include_dirs: bool = False,
+    ) -> List[Dict]:
         """
         Parse PROPFIND XML response.
         
         Args:
             xml_content: XML response body
-            base_path: Base path of the folder
+            base_path: Base path of the folder ('' = root)
+            include_dirs: Also return direct subfolders (is_dir=True)
             
         Returns:
             List of file metadata dictionaries
@@ -486,7 +498,7 @@ class NextcloudExchangeService:
                 # - base_path is like "OK Magdeburg - Austausch/2026_01_07"
                 # - relative_path for files should be like "OK Magdeburg - Austausch/2026_01_07/filename.ext"
                 # We want files that are direct children of the date folder
-                if not relative_path_clean.startswith(base_path_clean + '/'):
+                if base_path_clean and not relative_path_clean.startswith(base_path_clean + '/'):
                     # Not a file in this date folder, skip
                     continue
                 
@@ -536,17 +548,17 @@ class NextcloudExchangeService:
                 is_dir = resourcetype.find(f'{self.DAV_NS}collection') is not None
                 
                 # Skip directories
-                if is_dir:
+                if is_dir and not include_dirs:
                     continue
                 
-                filename = relative_path.split('/')[-1]
+                filename = relative_path_clean.split('/')[-1]
                 
                 files.append({
-                    'path': relative_path,
+                    'path': relative_path_clean if is_dir else relative_path,
                     'filename': filename,
                     'size': size,
                     'modified': modified,
-                    'is_dir': False,
+                    'is_dir': is_dir,
                 })
         except ET.ParseError as e:
             logger.error(f"Error parsing PROPFIND response: {e}")
@@ -1519,22 +1531,22 @@ class NextcloudExchangeService:
                 duration_val = parse_duration(str(duration_str))
                 
             result = {
-                'title': str(data.get('name', '')).strip(),
-                'description': str(data.get('description', '')).strip(),
-                'sender_responsible': str(data.get('senderResponsible', '')).strip(),
+                'title': _clean_str(data.get('name')),
+                'description': _clean_str(data.get('description')),
+                'sender_responsible': _clean_str(data.get('senderResponsible')),
                 'category_id': category_id,
                 'category_name': str(category_value) if isinstance(category_value, str) else None,
-                'target_channel': str(data.get('targetChannel', '')).strip(),
+                'target_channel': _clean_str(data.get('targetChannel')),
                 'originally_published_at': data.get('originallyPublishedAt'),
-                'thumbnail': str(data.get('thumbnail', '')).strip(),
+                'thumbnail': _clean_str(data.get('thumbnail')),
                 'allow_exchange': _coerce_bool(data.get('allowExchange')),
                 'allow_exchange_other_states': _coerce_bool(data.get('allowExchangeOtherStates')),
                 'save_to_mediathek': _coerce_bool(data.get('saveToMediathek')),
                 'tags': data.get('tags', []),  # Array of tags
                 'youth_protection_necessary': _coerce_bool(data.get('youthProtectionNecessary')),
-                'youth_protection_category': str(data.get('youthProtectionCategory', '')).strip(),
-                'bundesland': str(data.get('bundesland', '')).strip(),
-                'bundesland_code': str(data.get('bundesland_code', '')).strip(),
+                'youth_protection_category': _clean_str(data.get('youthProtectionCategory')),
+                'bundesland': _clean_str(data.get('bundesland')),
+                'bundesland_code': _clean_str(data.get('bundesland_code')).upper()[:2],
                 'video_number': video_number,  # Store videoNumber if present
                 'duration': duration_val,
             }

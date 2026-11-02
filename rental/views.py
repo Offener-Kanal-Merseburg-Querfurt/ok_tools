@@ -1067,12 +1067,18 @@ class RentalListView(StaffRequiredMixin, ListView):
             queryset = queryset.filter(status=status)
 
         if query:
-            queryset = queryset.filter(
-                Q(project_name__icontains=query)
-                | Q(user__first_name__icontains=query)
-                | Q(user__last_name__icontains=query)
-                | Q(user__email__icontains=query)
-            )
+            # Every word must match some field, so "Max Muster" finds
+            # "Max Mustermann". Names live on the profile, not on the user.
+            for word in query.split():
+                word_filter = (
+                    Q(project_name__icontains=word)
+                    | Q(user__profile__first_name__icontains=word)
+                    | Q(user__profile__last_name__icontains=word)
+                    | Q(user__email__icontains=word)
+                )
+                if word.lstrip('#').isdigit():
+                    word_filter |= Q(pk=int(word.lstrip('#')))
+                queryset = queryset.filter(word_filter)
 
         # User category, mirroring RentalConfig.get_organizations_for: staff are
         # employees; otherwise the profile flags decide, defaulting to "user".
