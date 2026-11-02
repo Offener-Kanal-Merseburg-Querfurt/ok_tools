@@ -122,9 +122,21 @@ def get_day_working_window(target_date: date) -> Tuple[Optional[datetime], Optio
     return start_at, end_at
 
 
-def validate_working_hours_period(start_at: datetime, end_at: datetime) -> Tuple[bool, Optional[str]]:
+def can_bypass_working_hours(user) -> bool:
+    """Staff may book equipment and rooms outside the configured working hours."""
+    return bool(user is not None and getattr(user, 'is_staff', False))
+
+
+def validate_working_hours_period(
+    start_at: datetime,
+    end_at: datetime,
+    user=None,
+) -> Tuple[bool, Optional[str]]:
     if end_at <= start_at:
         return False, _('End date must be after start date')
+
+    if can_bypass_working_hours(user):
+        return True, None
 
     start_window, start_close = get_day_working_window(start_at.date())
     end_window, end_close = get_day_working_window(end_at.date())

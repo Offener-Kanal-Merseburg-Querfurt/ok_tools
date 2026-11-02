@@ -134,6 +134,30 @@
       </div>
     </div>
 
+    <div class="side-card" id="consumables" style="margin-bottom:12px">
+      <h6>{% trans "Consumables" %}</h6>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="tiny mb-2" style="color:{% if message.level_tag == 'error' %}oklch(0.45 0.14 28){% else %}oklch(0.45 0.1 75){% endif %}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% if user_missing_consumables %}
+        <div class="tiny mb-2" style="padding:6px 8px;border-radius:6px;background:oklch(0.97 0.04 28);color:oklch(0.40 0.12 28)">
+          <i class="fas fa-triangle-exclamation me-1"></i>{% trans "Still missing from other rentals of this user:" %}
+          <ul style="margin:4px 0 0;padding-left:16px">
+            {% for c in user_missing_consumables %}
+              <li><a href="{% url 'rental:rental_detail' c.rental_request_id %}#consumables" style="color:inherit">{{ c.name }}</a> — {{ c.quantity_missing }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div id="consumables-checklist" data-csrf="{{ csrf_token }}"></div>
+      {{ consumables_json|json_script:"consumables-data" }}
+      {{ consumables_config|json_script:"consumables-config" }}
+    </div>
+
     <div class="side-card">
       <h6>{% trans "Internal note" %}</h6>
       <p style="font-size:12.5px;color:var(--ink-2);margin:0;line-height:1.5">
@@ -173,6 +197,7 @@
 
 <script src="{% static 'rental/js/build/shared.js' %}"></script>
 <script src="{% static 'rental/js/build/detail.js' %}"></script>
+<script src="{% static 'rental/js/consumables_checklist.js' %}"></script>
 <script src="{% static 'rental/js/build/entries/detail-entry.js' %}"></script>
 </body>
 </html>

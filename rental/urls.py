@@ -33,7 +33,12 @@ from .views import cancel_rental
 from .views import close_rental
 from .views import create_submit
 from .views import duplicate_rental
+from .views import MissingConsumablesView
+from .views import add_rental_consumables
+from .views import delete_rental_consumable
 from .views import edit_note
+from .views import resolve_rental_consumable
+from .views import update_rental_consumable
 from .views import extend_rental
 from .views import mark_issued
 from .views import print_form_msa_redirect
@@ -207,6 +212,14 @@ urlpatterns = [
     path('rental/<int:rental_id>/close/', close_rental, name='close'),
     path('rental/<int:rental_id>/send-reminder/', send_reminder, name='send_reminder'),
     path('rental/<int:rental_id>/edit-note/', edit_note, name='edit_note'),
+    path('rental/<int:rental_id>/consumables/add/', add_rental_consumables, name='add_consumables'),
+    path('rental/<int:rental_id>/consumables/<int:consumable_id>/delete/',
+         delete_rental_consumable, name='delete_consumable'),
+    path('rental/<int:rental_id>/consumables/<int:consumable_id>/update/',
+         update_rental_consumable, name='update_consumable'),
+    path('rental/<int:rental_id>/consumables/<int:consumable_id>/resolve/',
+         resolve_rental_consumable, name='resolve_consumable'),
+    path('admin/missing-consumables/', MissingConsumablesView.as_view(), name='missing_consumables'),
     path('rental/<int:rental_id>/report-issue/', report_issue, name='report_issue'),
     path('rental/<int:rental_id>/duplicate/', duplicate_rental, name='duplicate'),
     path('rental/<int:rental_id>/print-slip/', print_slip, name='print_slip'),

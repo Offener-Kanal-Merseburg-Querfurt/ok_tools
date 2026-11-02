@@ -6,6 +6,7 @@ from .models import EquipmentSetItem
 from .models import LabelFormat
 from .models import LabelLine
 from .models import RentalConfig
+from .models import RentalConsumable
 from .models import RentalIssue
 from .models import RentalItem
 from .models import RentalProcessProxy
@@ -65,6 +66,15 @@ class RentalIssueInline(admin.TabularInline):
     readonly_fields = ("reported_at",)
 
 
+class RentalConsumableInline(admin.TabularInline):
+    """Inline editor for consumables handed out with a rental."""
+
+    model = RentalConsumable
+    extra = 0
+    fields = ("name", "quantity", "quantity_returned", "status", "notes", "reminder_count", "last_reminder_sent_at")
+    readonly_fields = ("reminder_count", "last_reminder_sent_at")
+
+
 class RoomRentalInline(admin.TabularInline):
     """Inline editor to attach rooms to a rental request."""
 
@@ -100,7 +110,7 @@ class RentalRequestAdmin(admin.ModelAdmin):
         ("requested_end_date", admin.DateFieldListFilter),
     )
     search_fields = ("project_name", "purpose", "user__email", "created_by__email")
-    inlines = [RentalItemInline, RoomRentalInline]
+    inlines = [RentalItemInline, RoomRentalInline, RentalConsumableInline]
     readonly_fields = (
         "created_at",
         "updated_at",
@@ -320,6 +330,7 @@ class EquipmentSetAdmin(admin.ModelAdmin):
                 is_valid_period, error_message = validate_working_hours_period(
                     requested_start_date,
                     requested_end_date,
+                    request.user,
                 )
                 if not is_valid_period:
                     form.add_error(None, error_message)
@@ -604,6 +615,18 @@ class LabelFormatAdmin(admin.ModelAdmin):
         return obj.size_label
 
 
+@admin.register(RentalConsumable)
+class RentalConsumableAdmin(admin.ModelAdmin):
+    """Admin list of consumables handed out with rentals."""
+
+    list_display = ("name", "quantity", "quantity_returned", "status", "rental_request",
+                    "returned_at", "reminder_count", "last_reminder_sent_at")
+    list_filter = ("status",)
+    search_fields = ("name", "rental_request__project_name", "rental_request__user__email",
+                     "rental_request__user__profile__first_name", "rental_request__user__profile__last_name")
+    raw_id_fields = ("rental_request", "created_by", "resolved_by")
+
+
 @admin.register(RentalConfig)
 class RentalConfigAdmin(admin.ModelAdmin):
     """Admin interface for RentalConfig model."""
@@ -625,6 +648,7 @@ class RentalConfigAdmin(admin.ModelAdmin):
             'fields': (
                 'auto_reminder_enabled',
                 'auto_reminder_hours_before',
+                'missing_consumable_reminder_days',
             ),
             'description': _('Send automatic return reminder emails before the return deadline.'),
         }),

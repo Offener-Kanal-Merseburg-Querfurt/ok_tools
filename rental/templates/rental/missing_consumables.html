@@ -1,0 +1,113 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/favicon.ico' %}">
+    <title>{% trans "Missing consumables" %} — OK Tools</title>
+    <link href="{% static 'admin/css/base.css' %}" rel="stylesheet">
+    <link href="{% static 'rental/css/rental.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="topbar">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white" href="{% url 'rental:list' %}">
+                    <i class="fas fa-tools me-2"></i>OK Tools <span class="opacity-75">— {% trans "Rental Management" %}</span>
+                </a>
+                <div class="navbar-nav ms-auto align-items-center gap-2">
+                    <a class="btn btn-sm btn-outline-light" href="/admin/">
+                        <i class="fas fa-cog me-1"></i><span>{% trans "Back to Administration" %}</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="page">
+        {% include 'rental/_sidebar.html' with sidebar_active='missing_consumables' %}
+
+        <div class="page-main">
+            <div class="crumbs">
+                <a href="{% url 'rental:list' %}">{% trans "Rentals" %}</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>{% trans "Missing consumables" %}</span>
+            </div>
+
+            <div class="page-title">
+                <h1>{% trans "Missing consumables" %}</h1>
+                <span class="sub">{% trans "Consumables that were not returned. The user is reminded by email until they are returned or written off." %}</span>
+            </div>
+
+            {% for message in messages %}
+                <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}warning{% endif %} py-2">{{ message }}</div>
+            {% endfor %}
+
+            {% trans "Write off this consumable? No more reminders will be sent." as write_off_confirm %}
+            <div class="surface">
+                {% if rows %}
+                <table class="table table-sm mb-0" style="font-size:13px">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Consumable" %}</th>
+                            <th class="text-end">{% trans "Missing" %}</th>
+                            <th>{% trans "User" %}</th>
+                            <th>{% trans "Rental" %}</th>
+                            <th>{% trans "Open since" %}</th>
+                            <th>{% trans "Reminders" %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">{{ row.consumable.name }}</div>
+                                {% if row.consumable.notes %}<div class="tiny muted" style="white-space:pre-line">{{ row.consumable.notes }}</div>{% endif %}
+                            </td>
+                            <td class="text-end" style="font-variant-numeric:tabular-nums">{{ row.consumable.quantity_missing }} / {{ row.consumable.quantity }}</td>
+                            <td>
+                                <div>{{ row.user_name }}</div>
+                                <div class="tiny muted mono">{{ row.user_email }}</div>
+                            </td>
+                            <td>
+                                <a href="{% url 'rental:rental_detail' row.rental.pk %}#consumables" class="mono">{{ row.rental_code }}</a>
+                                <div class="tiny muted">{{ row.rental.project_name }}</div>
+                            </td>
+                            <td>
+                                {{ row.consumable.returned_at|date:"d.m.Y" }}
+                                <div class="tiny muted">{% blocktrans count counter=row.days_open %}{{ counter }} day{% plural %}{{ counter }} days{% endblocktrans %}</div>
+                            </td>
+                            <td>
+                                {{ row.consumable.reminder_count }}
+                                {% if row.consumable.last_reminder_sent_at %}
+                                    <div class="tiny muted">{{ row.consumable.last_reminder_sent_at|date:"d.m.Y" }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <form method="post" action="{% url 'rental:resolve_consumable' row.rental.pk row.consumable.pk %}" class="d-inline-flex" style="gap:4px">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="back_to" value="missing">
+                                    <button type="submit" name="action" value="returned" class="btn btn-ghost btn-sm">{% trans "Returned later" %}</button>
+                                    <button type="submit" name="action" value="written_off" class="btn btn-ghost btn-sm"
+                                            onclick="return confirm('{{ write_off_confirm|escapejs }}')">{% trans "Write off" %}</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="muted p-3 mb-0">{% trans "No missing consumables." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

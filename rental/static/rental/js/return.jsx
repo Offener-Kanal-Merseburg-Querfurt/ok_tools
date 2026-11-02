@@ -4,7 +4,7 @@
    Depends on: shared.jsx (cls, fmtDateShort, apiPost, t, Avatar, beep)
    ========================================================= */
 
-function ReturnScreen({ rental, items, urls }) {
+function ReturnScreen({ rental, items, urls, consumables = [] }) {
   const [returns, setReturns] = React.useState(() =>
     items.map(i => ({
       id: i.id,
@@ -19,6 +19,13 @@ function ReturnScreen({ rental, items, urls }) {
       holdOut: true,
     }))
   );
+  // Consumables (cables, cards, ...) not kept in inventory. Whatever is not
+  // ticked off here is stored as missing and reminded about later; it does
+  // not block completing the return.
+  const [consumableReturns, setConsumableReturns] = React.useState(() =>
+    consumables.map(c => ({ id: c.id, name: c.name, total: c.quantity, qtyReturned: 0, note: '' }))
+  );
+  const setCons = (id, patch) => setConsumableReturns(xs => xs.map(x => x.id === id ? { ...x, ...patch } : x));
   const [showIssueFor, setShowIssueFor] = React.useState(null);
   const [note, setNote] = React.useState('');
   const [emailReceipt, setEmailReceipt] = React.useState(true);
@@ -40,8 +47,14 @@ function ReturnScreen({ rental, items, urls }) {
   }, [scanBusy]);
 
   const setRet = (id, patch) => setReturns(xs => xs.map(x => x.id === id ? { ...x, ...patch } : x));
-  const checkAll = () => setReturns(xs => xs.map(x => ({ ...x, qtyReturned: x.total, condition: x.condition || 'ok' })));
-  const clearAll = () => setReturns(xs => xs.map(x => ({ ...x, qtyReturned: 0, condition: null, issue: '' })));
+  const checkAll = () => {
+    setReturns(xs => xs.map(x => ({ ...x, qtyReturned: x.total, condition: x.condition || 'ok' })));
+    setConsumableReturns(xs => xs.map(x => ({ ...x, qtyReturned: x.total })));
+  };
+  const clearAll = () => {
+    setReturns(xs => xs.map(x => ({ ...x, qtyReturned: 0, condition: null, issue: '' })));
+    setConsumableReturns(xs => xs.map(x => ({ ...x, qtyReturned: 0, note: '' })));
+  };
 
   const handleScan = async () => {
     if (!scanValue.trim() || scanDebounce.current) return;
@@ -75,8 +88,16 @@ function ReturnScreen({ rental, items, urls }) {
   const checkedCount = returns.filter(x => x.qtyReturned >= x.total).length;
   const totalCount = returns.length;
   const issueCount = returns.filter(x => x.condition === 'warn' || x.condition === 'bad' || x.issue).length;
+  const missingConsumables = consumableReturns.filter(x => x.qtyReturned < x.total);
 
   const submit = async () => {
+    if (missingConsumables.length > 0) {
+      const names = missingConsumables.map(x => `${x.name} (${x.total - x.qtyReturned})`).join(', ');
+      const ok = window.confirm(
+        t('ret.cons_confirm', 'These consumables are not returned and will be kept as missing: {names}. Continue?')
+          .replace('{names}', names));
+      if (!ok) return;
+    }
     setSubmitting(true);
     try {
       await apiPost(urls.submit_return, {
@@ -87,6 +108,11 @@ function ReturnScreen({ rental, items, urls }) {
           issue: r.issue,
           charge: r.charge,
           hold_out: r.holdOut,
+        })),
+        consumables: consumableReturns.map(c => ({
+          id: c.id,
+          qty_returned: c.qtyReturned,
+          note: c.note,
         })),
         note,
         email_receipt: emailReceipt,
@@ -308,8 +334,59 @@ function ReturnScreen({ rental, items, urls }) {
         })}
       </div>
 
+      {consumableReturns.length > 0 && (
+        <div className="surface p-3 mt-3">
+          <div className="d-flex align-items-center mb-2" style={{gap: 8}}>
+            <strong style={{fontSize: 13}}>{t('ret.cons_heading', 'Consumables')}</strong>
+            <span className="muted tiny">
+              {t('ret.cons_sub', 'Not in inventory. What is not ticked off stays open as missing and the user is reminded.')}
+            </span>
+          </div>
+          {consumableReturns.map(c => {
+            const done = c.qtyReturned >= c.total;
+            return (
+              <div key={c.id} className={cls('return-row', done && 'checked')}
+                   style={{gridTemplateColumns: '28px 1fr 120px 1fr'}}>
+                <button type="button" className="cons-check" aria-pressed={done}
+                        style={done ? {background: 'oklch(0.62 0.14 145)', borderColor: 'oklch(0.62 0.14 145)'} : undefined}
+                        onClick={() => setCons(c.id, { qtyReturned: done ? 0 : c.total })}>
+                  {done && <i className="fas fa-check" style={{fontSize: 11}}></i>}
+                </button>
+                <div className="name" style={done ? {textDecoration: 'line-through', color: 'var(--ink-3)'} : undefined}>
+                  {c.name} <span className="muted">- {c.total}</span>
+                </div>
+                <div>
+                  {c.total > 1 ? (
+                    <div className="input-group input-group-sm" style={{maxWidth: 110}}>
+                      <button className="btn btn-ghost"
+                              onClick={() => setCons(c.id, { qtyReturned: Math.max(0, c.qtyReturned - 1) })}>−</button>
+                      <input className="form-control text-center" readOnly value={`${c.qtyReturned}/${c.total}`} />
+                      <button className="btn btn-ghost"
+                              onClick={() => setCons(c.id, { qtyReturned: Math.min(c.total, c.qtyReturned + 1) })}>+</button>
+                    </div>
+                  ) : (
+                    <span className={cls('tag', done ? 'tag-ok' : 'tag-neutral')}>
+                      {done ? `1/1 ${t('ret.back','back')}` : '0/1'}
+                    </span>
+                  )}
+                </div>
+                <input type="text" className="form-control form-control-sm"
+                       value={c.note} onChange={e => setCons(c.id, { note: e.target.value })}
+                       placeholder={done ? t('ret.cons_note_ph', 'Note (optional)') : t('ret.cons_missing_ph', 'Why missing? (optional)')} />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Bottom — internal note + final toggles */}
       <div className="surface p-3 mt-3">
+        {rental.internal_note && (
+          <div className="mb-3">
+            <strong style={{fontSize: 13}}>{t('ret.rental_note', 'Internal note of the rental')}</strong>
+            <div className="tiny mt-1" style={{whiteSpace: 'pre-line', color: 'var(--ink-2)'}}>{rental.internal_note}</div>
+          </div>
+        )}
         <strong style={{fontSize: 13}}>{t('ret.int_note', 'Return note (internal)')}</strong>
         <textarea className="form-control mt-2" rows={2}
                   value={note} onChange={e => setNote(e.target.value)}

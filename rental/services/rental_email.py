@@ -143,7 +143,7 @@ def send_reminder_email(*, rental_request) -> bool:
         translation.deactivate()
 
 
-def send_return_receipt_email(*, rental_request, returned_items=None, note='') -> None:
+def send_return_receipt_email(*, rental_request, returned_items=None, note='', missing_items=None) -> None:
     user_email = getattr(rental_request.user, "email", None)
     if not user_email:
         logger.warning("No email for user %s, skipping return receipt (rental_id=%s)", rental_request.user.pk, rental_request.id)
@@ -157,6 +157,7 @@ def send_return_receipt_email(*, rental_request, returned_items=None, note='') -
         "project_name": rental_request.project_name,
         "returned_at": rental_request.actual_end_date,
         "returned_items": returned_items or [],
+        "missing_items": missing_items or [],
         "note": note,
         "contact_email": contact_email,
     }
@@ -176,6 +177,48 @@ def send_return_receipt_email(*, rental_request, returned_items=None, note='') -
         logger.info("Return receipt sent to %s (rental_id=%s)", user_email, rental_request.id)
     except Exception:
         logger.exception("Failed to send return receipt to %s (rental_id=%s)", user_email, rental_request.id)
+    finally:
+        translation.deactivate()
+
+
+def send_missing_consumables_reminder_email(*, user, consumables) -> bool:
+    """Remind ``user`` about consumables from their rentals that are still missing."""
+    user_email = getattr(user, "email", None)
+    if not user_email:
+        logger.warning("No email for user %s, skipping missing consumables reminder", user.pk)
+        return False
+
+    contact_email = getattr(settings, "OK_EMAIL", None) or getattr(settings, "EMAIL_HOST_USER", "") or ""
+    context = {
+        **_get_org_context(),
+        "user_name": _get_user_display_name(user),
+        "items": [
+            {
+                "name": consumable.name,
+                "quantity": consumable.quantity_missing,
+                "rental_id": consumable.rental_request_id,
+                "project_name": consumable.rental_request.project_name,
+            }
+            for consumable in consumables
+        ],
+        "contact_email": contact_email,
+    }
+
+    translation.activate('de')
+    try:
+        send_mail(
+            subject_template_name="email/rental_missing_consumables_subject.txt",
+            email_template_name="email/rental_missing_consumables_body.txt",
+            html_email_template_name="email/rental_missing_consumables_body.html",
+            context=context,
+            from_email=getattr(settings, "EMAIL_HOST_USER", ""),
+            to_email=user_email,
+        )
+        logger.info("Missing consumables reminder sent to %s (%s item(s))", user_email, len(context["items"]))
+        return True
+    except Exception:
+        logger.exception("Failed to send missing consumables reminder to %s", user_email)
+        return False
     finally:
         translation.deactivate()
 

@@ -414,6 +414,7 @@ def api_change_rental_period(request, rental_id):
     is_valid_period, error_message = validate_working_hours_period(
         start_dt,
         end_dt,
+        request.user,
     )
     if not is_valid_period:
         return JsonResponse({

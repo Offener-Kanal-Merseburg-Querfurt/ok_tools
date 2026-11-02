@@ -71,7 +71,8 @@
 - **Austausch visibility rules**: Feed items now respect `allowExchange`/`allowExchangeOtherStates`, compare `bundesland_code` against the local organization config, and support configurable same-state channel exceptions from the exchange admin settings
 - **Bundesland metadata compatibility**: Organization configuration now stores the export Bundesland, auto-generates the Bundesland code, and guarantees both fields in license metadata/API payloads
 - **Nested metadata normalization**: Austausch imports and admin JSON imports now normalize both flat legacy payloads and nested canonical `organization`/`license` structures, including string boolean handling
-- **Rental working hours and pick lists**: Added DB-backed weekday opening hours, public/admin validation, smarter room-booking time selection, and printable pick lists with checklist fields on rental items
+- **Rental consumables**: Free-text consumables (cables, memory cards) per rental, checked on return; missing ones stay open on a dedicated page and are reminded to the user by email until returned or written off.
+- **Rental working hours and pick lists**: Added DB-backed weekday opening hours, validation for members (staff may book outside the hours), smarter room-booking time selection, and printable pick lists with checklist fields on rental items
 - **Program schedule metadata**: Extended the contributions program schedule API and admin example output with `mediathek_url` for published licenses
 - **Dashboard and planning UX**: Improved dashboard chart translations/placeholders and kept filtered planning calendar cells hidden from keyboard navigation without breaking table layout
 - **Nextcloud chunked upload v2**: Fixed large file export (9GB+) to Nextcloud using proper chunked upload v2 API with MKCOL/PUT/MOVE sequence

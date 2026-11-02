@@ -228,6 +228,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return null;
         }
 
+        // Staff may book outside the working hours (see
+        // rental.working_hours.can_bypass_working_hours).
+        canBypassWorkingHours() {
+            return typeof RENTAL_CAN_BYPASS_WORKING_HOURS !== 'undefined' && RENTAL_CAN_BYPASS_WORKING_HOURS;
+        }
+
         // Show the hours of the chosen days below the period fields.
         updateWorkingHoursHint() {
             const hint = document.getElementById('workingHoursHint');
@@ -250,8 +256,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (error) {
                 const warning = document.createElement('div');
-                warning.className = 'text-danger';
-                warning.textContent = error;
+                warning.className = this.canBypassWorkingHours() ? 'text-warning' : 'text-danger';
+                warning.textContent = this.canBypassWorkingHours()
+                    ? `${error} ${gettext('Staff can still book outside working hours.')}`
+                    : error;
                 hint.append(warning);
             }
         }
@@ -2423,7 +2431,7 @@ const status = (rental.status || '').toLowerCase();
                 }
 
                 const workingHoursError = this.getWorkingHoursError(startDate, endDate);
-                if (workingHoursError) {
+                if (workingHoursError && !this.canBypassWorkingHours()) {
                     this.updateWorkingHoursHint();
                     alert(workingHoursError);
                     return;

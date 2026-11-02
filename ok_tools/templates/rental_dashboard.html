@@ -536,6 +536,7 @@
     const RENTAL_REQUIRES_APPROVAL = {{ rental_requires_approval|yesno:"true,false" }};
     const RENTAL_WORKING_HOURS = {{ rental_working_hours_json|safe }};
     const RENTAL_WORKING_HOURS_SUMMARY = "{{ rental_working_hours_summary|escapejs }}";
+    const RENTAL_CAN_BYPASS_WORKING_HOURS = {{ rental_can_bypass_working_hours|yesno:"true,false" }};
 </script>
 
 <script src="{% static 'rental/js/working_hours.js' %}"></script>

@@ -104,6 +104,8 @@ function WizardScreen({ initial }) {
   const [project, setProject] = React.useState(initial.defaults?.project || '');
   const [purpose, setPurpose] = React.useState(initial.defaults?.purpose || '');
   const [notifyEmail, setNotifyEmail] = React.useState(false);
+  // Consumables not kept in inventory, one per line ("XLR cable 5 m - 3").
+  const [consumables, setConsumables] = React.useState('');
 
   const hasOnlyRooms = rooms.length > 0 && cart.length === 0;
 
@@ -158,6 +160,7 @@ function WizardScreen({ initial }) {
           end_date: r.end_date || '',
           end_time: r.end_time || '',
         })),
+        consumables,
         notify: { email: notifyEmail },
       };
       const res = await apiPost(initial.urls.create, payload);
@@ -189,7 +192,8 @@ function WizardScreen({ initial }) {
 
       {mode === 'quick'
         ? <QuickRental initial={initial} cart={cart} setCart={setCart}
-                       user={user} setUser={setUser} period={period} setPeriod={setPeriod} />
+                       user={user} setUser={setUser} period={period} setPeriod={setPeriod}
+                       consumables={consumables} setConsumables={setConsumables} />
         : <>
             <Stepper steps={steps} active={step} setActive={setStep} />
 
@@ -210,6 +214,7 @@ function WizardScreen({ initial }) {
               {step === 3 && <StepReview user={user} period={period} cart={cart} rooms={rooms}
                                          project={project} setProject={setProject}
                                          purpose={purpose} setPurpose={setPurpose}
+                                         consumables={consumables} setConsumables={setConsumables}
                                          notifyEmail={notifyEmail} setNotifyEmail={setNotifyEmail} />}
             </div>
 
@@ -539,17 +544,13 @@ function RoomPicker({ rooms, setRooms, options, initial, period }) {
   const [availResult, setAvailResult] = React.useState({});
   const wh = initial?.working_hours || {};
 
+  // Staff may book rooms outside the working hours, so every half hour of the
+  // day is offered; the working hours only drive the default times.
   const getTimeSlots = (dateStr) => {
     if (!dateStr) return [];
-    const d = new Date(dateStr + 'T00:00:00');
-    const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
-    const dayHours = wh[String(dayIdx)];
-    if (!dayHours || !dayHours.enabled) return [];
-    const [sh, sm] = (dayHours.start || '00:00').split(':').map(Number);
-    const [eh, em] = (dayHours.end || '00:00').split(':').map(Number);
     const slots = [];
-    let mins = sh * 60 + sm;
-    const endMins = eh * 60 + em;
+    let mins = 0;
+    const endMins = 24 * 60;
     while (mins < endMins) {
       const h = String(Math.floor(mins / 60)).padStart(2, '0');
       const m = String(mins % 60).padStart(2, '0');
@@ -563,6 +564,11 @@ function RoomPicker({ rooms, setRooms, options, initial, period }) {
 
   const getDefaultTimes = (dateStr) => {
     const slots = getTimeSlots(dateStr);
+    const dayHours = dateStr ? _whForDate(new Date(dateStr + 'T00:00:00'), wh) : null;
+    if (dayHours && dayHours.enabled) {
+      const open = slots.filter(s => s >= dayHours.start && s <= dayHours.end);
+      if (open.length) return { start: open[0], end: open[open.length - 1] };
+    }
     return { start: slots[0] || '', end: slots[slots.length - 1] || '' };
   };
 
@@ -765,12 +771,17 @@ function RoomDateTimeForm({ room, wh, period, getTimeSlots, getDefaultTimes, che
   const dayClosed = startDayHours && !startDayHours.enabled;
   const endDayIdx = endDate ? (new Date(endDate + 'T00:00:00').getDay() === 0 ? 6 : new Date(endDate + 'T00:00:00').getDay() - 1) : -1;
   const endDayHours = wh[String(endDayIdx)];
-  const noFutureSlots = (
-    (startDayHours?.enabled && startSlots.length === 0)
-    || (endDayHours?.enabled && endSlots.length === 0)
+  const endDayClosed = endDayHours && !endDayHours.enabled;
+  const noFutureSlots = startSlots.length === 0 || endSlots.length === 0;
+  const isOutsideHours = (dayHours, time, isEnd) => (
+    dayHours && dayHours.enabled && time
+    && (time < dayHours.start || (isEnd ? time > dayHours.end : time >= dayHours.end))
+  );
+  const outsideHours = !dayClosed && !endDayClosed && (
+    isOutsideHours(startDayHours, startTime, false) || isOutsideHours(endDayHours, endTime, true)
   );
 
-  const canCheck = startDate && startTime && endDate && endTime && !dayClosed && !noFutureSlots;
+  const canCheck = startDate && startTime && endDate && endTime && !noFutureSlots;
   const canConfirm = result && result.is_available;
 
   return (
@@ -783,15 +794,10 @@ function RoomDateTimeForm({ room, wh, period, getTimeSlots, getDefaultTimes, che
         </div>
         <div>
           <label className="muted tiny" style={{display: 'block', marginBottom: 2}}>{t('room.start_time', 'Start time')}</label>
-          {startDayHours?.enabled ? (
-            <select className="form-select form-select-sm" value={startTime} disabled={startSlots.length === 0} onChange={e => setStartTime(e.target.value)}>
-              {startSlots.length === 0 && <option value="">—</option>}
-              {startSlots.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          ) : (
-            <input type="time" className="form-control form-control-sm" value={startTime} step="1800"
-                   onChange={e => setStartTime(e.target.value)} />
-          )}
+          <select className="form-select form-select-sm" value={startTime} disabled={startSlots.length === 0} onChange={e => setStartTime(e.target.value)}>
+            {startSlots.length === 0 && <option value="">—</option>}
+            {startSlots.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
         <div>
           <label className="muted tiny" style={{display: 'block', marginBottom: 2}}>{t('room.end_date', 'End date')}</label>
@@ -800,25 +806,26 @@ function RoomDateTimeForm({ room, wh, period, getTimeSlots, getDefaultTimes, che
         </div>
         <div>
           <label className="muted tiny" style={{display: 'block', marginBottom: 2}}>{t('room.end_time', 'End time')}</label>
-          {endDayHours?.enabled ? (
-            <select className="form-select form-select-sm" value={endTime} disabled={endSlots.length === 0} onChange={e => setEndTime(e.target.value)}>
-              {endSlots.length === 0 && <option value="">—</option>}
-              {endSlots.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          ) : (
-            <input type="time" className="form-control form-control-sm" value={endTime} step="1800"
-                   onChange={e => setEndTime(e.target.value)} />
-          )}
+          <select className="form-select form-select-sm" value={endTime} disabled={endSlots.length === 0} onChange={e => setEndTime(e.target.value)}>
+            {endSlots.length === 0 && <option value="">—</option>}
+            {endSlots.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
       </div>
 
-      {dayClosed && (
-        <div className="tiny" style={{color: 'oklch(0.45 0.14 28)', marginTop: 6}}>
-          <i className="fas fa-triangle-exclamation me-1"></i>{t('room.day_closed', 'Selected day is closed.')}
+      {(dayClosed || endDayClosed) && (
+        <div className="tiny" style={{color: 'oklch(0.5 0.12 75)', marginTop: 6}}>
+          <i className="fas fa-triangle-exclamation me-1"></i>{t('room.day_closed_staff', 'Selected day is closed. Staff can still book it.')}
         </div>
       )}
 
-      {!dayClosed && noFutureSlots && (
+      {outsideHours && (
+        <div className="tiny" style={{color: 'oklch(0.5 0.12 75)', marginTop: 6}}>
+          <i className="fas fa-triangle-exclamation me-1"></i>{t('room.outside_hours_staff', 'Outside working hours. Staff can still book it.')}
+        </div>
+      )}
+
+      {noFutureSlots && (
         <div className="tiny" style={{color: 'oklch(0.45 0.14 28)', marginTop: 6}}>
           <i className="fas fa-clock me-1"></i>{t('room.no_future_slots', 'No reservable time remains on this day.')}
         </div>
@@ -1072,19 +1079,9 @@ function StepTime({ initial, period, setPeriod, cart }) {
   const [conflicts, setConflicts] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
-  // Earliest valid pickup time (snapped to working hours)
-  const earliestFrom = React.useMemo(() => {
-    return _fmtDT(snapToWorkingHours(new Date(), initial.working_hours));
-  }, [initial.working_hours]);
-
-  // Snap a field value to working hours on blur
-  const snapInput = (field, raw) => {
-    const snapped = snapToWorkingHours(new Date(raw), initial.working_hours);
-    const snappedStr = _fmtDT(snapped);
-    if (snappedStr !== raw) {
-      setPeriod(p => ({...p, [field]: snappedStr}));
-    }
-  };
+  // Earliest pickup time. Staff may book outside the working hours, so typed
+  // values are kept as they are; the warnings below only point them out.
+  const earliestFrom = React.useMemo(() => _fmtDT(new Date()), []);
 
   // Pull real conflict data whenever period or cart changes. Rooms are not
   // covered here: each room carries its own time slot, picked inline in the
@@ -1126,6 +1123,9 @@ function StepTime({ initial, period, setPeriod, cart }) {
       }
     }
   }
+  if (warnings.length > (period.from && period.to && from >= to ? 1 : 0)) {
+    warnings.push(t('wiz.warn.staff_ok', 'Staff can still book outside working hours.'));
+  }
   const duration = period.from && period.to ? Math.round((to - from) / 36e5) : 0;
   const hasConflict = conflicts.some(c => c.ranges && c.ranges.some(r => r.conflict));
 
@@ -1153,15 +1153,13 @@ function StepTime({ initial, period, setPeriod, cart }) {
           <label>{t('wiz.pickup', 'Pickup')}</label>
           <input type="datetime-local" className="form-control" value={period.from} step="1800"
                  min={earliestFrom}
-                 onChange={e => setPeriod(p => ({...p, from: e.target.value}))}
-                 onBlur={e => { if (e.target.value) snapInput('from', e.target.value); }} />
+                 onChange={e => setPeriod(p => ({...p, from: e.target.value}))} />
         </div>
         <div className="t-card">
           <label>{t('wiz.return_by', 'Return by')}</label>
           <input type="datetime-local" className="form-control" value={period.to} step="1800"
                  min={period.from || earliestFrom}
-                 onChange={e => setPeriod(p => ({...p, to: e.target.value}))}
-                 onBlur={e => { if (e.target.value) snapInput('to', e.target.value); }} />
+                 onChange={e => setPeriod(p => ({...p, to: e.target.value}))} />
           <div className="tiny muted mt-1">
             <i className="fas fa-clock me-1"></i>{duration > 0 ? `${duration}h` : '—'}
           </div>
@@ -1215,8 +1213,29 @@ function StepTime({ initial, period, setPeriod, cart }) {
 }
 
 /* ===== STEP 4 — Review + email preview ===== */
+/* Free-text list of consumables handed out with the rental but not kept in
+   inventory (cables, memory cards, ...). Parsed on the server, one per line. */
+function ConsumablesInput({ value, setValue, user }) {
+  return (
+    <div className="surface p-3 mb-3">
+      <strong style={{fontSize: 13}}>{t('wiz.consumables', 'Consumables (not in inventory)')}</strong>
+      {user && user.warn && (
+        <div className="tiny mt-1" style={{color: 'oklch(0.45 0.14 28)'}}>
+          <i className="fas fa-triangle-exclamation me-1"></i>{user.warn}
+        </div>
+      )}
+      <textarea className="form-control form-control-sm mt-2" rows={3} value={value}
+                onChange={e => setValue(e.target.value)}
+                placeholder={t('wiz.consumables_ph', 'XLR cable 5 m - 3\nSD card 64 GB - 5')} />
+      <div className="muted tiny mt-1">
+        {t('wiz.consumables_hint', 'One per line, the number at the end is the quantity. They are checked on return.')}
+      </div>
+    </div>
+  );
+}
+
 function StepReview({ user, period, cart, rooms, project, setProject, purpose, setPurpose,
-                     notifyEmail, setNotifyEmail }) {
+                     consumables, setConsumables, notifyEmail, setNotifyEmail }) {
   if (!user) return <div className="muted">{t('wiz.need_user','Select a user first.')}</div>;
   return (
     <div className="col-lg-12">
@@ -1290,6 +1309,8 @@ function StepReview({ user, period, cart, rooms, project, setProject, purpose, s
             ))}
           </ul>
         </div>
+
+        <ConsumablesInput value={consumables} setValue={setConsumables} user={user} />
 
         <div className="surface p-3">
           <strong style={{fontSize: 13}}>{t('wiz.notifications', 'Notifications')}</strong>
@@ -1391,7 +1412,8 @@ function QuickUserPicker({ initial, user, setUser, onPicked }) {
 }
 
 /* ===== Quick mode ===== */
-function QuickRental({ initial, cart, setCart, user, setUser, period, setPeriod }) {
+function QuickRental({ initial, cart, setCart, user, setUser, period, setPeriod,
+                      consumables, setConsumables }) {
   const [scan, setScan] = React.useState('');
   const [busy, setBusy] = React.useState(false);
   const [feedback, setFeedback] = React.useState(null);
@@ -1407,10 +1429,10 @@ function QuickRental({ initial, cart, setCart, user, setUser, period, setPeriod 
 
   const setQty = (id, qty) => setCart(cc => cc.map(x => x.id === id ? { ...x, qty } : x));
 
-  // Quick mode used to accept any typed value, including dates in the past or
-  // outside the opening hours -- the backend then refused the issue with an
-  // error the operator only saw after scanning everything. Correct the value
-  // as soon as the field is left instead.
+  // Quick mode used to accept dates in the past -- the backend then refused
+  // the issue with an error the operator only saw after scanning everything.
+  // Correct the value as soon as the field is left instead. Times outside the
+  // working hours are kept: staff may book them.
   const workingHours = initial.working_hours;
   const nowInput = _fmtDT(new Date());
 
@@ -1419,13 +1441,11 @@ function QuickRental({ initial, cart, setCart, user, setUser, period, setPeriod 
     const parsed = new Date(raw);
     if (isNaN(parsed)) return '';
     const floor = notBefore ? new Date(notBefore) : new Date();
-    const snapped = snapToWorkingHours(parsed < floor ? floor : parsed,
-                                       workingHours);
-    return _fmtDT(snapped);
+    return _fmtDT(parsed < floor ? floor : parsed);
   };
 
-  // The return has to stay strictly after the pickup: snapping both to the
-  // same opening time would otherwise produce a rental of zero length.
+  // The return has to stay strictly after the pickup: a return before it is
+  // moved to the next day's opening time.
   const normalizeReturn = (raw, from) => {
     const candidate = normalize(raw, from);
     if (!from) return candidate;
@@ -1520,6 +1540,7 @@ function QuickRental({ initial, cart, setCart, user, setUser, period, setPeriod 
       const r = await apiPost(initial.urls.quick_issue, {
         user_id: user.id, from, to,
         items: cart.map(c => ({ id: c.id, qty: c.qty })),
+        consumables,
       });
       if (r.has_signature || !r.signature_urls) {
         window.location = r.detail_url;
@@ -1624,6 +1645,9 @@ function QuickRental({ initial, cart, setCart, user, setUser, period, setPeriod 
             {t('wiz.scan_hint', 'Scan or enter an inventory code above to add items.')}
           </div>
         )}
+      </div>
+      <div className="mt-3">
+        <ConsumablesInput value={consumables} setValue={setConsumables} user={user} />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n rental_consumables %}
 <aside class="page-nav">
     <div class="nav-section">
         <div class="nav-section-title">{% trans "Workflows" %}</div>
@@ -46,6 +46,11 @@
         <a class="nav-link" href="{% url 'rental:list' %}?status=draft">
             <i class="fas fa-circle-question"></i>
             {% trans "Pending approval" %}<span class="nav-count">{{ sidebar.pending_approval_count }}</span>
+        </a>
+        {% missing_consumables_count as missing_consumables_total %}
+        <a class="nav-link {% if sidebar_active == 'missing_consumables' %}active{% endif %}" href="{% url 'rental:missing_consumables' %}">
+            <i class="fas fa-plug-circle-exclamation" style="color:oklch(0.6 0.15 28)"></i>
+            {% trans "Missing consumables" %}<span class="nav-count {% if missing_consumables_total %}bad{% endif %}">{{ missing_consumables_total }}</span>
         </a>
     </div>
 </aside>

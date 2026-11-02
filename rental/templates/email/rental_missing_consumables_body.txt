@@ -1,0 +1,10 @@
+{% load i18n %}{% blocktrans with user_name=user_name %}Hello {{ user_name }},{% endblocktrans %}
+
+{% trans "The following material from your rentals has not been returned yet:" %}
+
+{% for item in items %}- {{ item.quantity }} x {{ item.name }} ({% blocktrans with rental_id=item.rental_id project_name=item.project_name %}rental #{{ rental_id }}, {{ project_name }}{% endblocktrans %})
+{% endfor %}
+{% trans "Please bring it back as soon as possible or contact us if it got lost." %}
+
+{% if contact_email %}{% blocktrans with contact_email=contact_email %}E-mail: {{ contact_email }}{% endblocktrans %}{% endif %}
+{% if ok_phone %}{% blocktrans with ok_phone=ok_phone %}Phone: {{ ok_phone }}{% endblocktrans %}{% endif %}

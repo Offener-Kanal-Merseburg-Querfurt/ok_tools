@@ -1,6 +1,20 @@
 CHANGELOG
 =========
 
+2026-11-02 (Version 4.63.0)
+==========================
+
+* **rental: Staff can book outside the working hours**
+  * ``validate_working_hours_period`` takes the acting user; staff (``is_staff``) skip the closed-day and opening-hours checks, only "end after start" still applies. Creating, adding rooms, extending, changing the period and the room availability check pass the acting user (``created_by`` / ``request.user``). Members are still held to the configured working hours.
+  * The Django admin rental form no longer enforces working hours, since only staff can open it.
+  * Rental wizard (``/rental/admin/rental-process/``): pickup and return times are no longer snapped to the working hours, room time slots cover the whole day, and closed days or times outside the hours show a warning instead of blocking. Defaults still follow the working hours.
+  * Booking page (``/rental/``): for staff the working-hours hint is a warning and no longer stops the submit.
+* **rental: Consumables that are not kept in inventory**
+  * New ``RentalConsumable`` (migration ``0030``): free-text material handed out with a rental, e.g. "XLR cable 5 m - 3". Staff enter it one per line (the trailing number is the quantity) in the rental wizard (guided and quick mode) or in the new "Consumables" checklist on the rental detail page: a circle per line ticks it off as returned (struck through), the empty last line adds new ones, a pasted list adds one line each, and lines are edited in place.
+  * The return screen lists the consumables with a checkbox and quantity per line. What is not ticked off is stored as missing and does not block completing or closing the return; the return receipt email lists it as "not returned yet".
+  * Missing consumables appear on the new page ``/rental/admin/missing-consumables/`` (sidebar "Missing consumables" with a count), on the rental detail page and as a warning when the user is picked in the wizard. Staff mark them "returned later" or "written off".
+  * ``send_return_reminders`` (hourly beat) emails each user one list of their missing consumables every ``RentalConfig.missing_consumable_reminder_days`` days (default 7, 0 disables) until they are resolved.
+
 2026-11-02 (Version 4.62.1)
 ==========================
 

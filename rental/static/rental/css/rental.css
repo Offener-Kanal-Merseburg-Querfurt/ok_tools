@@ -1036,3 +1036,29 @@ html, body {
   color: rgba(255, 255, 255, 0.96);
 }
 
+
+/* Consumables checklist on the rental detail page (rental/js/consumables_checklist.js) */
+.cons-list { display: flex; flex-direction: column; }
+.cons-row { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start; padding: 4px 0; }
+.cons-check {
+  width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--ink-3, #8a8f98);
+  background: transparent; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; cursor: pointer; margin-top: 1px;
+}
+.cons-check:disabled { cursor: default; opacity: .45; }
+.cons-row.done .cons-check { background: oklch(0.62 0.14 145); border-color: oklch(0.62 0.14 145); }
+.cons-row.missing .cons-check { border-color: oklch(0.6 0.16 28); }
+.cons-text {
+  width: 100%; border: 0; background: transparent; padding: 2px 0; font-size: 13.5px; color: var(--ink);
+  outline: none; border-bottom: 1px solid transparent;
+}
+/* admin/css/base.css frames every text input; a checklist line has none. */
+.cons-list input.cons-text, .cons-list input.cons-text:focus {
+  border: 0; border-bottom: 1px solid transparent; border-radius: 0; box-shadow: none; padding: 2px 0; height: auto;
+}
+.cons-list input.cons-text:focus { border-bottom-color: var(--line); }
+.cons-row.done .cons-text, .cons-row.off .cons-text { text-decoration: line-through; color: var(--ink-3, #8a8f98); }
+.cons-row.missing .cons-text { color: oklch(0.45 0.14 28); }
+.cons-meta { font-size: 11.5px; color: oklch(0.45 0.14 28); display: flex; gap: 8px; flex-wrap: wrap; }
+.cons-meta button { border: 0; background: none; padding: 0; color: var(--ink-3, #8a8f98); text-decoration: underline; font-size: 11.5px; }
+.cons-error { font-size: 11.5px; color: oklch(0.45 0.14 28); margin-top: 4px; }

@@ -14,7 +14,7 @@ User = get_user_model()
 @pytest.mark.django_db
 def test__rental__working_hours__api_check_room_availability_rejects_closed_day_before_room_lookup():
     rf = RequestFactory()
-    user = User.objects.create_user(email='staff@example.com', password='pwd', is_staff=True)
+    user = User.objects.create_user(email='member@example.com', password='pwd')
     request = rf.get(
         '/rental/api/check-room-availability',
         data={

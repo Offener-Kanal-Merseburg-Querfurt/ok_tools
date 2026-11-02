@@ -386,10 +386,12 @@ class RentalDashboardView(LoginRequiredMixin, TemplateView):
         from rental.config import get_rental_user_request_requires_approval
         from rental.config import get_rental_working_hours
         from rental.config import get_rental_working_hours_summary_text
+        from rental.working_hours import can_bypass_working_hours
 
         context['rental_requires_approval'] = get_rental_user_request_requires_approval()
         context['rental_working_hours_json'] = json.dumps(get_rental_working_hours())
         context['rental_working_hours_summary'] = get_rental_working_hours_summary_text()
+        context['rental_can_bypass_working_hours'] = can_bypass_working_hours(self.request.user)
 
         # Add rental statistics for the current user
         try:

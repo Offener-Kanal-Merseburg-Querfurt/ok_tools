@@ -6,6 +6,7 @@ from .formatting import format_booked_period
 from .models import EquipmentSet
 from .models import EquipmentSetItem
 from .models import RentalConfig
+from .models import RentalConsumable
 from .models import RentalIssue
 from .models import RentalItem
 from .models import RentalRequest
@@ -27,6 +28,14 @@ from .serializers import RentalRequestSerializer
 from .serializers import RentalTransactionSerializer
 from .services import RentalService
 from .services.barcode_service import BarcodeService
+from .services.consumables import RETURNED_RENTAL_STATUSES
+from .services.consumables import add_consumables
+from .services.consumables import apply_consumable_returns
+from .services.consumables import missing_consumables
+from .services.consumables import resolve_missing_consumable
+from .services.consumables import serialize_consumable
+from .services.consumables import set_consumable_checked
+from .services.consumables import update_consumable_line
 from .services.label_printer_service import LabelPrinterError
 from .services.label_printer_service import LabelPrinterService
 from .services.label_printer_service import PrinterSettings
@@ -203,8 +212,24 @@ def serialize_user(user):
         'past_count': past_count,
         'phone': ((profile.phone_number or profile.mobile_number) if profile else ''),
         'email': user.email or '',
-        'warn': None,
+        'warn': _missing_consumables_warning(user),
     }
+
+
+def _missing_consumables_warning(user):
+    """Warning text listing consumables the user did not return, or None."""
+    if not user or not user.pk:
+        return None
+    missing = [
+        f'{consumable.name} ({consumable.quantity_missing})'
+        for consumable in RentalConsumable.objects.filter(
+            rental_request__user=user,
+            status=RentalConsumable.STATUS_MISSING,
+        ).order_by('returned_at')
+    ]
+    if not missing:
+        return None
+    return _('Missing consumables: %(items)s') % {'items': ', '.join(missing)}
 
 
 def get_initial_rental_process_users(limit=RENTAL_PROCESS_INITIAL_USER_LIMIT):
@@ -347,6 +372,10 @@ def _i18n_bundle():
         'wiz.warn.closed': _('The selected day is closed.'),
         'wiz.warn.hours': _('Outside configured working hours.'),
         'wiz.warn.reversed': _('End date must be after start date.'),
+        'wiz.warn.staff_ok': _('Staff can still book outside working hours.'),
+        'wiz.consumables': _('Consumables (not in inventory)'),
+        'wiz.consumables_ph': _('XLR cable 5 m - 3\nSD card 64 GB - 5'),
+        'wiz.consumables_hint': _('One per line, the number at the end is the quantity. They are checked on return.'),
         'wiz.rooms_skip_title': _('Room-only rental'),
         'wiz.rooms_skip_hint': _('Each room has its own time slot. You can skip this step.'),
         # Wizard - step 3 items
@@ -435,6 +464,8 @@ def _i18n_bundle():
         'room.check': _('Check availability'),
         'room.check_error': _('Error checking availability'),
         'room.day_closed': _('Day is closed'),
+        'room.day_closed_staff': _('The selected day is closed. Staff can still book it.'),
+        'room.outside_hours_staff': _('Outside working hours. Staff can still book it.'),
         'room.day_overview': _('Day overview'),
         'room.free': _('free'),
         'room.end_date': _('End date'),
@@ -500,6 +531,12 @@ def _i18n_bundle():
         'ret.charge': _('Charge user (recoverable damage)'),
         'ret.hold_out': _('Hold item out of pool until reviewed'),
         'ret.int_note': _('Return note (internal)'),
+        'ret.rental_note': _('Internal note of the rental'),
+        'ret.cons_heading': _('Consumables'),
+        'ret.cons_sub': _('Not in inventory. What is not ticked off stays open as missing and the user is reminded.'),
+        'ret.cons_note_ph': _('Note (optional)'),
+        'ret.cons_missing_ph': _('Why missing? (optional)'),
+        'ret.cons_confirm': _('These consumables are not returned and will be kept as missing: {names}. Continue?'),
         'ret.int_note_ph': _('Anything to remember for next time?'),
         'ret.email_receipt': _('Email return receipt to user'),
         'ret.close': _('Close rental after return'),
@@ -2255,13 +2292,14 @@ def api_return_rental_items(request):
         email_receipt = bool(data.get('email_receipt'))
         close_after_return = bool(data.get('close_rental'))
         flag_audit = bool(data.get('flag_audit'))
+        consumable_returns = data.get('consumables')
 
         if not rental_id and items:
             first_item_id = items[0].get('rental_item_id') or items[0].get('id')
             if first_item_id:
                 rental_id = RentalItem.objects.filter(id=first_item_id).values_list('rental_request_id', flat=True).first()
 
-        if not rental_id or not items:
+        if not rental_id or (not items and consumable_returns is None):
             return JsonResponse({'error': _('Rental ID and items are required')}, status=400)
 
         from .models import RentalIssue
@@ -2364,6 +2402,24 @@ def api_return_rental_items(request):
                     reported_by=request.user,
                 )
 
+        # Consumables are checked once, together with the equipment. What did
+        # not come back stays "missing" and is reminded about separately, so it
+        # never blocks closing the rental.
+        missing_consumables_for_email = []
+        if consumable_returns is not None:
+            returned_consumables, missing_list = apply_consumable_returns(
+                rental_request, consumable_returns)
+            for consumable in returned_consumables:
+                returned_items_for_email.append({
+                    'name': consumable.name,
+                    'quantity': consumable.quantity_returned,
+                    'condition': '',
+                })
+            missing_consumables_for_email = [
+                {'name': consumable.name, 'quantity': consumable.quantity_missing}
+                for consumable in missing_list
+            ]
+
         # Check if all equipment items are returned
         # Note: Rooms are handled separately via automatic expiration
         # For mixed rentals, we only check equipment items for 'returned' status
@@ -2393,6 +2449,7 @@ def api_return_rental_items(request):
                 rental_request=rental_request,
                 returned_items=returned_items_for_email,
                 note=general_note,
+                missing_items=missing_consumables_for_email,
             )
 
         return JsonResponse({
@@ -2525,7 +2582,37 @@ class RentalDetailView(StaffRequiredMixin, TemplateView):
             'duplicate': self._safe_reverse('rental:duplicate', args=[rental.pk]),
             'edit_note': self._safe_reverse('rental:edit_note', args=[rental.pk]),
             'detail': reverse('rental:rental_detail', args=[rental.pk]),
+            'add_consumables': reverse('rental:add_consumables', args=[rental.pk]),
         }
+        context['consumables'] = list(rental.consumables.all())
+        context['can_add_consumables'] = rental.status not in RETURNED_RENTAL_STATUSES
+        context['consumables_json'] = [serialize_consumable(c) for c in context['consumables']]
+        context['consumables_config'] = {
+            'can_add': context['can_add_consumables'],
+            'urls': {
+                'add': reverse('rental:add_consumables', args=[rental.pk]),
+                # The JS replaces 0 with the consumable id.
+                'update': reverse('rental:update_consumable', args=[rental.pk, 0]),
+                'delete': reverse('rental:delete_consumable', args=[rental.pk, 0]),
+            },
+            'i18n': {
+                'new_line': str(_('New item, e.g. XLR cable 3 m - 3')),
+                'missing': str(_('%(missing)s of %(total)s missing')),
+                'reminders': str(_('reminders sent: %(count)s')),
+                'written_off': str(_('Written off')),
+                'write_off': str(_('Write off')),
+                'write_off_confirm': str(_('Write off this consumable? No more reminders will be sent.')),
+                'tick': str(_('Mark as returned')),
+                'untick': str(_('Mark as not returned')),
+                'empty': str(_('No consumables.')),
+                'error': str(_('Could not save the change.')),
+            },
+        }
+        # Missing consumables of the same user from other rentals, so they are
+        # not forgotten when the user comes back.
+        context['user_missing_consumables'] = list(
+            missing_consumables().filter(rental_request__user=rental.user).exclude(
+                rental_request=rental).order_by('returned_at'))
         # Per-organization print form URLs for items in this rental
         context['print_slips'] = self._build_print_slip_urls(rental)
         context['show_pick_list'] = rental.status in ('reserved', 'issued')
@@ -2669,6 +2756,10 @@ class RentalReturnView(StaffRequiredMixin, TemplateView):
                     'inventory_item__location',
                     'inventory_item__owner',
                 ).prefetch_related('transactions')
+            ]
+            context['consumables_json'] = [
+                serialize_consumable(consumable)
+                for consumable in rental.consumables.filter(status=RentalConsumable.STATUS_OUT)
             ]
             context['urls_json'] = {
                 'submit_return': reverse('rental:api_return_rental_items'),
@@ -2894,6 +2985,102 @@ def edit_note(request, rental_id):
     return redirect('rental:rental_detail', rental_id=rental.pk)
 
 
+def _redirect_to_consumables(rental_id, back_to=''):
+    if back_to == 'missing':
+        return redirect('rental:missing_consumables')
+    return redirect(f"{reverse('rental:rental_detail', args=[rental_id])}#consumables")
+
+
+@login_required
+@staff_member_required
+@require_POST
+def add_rental_consumables(request, rental_id):
+    """Add checklist lines (e.g. "XLR cable 5 m - 3") to a rental; JSON in and out."""
+    rental = get_object_or_404(RentalRequest, id=rental_id)
+    if rental.status in RETURNED_RENTAL_STATUSES:
+        return JsonResponse(
+            {'error': _('Consumables can only be added before the return.')}, status=400)
+    created = add_consumables(rental, _json_body(request).get('lines', ''), request.user)
+    if not created:
+        return JsonResponse({'error': _('Enter at least one consumable.')}, status=400)
+    return JsonResponse({'success': True, 'items': [serialize_consumable(c) for c in created]})
+
+
+@login_required
+@staff_member_required
+@require_POST
+def update_rental_consumable(request, rental_id, consumable_id):
+    """Edit the line of a consumable or tick it off; JSON in and out."""
+    consumable = get_object_or_404(
+        RentalConsumable.objects.select_related('rental_request'),
+        id=consumable_id, rental_request_id=rental_id)
+    data = _json_body(request)
+    if 'line' in data:
+        if consumable.status != RentalConsumable.STATUS_OUT:
+            return JsonResponse({'error': _('Checked consumables cannot be changed.')}, status=400)
+        if not update_consumable_line(consumable, data.get('line') or ''):
+            return JsonResponse({'error': _('Enter one consumable per line.')}, status=400)
+    try:
+        if 'checked' in data:
+            set_consumable_checked(consumable, bool(data.get('checked')), request.user)
+        if data.get('write_off'):
+            resolve_missing_consumable(consumable, 'written_off', request.user)
+    except ValueError:
+        return JsonResponse({'error': _('This consumable cannot be changed.')}, status=400)
+    return JsonResponse({'success': True, 'item': serialize_consumable(consumable)})
+
+
+@login_required
+@staff_member_required
+@require_POST
+def delete_rental_consumable(request, rental_id, consumable_id):
+    """Remove a consumable that has not been ticked off yet."""
+    consumable = get_object_or_404(
+        RentalConsumable, id=consumable_id, rental_request_id=rental_id)
+    if consumable.status != RentalConsumable.STATUS_OUT:
+        return JsonResponse({'error': _('Checked consumables cannot be removed.')}, status=400)
+    consumable.delete()
+    return JsonResponse({'success': True})
+
+
+@login_required
+@staff_member_required
+@require_POST
+def resolve_rental_consumable(request, rental_id, consumable_id):
+    """Mark a missing consumable as returned later or written off."""
+    consumable = get_object_or_404(
+        RentalConsumable, id=consumable_id, rental_request_id=rental_id)
+    try:
+        resolve_missing_consumable(consumable, request.POST.get('action', ''), request.user)
+    except ValueError:
+        messages.error(request, _('This consumable cannot be resolved.'))
+    return _redirect_to_consumables(rental_id, request.POST.get('back_to', ''))
+
+
+class MissingConsumablesView(StaffRequiredMixin, TemplateView):
+    """All consumables that were not returned and are not resolved yet."""
+
+    template_name = 'rental/missing_consumables.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        _add_sidebar_counts(context)
+        now = timezone.now()
+        rows = []
+        for consumable in missing_consumables().order_by('returned_at', 'id'):
+            rental = consumable.rental_request
+            rows.append({
+                'consumable': consumable,
+                'rental': rental,
+                'rental_code': f"R-{rental.created_at.strftime('%y%m')}-{rental.pk:04d}",
+                'user_name': _user_display_name(rental.user),
+                'user_email': rental.user.email,
+                'days_open': (now - consumable.returned_at).days if consumable.returned_at else 0,
+            })
+        context['rows'] = rows
+        return context
+
+
 @login_required
 @staff_member_required
 def report_issue(request, rental_id):
@@ -3084,6 +3271,8 @@ def create_submit(request):
     if not result.get('success'):
         return JsonResponse({'error': result.get('error', _('Could not create rental'))}, status=400)
     rental_id = result['rental_id']
+    add_consumables(
+        RentalRequest.objects.get(pk=rental_id), data.get('consumables') or '', request.user)
     return JsonResponse({
         'success': True,
         'rental_id': rental_id,
@@ -3119,6 +3308,7 @@ def quick_issue(request):
     if not result.get('success'):
         return JsonResponse({'error': result.get('error', _('Could not issue rental'))}, status=400)
     rental = get_object_or_404(RentalRequest, id=result['rental_id'])
+    add_consumables(rental, data.get('consumables') or '', request.user)
     # Quick mode signs the rental right after issuing it, so hand back the
     # per-rental signature endpoints instead of making the client build them.
     return JsonResponse({
@@ -3339,6 +3529,7 @@ def api_extend_rental(request):
             is_valid_period, error_message = validate_working_hours_period(
                 rental_request.requested_start_date,
                 new_end_datetime,
+                request.user,
             )
             if not is_valid_period:
                 return JsonResponse({'error': error_message}, status=400)
@@ -6189,7 +6380,8 @@ def api_check_room_availability(request):
         if timezone.is_naive(end_datetime):
             end_datetime = timezone.make_aware(end_datetime)
 
-        is_valid_period, error_message = validate_working_hours_period(start_datetime, end_datetime)
+        is_valid_period, error_message = validate_working_hours_period(
+            start_datetime, end_datetime, request.user)
         if not is_valid_period:
             return JsonResponse({
                 'success': True,

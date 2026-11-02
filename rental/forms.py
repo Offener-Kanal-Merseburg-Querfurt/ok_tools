@@ -28,16 +28,17 @@ class RentalRequestAdminForm(forms.ModelForm):
         }
 
     def clean(self):
-        """Validate date consistency (end after start)."""
+        """
+        Validate date consistency (end after start).
+
+        Working hours are not enforced: only staff can open the Django admin,
+        and staff may book outside the configured working hours.
+        """
         cleaned = super().clean()
         start = cleaned.get('requested_start_date')
         end = cleaned.get('requested_end_date')
         if start and end and end < start:
             raise forms.ValidationError(_('Requested end date must be after start date.'))
-        if start and end:
-            is_valid, error_message = validate_working_hours_period(start, end)
-            if not is_valid and error_message:
-                raise forms.ValidationError(error_message)
         return cleaned
 
 

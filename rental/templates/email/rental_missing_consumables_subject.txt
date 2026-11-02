@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with ok_name=ok_name %}Reminder: borrowed material not returned yet — {{ ok_name }}{% endblocktrans %}

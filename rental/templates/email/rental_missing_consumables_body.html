@@ -1,0 +1,21 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+<h2>{% blocktrans with user_name=user_name %}Hello {{ user_name }},{% endblocktrans %}</h2>
+
+<p>{% trans "The following material from your rentals has not been returned yet:" %}</p>
+<ul>
+{% for item in items %}
+<li>{{ item.quantity }} x {{ item.name }} ({% blocktrans with rental_id=item.rental_id project_name=item.project_name %}rental #{{ rental_id }}, {{ project_name }}{% endblocktrans %})</li>
+{% endfor %}
+</ul>
+
+<p>{% trans "Please bring it back as soon as possible or contact us if it got lost." %}</p>
+<p>{% if contact_email %}{% blocktrans with contact_email=contact_email %}E-mail: {{ contact_email }}{% endblocktrans %}<br>{% endif %}
+{% if ok_phone %}{% blocktrans with ok_phone=ok_phone %}Phone: {{ ok_phone }}{% endblocktrans %}{% endif %}</p>
+</body>
+</html>

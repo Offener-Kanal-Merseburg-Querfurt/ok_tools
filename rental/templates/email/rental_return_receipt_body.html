@@ -19,9 +19,19 @@
 <h3>{% trans "Returned equipment" %}:</h3>
 <ul>
 {% for item in returned_items %}
-<li>{{ item.quantity }} x {{ item.name }} — {{ item.condition }}</li>
+<li>{{ item.quantity }} x {{ item.name }}{% if item.condition %} — {{ item.condition }}{% endif %}</li>
 {% endfor %}
 </ul>
+{% endif %}
+
+{% if missing_items %}
+<h3>{% trans "Not returned yet" %}:</h3>
+<ul>
+{% for item in missing_items %}
+<li>{{ item.quantity }} x {{ item.name }}</li>
+{% endfor %}
+</ul>
+<p>{% trans "Please bring these back as soon as possible." %}</p>
 {% endif %}
 
 {% if note %}<p><strong>{% trans "Return note" %}:</strong> {{ note }}</p>{% endif %}

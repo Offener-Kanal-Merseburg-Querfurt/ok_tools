@@ -595,6 +595,115 @@ class RentalIssue(models.Model):
         return f"{self.get_issue_type_display()} ({self.get_severity_display()}) → {self.rental_item}"
 
 
+class RentalConsumable(models.Model):
+    """
+    Consumable or accessory handed out with a rental but not kept in inventory.
+
+    Typical examples are cables or memory cards ("XLR cable 5 m", 3 pieces).
+    The return screen records how many came back; what is still missing stays
+    open until staff mark it as returned later or written off, and the user is
+    reminded about it by email.
+    """
+
+    STATUS_OUT = 'out'
+    STATUS_RETURNED = 'returned'
+    STATUS_MISSING = 'missing'
+    STATUS_WRITTEN_OFF = 'written_off'
+    STATUS_CHOICES = [
+        (STATUS_OUT, _('Handed out')),
+        (STATUS_RETURNED, _('Returned')),
+        (STATUS_MISSING, _('Missing')),
+        (STATUS_WRITTEN_OFF, _('Written off')),
+    ]
+
+    rental_request = models.ForeignKey(
+        RentalRequest,
+        on_delete=models.CASCADE,
+        related_name='consumables',
+        verbose_name=_('Rental request'),
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('Name'),
+    )
+    quantity = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)],
+        verbose_name=_('Quantity'),
+    )
+    quantity_returned = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_('Quantity returned'),
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_OUT,
+        db_index=True,
+        verbose_name=_('Status'),
+    )
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_('Notes'),
+    )
+    created_by = models.ForeignKey(
+        'registration.OKUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+        verbose_name=_('Created by'),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at'),
+    )
+    returned_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('Return checked at'),
+    )
+    resolved_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('Resolved at'),
+        help_text=_('When a missing consumable was returned later or written off.'),
+    )
+    resolved_by = models.ForeignKey(
+        'registration.OKUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+        verbose_name=_('Resolved by'),
+    )
+    last_reminder_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('Last reminder sent at'),
+    )
+    reminder_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_('Reminders sent'),
+    )
+
+    class Meta:
+        """Django model metadata for ``RentalConsumable``."""
+
+        verbose_name = _('Consumable')
+        verbose_name_plural = _('Consumables')
+        ordering = ['created_at', 'id']
+
+    def __str__(self) -> str:
+        """Return human-readable representation."""
+        return f'{self.name} × {self.quantity}'
+
+    @property
+    def quantity_missing(self) -> int:
+        """Return how many pieces have not come back."""
+        return max(self.quantity - self.quantity_returned, 0)
+
+
 class Room(models.Model):
     """Model for rooms/premises."""
 
@@ -1018,6 +1127,13 @@ class RentalConfig(models.Model):
         default=24,
         verbose_name=_('Reminder Hours Before Return'),
         help_text=_('Send reminder this many hours before the requested return date')
+    )
+    missing_consumable_reminder_days = models.PositiveIntegerField(
+        default=7,
+        verbose_name=_('Missing consumables reminder interval (days)'),
+        help_text=_('Remind the user by email about consumables that were not '
+                    'returned, every this many days until staff resolve them. '
+                    '0 disables the reminder.'),
     )
 
     monday_start_time = models.TimeField(

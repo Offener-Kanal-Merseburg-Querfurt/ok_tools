@@ -337,7 +337,8 @@ class RentalService:
             if end_date <= start_date:
                 return {'success': False, 'error': _('End date must be after start date')}
 
-            is_valid_period, error_message = validate_working_hours_period(start_date, end_date)
+            is_valid_period, error_message = validate_working_hours_period(
+                start_date, end_date, created_by)
             if not is_valid_period and not rooms:
                 return {'success': False, 'error': error_message}
             
@@ -484,6 +485,7 @@ class RentalService:
                     is_valid_room_period, error_message = validate_working_hours_period(
                         room_start_date,
                         room_end_date,
+                        created_by,
                     )
                     if not is_valid_room_period:
                         rental_request.delete()
@@ -633,6 +635,7 @@ class RentalService:
             is_valid_room_period, error_message = validate_working_hours_period(
                 room_start_date,
                 room_end_date,
+                rental_request.created_by,
             )
             if not is_valid_room_period:
                 continue
@@ -930,6 +933,7 @@ class RentalService:
         is_valid_period, error_message = validate_working_hours_period(
             rental_request.requested_start_date,
             new_end_date,
+            performed_by,
         )
         if not is_valid_period:
             return False

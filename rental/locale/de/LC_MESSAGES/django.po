@@ -4779,3 +4779,196 @@ msgstr "Ausleihen mit bereits ausgegebenen Artikeln können nicht wiederhergeste
 
 msgid "Could not load rooms: "
 msgstr "Räume konnten nicht geladen werden: "
+
+msgid "Staff can still book outside working hours."
+msgstr "Mitarbeitende können trotzdem außerhalb der Öffnungszeiten buchen."
+
+msgid "The selected day is closed. Staff can still book it."
+msgstr "Der gewählte Tag ist geschlossen. Mitarbeitende können trotzdem buchen."
+
+msgid "Outside working hours. Staff can still book it."
+msgstr "Außerhalb der Öffnungszeiten. Mitarbeitende können trotzdem buchen."
+
+msgid "Handed out"
+msgstr "Ausgegeben"
+
+msgid "Written off"
+msgstr "Abgeschrieben"
+
+msgid "Return checked at"
+msgstr "Rückgabe geprüft am"
+
+msgid "Resolved at"
+msgstr "Erledigt am"
+
+msgid "When a missing consumable was returned later or written off."
+msgstr "Wann fehlendes Material nachträglich zurückgegeben oder abgeschrieben wurde."
+
+msgid "Resolved by"
+msgstr "Erledigt von"
+
+msgid "Last reminder sent at"
+msgstr "Letzte Erinnerung gesendet am"
+
+msgid "Reminders sent"
+msgstr "Gesendete Erinnerungen"
+
+msgid "Consumable"
+msgstr "Verbrauchsmaterial"
+
+msgid "Consumables"
+msgstr "Verbrauchsmaterial"
+
+msgid "Missing consumables reminder interval (days)"
+msgstr "Erinnerung an fehlendes Material (Tage)"
+
+msgid "Remind the user by email about consumables that were not returned, every this many days until staff resolve them. 0 disables the reminder."
+msgstr "Erinnert die Person per E-Mail an nicht zurückgegebenes Material, alle so viele Tage, bis es erledigt ist. 0 schaltet die Erinnerung aus."
+
+msgid "Consumables can only be added before the return."
+msgstr "Verbrauchsmaterial kann nur vor der Rückgabe hinzugefügt werden."
+
+msgid "Enter at least one consumable."
+msgstr "Bitte mindestens ein Material eingeben."
+
+msgid "Checked consumables cannot be removed."
+msgstr "Bereits geprüftes Material kann nicht entfernt werden."
+
+msgid "This consumable cannot be resolved."
+msgstr "Dieses Material kann nicht erledigt werden."
+
+msgid "Missing consumables: %(items)s"
+msgstr "Fehlendes Material: %(items)s"
+
+msgid "Internal note of the rental"
+msgstr "Interne Notiz der Ausleihe"
+
+msgid "Not in inventory. What is not ticked off stays open as missing and the user is reminded."
+msgstr "Nicht im Inventar. Was nicht abgehakt wird, bleibt als fehlend offen und die Person wird erinnert."
+
+msgid "Note (optional)"
+msgstr "Notiz (optional)"
+
+msgid "Why missing? (optional)"
+msgstr "Warum fehlt es? (optional)"
+
+msgid "These consumables are not returned and will be kept as missing: {names}. Continue?"
+msgstr "Dieses Material ist nicht zurück und bleibt als fehlend offen: {names}. Fortfahren?"
+
+msgid "Consumables (not in inventory)"
+msgstr "Verbrauchsmaterial (nicht im Inventar)"
+
+msgid "XLR cable 5 m - 3\nSD card 64 GB - 5"
+msgstr "XLR-Kabel 5 m - 3\nSD-Karte 64 GB - 5"
+
+msgid "One per line, the number at the end is the quantity. They are checked on return."
+msgstr "Eins pro Zeile, die Zahl am Ende ist die Menge. Wird bei der Rückgabe geprüft."
+
+msgid "Still missing from other rentals of this user:"
+msgstr "Fehlt noch aus anderen Ausleihen dieser Person:"
+
+msgid "%(missing)s of %(total)s not returned"
+msgstr "%(missing)s von %(total)s nicht zurück"
+
+msgid "Returned later"
+msgstr "Nachträglich zurück"
+
+msgid "Write off"
+msgstr "Abschreiben"
+
+msgid "Write off this consumable? No more reminders will be sent."
+msgstr "Dieses Material abschreiben? Es werden keine Erinnerungen mehr gesendet."
+
+msgid "No consumables."
+msgstr "Kein Verbrauchsmaterial."
+
+msgid "XLR cable 5 m - 3"
+msgstr "XLR-Kabel 5 m - 3"
+
+msgid "SD card 64 GB - 5"
+msgstr "SD-Karte 64 GB - 5"
+
+msgid "One per line, the number at the end is the quantity."
+msgstr "Eins pro Zeile, die Zahl am Ende ist die Menge."
+
+msgid "Add consumables"
+msgstr "Material hinzufügen"
+
+msgid "Missing consumables"
+msgstr "Fehlendes Material"
+
+msgid "Consumables that were not returned. The user is reminded by email until they are returned or written off."
+msgstr "Material, das nicht zurückgegeben wurde. Die Person wird per E-Mail erinnert, bis es zurück ist oder abgeschrieben wurde."
+
+msgid "Open since"
+msgstr "Offen seit"
+
+msgid "Reminders"
+msgstr "Erinnerungen"
+
+msgid "No missing consumables."
+msgstr "Kein fehlendes Material."
+
+msgid "Not returned yet"
+msgstr "Noch nicht zurückgegeben"
+
+msgid "Please bring these back as soon as possible."
+msgstr "Bitte bringen Sie diese so bald wie möglich zurück."
+
+msgid "Reminder: borrowed material not returned yet — %(ok_name)s"
+msgstr "Erinnerung: ausgeliehenes Material noch nicht zurück — %(ok_name)s"
+
+msgid "The following material from your rentals has not been returned yet:"
+msgstr "Folgendes Material aus Ihren Ausleihen wurde noch nicht zurückgegeben:"
+
+msgid "rental #%(rental_id)s, %(project_name)s"
+msgstr "Ausleihe #%(rental_id)s, %(project_name)s"
+
+msgid "Please bring it back as soon as possible or contact us if it got lost."
+msgstr "Bitte bringen Sie es so bald wie möglich zurück oder melden Sie sich, falls es verloren gegangen ist."
+
+msgid "Phone: %(ok_phone)s"
+msgstr "Telefon: %(ok_phone)s"
+
+msgid "Send automatic return reminders for issued rentals and missing consumables."
+msgstr "Automatische Rückgabe-Erinnerungen für ausgegebene Ausleihen und fehlendes Material senden."
+
+msgid "Missing consumables reminders sent: {} user(s)"
+msgstr "Erinnerungen an fehlendes Material gesendet: {} Person(en)"
+
+msgid "%(counter)s reminder sent"
+msgid_plural "%(counter)s reminders sent"
+msgstr[0] "%(counter)s Erinnerung gesendet"
+msgstr[1] "%(counter)s Erinnerungen gesendet"
+
+msgid "%(counter)s day"
+msgid_plural "%(counter)s days"
+msgstr[0] "%(counter)s Tag"
+msgstr[1] "%(counter)s Tage"
+
+msgid "New item, e.g. XLR cable 3 m - 3"
+msgstr "Neues Material, z. B. XLR-Kabel 3 m - 3"
+
+msgid "%(missing)s of %(total)s missing"
+msgstr "%(missing)s von %(total)s fehlen"
+
+msgid "reminders sent: %(count)s"
+msgstr "Erinnerungen gesendet: %(count)s"
+
+msgid "Mark as returned"
+msgstr "Als zurückgegeben abhaken"
+
+msgid "Mark as not returned"
+msgstr "Als nicht zurückgegeben markieren"
+
+msgid "Could not save the change."
+msgstr "Die Änderung konnte nicht gespeichert werden."
+
+msgid "Checked consumables cannot be changed."
+msgstr "Abgehaktes Material kann nicht geändert werden."
+
+msgid "Enter one consumable per line."
+msgstr "Bitte ein Material pro Zeile eingeben."
+
+msgid "This consumable cannot be changed."
+msgstr "Dieses Material kann nicht geändert werden."

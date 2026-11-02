@@ -9,8 +9,16 @@
 {% if returned_items %}
 {% trans "Returned equipment" %}:
 {% for item in returned_items %}
-- {{ item.quantity }} x {{ item.name }} — {{ item.condition }}
+- {{ item.quantity }} x {{ item.name }}{% if item.condition %} — {{ item.condition }}{% endif %}
 {% endfor %}
+{% endif %}
+
+{% if missing_items %}
+{% trans "Not returned yet" %}:
+{% for item in missing_items %}
+- {{ item.quantity }} x {{ item.name }}
+{% endfor %}
+{% trans "Please bring these back as soon as possible." %}
 {% endif %}
 
 {% if note %}{% blocktrans with note=note %}Return note: {{ note }}{% endblocktrans %}{% endif %}

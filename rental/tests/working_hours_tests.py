@@ -48,6 +48,55 @@ def test__rental__working_hours__validation_uses_weekday_specific_hours():
 
 
 @pytest.mark.django_db
+def test__rental__working_hours__staff_may_book_outside_working_hours():
+    member = OKUser.objects.create_user(email='member@example.com', password='testpass123')
+    staff = OKUser.objects.create_user(email='staff@example.com', password='testpass123', is_staff=True)
+    # Sunday is closed, Friday evening is after closing time.
+    sunday_start = timezone.make_aware(datetime(2026, 3, 22, 20, 0))
+    sunday_end = timezone.make_aware(datetime(2026, 3, 22, 23, 0))
+    evening_start = timezone.make_aware(datetime(2026, 3, 20, 19, 0))
+    evening_end = timezone.make_aware(datetime(2026, 3, 20, 22, 0))
+
+    for start, end in ((sunday_start, sunday_end), (evening_start, evening_end)):
+        assert validate_working_hours_period(start, end, member)[0] is False
+        assert validate_working_hours_period(start, end)[0] is False
+        assert validate_working_hours_period(start, end, staff) == (True, None)
+
+    # The period itself still has to make sense.
+    assert validate_working_hours_period(sunday_end, sunday_start, staff)[0] is False
+
+
+@pytest.mark.django_db
+def test__rental__working_hours__staff_creates_and_extends_outside_working_hours():
+    user = OKUser.objects.create_user(email='user3@example.com', password='testpass123')
+    staff = OKUser.objects.create_user(email='staff3@example.com', password='testpass123', is_staff=True)
+    room = Room.objects.create(name='Studio C', capacity=8, is_active=True, location='First Floor')
+
+    result = RentalService.create_rental_request(
+        {
+            'project_name': 'Weekend shoot',
+            'purpose': 'Practice',
+            'start_date': '2027-03-21T10:00',
+            'end_date': '2027-03-21T11:00',
+            'action': 'reserved',
+            'rooms': [{'room_id': room.id}],
+        },
+        user,
+        staff,
+        is_user_request=False,
+    )
+
+    assert result['success'] is True, result
+    rental_request = RentalRequest.objects.get(id=result['rental_id'])
+    assert rental_request.room_rentals.count() == 1
+    assert RentalService.extend_rental(
+        rental_request,
+        timezone.make_aware(datetime(2027, 3, 21, 23, 0)),
+        staff,
+    ) is True
+
+
+@pytest.mark.django_db
 def test__rental__working_hours__service_rejects_closed_start_day():
     user = OKUser.objects.create_user(email='user@example.com', password='testpass123')
     admin_user = OKUser.objects.create_user(email='admin@example.com', password='testpass123')
@@ -57,8 +106,8 @@ def test__rental__working_hours__service_rejects_closed_start_day():
         {
             'project_name': 'Weekend booking',
             'purpose': 'Practice',
-            'start_date': '2026-03-22T10:00',
-            'end_date': '2026-03-22T11:00',
+            'start_date': '2027-03-21T10:00',
+            'end_date': '2027-03-21T11:00',
             'action': 'reserved',
             'rooms': [{'room_id': room.id}],
         },
@@ -79,8 +128,8 @@ def test__rental__working_hours__extend_rental_rejects_end_time_outside_hours():
         {
             'project_name': 'Weekday booking',
             'purpose': 'Practice',
-            'start_date': '2026-03-20T10:00',
-            'end_date': '2026-03-20T15:00',
+            'start_date': '2027-03-19T10:00',
+            'end_date': '2027-03-19T15:00',
             'action': 'reserved',
             'rooms': [{'room_id': Room.objects.create(name='Studio B', capacity=10, is_active=True, location='First Floor').id}],
         },
@@ -92,6 +141,6 @@ def test__rental__working_hours__extend_rental_rejects_end_time_outside_hours():
     created_request = RentalRequest.objects.get(id=rental_request['rental_id'])
     assert RentalService.extend_rental(
         created_request,
-        timezone.make_aware(datetime(2026, 3, 20, 19, 0)),
+        timezone.make_aware(datetime(2027, 3, 19, 19, 0)),
         admin_user,
     ) is False
