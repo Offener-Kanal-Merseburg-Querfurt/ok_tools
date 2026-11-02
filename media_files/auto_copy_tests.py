@@ -7,14 +7,20 @@ Covers the primary-version selection and the lifecycle:
 """
 
 from datetime import date
+from datetime import timedelta
 from django.test import TestCase
+from licenses.models import License
+from licenses.models import default_category
 from media_files.models import MediaFilesConfig
 from media_files.models import StorageLocation
 from media_files.models import VideoFile
 from media_files.tasks import _copy_video_to_storage
 from media_files.tasks import copy_videos_for_plan
+from ok_tools.testing import create_license
+from ok_tools.testing import create_user
 from pathlib import Path
 from unittest.mock import patch
+import json
 import shutil
 import tempfile
 
@@ -83,6 +89,140 @@ class CopyVideosForPlanTests(TestCase):
 
     def _run(self, numbers):
         return copy_videos_for_plan(numbers, self.plan_date, user_id=None)
+
+    def _run_expecting_errors(self, numbers):
+        """Run the task and return the result carried by its RuntimeError."""
+        with self.assertRaises(RuntimeError) as ctx:
+            self._run(numbers)
+        return json.loads(str(ctx.exception))
+
+    def _fail_storage(self, storage_type, message):
+        """Return a _copy_video_to_storage side effect failing one storage type."""
+        def side_effect(source_video, destination_storage, user, destination_subfolder=None):
+            if destination_storage.storage_type == storage_type:
+                return False, message
+            return _copy_video_to_storage(
+                source_video, destination_storage, user,
+                destination_subfolder=destination_subfolder,
+            )
+        return side_effect
+
+    # --- order: playout pass before archive pass ---------------------------
+
+    def test_all_playout_copies_before_archive_copies(self):
+        """Every number reaches playout before any archive copy starts."""
+        _make_video(self.custom, 18628, "18628.mp4", is_manual_primary=True)
+        _make_video(self.custom, 17431, "17431.mp4", is_manual_primary=True)
+        _make_video(self.custom, 19041, "19041.mp4", is_manual_primary=True)
+        calls = []
+
+        def record(source_video, destination_storage, user, destination_subfolder=None):
+            calls.append((destination_storage.storage_type, source_video.number))
+            return True, "Video copied successfully"
+
+        with patch("media_files.tasks._copy_video_to_storage", side_effect=record):
+            result = self._run([18628, 17431, 19041])
+
+        self.assertEqual(calls, [
+            ("PLAYOUT", 18628), ("PLAYOUT", 17431), ("PLAYOUT", 19041),
+            ("ARCHIVE", 18628), ("ARCHIVE", 17431), ("ARCHIVE", 19041),
+        ])
+        self.assertEqual(result["copied_to_playout"], 3)
+        self.assertEqual(result["copied_to_archive"], 3)
+        self.assertEqual(result["errors"], 0)
+
+    def test_archive_unreachable_still_fills_playout(self):
+        """Archive failure keeps playout copies and the CUSTOM source."""
+        _make_video(self.custom, 18628, "18628.mp4", is_manual_primary=True)
+        _make_video(self.custom, 17431, "17431.mp4", is_manual_primary=True)
+
+        with patch(
+            "media_files.tasks._copy_video_to_storage",
+            side_effect=self._fail_storage("ARCHIVE", "Archive not reachable"),
+        ):
+            result = self._run_expecting_errors([18628, 17431])
+
+        self.assertEqual(result["copied_to_playout"], 2)
+        self.assertEqual(result["copied_to_archive"], 0)
+        self.assertEqual(result["errors"], 2)
+        self.assertEqual(
+            [e["message"] for e in result["details"]["errors"]],
+            [
+                "Archive copy failed for 18628.mp4: Archive not reachable",
+                "Archive copy failed for 17431.mp4: Archive not reachable",
+            ],
+        )
+        for number in (18628, 17431):
+            self.assertTrue(VideoFile.objects.filter(
+                number=number, storage_location=self.playout,
+                file_path__startswith=self.week_folder, is_available=True,
+            ).exists())
+            self.assertTrue(VideoFile.objects.filter(
+                number=number, storage_location=self.custom, is_available=True,
+            ).exists())
+
+    def test_playout_unreachable_still_fills_archive(self):
+        """Playout failure still archives, but keeps the CUSTOM source."""
+        _make_video(self.custom, 18628, "18628.mp4", is_manual_primary=True)
+
+        with patch(
+            "media_files.tasks._copy_video_to_storage",
+            side_effect=self._fail_storage("PLAYOUT", "Playout not reachable"),
+        ):
+            result = self._run_expecting_errors([18628])
+
+        self.assertEqual(result["copied_to_playout"], 0)
+        self.assertEqual(result["copied_to_archive"], 1)
+        self.assertEqual(
+            result["details"]["errors"],
+            [{"number": 18628, "message": "Playout copy failed: Playout not reachable"}],
+        )
+        self.assertTrue(VideoFile.objects.filter(
+            number=18628, storage_location=self.archive, is_available=True,
+        ).exists())
+        self.assertTrue(VideoFile.objects.filter(
+            number=18628, storage_location=self.custom, is_available=True,
+        ).exists())
+
+    def test_license_ends_on_archive_copy_not_playout(self):
+        """The playout copy never takes the License link; the archive copy does."""
+        user = create_user({
+            "email": "autocopy@example.com", "first_name": "a",
+            "last_name": "b", "gender": "m", "phone_number": None,
+            "mobile_number": None, "birthday": "05.09.1989",
+            "street": "s", "house_number": "1", "zipcode": "12345",
+            "city": "c",
+        })
+        license = create_license(user.profile, {
+            "title": "Auto copy", "subtitle": None, "description": "d",
+            "duration": timedelta(minutes=1), "further_persons": None,
+            "category": default_category(), "suggested_date": None,
+            "repetitions_allowed": True,
+            "media_authority_exchange_allowed": True,
+            "youth_protection_necessary": False,
+            "store_in_ok_media_library": True,
+        })
+        License.objects.filter(pk=license.pk).update(number=18628)
+        custom_video = _make_video(self.custom, 18628, "18628.mp4")
+        license.refresh_from_db()
+        self.assertEqual(license.video_file.id, custom_video.id)
+
+        with self.assertLogs("django", level="INFO") as logs:
+            self._run([18628])
+
+        playout_video = VideoFile.objects.get(
+            number=18628, storage_location=self.playout,
+        )
+        archive_video = VideoFile.objects.get(
+            number=18628, storage_location=self.archive,
+        )
+        license.refresh_from_db()
+        self.assertEqual(license.video_file.id, archive_video.id)
+        self.assertFalse(any(
+            f"to primary VideoFile {playout_video.id}" in line
+            or f"Auto-linked VideoFile {playout_video.id} " in line
+            for line in logs.output
+        ))
 
     # --- playout: only PRIMARY ---------------------------------------------
 

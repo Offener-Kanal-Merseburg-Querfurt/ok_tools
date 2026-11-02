@@ -1,6 +1,8 @@
 """Signal handlers for media files."""
 
 import logging
+from contextlib import contextmanager
+from contextvars import ContextVar
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
@@ -8,6 +10,21 @@ from .models import VideoFile, FileOperation
 
 
 logger = logging.getLogger('django')
+
+# When set, auto_link_to_license leaves the License link untouched. Used by
+# auto-copy while writing temporary PLAYOUT copies before the ARCHIVE copy
+# exists, so the License never ends up pointing at a playout file.
+_license_relink_suppressed = ContextVar('license_relink_suppressed', default=False)
+
+
+@contextmanager
+def suppress_license_relink():
+    """Skip License auto-linking for VideoFile saves inside this block."""
+    token = _license_relink_suppressed.set(True)
+    try:
+        yield
+    finally:
+        _license_relink_suppressed.reset(token)
 
 
 @receiver(post_save, sender=VideoFile)
@@ -20,6 +37,11 @@ def auto_link_to_license(sender, instance, created, **kwargs):
     a matching License by number. Only the newest VideoFile
     (by created_at or updated_at) will be linked to the License.
     """
+    if _license_relink_suppressed.get():
+        logger.debug(
+            f"License auto-link suppressed for VideoFile {instance.id} (number {instance.number})"
+        )
+        return
     try:
         from licenses.models import License
         from django.db import transaction

@@ -1535,9 +1535,11 @@ def copy_videos_for_plan(video_numbers, plan_date, user_id=None):
 
 def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
     """
-    Automatically copy videos to archive and playout storage when planning.
+    Automatically copy videos to playout and archive storage when planning.
     
     Uses smart source selection: prefers CUSTOM if recent, otherwise ARCHIVE.
+    Playout is served first for the whole plan, then the archive, so a slow
+    or unreachable archive never delays the broadcast folder.
     
     Args:
         video_numbers: List of video numbers (license numbers)
@@ -1547,6 +1549,7 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
     Returns:
         Dictionary with operation results
     """
+    from contextlib import nullcontext
     from datetime import date
     from django.conf import settings
     from django.contrib.auth import get_user_model
@@ -1554,6 +1557,7 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
     from media_files.models import FileOperation
     from media_files.models import StorageLocation
     from media_files.models import VideoFile
+    from media_files.signals import suppress_license_relink
     from media_files.utils import select_best_source_video
     from pathlib import Path
     
@@ -1645,6 +1649,10 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
     warnings = 0  # Non-critical errors (e.g., video not found)
     operation_details = {'errors': [], 'warnings': []}
     
+    # Pass 0: resolve source versions and the PRIMARY for every number.
+    # Copies run in separate passes afterwards so all PRIMARY files reach
+    # playout before the (slower, possibly unreachable) archive is touched.
+    plan_items = []
     for number in video_numbers:
         try:
             # All source versions for this number (CUSTOM + ARCHIVE); PLAYOUT is a
@@ -1707,14 +1715,108 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
                 })
                 continue
 
-            # Step 1: Copy ALL source versions to archive.
-            # Each version is copied only if its filename is not already in the
-            # archive, so a rendered "_v1" primary lands alongside an existing
-            # 50fps master without overwriting or skipping it.
+            plan_items.append({
+                'number': number,
+                'source_versions': source_versions,
+                'primary_video': primary_video,
+                'archive_copy_success': False,
+                'playout_copy_success': False,
+                'archived_custom_ids': [],
+            })
+        except Exception as e:
+            logger.error(f"Video {number}: ERROR - {str(e)}", exc_info=True)
+            errors += 1
+            operation_details['errors'].append({
+                'number': number,
+                'message': str(e)
+            })
+
+    # Pass 1: copy PRIMARY to playout (weekly folder) for every number.
+    # The existence check is filename-aware so a previously copied
+    # non-primary version in the same week does not block the primary.
+    # While the archive copy is still pending, the playout copy must not
+    # take over the License link; the archive pass re-links it afterwards.
+    for item in plan_items:
+        number = item['number']
+        primary_video = item['primary_video']
+        try:
+            if playout_storage:
+                if week_folder:
+                    playout_exists = VideoFile.objects.filter(
+                        number=number,
+                        storage_location=playout_storage,
+                        file_path__startswith=week_folder,
+                        filename=primary_video.filename,
+                        is_available=True,
+                    ).exists()
+                else:
+                    playout_exists = VideoFile.objects.filter(
+                        number=number,
+                        storage_location=playout_storage,
+                        filename=primary_video.filename,
+                        is_available=True,
+                    ).exists()
+
+                if not playout_exists:
+                    relink_guard = suppress_license_relink() if archive_storage else nullcontext()
+                    with relink_guard:
+                        success, msg = _copy_video_to_storage(
+                            primary_video, playout_storage, user,
+                            destination_subfolder=week_folder
+                        )
+                    if success:
+                        item['playout_copy_success'] = True
+                        if _copy_result_already_exists(msg):
+                            skipped += 1
+                            warnings += 1
+                            operation_details['warnings'].append({
+                                'number': number,
+                                'message': f'Playout copy skipped: {msg}'
+                            })
+                            logger.info(
+                                f"Video {number}: PRIMARY already in "
+                                f"playout/{week_folder or 'root'}, skipping"
+                            )
+                        else:
+                            copied_to_playout += 1
+                            logger.info(
+                                f"Video {number}: copied PRIMARY {primary_video.filename} "
+                                f"to playout/{week_folder or 'root'}"
+                            )
+                    else:
+                        logger.error(f"Video {number}: ✗ Failed to copy PRIMARY to playout: {msg}")
+                        errors += 1
+                        operation_details['errors'].append({
+                            'number': number,
+                            'message': f'Playout copy failed: {msg}'
+                        })
+                else:
+                    item['playout_copy_success'] = True  # Already exists, consider as success
+                    logger.debug(
+                        f"Video {number}: PRIMARY already in playout/{week_folder or 'root'}, skipping"
+                    )
+                    skipped += 1
+            else:
+                item['playout_copy_success'] = True  # Playout copy not required
+                skipped += 1
+        except Exception as e:
+            logger.error(f"Video {number}: ERROR - {str(e)}", exc_info=True)
+            errors += 1
+            operation_details['errors'].append({
+                'number': number,
+                'message': str(e)
+            })
+
+    # Pass 2: copy ALL source versions to archive for every number.
+    # Each version is copied only if its filename is not already in the
+    # archive, so a rendered "_v1" primary lands alongside an existing
+    # 50fps master without overwriting or skipping it.
+    for item in plan_items:
+        number = item['number']
+        try:
             archive_copy_success = True
-            archived_custom_ids = []
             if archive_storage:
-                for version in source_versions:
+                for version in item['source_versions']:
                     if version.storage_location == archive_storage:
                         continue
                     already_archived = VideoFile.objects.filter(
@@ -1749,10 +1851,10 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
                                 f"Video {number}: copied {version.filename} to archive"
                             )
                         if version.storage_location.storage_type == 'CUSTOM' and not already_exists:
-                            archived_custom_ids.append(version.id)
+                            item['archived_custom_ids'].append(version.id)
                     else:
                         logger.error(
-                            f"Video {number}: \u2717 Failed to copy {version.filename} to archive: {msg}"
+                            f"Video {number}: ✗ Failed to copy {version.filename} to archive: {msg}"
                         )
                         errors += 1
                         operation_details['errors'].append({
@@ -1760,111 +1862,7 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
                             'message': f'Archive copy failed for {version.filename}: {msg}'
                         })
                         archive_copy_success = False
-            else:
-                archive_copy_success = True  # Archive copy not required
-
-            # Step 2: Copy PRIMARY to playout (weekly folder).
-            # The existence check is filename-aware so a previously copied
-            # non-primary version in the same week does not block the primary.
-            playout_copy_success = False
-            if playout_storage:
-                if week_folder:
-                    playout_exists = VideoFile.objects.filter(
-                        number=number,
-                        storage_location=playout_storage,
-                        file_path__startswith=week_folder,
-                        filename=primary_video.filename,
-                        is_available=True,
-                    ).exists()
-                else:
-                    playout_exists = VideoFile.objects.filter(
-                        number=number,
-                        storage_location=playout_storage,
-                        filename=primary_video.filename,
-                        is_available=True,
-                    ).exists()
-
-                if not playout_exists:
-                    success, msg = _copy_video_to_storage(
-                        primary_video, playout_storage, user,
-                        destination_subfolder=week_folder
-                    )
-                    if success:
-                        playout_copy_success = True
-                        if _copy_result_already_exists(msg):
-                            skipped += 1
-                            warnings += 1
-                            operation_details['warnings'].append({
-                                'number': number,
-                                'message': f'Playout copy skipped: {msg}'
-                            })
-                            logger.info(
-                                f"Video {number}: PRIMARY already in "
-                                f"playout/{week_folder or 'root'}, skipping"
-                            )
-                        else:
-                            copied_to_playout += 1
-                            logger.info(
-                                f"Video {number}: copied PRIMARY {primary_video.filename} "
-                                f"to playout/{week_folder or 'root'}"
-                            )
-                    else:
-                        logger.error(f"Video {number}: \u2717 Failed to copy PRIMARY to playout: {msg}")
-                        errors += 1
-                        operation_details['errors'].append({
-                            'number': number,
-                            'message': f'Playout copy failed: {msg}'
-                        })
-                else:
-                    playout_copy_success = True  # Already exists, consider as success
-                    logger.debug(
-                        f"Video {number}: PRIMARY already in playout/{week_folder or 'root'}, skipping"
-                    )
-                    skipped += 1
-            else:
-                playout_copy_success = True  # Playout copy not required
-                skipped += 1
-
-            # Step 3: Delete CUSTOM source versions that were archived and
-            # (when playout is configured) the primary was played out.
-            # CUSTOM is treated as a staging area: once a version is safely in
-            # the archive it can be removed from CUSTOM.
-            auto_delete_enabled = getattr(settings, 'VIDEO_AUTO_DELETE_FROM_CUSTOM', True)
-            if (
-                auto_delete_enabled
-                and archive_copy_success
-                and playout_copy_success
-                and archived_custom_ids
-            ):
-                for custom_id in archived_custom_ids:
-                    try:
-                        custom_source = VideoFile.objects.filter(
-                            id=custom_id,
-                            storage_location__storage_type='CUSTOM',
-                            is_available=True,
-                        ).first()
-                        if not custom_source:
-                            logger.debug(
-                                f"Video {number}: CUSTOM source {custom_id} already deleted or not found"
-                            )
-                            continue
-                        delete_success, delete_msg = _delete_source_from_custom(custom_source, user)
-                        if delete_success:
-                            logger.info(
-                                f"Video {number}: \u2713 Deleted {custom_source.filename} "
-                                f"from CUSTOM (archived+played)"
-                            )
-                        else:
-                            logger.warning(
-                                f"Video {number}: \u26a0 Failed to delete {custom_source.filename} "
-                                f"from CUSTOM: {delete_msg}"
-                            )
-                    except Exception as e:
-                        logger.error(
-                            f"Video {number}: Error deleting CUSTOM source {custom_id}: {str(e)}",
-                            exc_info=True,
-                        )
-
+            item['archive_copy_success'] = archive_copy_success  # True if archive not required
         except Exception as e:
             logger.error(f"Video {number}: ERROR - {str(e)}", exc_info=True)
             errors += 1
@@ -1872,6 +1870,52 @@ def _copy_videos_for_plan_unlocked(video_numbers, plan_date, user_id=None):
                 'number': number,
                 'message': str(e)
             })
+
+    # Pass 3: Delete CUSTOM source versions that were archived and
+    # (when playout is configured) the primary was played out.
+    # CUSTOM is treated as a staging area: once a version is safely in
+    # the archive it can be removed from CUSTOM.
+    auto_delete_enabled = getattr(settings, 'VIDEO_AUTO_DELETE_FROM_CUSTOM', True)
+    for item in plan_items:
+        number = item['number']
+        archive_copy_success = item['archive_copy_success']
+        playout_copy_success = item['playout_copy_success']
+        archived_custom_ids = item['archived_custom_ids']
+        if not (
+            auto_delete_enabled
+            and archive_copy_success
+            and playout_copy_success
+            and archived_custom_ids
+        ):
+            continue
+        for custom_id in archived_custom_ids:
+            try:
+                custom_source = VideoFile.objects.filter(
+                    id=custom_id,
+                    storage_location__storage_type='CUSTOM',
+                    is_available=True,
+                ).first()
+                if not custom_source:
+                    logger.debug(
+                        f"Video {number}: CUSTOM source {custom_id} already deleted or not found"
+                    )
+                    continue
+                delete_success, delete_msg = _delete_source_from_custom(custom_source, user)
+                if delete_success:
+                    logger.info(
+                        f"Video {number}: ✓ Deleted {custom_source.filename} "
+                        f"from CUSTOM (archived+played)"
+                    )
+                else:
+                    logger.warning(
+                        f"Video {number}: ⚠ Failed to delete {custom_source.filename} "
+                        f"from CUSTOM: {delete_msg}"
+                    )
+            except Exception as e:
+                logger.error(
+                    f"Video {number}: Error deleting CUSTOM source {custom_id}: {str(e)}",
+                    exc_info=True,
+                )
     
     logger.info(
         f"[AUTO-COPY] Completed: archive={copied_to_archive}, "

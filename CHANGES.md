@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+2026-11-02 (Version 4.62.1)
+==========================
+
+* **media_files: Auto-copy on planning fills playout before the archive**
+  * ``copy_videos_for_plan`` now copies the PRIMARY of every planned number into the weekly playout folder first and only then copies the versions into the archive. A 3.7 GB show no longer waits about two minutes for its archive copy before it reaches ``<YYYY>_KW_<NN>``, and a slow or unreachable archive no longer holds up playout.
+  * A playout failure still lets the archive copy run and vice versa. CUSTOM sources are deleted after both passes, under the same condition as before (archived and played out).
+  * The playout copy no longer takes over the license link while the archive copy is pending; the license ends up on the archive copy as before. The task result and log lines are unchanged, only their order differs.
+
 2026-11-02 (Version 4.62.0)
 ==========================
 
