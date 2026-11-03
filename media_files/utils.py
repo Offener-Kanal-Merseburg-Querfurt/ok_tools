@@ -273,10 +273,35 @@ def calculate_checksum(file_path: str, algorithm='sha256') -> str:
         return ''
 
 
+def _partial_copy_path(destination: Path) -> Path:
+    """
+    Return a hidden temporary path next to ``destination`` for an in-flight copy.
+
+    The ``.part`` suffix is not a supported video format, so storage scans never
+    register an interrupted copy as a video. Staying in the same directory keeps
+    the final ``os.replace`` an atomic rename on the same filesystem.
+    """
+    return destination.with_name(f".{destination.name}.{os.getpid()}.part")
+
+
+def _remove_partial_copy(path: Path) -> None:
+    """Delete a leftover partial copy, logging (not raising) on failure."""
+    try:
+        path.unlink(missing_ok=True)
+    except OSError:
+        logger.exception(f"Failed to remove partial copy: {path}")
+
+
 def copy_file_with_progress(source: str, destination: str, verify_checksum=True, source_checksum_from_db=None, verify_by_size_only=False) -> Tuple[bool, str]:
     """
     Copy file with progress logging and optional integrity verification.
     Calculates destination checksum during copy to avoid reading file twice.
+
+    The data is written to a hidden ``.part`` file next to the destination and
+    renamed into place only after verification succeeded. An interrupted copy
+    (worker shutdown, time limit, crash) therefore never leaves a truncated file
+    under the real name: the partial file is removed on any exception, and one
+    left behind by a hard kill is ignored by scans.
     
     Args:
         source: Source file path
@@ -296,10 +321,12 @@ def copy_file_with_progress(source: str, destination: str, verify_checksum=True,
         Tuple of (success: bool, message: str)
     """
     import hashlib
-    
+
+    dest_path = Path(destination)
+    partial_path = _partial_copy_path(dest_path)
+
     try:
         # Ensure destination directory exists
-        dest_path = Path(destination)
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         
         # Get file size for progress reporting and verification
@@ -313,16 +340,17 @@ def copy_file_with_progress(source: str, destination: str, verify_checksum=True,
             logger.info(f"Using size-only verification (fastest, for ARCHIVE sources)")
             # Just copy the file
             logger.info(f"Starting file copy...")
-            shutil.copy2(source, destination)
+            shutil.copy2(source, partial_path)
             logger.info(f"File copy completed, verifying by size...")
             
             # Verify by size
-            dest_size = os.path.getsize(destination)
+            dest_size = os.path.getsize(partial_path)
             if source_size != dest_size:
-                os.remove(destination)
+                _remove_partial_copy(partial_path)
                 error_msg = f"Size mismatch - source: {source_size} bytes, destination: {dest_size} bytes"
                 logger.error(error_msg)
                 return False, error_msg
+            os.replace(partial_path, dest_path)
             logger.info(f"Size verification passed ({file_size_mb:.2f} MB)")
             logger.info(f"Successfully copied file to {destination}")
             return True, "File copied successfully"
@@ -373,7 +401,7 @@ def copy_file_with_progress(source: str, destination: str, verify_checksum=True,
         
         # Copy file in chunks and calculate checksum simultaneously
         with open(source, 'rb') as src_file:
-            with open(destination, 'wb') as dst_file:
+            with open(partial_path, 'wb') as dst_file:
                 if dest_hasher:
                     # Copy and calculate checksum in one pass (more efficient)
                     chunk_size = 8192 * 1024  # 8 MB chunks for better performance
@@ -388,19 +416,16 @@ def copy_file_with_progress(source: str, destination: str, verify_checksum=True,
                     shutil.copyfileobj(src_file, dst_file)
         
         # Copy metadata (timestamps, etc.)
-        shutil.copystat(source, destination)
+        shutil.copystat(source, partial_path)
         
         logger.info(f"File copy completed")
 
         # Always verify by size as a baseline integrity check.
         # This protects against partial copies (e.g. timeouts, network hiccups) even when checksum
         # verification is enabled/disabled or run in destination-only mode.
-        dest_size = os.path.getsize(destination)
+        dest_size = os.path.getsize(partial_path)
         if source_size != dest_size:
-            try:
-                os.remove(destination)
-            except Exception:
-                logger.exception(f"Failed to remove destination after size mismatch: {destination}")
+            _remove_partial_copy(partial_path)
             error_msg = f"Size mismatch - source: {source_size} bytes, destination: {dest_size} bytes"
             logger.error(error_msg)
             return False, error_msg
@@ -410,7 +435,7 @@ def copy_file_with_progress(source: str, destination: str, verify_checksum=True,
             dest_checksum = dest_hasher.hexdigest()
             logger.info(f"Verifying integrity (checksum comparison)...")
             if source_checksum != dest_checksum:
-                os.remove(destination)
+                _remove_partial_copy(partial_path)
                 error_msg = f"Checksum mismatch ({checksum_algorithm}) - file may be corrupted"
                 logger.error(error_msg)
                 return False, error_msg
@@ -419,14 +444,21 @@ def copy_file_with_progress(source: str, destination: str, verify_checksum=True,
             # Only destination checksum calculated (no source to compare)
             dest_checksum = dest_hasher.hexdigest()
             logger.info(f"Destination checksum calculated ({checksum_algorithm}) - no source comparison")
-        
+
+        os.replace(partial_path, dest_path)
         logger.info(f"Successfully copied file to {destination}")
         return True, "File copied successfully"
         
     except Exception as e:
+        _remove_partial_copy(partial_path)
         error_msg = f"Error copying file: {str(e)}"
         logger.error(error_msg)
         return False, error_msg
+    except BaseException:
+        # Worker shutdown (SystemExit) or an interrupt: drop the partial file
+        # and let the signal propagate.
+        _remove_partial_copy(partial_path)
+        raise
 
 
 def verify_file_integrity(video_file) -> Tuple[bool, str]:

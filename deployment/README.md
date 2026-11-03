@@ -69,11 +69,23 @@ cd ../ok_tools_production
 ```
 
 The update script will:
-- Pull latest code from git repository
-- Update Docker containers
-- Run database migrations
-- Collect static files
-- Restart services
+- Back up `.env` and the database (`pg_dump` from the running `db` container)
+- Pull latest code from git repository and build the JSX assets
+- Build the new Docker images while the running containers keep serving
+- Wait until Celery is idle (no running task, empty queues); the copy/download/render queues are paused meanwhile
+- Restart the containers (`docker compose up -d`); the web container runs migrations, `compilemessages` and `collectstatic` on start
+- Wait for `web` to become healthy and exit non-zero if any container is not healthy
+
+Options and settings:
+
+```bash
+./update.sh --force      # restart without waiting for running Celery tasks
+./update.sh --no-cache   # clean image build
+./update.sh --no-pause   # wait without pausing the copy/download/render queues
+OKTOOLS_UPDATE_WAIT_IDLE=7200 ./update.sh   # max wait for idle Celery (default 3600 s)
+```
+
+On timeout the update aborts and the old containers keep running. Without a terminal (ssh without `-t`, cron) the script asks no questions and builds with cache.
 
 **Note:** The `update.sh` script is automatically created in the production directory during installation.
 

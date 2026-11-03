@@ -1,6 +1,20 @@
 CHANGELOG
 =========
 
+2026-11-03 (Version 4.63.1)
+==========================
+
+* **deployment: Updates keep the site online during the build and never kill running Celery tasks**
+  * ``update.sh`` no longer runs ``docker compose down`` before the build. The order is now: backup (``.env`` + ``pg_dump`` from the running ``db``) → git pull → JSX build → ``docker compose build`` while the old containers keep serving → wait for idle Celery → ``docker compose up -d`` → wait for ``web`` to become healthy. Downtime is the container restart (about 1–2 minutes) instead of the whole build (5 minutes, 18 on 2026-11-02 when the pip cache was gone). ``down`` remains only for the one-time volume → bind mount migration.
+  * Before the restart the script waits until no Celery task is active or prefetched (all workers) and the ``copy``, ``download``, ``render``, ``anchor_render`` and ``celery`` queues are empty, confirmed twice 5 s apart. Every 30 s it prints the running tasks with name, arguments and runtime. Meanwhile the ``copy``/``download``/``render``/``anchor_render`` consumers are paused (``cancel_consumer``) so the wait ends when the current tasks are done; queued tasks stay in Redis and run on the new workers, and an aborted update restores the consumers. ``OKTOOLS_UPDATE_WAIT_IDLE`` (default 3600 s) limits the wait: on timeout the update aborts and the old containers stay up. ``--force`` restarts without waiting, ``--no-pause`` waits without pausing. The check runs ``deployment/scripts/celery_idle_check.py`` inside the running ``web`` container.
+  * The post-start ``migrate``, ``migrate_module_configs``, ``compilemessages``, ``collectstatic`` and RNN model steps were removed: the web entrypoint already runs them, and running both raced on 2026-11-02 (``DuplicateColumn`` and a duplicate ``austausch.0021`` row in ``django_migrations``). The script now waits for ``web`` to be healthy (``OKTOOLS_UPDATE_WEB_TIMEOUT``, default 900 s) and prints the last 80 lines of its log if it is not.
+  * Exit code 0 only when every compose service is running and healthy (or has no healthcheck), 1 otherwise. The final log checks can no longer abort the script under ``set -e`` when ``grep`` finds nothing.
+  * Without a terminal (ssh without ``-t``, cron) the script asks nothing: the build uses the cache (``--no-cache`` for a clean build) and the yes/no questions take their safe default. ``ok_tools_production/update.sh`` now forwards its arguments; existing wrappers are patched on the next update. ``OKTOOLS_UPDATE_FORCE`` / ``OKTOOLS_UPDATE_NO_CACHE`` / ``OKTOOLS_UPDATE_NO_PAUSE`` work with old wrappers too.
+* **deployment: Copy and download workers get a warm shutdown**
+  * ``celery_copy_worker`` and ``celery_download_worker`` have ``stop_grace_period: 30m`` in both production compose files and in the generated ``docker-compose.override.yml`` (``CELERY_TRANSFER_STOP_GRACE_PERIOD``), so existing installations get it without ``FORCE_OVERWRITE``. A ``SIGTERM`` lets the running transfer finish instead of killing it after 10 s.
+* **media_files: An interrupted copy no longer leaves a truncated video**
+  * ``copy_file_with_progress`` writes to a hidden ``.<name>.<pid>.part`` file next to the destination and renames it into place only after the size/checksum check. On an error, time limit or worker shutdown the partial file is deleted; one left by a hard kill is ignored by scans (``.part`` is no video format). ``_copy_video_to_storage`` no longer deletes the destination after a failed copy, since that could only be a file that existed before.
+
 2026-11-02 (Version 4.63.0)
 ==========================
 

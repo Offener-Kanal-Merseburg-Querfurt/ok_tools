@@ -119,6 +119,12 @@ add_celery_entrypoint() {
     service_extras["$service_name"]="${service_extras["$service_name"]}|celery_entrypoint"
 }
 
+# Helper: give a long-running transfer worker time for a Celery warm shutdown
+add_stop_grace_period() {
+    local service_name="$1"
+    service_extras["$service_name"]="${service_extras["$service_name"]}|stop_grace"
+}
+
 # Function to add volume mount to a service (collects volumes, doesn't write yet)
 add_volume_to_service() {
     local service_name=$1
@@ -199,6 +205,16 @@ for service in "${CELERY_SERVICES[@]}"; do
     add_celery_entrypoint "$service"
 done
 
+# Transfer workers get a long stop grace period so SIGTERM (update, restart)
+# lets the running copy/download finish instead of killing it after 10s.
+# The production compose file has the same setting, but an existing
+# docker-compose.yml is only replaced on FORCE_OVERWRITE=1, while this
+# override is regenerated on every update.
+CELERY_TRANSFER_STOP_GRACE_PERIOD="${CELERY_TRANSFER_STOP_GRACE_PERIOD:-30m}"
+for service in "celery_copy_worker" "celery_download_worker"; do
+    add_stop_grace_period "$service"
+done
+
 # Write the override file
 # This file may contain both volume mounts AND other server-specific overrides (e.g. UID/GID build args)
 #
@@ -259,6 +275,13 @@ EOF
         if [[ "$extras" == *"|celery_entrypoint"* ]]; then
             cat >> "$OVERRIDE_FILE" << 'EOF'
     entrypoint: ["/app/deployment/entrypoint.celery.sh"]
+EOF
+        fi
+
+        # Stop grace period for transfer workers (Celery warm shutdown)
+        if [[ "$extras" == *"|stop_grace"* ]]; then
+            cat >> "$OVERRIDE_FILE" << EOF
+    stop_grace_period: ${CELERY_TRANSFER_STOP_GRACE_PERIOD}
 EOF
         fi
 

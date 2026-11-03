@@ -1287,14 +1287,10 @@ def _copy_video_to_storage(source_video, destination_storage, user, destination_
         )
         
         if not success:
-            # Avoid leaving partially copied files behind. These can later be picked up by scans
-            # and incorrectly treated as valid duplicates/primary versions.
-            try:
-                if dest_path.exists():
-                    dest_path.unlink()
-            except Exception:
-                logger.exception(f"Failed to cleanup destination file after copy failure: {dest_path}")
-
+            # copy_file_with_progress writes to a hidden .part file and removes it
+            # on failure, so nothing partial exists under dest_path. Do not
+            # delete dest_path here: it may be an unrelated file that was
+            # already there before this copy started.
             operation.status = 'FAILED'
             operation.error_message = message
             operation.save()

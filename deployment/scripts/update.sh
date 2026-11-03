@@ -25,6 +25,83 @@ print_error() { echo -e "${RED}✗ $1${NC}"; }
 print_warning() { echo -e "${YELLOW}⚠ $1${NC}"; }
 print_info() { echo -e "${BLUE}ℹ $1${NC}"; }
 
+usage() {
+    cat <<'USAGE_EOF'
+Usage: update.sh [--force] [--no-cache] [--no-pause] [--help]
+
+Flow: backup (.env + database) -> git pull -> JSX build -> docker compose build
+(old containers keep serving) -> wait until Celery is idle -> docker compose up -d
+-> wait for web to become healthy. Downtime is only the container restart.
+
+  --force      Do not wait for running Celery tasks; restart immediately.
+               Workers still get a warm shutdown (stop_grace_period).
+  --no-cache   Build Docker images without cache (clean rebuild).
+  --no-pause   Do not pause the copy/download/render/anchor_render consumers
+               while waiting; new tasks may then start and prolong the wait.
+
+Environment:
+  OKTOOLS_UPDATE_WAIT_IDLE      Max seconds to wait for idle Celery (default 3600).
+                                On timeout the update aborts; old containers stay up.
+  OKTOOLS_UPDATE_WEB_TIMEOUT    Max seconds to wait for web to become healthy
+                                after the restart (default 900; it runs migrations).
+  OKTOOLS_UPDATE_FORCE=1        Same as --force.
+  OKTOOLS_UPDATE_NO_CACHE=1     Same as --no-cache.
+  OKTOOLS_UPDATE_NO_PAUSE=1     Same as --no-pause.
+  FORCE_OVERWRITE=1             Overwrite docker-compose.yml etc. with the repository version.
+
+Exit code: 0 when every container is running and healthy, non-zero otherwise.
+USAGE_EOF
+}
+
+# Options. The production wrapper (ok_tools_production/update.sh) forwards its
+# arguments; the OKTOOLS_UPDATE_* variables work with older wrappers too.
+FORCE_UPDATE="${OKTOOLS_UPDATE_FORCE:-0}"
+BUILD_NO_CACHE="${OKTOOLS_UPDATE_NO_CACHE:-0}"
+PAUSE_CONSUMERS=1
+if [ "${OKTOOLS_UPDATE_NO_PAUSE:-0}" = "1" ]; then
+    PAUSE_CONSUMERS=0
+fi
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --force) FORCE_UPDATE=1 ;;
+        --no-cache) BUILD_NO_CACHE=1 ;;
+        --no-pause) PAUSE_CONSUMERS=0 ;;
+        -h|--help) usage; exit 0 ;;
+        *) print_error "Unknown option: $1"; usage; exit 2 ;;
+    esac
+    shift
+done
+WAIT_IDLE_TIMEOUT="${OKTOOLS_UPDATE_WAIT_IDLE:-3600}"
+WEB_HEALTH_TIMEOUT="${OKTOOLS_UPDATE_WEB_TIMEOUT:-900}"
+if ! [[ "$WAIT_IDLE_TIMEOUT" =~ ^[0-9]+$ ]] || ! [[ "$WEB_HEALTH_TIMEOUT" =~ ^[0-9]+$ ]]; then
+    print_error "OKTOOLS_UPDATE_WAIT_IDLE and OKTOOLS_UPDATE_WEB_TIMEOUT must be whole seconds"
+    exit 2
+fi
+
+# Interactive only when stdin is a terminal (ssh without -t, cron, CI).
+if [ -t 0 ]; then
+    INTERACTIVE=1
+else
+    INTERACTIVE=0
+fi
+
+# confirm "<question>" <default y|n>
+# Asks on a terminal; without one it prints the question and uses the default,
+# so `read` failing on a closed stdin can never abort the script under set -e.
+confirm() {
+    local question="$1"
+    local default="$2"
+    local reply=""
+    if [ "$INTERACTIVE" = "1" ]; then
+        read -p "$question (y/n) " -n 1 -r reply || reply=""
+        echo
+    else
+        print_info "$question -> '$default' (non-interactive)"
+        reply="$default"
+    fi
+    [[ $reply =~ ^[Yy]$ ]]
+}
+
 print_header "OK Tools Production Update"
 
 # Ensure a stable Docker build context path ../ok_tools
@@ -52,9 +129,7 @@ if [ "$(id -u)" -eq 0 ]; then
     print_info "If you need to fix file permissions, run:"
     echo "  sudo chown -R \$USER:\$USER $PRODUCTION_DIR"
     echo ""
-    read -p "Continue update as root anyway? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    if ! confirm "Continue update as root anyway?" n; then
         print_info "Update cancelled. Please run as regular user."
         exit 1
     fi
@@ -170,7 +245,8 @@ apply_required_compose_service_update() {
         return 0
     fi
 
-    local backup_file="$compose_file.backup.$(date +%Y%m%d_%H%M%S)"
+    local backup_file
+    backup_file="$compose_file.backup.$(date +%Y%m%d_%H%M%S)"
     print_warning "Current docker-compose.yml is missing required service: $service_name"
     print_info "Backing up current docker-compose.yml to $(basename "$backup_file")"
     cp "$compose_file" "$backup_file"
@@ -217,10 +293,11 @@ validate_env_file() {
     # Check each critical variable
     for var in "${critical_vars[@]}"; do
         # Extract the value for this variable - try with current user first, then sudo if needed
-        local value=$(grep "^${var}=" "$env_file" 2>/dev/null | head -1 | cut -d'=' -f2-)
-        
-        # If grep failed, try with sudo (if available)
-        if [ $? -ne 0 ] || [ -z "$value" ]; then
+        local value
+        value=$(grep "^${var}=" "$env_file" 2>/dev/null | head -1 | cut -d'=' -f2-)
+
+        # If grep found nothing, try with sudo (if available)
+        if [ -z "$value" ]; then
             if command -v sudo >/dev/null 2>&1; then
                 value=$(sudo grep "^${var}=" "$env_file" 2>/dev/null | head -1 | cut -d'=' -f2-)
             fi
@@ -267,7 +344,8 @@ validate_env_file() {
     
     # Check for concatenated lines (common issue) - IMPROVED DETECTION
     # Only flag as error if it's clearly a concatenation of separate variables
-    local concatenated=$(grep -E '^[A-Z_][A-Z0-9_]*=[^=]*[A-Z_][A-Z0-9_]*=' "$env_file" | wc -l | tr -d ' ')
+    local concatenated
+    concatenated=$(grep -cE '^[A-Z_][A-Z0-9_]*=[^=]*[A-Z_][A-Z0-9_]*=' "$env_file" || true)
     if [ "$concatenated" -gt 0 ]; then
         echo "❌ ERROR: Found $concatenated line(s) with concatenated variables"
         echo "   This usually means line breaks are missing in .env file"
@@ -320,7 +398,9 @@ repair_env_file() {
     
     # Check for corruption pattern: ONLY flag clear concatenations of separate variables
     # Pattern: KEY1=VALUE1KEY2=VALUE2 (no space between VALUE1 and KEY2)
-    local corrupted_lines=$(grep -E '^[A-Z_][A-Z0-9_]*=[^=]*[A-Z_][A-Z0-9_]*=' "$env_file" 2>/dev/null | wc -l || echo "0")
+    local corrupted_lines
+    corrupted_lines=$(grep -cE '^[A-Z_][A-Z0-9_]*=[^=]*[A-Z_][A-Z0-9_]*=' "$env_file" 2>/dev/null || true)
+    corrupted_lines=${corrupted_lines:-0}
     
     if [ "$corrupted_lines" -gt 0 ]; then
         echo "Detected corruption in .env file ($corrupted_lines corrupted lines)"
@@ -403,7 +483,8 @@ fix_permissions() {
     fi
     
     # Check if files are owned by different user
-    local dir_owner=$(stat -c '%U' "$target_dir" 2>/dev/null || stat -f '%Su' "$target_dir" 2>/dev/null || echo "")
+    local dir_owner
+    dir_owner=$(stat -c '%U' "$target_dir" 2>/dev/null || stat -f '%Su' "$target_dir" 2>/dev/null || echo "")
     if [ -n "$dir_owner" ] && [ "$dir_owner" != "$CURRENT_USER" ] && [ "$dir_owner" != "root" ]; then
         print_warning "Production directory is owned by $dir_owner, but running as $CURRENT_USER"
         print_info "Attempting to fix ownership..."
@@ -462,9 +543,7 @@ if [ ! -r "$ENV_FILE" ]; then
         echo "   sudo chmod 644 $ENV_FILE && sudo chown $CURRENT_USER:$CURRENT_USER $ENV_FILE"
         echo "   sudo chown $CURRENT_USER:$CURRENT_USER $ENV_FILE"
         echo ""
-        read -p "Do you want to continue without .env validation? (y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        if ! confirm "Do you want to continue without .env validation?" n; then
             print_info "Update cancelled. Please fix .env file permissions first."
             exit 1
         fi
@@ -473,9 +552,7 @@ if [ ! -r "$ENV_FILE" ]; then
 elif ! validate_env_file "$ENV_FILE"; then
     echo ""
     print_warning ".env file validation failed. Please review and fix errors"
-    read -p "Do you want to continue anyway? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    if ! confirm "Do you want to continue anyway?" n; then
         print_info "Update cancelled"
         exit 1
     fi
@@ -494,7 +571,6 @@ fi
 # Function to rotate .env backups - keep only last 7
 rotate_env_backups() {
     local env_backup_dir="$PRODUCTION_DIR"
-    local env_backup_pattern="$env_backup_dir/.env.backup."
     
     print_info "Rotating .env backups (keeping last 7)..."
     
@@ -617,6 +693,19 @@ create_local_update_script() {
     # Check if script already exists
     if [ -f "$local_update_script" ]; then
         print_info "Local update script already exists at $local_update_script"
+        # Older wrappers dropped their arguments (--force, --no-cache). The
+        # wrapper has already exec'd into this script, so rewriting it is safe.
+        if grep -qxF 'exec "$MAIN_UPDATE_SCRIPT"' "$local_update_script" 2>/dev/null; then
+            local patched_wrapper="${local_update_script}.tmp.$$"
+            if sed 's|^exec "\$MAIN_UPDATE_SCRIPT"$|exec "$MAIN_UPDATE_SCRIPT" "$@"|' "$local_update_script" > "$patched_wrapper" 2>/dev/null \
+                && chmod +x "$patched_wrapper" \
+                && mv -f "$patched_wrapper" "$local_update_script"; then
+                print_success "Local update script now forwards its arguments"
+            else
+                rm -f "$patched_wrapper" 2>/dev/null || true
+                print_warning "Could not patch $local_update_script to forward arguments; use OKTOOLS_UPDATE_* variables instead"
+            fi
+        fi
         # Verify it's executable
         if [ ! -x "$local_update_script" ]; then
             print_info "Making local update script executable..."
@@ -640,7 +729,8 @@ create_local_update_script() {
     
     # Check write permissions and determine creation method
     local need_sudo=false
-    local current_uid_check=$(id -u)
+    local current_uid_check
+    current_uid_check=$(id -u)
     print_info "Current UID: $current_uid_check, Current user: $(whoami)"
     
     if [ "$current_uid_check" -eq 0 ]; then
@@ -665,7 +755,8 @@ create_local_update_script() {
     fi
     
     # Create the script content
-    local script_content=$(cat <<'SCRIPT_EOF'
+    local script_content
+    script_content=$(cat <<'SCRIPT_EOF'
 #!/bin/bash
 # Local update wrapper script for OK Tools production environment
 # This script updates the code from git and then calls the main update script
@@ -753,7 +844,7 @@ git pull
 # Call the main update script with flag indicating it was called from local script
 echo "Running update script..."
 export LOCAL_UPDATE_CALLED=1
-exec "$MAIN_UPDATE_SCRIPT"
+exec "$MAIN_UPDATE_SCRIPT" "$@"
 SCRIPT_EOF
 )
     
@@ -763,16 +854,14 @@ SCRIPT_EOF
     # Create the script file
     if [ "$need_sudo" = true ]; then
         print_info "Creating local update script with sudo (permission required)..."
-        echo "$script_content" | sudo tee "$local_update_script" > /dev/null
-        if [ $? -ne 0 ] || [ ! -f "$local_update_script" ]; then
+        if ! echo "$script_content" | sudo tee "$local_update_script" > /dev/null || [ ! -f "$local_update_script" ]; then
             print_error "Failed to create local update script with sudo"
             return 1
         fi
         sudo chmod +x "$local_update_script" 2>/dev/null || true
     else
         print_info "Creating local update script..."
-        echo "$script_content" > "$local_update_script"
-        if [ $? -ne 0 ] || [ ! -f "$local_update_script" ]; then
+        if ! echo "$script_content" > "$local_update_script" || [ ! -f "$local_update_script" ]; then
             print_error "Failed to create local update script"
             return 1
         fi
@@ -823,9 +912,7 @@ if [ -z "${LOCAL_UPDATE_CALLED:-}" ]; then
         print_info "  - Merge conflicts (resolve manually and retry)"
         print_info "  - Authentication required (configure git credentials)"
         echo ""
-        read -p "Continue update anyway? (y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        if ! confirm "Continue update anyway?" n; then
             print_info "Update cancelled. Please fix git issues and retry."
             exit 1
         fi
@@ -845,7 +932,6 @@ fi
 print_info "Verifying template files..."
 TEMPLATE_INDEX="$PROJECT_DIR/ok_tools/templates/admin/index.html"
 TEMPLATE_NAV="$PROJECT_DIR/ok_tools/templates/admin/nav_sidebar.html"
-TEMPLATE_BASE="$PROJECT_DIR/ok_tools/templates/admin/base_site.html"
 
 if [ ! -f "$TEMPLATE_INDEX" ]; then
     print_warning "Template file not found: $TEMPLATE_INDEX"
@@ -1195,12 +1281,9 @@ fi
 
 print_success "Directories checked and permissions set"
 
-# Stop containers before rebuilding (if not already stopped)
-if [ "$MIGRATION_NEEDED" != true ]; then
-    print_info "Stopping containers..."
-    cd "$PRODUCTION_DIR"
-    docker compose down
-fi
+# No `docker compose down` here: the old containers keep serving while the
+# new images are built and are only replaced by `docker compose up -d` after
+# Celery became idle. Only the volume migration above stops the stack.
 
 # Build JSX assets before Docker build
 print_info "Building JSX assets..."
@@ -1242,38 +1325,185 @@ print_success "JSX assets built successfully"
 
 cd "$PRODUCTION_DIR"
 
-# Rebuild Docker images
-# Interactive choice: use cache (faster) or rebuild without cache (clean)
-echo ""
-print_info "Docker image build options:"
-echo "  1) Build with cache (faster, recommended for regular updates)"
-echo "  2) Build without cache (full rebuild, use when dependencies changed)"
-echo ""
-# Without a terminal (or on timeout) read fails; fall back to option 1 so
-# set -e does not abort the update after the containers were stopped.
-read -p "Choose build option (1 or 2, default: 1): " -t 10 BUILD_OPTION || BUILD_OPTION=1
-echo ""
-
-# Normalize BUILD_OPTION - default to 1 if empty or invalid
-BUILD_OPTION=${BUILD_OPTION:-1}
-BUILD_OPTION=$(echo "$BUILD_OPTION" | tr -d '[:space:]' | head -c 1)
-
-if [ "$BUILD_OPTION" = "2" ]; then
-    print_info "Rebuilding Docker images (without cache - full rebuild)..."
-    docker compose build --no-cache
-    # Clean up build cache after full rebuild to free disk space
-    print_info "Cleaning up Docker build cache after full rebuild..."
-    docker builder prune -f > /dev/null 2>&1
-    print_success "Build cache cleaned"
-else
-    print_info "Rebuilding Docker images (using cache for faster builds)..."
-    # Docker will use local base images if available (no need for --pull flag)
-    # Keep build cache for faster subsequent builds
-    docker compose build
+# Rebuild Docker images while the current containers keep serving.
+# Running containers keep their old image; nothing is restarted until
+# `docker compose up -d` below.
+print_header "Building Docker Images"
+if [ "$BUILD_NO_CACHE" != "1" ] && [ "$INTERACTIVE" = "1" ]; then
+    print_info "Docker image build options:"
+    echo "  1) Build with cache (faster, recommended for regular updates)"
+    echo "  2) Build without cache (full rebuild, use when dependencies changed)"
+    echo ""
+    read -p "Choose build option (1 or 2, default: 1): " -t 10 BUILD_OPTION || BUILD_OPTION=1
+    echo ""
+    BUILD_OPTION=$(echo "${BUILD_OPTION:-1}" | tr -d '[:space:]' | head -c 1)
+    if [ "$BUILD_OPTION" = "2" ]; then
+        BUILD_NO_CACHE=1
+    fi
 fi
 
-# Start containers
-print_info "Starting containers..."
+if [ "$BUILD_NO_CACHE" = "1" ]; then
+    print_info "Building images without cache (full rebuild) - the site stays online meanwhile..."
+    BUILD_ARGS=(--no-cache)
+else
+    print_info "Building images with cache - the site stays online meanwhile..."
+    BUILD_ARGS=()
+fi
+if ! docker compose build "${BUILD_ARGS[@]}"; then
+    print_error "Docker build failed - the running containers were not touched"
+    exit 1
+fi
+if [ "$BUILD_NO_CACHE" = "1" ]; then
+    print_info "Cleaning up Docker build cache after full rebuild..."
+    docker builder prune -f > /dev/null 2>&1 || true
+fi
+print_success "Docker images built"
+
+# ---------------------------------------------------------------------------
+# Wait for idle Celery
+# ---------------------------------------------------------------------------
+# Restarting a worker in the middle of a task aborts it (2026-11-03: a 6.2 GB
+# copy_videos_for_plan run nearly died this way). Wait until no task is running
+# and the queues are drained before replacing the containers.
+
+CELERY_IDLE_HELPER="$PROJECT_DIR/deployment/scripts/celery_idle_check.py"
+# Long-running queues whose consumers are paused while waiting, so the wait
+# ends once the current tasks are done. Queued tasks stay in Redis and run on
+# the new workers.
+PAUSABLE_QUEUES="copy,download,render,anchor_render"
+PAUSED_CONSUMERS_JSON=""
+STACK_RESTARTED=0
+
+running_services() {
+    docker compose ps --status running --services 2>/dev/null || true
+}
+
+running_celery_workers() {
+    running_services | grep -E '^celery_' | grep -vx 'celery_beat' || true
+}
+
+# Runs celery_idle_check.py inside a running container of the current release.
+# Output lines meant for this script start with OKTOOLS_.
+celery_helper() {
+    local service
+    for service in web celery_worker; do
+        if running_services | grep -qx "$service"; then
+            docker compose exec -T "$service" python - "$@" < "$CELERY_IDLE_HELPER" 2>&1
+            return $?
+        fi
+    done
+    echo "no running web or celery_worker container to query Celery from"
+    return 1
+}
+
+resume_paused_consumers() {
+    if [ -z "$PAUSED_CONSUMERS_JSON" ] || [ "$PAUSED_CONSUMERS_JSON" = "{}" ]; then
+        PAUSED_CONSUMERS_JSON=""
+        return 0
+    fi
+    local out
+    out=$(celery_helper resume "$PAUSED_CONSUMERS_JSON" || true)
+    if echo "$out" | grep -q '^OKTOOLS_RESUMED'; then
+        print_info "Paused Celery consumers resumed"
+        PAUSED_CONSUMERS_JSON=""
+    else
+        print_warning "Could not resume paused Celery consumers: $PAUSED_CONSUMERS_JSON"
+        print_warning "Restart the workers to restore them:"
+        echo "   docker compose restart celery_copy_worker celery_download_worker celery_render_worker celery_anchor_render_worker"
+    fi
+}
+
+# Never leave the old workers paused when the update stops before the restart
+# (timeout, build error, Ctrl-C).
+on_exit() {
+    if [ "$STACK_RESTARTED" != "1" ] && [ -n "$PAUSED_CONSUMERS_JSON" ]; then
+        print_info "Restoring paused Celery consumers before exit..."
+        resume_paused_consumers
+    fi
+}
+trap on_exit EXIT
+trap 'exit 130' INT TERM
+
+wait_for_celery_idle() {
+    local expected
+    expected=$(running_celery_workers | wc -l | tr -d ' ')
+    if [ "$expected" -eq 0 ]; then
+        print_info "No Celery workers are running - nothing to wait for"
+        return 0
+    fi
+
+    print_warning "Please do not start new copy, download or render jobs until the update has finished."
+    print_info "Waiting for $expected Celery worker(s) to become idle (timeout ${WAIT_IDLE_TIMEOUT}s, skip with --force)..."
+
+    local paused_queues=""
+    if [ "$PAUSE_CONSUMERS" = "1" ]; then
+        local paused_out
+        paused_out=$(celery_helper pause "$PAUSABLE_QUEUES" || true)
+        PAUSED_CONSUMERS_JSON=$(echo "$paused_out" | sed -n 's/^OKTOOLS_PAUSED //p' | tail -1)
+        if [ -n "$PAUSED_CONSUMERS_JSON" ]; then
+            paused_queues="$PAUSABLE_QUEUES"
+            print_info "Paused new tasks on queues: $PAUSABLE_QUEUES"
+            print_info "Running tasks continue; queued ones start on the new workers after the update."
+        else
+            print_warning "Could not pause Celery consumers - waiting without pausing"
+            echo "$paused_out" | grep -v '^OKTOOLS_' | tail -3 | sed 's/^/    /' || true
+        fi
+    fi
+
+    local start elapsed out status_line
+    local idle_streak=0
+    local last_report=-60
+    start=$(date +%s)
+    while true; do
+        out=$(celery_helper status "$expected" "$paused_queues" || true)
+        status_line=$(echo "$out" | grep '^OKTOOLS_STATUS' | tail -1 || true)
+        elapsed=$(( $(date +%s) - start ))
+
+        if [[ "$status_line" == *"idle=1"* ]]; then
+            idle_streak=$((idle_streak + 1))
+            if [ "$idle_streak" -ge 2 ]; then
+                print_success "Celery is idle (confirmed twice, waited ${elapsed}s)"
+                return 0
+            fi
+            print_info "Celery looks idle - confirming in 5s..."
+        else
+            idle_streak=0
+            if [ $((elapsed - last_report)) -ge 30 ]; then
+                last_report=$elapsed
+                print_info "Still waiting for Celery (${elapsed}s of ${WAIT_IDLE_TIMEOUT}s):"
+                if [ -n "$status_line" ]; then
+                    echo "$out" | sed -n 's/^OKTOOLS_LINE /    /p'
+                else
+                    print_warning "  Celery state could not be read:"
+                    echo "$out" | grep -v '^OKTOOLS_' | tail -3 | sed 's/^/    /' || true
+                fi
+            fi
+        fi
+
+        if [ "$elapsed" -ge "$WAIT_IDLE_TIMEOUT" ]; then
+            return 1
+        fi
+        sleep 5
+    done
+}
+
+print_header "Waiting for Celery to Become Idle"
+if [ "$MIGRATION_NEEDED" = true ]; then
+    print_info "Containers were stopped for the volume migration - no Celery tasks to wait for"
+elif [ "$FORCE_UPDATE" = "1" ]; then
+    print_warning "--force: not waiting for running Celery tasks"
+    print_info "Workers still get a warm shutdown (copy/download workers: stop_grace_period)"
+elif ! wait_for_celery_idle; then
+    print_error "Celery did not become idle within ${WAIT_IDLE_TIMEOUT}s - update aborted"
+    print_info "Nothing was restarted: the old containers are still running. The new images are built."
+    print_info "Re-run later, raise OKTOOLS_UPDATE_WAIT_IDLE, or use --force to restart anyway."
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Restart
+# ---------------------------------------------------------------------------
+print_header "Restarting Containers"
 # If docker-compose.yml.new exists, it has NOT been applied (we keep the existing file by design).
 # Do NOT remove the .new file; let the operator review/apply it explicitly.
 if [ -f "$PRODUCTION_DIR/docker-compose.yml.new" ]; then
@@ -1281,169 +1511,148 @@ if [ -f "$PRODUCTION_DIR/docker-compose.yml.new" ]; then
     print_warning "Your current deployment is still using the existing docker-compose.yml."
     print_warning "If you want to apply the new compose file automatically, re-run with: FORCE_OVERWRITE=1 ./update.sh"
 fi
-docker compose up -d
 
-# Wait for containers to be ready
-print_info "Waiting for containers to be ready..."
-sleep 10
-
-# Run migrations
-print_info "Running database migrations..."
-docker compose exec -T web python manage.py migrate --noinput
-
-# Migrate module configs from env to database (one-time migration for empty/default values)
-print_info "Migrating module configs from environment variables (if empty/default in DB)..."
-docker compose exec -T web python manage.py migrate_module_configs || print_warning "Failed to migrate module configs, continuing..."
-
-# Compile translation messages
-print_info "Compiling translation messages..."
-if ! docker compose exec -T web python manage.py compilemessages; then
-    print_warning "Failed to compile translation messages, continuing..."
+WORKER_IDS_BEFORE=$(docker compose ps -q 2>/dev/null | sort || true)
+UPDATE_FAILED=0
+RESTART_STARTED_AT=$(date +%s)
+if docker compose up -d; then
+    print_success "Containers started with the new images"
 else
-    print_success "Translation messages compiled successfully"
-    
-    # Verify compiled translation files exist
-    print_info "Verifying compiled translation files..."
-    MO_FILES=$(docker compose exec -T web find /app -name "*.mo" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
-    if [ "$MO_FILES" -gt 0 ]; then
-        print_success "Found $MO_FILES compiled translation files (.mo)"
-        
-        # Check for German translations specifically
-        DE_MO_FILES=$(docker compose exec -T web find /app -path "*/locale/de/LC_MESSAGES/*.mo" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
-        if [ "$DE_MO_FILES" -gt 0 ]; then
-            print_success "Found $DE_MO_FILES German translation files"
-        else
-            print_warning "No German translation files found - translations may not work"
-        fi
+    print_error "docker compose up -d failed"
+    UPDATE_FAILED=1
+fi
+STACK_RESTARTED=1
+
+# `up -d` only recreates containers whose image or config changed. Workers that
+# survived the restart (e.g. nothing new was pulled) are still paused.
+if [ -n "$PAUSED_CONSUMERS_JSON" ]; then
+    WORKER_IDS_AFTER=$(docker compose ps -q 2>/dev/null | sort || true)
+    if [ -n "$(comm -12 <(echo "$WORKER_IDS_BEFORE") <(echo "$WORKER_IDS_AFTER") | grep -v '^$' || true)" ]; then
+        resume_paused_consumers
     else
-        print_warning "No compiled translation files found - translations will not work"
+        PAUSED_CONSUMERS_JSON=""
     fi
 fi
 
-# Collect static files
-print_info "Collecting static files..."
-docker compose exec -T web python manage.py collectstatic --noinput
+# The web entrypoint runs migrate, compilemessages, collectstatic,
+# migrate_module_configs and the RNN model download on every start. They are
+# NOT repeated here: running them twice in parallel raced on 2026-11-02
+# (DuplicateColumn and a duplicate austausch.0021 row in django_migrations).
+container_state() {
+    local cid="$1"
+    docker inspect --format '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid" 2>/dev/null || echo "missing missing"
+}
 
-# Download/update RNN models for audio denoising
-# This runs after git pull, so new models will be downloaded on first update
-print_info "Checking RNN models for audio denoising..."
-if docker compose exec -T web bash -c "cd /app && [ -f tools/rnn_models/download_models.sh ] && bash tools/rnn_models/download_models.sh"; then
-    print_success "RNN models checked/updated"
-    # Verify at least std.rnnn is present
-    if docker compose exec -T web bash -c "test -f /app/tools/rnn_models/std.rnnn"; then
-        print_success "Standard model (std.rnnn) is available"
-    else
-        print_warning "Standard model (std.rnnn) not found - AI presets will use FFT denoising"
-    fi
+wait_for_web_healthy() {
+    local start elapsed cid state
+    local last_report=-60
+    start=$(date +%s)
+    while true; do
+        cid=$(docker compose ps -q web 2>/dev/null | head -1 || true)
+        state="missing missing"
+        if [ -n "$cid" ]; then
+            state=$(container_state "$cid")
+        fi
+        elapsed=$(( $(date +%s) - start ))
+        if [ "$state" = "running healthy" ] || [ "$state" = "running none" ]; then
+            return 0
+        fi
+        if [ $((elapsed - last_report)) -ge 30 ]; then
+            last_report=$elapsed
+            print_info "  web: $state (${elapsed}s of ${WEB_HEALTH_TIMEOUT}s; migrations run on start)"
+        fi
+        if [ "$elapsed" -ge "$WEB_HEALTH_TIMEOUT" ]; then
+            return 1
+        fi
+        sleep 5
+    done
+}
+
+print_info "Waiting for web to become healthy (timeout ${WEB_HEALTH_TIMEOUT}s)..."
+if wait_for_web_healthy; then
+    print_success "web is healthy (restart took $(( $(date +%s) - RESTART_STARTED_AT ))s)"
 else
-    print_warning "Failed to update RNN models automatically (non-critical)"
-    print_info "Models can be downloaded manually or will be retried on next update"
+    print_error "web did not become healthy within ${WEB_HEALTH_TIMEOUT}s"
+    print_info "Last 80 lines of the web log:"
+    docker compose logs --tail=80 web 2>&1 | sed 's/^/    /' || true
+    UPDATE_FAILED=1
 fi
 
-# Verify static files are present and accessible
-print_info "Verifying static files..."
-STATIC_COUNT=$(docker compose exec -T web sh -c "find /app/staticfiles -type f 2>/dev/null | wc -l" | tr -d ' ' || echo "0")
-if [ "$STATIC_COUNT" -gt 0 ]; then
-    print_success "Found $STATIC_COUNT static files in container"
-    
-    # Wait a moment for filesystem sync
-    sleep 2
-    
-    # Check if files are visible on host
-    HOST_STATIC_COUNT=$(find "$PRODUCTION_DIR/data/static" -type f 2>/dev/null | wc -l || echo "0")
-    if [ "$HOST_STATIC_COUNT" -gt 0 ]; then
-        print_success "Static files are accessible on host: $HOST_STATIC_COUNT files found"
-    else
-        print_warning "Static files not visible on host"
-        print_info "This may be a permissions issue. Checking..."
-        echo "   Container files: $STATIC_COUNT"
-        echo "   Host files: $HOST_STATIC_COUNT"
-        print_info "Trying to fix permissions..."
-        
-        # Try to fix permissions - run as root in container to ensure access
-        docker compose exec -T --user root web sh -c "chown -R app:app /app/staticfiles && chmod -R 755 /app/staticfiles" || true
-        
-        # Check again after permission fix
-        sleep 1
-        HOST_STATIC_COUNT_AFTER=$(find "$PRODUCTION_DIR/data/static" -type f 2>/dev/null | wc -l || echo "0")
-        if [ "$HOST_STATIC_COUNT_AFTER" -gt 0 ]; then
-            print_success "Permission fix successful: $HOST_STATIC_COUNT_AFTER files now visible"
-        else
-            print_warning "Files still not visible. This may be normal if running in a restricted environment"
-            print_info "Static files are available inside the container and will be served by Django/WhiteNoise"
-        fi
+# Give the remaining services time to leave the "starting" health state.
+print_info "Waiting for the other services to settle..."
+SETTLE_START=$(date +%s)
+while [ $(( $(date +%s) - SETTLE_START )) -lt 180 ]; do
+    STARTING=0
+    for cid in $(docker compose ps -q 2>/dev/null || true); do
+        case "$(container_state "$cid")" in
+            *" starting"|"restarting "*|"created "*) STARTING=1 ;;
+        esac
+    done
+    if [ "$STARTING" = "0" ]; then
+        break
     fi
-else
-    print_warning "No static files found in container after collectstatic"
-    print_info "This may indicate a problem with static files configuration"
+    sleep 5
+done
+
+# Static files are collected by the web entrypoint into the bind mount.
+if [ -z "$(ls -A "$PRODUCTION_DIR/data/static" 2>/dev/null)" ]; then
+    print_warning "No static files in $PRODUCTION_DIR/data/static - check the web log (collectstatic)"
 fi
 
 # Cleanup Docker resources
 print_info "Cleaning up unused Docker resources..."
-docker image prune -f > /dev/null 2>&1
-docker volume prune -f > /dev/null 2>&1
+docker image prune -f > /dev/null 2>&1 || true
+docker volume prune -f > /dev/null 2>&1 || true
 print_success "Docker cleanup completed"
-
-# Health check
-print_info "Checking web service availability on port 8010..."
-for i in {1..30}; do
-    if curl -s http://localhost:8010/health > /dev/null 2>&1; then
-        print_success "Web service is available"
-        break
-    elif [ $i -eq 30 ]; then
-        print_warning "Web service health check timeout"
-    else
-        sleep 2
-    fi
-done
-
-# Check logs for errors
-print_info "Checking logs for errors..."
-ERROR_LINES=$(docker compose logs web 2>&1 | grep -iE "(error|exception|traceback)" | grep -vE "(ERROR|WARNING|INFO|DEBUG)\s*\:" | grep -vE "No valid legacy config|Validation|migration" | tail -10)
-if [ -n "$ERROR_LINES" ]; then
-    print_warning "Potential errors found in logs:"
-    echo "$ERROR_LINES" | head -5 | sed 's/^/  /'
-    print_info "Full logs: docker compose logs web"
-else
-    print_success "No critical errors in logs"
-fi
 
 # Clean up old volumes after successful update (if migration was performed)
 if [ "$MIGRATION_NEEDED" = true ]; then
     echo ""
     print_info "Cleaning up old volumes..."
     # Remove old named volumes (non-destructive - only removes if not in use)
-    docker volume ls | grep -E "${PROJECT_NAME}_static_volume|static_volume|${PROJECT_NAME}_media_volume|media_volume|${PROJECT_NAME}_logs_volume|logs_volume|${PROJECT_NAME}_backups_volume|backups_volume" | awk '{print $2}' | while read vol; do
+    docker volume ls | grep -E "${PROJECT_NAME}_static_volume|static_volume|${PROJECT_NAME}_media_volume|media_volume|${PROJECT_NAME}_logs_volume|logs_volume|${PROJECT_NAME}_backups_volume|backups_volume" | awk '{print $2}' | while read -r vol; do
         if docker volume inspect "$vol" >/dev/null 2>&1; then
             print_info "  Removing old volume: $vol"
             docker volume rm "$vol" 2>/dev/null || print_info "    (Volume may still be in use, will be cleaned up later)"
         fi
-    done
+    done || true
     print_success "Volume cleanup completed"
 fi
 
-# Run post-update diagnostics
+# Run post-update diagnostics. Nothing here may abort the script under set -e:
+# the exit code is decided explicitly at the end.
 print_header "Running Post-Update Diagnostics"
 
-# 1. Check container status
-print_info "1. Checking container status..."
-if ! docker compose ps --format "table {{.Service}}\t{{.Status}}"; then
-    print_error "Failed to get container status. Is Docker running?"
-    exit 1
+print_info "1. Container status:"
+STACK_HEALTHY=1
+SERVICES=$(docker compose config --services 2>/dev/null || true)
+if [ -z "$SERVICES" ]; then
+    print_error "Could not read the compose services. Is Docker running?"
+    STACK_HEALTHY=0
 fi
-
-UNHEALTHY_CONTAINERS=$(docker compose ps --format "table {{.Service}}\t{{.Status}}" | grep -i "unhealthy" | awk '{print $1}' | grep -v "SERVICE" || true)
-if [ -n "$UNHEALTHY_CONTAINERS" ]; then
-    print_warning "The following containers are unhealthy:"
-    echo "$UNHEALTHY_CONTAINERS"
-    print_info "Check logs with: docker compose logs -f <service_name>"
-else
+for service in $SERVICES; do
+    cid=$(docker compose ps -a -q "$service" 2>/dev/null | head -1 || true)
+    if [ -z "$cid" ]; then
+        state="missing missing"
+    else
+        state=$(container_state "$cid")
+    fi
+    printf "   %-30s %s\n" "$service" "$state"
+    case "$state" in
+        "running healthy"|"running none") ;;
+        *) STACK_HEALTHY=0 ;;
+    esac
+done
+if [ "$STACK_HEALTHY" = "1" ]; then
     print_success "All containers are running and healthy"
+else
+    print_warning "Some containers are not running or not healthy"
+    print_info "Check logs with: docker compose logs -f <service_name>"
+    UPDATE_FAILED=1
 fi
 
-# 2. Check web service logs for errors
 print_info "2. Checking web service logs for recent errors..."
-ERROR_LINES=$(docker compose logs --tail=50 web 2>&1 | grep -iE "(error|exception|traceback)" | grep -vE "(ERROR|WARNING|INFO|DEBUG)\s*\:" | grep -vE "No valid legacy config|Validation|migration|Your models.*have changes")
+ERROR_LINES=$(docker compose logs --tail=50 web 2>&1 | grep -iE "(error|exception|traceback)" | grep -vE "(ERROR|WARNING|INFO|DEBUG)\s*\:" | grep -vE "No valid legacy config|Validation|migration|Your models.*have changes" || true)
 if [ -n "$ERROR_LINES" ]; then
     print_warning "Potential errors found in web service logs:"
     echo "$ERROR_LINES" | head -5 | sed 's/^/  /'
@@ -1452,7 +1661,11 @@ else
     print_success "No critical errors found in recent web service logs"
 fi
 
-print_header "Update Complete!"
+if [ "$UPDATE_FAILED" = "0" ]; then
+    print_header "Update Complete!"
+else
+    print_header "Update Finished With Problems"
+fi
 echo "Production directory: $PRODUCTION_DIR"
 echo ""
 
@@ -1460,20 +1673,14 @@ echo ""
 case $INSTALL_TYPE in
     1)
         # Production with SSL
-        DOMAIN_NAME=$(grep "^DOMAIN_NAME=" "$PRODUCTION_DIR/.env" | cut -d'=' -f2)
+        DOMAIN_NAME=$(grep "^DOMAIN_NAME=" "$PRODUCTION_DIR/.env" | cut -d'=' -f2 || true)
         print_info "Access admin panel: https://$DOMAIN_NAME/admin"
         ;;
     2)
         # Local Network - detect IP
-        LOCAL_IP=$(hostname -I | awk '{print $1}' 2>/dev/null || \
-                  ip route get 1.1.1.1 | awk '{print $7}' 2>/dev/null || \
-                  ipconfig getifaddr en0 2>/dev/null || \
-                  echo "127.0.0.1")
+        LOCAL_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+        LOCAL_IP=${LOCAL_IP:-127.0.0.1}
         print_info "Access admin panel: http://$LOCAL_IP:8010/admin"
-        ;;
-    3)
-        # Localhost
-        print_info "Access admin panel: http://localhost:8010/admin"
         ;;
     *)
         print_info "Access admin panel: http://localhost:8010/admin"
@@ -1485,11 +1692,16 @@ print_info "Next steps:"
 echo "1. Check container status: cd $PRODUCTION_DIR && docker compose ps"
 echo "2. View logs: cd $PRODUCTION_DIR && docker compose logs -f web"
 if [ -f "$PRODUCTION_DIR/update.sh" ]; then
-    echo "3. For future updates, use: $PRODUCTION_DIR/update.sh"
+    echo "3. For future updates, use: $PRODUCTION_DIR/update.sh [--force] [--no-cache]"
     echo "   (This script automatically updates from git and uses the latest version)"
 else
-    echo "3. For future updates, use: $SCRIPT_DIR/update.sh"
+    echo "3. For future updates, use: $SCRIPT_DIR/update.sh [--force] [--no-cache]"
 fi
 echo "4. If issues occur, check logs or contact support"
 
-print_header "Diagnostics Complete"
+if [ "$UPDATE_FAILED" = "0" ]; then
+    print_header "Diagnostics Complete"
+    exit 0
+fi
+print_error "Update finished with problems - see the diagnostics above"
+exit 1

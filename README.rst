@@ -4,8 +4,8 @@ ok_tools
 
 A universal set of tools to support administrative tasks for community media organizations. Originally developed for the Offener Kanal system of Medienanstalt Sachsen-Anhalt, now configurable for any organization.
 
-**Current Version**: 4.63.0
-**Last Updated**: 2 November 2026
+**Current Version**: 4.63.1
+**Last Updated**: 3 November 2026
 
 Features
 ========
@@ -356,7 +356,7 @@ After installation, updates are performed from the production directory:
     cd ../ok_tools_production
     ./update.sh
 
-The update script automatically pulls the latest code from git, updates Docker containers, runs migrations, and restarts services.
+The update script backs up ``.env`` and the database, pulls the latest code, builds the new images while the running containers keep serving, waits until no Celery task is running, and then restarts the containers; the web container runs the migrations on start. Downtime is the restart only (about 1–2 minutes). Options: ``--force`` (do not wait for Celery), ``--no-cache`` (clean build), ``--no-pause`` (do not pause the copy/download/render queues while waiting); ``OKTOOLS_UPDATE_WAIT_IDLE`` (default 3600 s) limits the wait, after which the update aborts with the old containers still running. It works without a terminal and exits non-zero when a container is not healthy.
 
 See ``deployment/README.md`` for detailed installation instructions.
 

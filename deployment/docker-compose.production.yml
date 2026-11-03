@@ -190,6 +190,11 @@ services:
       # Run: ./deployment/scripts/generate-override.sh to generate override file from .env
     entrypoint: ["/app/deployment/entrypoint.celery.sh"]
     command: celery -A ok_tools worker --loglevel=info --queues=download --concurrency=${CELERY_DOWNLOAD_WORKER_CONCURRENCY:-1}
+    # SIGTERM triggers a Celery warm shutdown: the running transfer is allowed
+    # to finish before the container stops. Without this Docker kills the
+    # worker after 10s and aborts a multi-GB copy halfway (update.sh also
+    # waits for idle workers first; this is the safety net).
+    stop_grace_period: 30m
     restart: unless-stopped
     networks:
       - oktools-network
@@ -266,6 +271,11 @@ services:
       # Run: ./deployment/scripts/generate-override.sh to generate override file from .env
     entrypoint: ["/app/deployment/entrypoint.celery.sh"]
     command: celery -A ok_tools worker --loglevel=info --queues=copy --concurrency=${CELERY_COPY_WORKER_CONCURRENCY:-1}
+    # SIGTERM triggers a Celery warm shutdown: the running transfer is allowed
+    # to finish before the container stops. Without this Docker kills the
+    # worker after 10s and aborts a multi-GB copy halfway (update.sh also
+    # waits for idle workers first; this is the safety net).
+    stop_grace_period: 30m
     restart: unless-stopped
     networks:
       - oktools-network
