@@ -73,6 +73,8 @@ class TagesPlanAdmin(admin.ModelAdmin):
         start = parse_date(start_param) if start_param else None
         if not start:
             start = today - timedelta(weeks=3, days=today.weekday())
+        # The grid labels its columns Mon–Sun, so it always starts on a Monday.
+        start -= timedelta(days=start.weekday())
 
         try:
             weeks_count = max(1, min(int(weeks), 52))

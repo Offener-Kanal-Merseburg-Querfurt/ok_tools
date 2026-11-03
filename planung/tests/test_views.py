@@ -301,3 +301,14 @@ def test__planung__playout_payloads_carry_owner_sender(license_obj):
 
     assert schedule["items"][0]["sender"] == "OK Dessau"
     assert metadata[0]["sender"] == "OK Dessau"
+
+
+@pytest.mark.django_db
+def test__planung__calendar_weeks_view__starts_on_monday(client, staff_user):
+    """A start that is not a Monday (e.g. shifted by a DST bug) snaps back to its Monday."""
+    client.force_login(staff_user)
+
+    response = client.get("/admin/planung/tagesplan/calendar-weeks/?start=2026-10-04&weeks=18")
+
+    assert response.status_code == 200
+    assert response.context["calendar_start"] == "2026-09-28"

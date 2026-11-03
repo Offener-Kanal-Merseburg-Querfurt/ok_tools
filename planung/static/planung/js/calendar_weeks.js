@@ -2,7 +2,15 @@
   $(function () {
     var $modal = $('#dayPlanModal');
     var plannedItems = [];
-    var calendarStartDate = INITIAL_CALENDAR_START ? new Date(INITIAL_CALENDAR_START + 'T00:00:00Z') : null;
+    // Local midnight, not UTC: across the DST switch a UTC date shifted by
+    // whole days lands on the previous evening and toISOString() then names
+    // the Sunday before the intended Monday.
+    var calendarStartDate = INITIAL_CALENDAR_START ? new Date(INITIAL_CALENDAR_START + 'T00:00:00') : null;
+
+    function formatLocalDate(date) {
+      return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0')
+        + '-' + String(date.getDate()).padStart(2, '0');
+    }
 
     function announce(message) {
       $('#planningA11yLive').text(message || '');
@@ -1836,7 +1844,7 @@
         calendarStartDate = new Date();
       }
       calendarStartDate.setDate(calendarStartDate.getDate() + (deltaWeeks * 7));
-      var iso = calendarStartDate.toISOString().split('T')[0];
+      var iso = formatLocalDate(calendarStartDate);
       window.location.href = '/admin/planung/tagesplan/calendar-weeks/?start=' + iso + '&weeks=' + (CALENDAR_WEEKS || 18);
     }
 
@@ -1847,7 +1855,7 @@
       var day = now.getDay();
       var mondayOffset = day === 0 ? 6 : day - 1;
       now.setDate(now.getDate() - mondayOffset);
-      var iso = now.toISOString().split('T')[0];
+      var iso = formatLocalDate(now);
       window.location.href = '/admin/planung/tagesplan/calendar-weeks/?start=' + iso + '&weeks=' + (CALENDAR_WEEKS || 18);
     });
 

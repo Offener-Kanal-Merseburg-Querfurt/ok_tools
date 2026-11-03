@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+2026-11-03 (Version 4.63.2)
+==========================
+
+* **planung: Calendar weeks navigation no longer shifts the grid by a day**
+  * "Previous/Next 4 weeks" and "Today" built the ``start`` date with ``toISOString()`` (UTC). Across the DST switch this named the Sunday before the intended Monday (``?start=2026-10-04``), and the grid labelled that Sunday as "Mo". The buttons now use the local date, and the view snaps any ``start`` to the Monday of its week, so old links show correctly too.
+
 2026-11-03 (Version 4.63.1)
 ==========================
 
