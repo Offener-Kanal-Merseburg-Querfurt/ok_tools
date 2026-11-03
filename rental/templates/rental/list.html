@@ -55,6 +55,12 @@
     <div class="n">{{ counts.all }}</div>
     <div class="l">{% trans "All" %}</div>
   </a>
+  <a href="{{ status_urls.draft }}"
+     class="stat-cell {% if current_status == 'draft' %}active{% endif %}"
+     style="text-decoration:none;color:inherit">
+    <div class="n">{{ counts.draft }}</div>
+    <div class="l"><span class="dot dot-violet"></span>{% trans "Draft" %}</div>
+  </a>
   <a href="{{ status_urls.reserved }}"
      class="stat-cell {% if current_status == 'reserved' %}active{% endif %}"
      style="text-decoration:none;color:inherit">
@@ -77,7 +83,13 @@
      class="stat-cell {% if current_status == 'returned' %}active{% endif %}"
      style="text-decoration:none;color:inherit">
     <div class="n">{{ counts.returned }}</div>
-    <div class="l"><span class="dot dot-green"></span>{% trans "Returned" %}</div>
+    <div class="l" title="{% trans "Returned and closed rentals" %}"><span class="dot dot-green"></span>{% trans "Returned" %}</div>
+  </a>
+  <a href="{{ status_urls.cancelled }}"
+     class="stat-cell {% if current_status == 'cancelled' %}active{% endif %}"
+     style="text-decoration:none;color:inherit">
+    <div class="n">{{ counts.cancelled }}</div>
+    <div class="l"><span class="dot" style="background:var(--ink-3)"></span>{% trans "Cancelled" %}</div>
   </a>
 </div>
 

@@ -4972,3 +4972,6 @@ msgstr "Bitte ein Material pro Zeile eingeben."
 
 msgid "This consumable cannot be changed."
 msgstr "Dieses Material kann nicht geändert werden."
+
+msgid "Returned and closed rentals"
+msgstr "Zurückgegebene und geschlossene Ausleihen"

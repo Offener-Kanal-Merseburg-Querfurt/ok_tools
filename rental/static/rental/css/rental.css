@@ -762,7 +762,9 @@ html, body {
 }
 .stat-bar {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  /* Each card at least as wide as its label, the rest shared evenly. */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(max-content, 1fr);
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
@@ -772,8 +774,14 @@ html, body {
 }
 .stat-cell {
   background: #fff;
-  padding: 14px 18px;
+  padding: 14px 14px;
   cursor: pointer;
+  min-width: 0;
+}
+/* Seven cards: on narrower screens two rows instead of clipped labels. */
+@media (max-width: 1100px) {
+  .stat-bar { grid-auto-flow: row; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .stat-cell { padding: 10px 12px; }
 }
 .stat-cell:hover { background: var(--bg-sub); }
 .stat-cell.active { background: #f3f7f9; }
@@ -783,10 +791,11 @@ html, body {
   line-height: 1.1;
 }
 .stat-cell .l {
-  font-size: 11.5px; color: var(--ink-3);
-  text-transform: uppercase; letter-spacing: .04em;
+  font-size: 11px; color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: .02em;
   font-weight: 600; margin-top: 2px;
   display: flex; align-items: center; gap: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 .rental-list {

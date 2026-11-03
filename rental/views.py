@@ -1100,6 +1100,9 @@ class RentalListView(StaffRequiredMixin, ListView):
             )
         elif status == 'issued':
             queryset = queryset.filter(status='issued').exclude(requested_end_date__lt=now)
+        elif status == 'returned':
+            # A closed rental is a finished return, so it counts as returned.
+            queryset = queryset.filter(status__in=('returned', 'closed'))
         elif status:
             queryset = queryset.filter(status=status)
 
@@ -1196,7 +1199,9 @@ class RentalListView(StaffRequiredMixin, ListView):
             'reserved': base_queryset.filter(status='reserved').count(),
             'issued': base_queryset.filter(status='issued', requested_end_date__gte=now).count(),
             'overdue': base_queryset.filter(status='issued', requested_end_date__lt=now).count(),
-            'returned': base_queryset.filter(status='returned').count(),
+            'returned': base_queryset.filter(status__in=('returned', 'closed')).count(),
+            'draft': base_queryset.filter(status='draft').count(),
+            'cancelled': base_queryset.filter(status='cancelled').count(),
         }
         context['current_status'] = self.request.GET.get('status', '')
         context['current_q'] = self.request.GET.get('q', '')
@@ -1239,6 +1244,8 @@ class RentalListView(StaffRequiredMixin, ListView):
             'issued': self._query_url(status='issued'),
             'overdue': self._query_url(status='overdue'),
             'returned': self._query_url(status='returned'),
+            'draft': self._query_url(status='draft'),
+            'cancelled': self._query_url(status='cancelled'),
         }
         page_params = self.request.GET.copy()
         page_params.pop('page', None)

@@ -241,3 +241,24 @@ class RentalListFilterTests(TestCase):
         self.assertEqual(found('bob@'), {other.pk})
         self.assertEqual(found(str(other.pk)), {other.pk})
         self.assertEqual(found(f'#{anna_rental.pk}'), {anna_rental.pk})
+
+    def test_status_cards_cover_every_rental(self):
+        user = self._user('cards@x.com')
+        past = timezone.now() - timedelta(days=3)
+        for status in ('draft', 'reserved', 'issued', 'returned', 'closed', 'cancelled'):
+            self._rental(user, status=status, project=status)
+        self._rental(user, status='issued', project='late', start=past)
+
+        response = RentalListView.as_view()(self._get_request())
+        counts = response.context_data['counts']
+
+        self.assertEqual(counts['returned'], 2)  # returned + closed
+        self.assertEqual(counts['all'], sum(
+            counts[key] for key in ('draft', 'reserved', 'issued', 'overdue', 'returned', 'cancelled')))
+        for key in ('draft', 'reserved', 'issued', 'overdue', 'returned', 'cancelled'):
+            self.assertEqual(self._count(status=key), counts[key], key)
+
+    def _get_request(self):
+        request = self.factory.get('/rental/admin/')
+        request.user = self.staff
+        return request

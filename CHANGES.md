@@ -4,6 +4,9 @@ CHANGELOG
 2026-11-03 (Version 4.63.1)
 ==========================
 
+* **rental: Status cards on the rental list add up to "All"**
+  * "Returned" now counts and filters returned and closed rentals; closed ones were in no card before. New cards "Draft" and "Cancelled" cover the remaining statuses, so the cards sum up to "All".
+
 * **deployment: Updates keep the site online during the build and never kill running Celery tasks**
   * ``update.sh`` no longer runs ``docker compose down`` before the build. The order is now: backup (``.env`` + ``pg_dump`` from the running ``db``) → git pull → JSX build → ``docker compose build`` while the old containers keep serving → wait for idle Celery → ``docker compose up -d`` → wait for ``web`` to become healthy. Downtime is the container restart (about 1–2 minutes) instead of the whole build (5 minutes, 18 on 2026-11-02 when the pip cache was gone). ``down`` remains only for the one-time volume → bind mount migration.
   * Before the restart the script waits until no Celery task is active or prefetched (all workers) and the ``copy``, ``download``, ``render``, ``anchor_render`` and ``celery`` queues are empty, confirmed twice 5 s apart. Every 30 s it prints the running tasks with name, arguments and runtime. Meanwhile the ``copy``/``download``/``render``/``anchor_render`` consumers are paused (``cancel_consumer``) so the wait ends when the current tasks are done; queued tasks stay in Redis and run on the new workers, and an aborted update restores the consumers. ``OKTOOLS_UPDATE_WAIT_IDLE`` (default 3600 s) limits the wait: on timeout the update aborts and the old containers stay up. ``--force`` restarts without waiting, ``--no-pause`` waits without pausing. The check runs ``deployment/scripts/celery_idle_check.py`` inside the running ``web`` container.
