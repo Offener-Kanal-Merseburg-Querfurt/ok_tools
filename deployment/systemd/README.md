@@ -15,6 +15,14 @@ the site stays down until someone starts it by hand. With the helper the unit
 waits up to 5 minutes, then fails and `Restart=on-failure` (every 30s, no start
 limit) tries again until the mounts appear.
 
+While waiting, the helper also retries mounts itself: for a path that is still
+missing it finds the matching `/etc/fstab` entry (the path or its closest
+parent) and runs `systemctl reset-failed` + `systemctl start` on that `.mount`
+unit every 30s (`WAIT_MOUNTS_RETRY`). A plain fstab CIFS mount without
+`x-systemd.automount` that failed at boot is otherwise never retried by
+systemd, and the stack would wait forever. Adding `x-systemd.automount` to such
+fstab lines is still recommended.
+
 ## Files
 
 - `ok-tools.service` — unit template. `__PRODUCTION_DIR__` and `__DOCKER_BIN__`

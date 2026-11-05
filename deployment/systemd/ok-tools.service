@@ -21,7 +21,8 @@ StartLimitIntervalSec=0
 # with an ExecStartPre= that waits for the host-specific paths, for example:
 #   [Service]
 #   ExecStartPre=/usr/local/lib/ok-tools/ok-tools-wait-mounts.sh /mnt/nas
-# If the wait times out the unit fails and Restart=on-failure tries again.
+# The helper restarts failed fstab mounts while it waits. If the wait times
+# out the unit fails and Restart=on-failure tries again.
 
 [Service]
 Type=oneshot
