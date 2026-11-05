@@ -574,11 +574,13 @@ rotate_env_backups() {
     
     print_info "Rotating .env backups (keeping last 7)..."
     
-    # Find all .env backup files with timestamp format
+    # Find all .env backup files, oldest first: the names end in a
+    # YYYYMMDD_HHMMSS timestamp, so name order is chronological and the
+    # removal loop below must start from the beginning of the list.
     local all_env_backups=()
     while IFS= read -r -d '' file; do
         all_env_backups+=("$file")
-    done < <(find "$env_backup_dir" -maxdepth 1 -name ".env.backup.*" -print0 2>/dev/null | sort -rz)
+    done < <(find "$env_backup_dir" -maxdepth 1 -type f -name ".env.backup.*" -print0 2>/dev/null | sort -z)
     
     local backup_count=${#all_env_backups[@]}
     
@@ -676,12 +678,20 @@ print_success "Configuration backup created"
 
 # Backup rotation for general backup directories - keep only last 5
 print_info "Rotating general backups (keeping last 5)..."
-BACKUP_COUNT=$(ls -1d "$PRODUCTION_DIR/backups/backup-"* 2>/dev/null | wc -l | tr -d ' ')
+# Only the backup-YYYYMMDD-HHMMSS directories created by this script are
+# rotated here. The nightly backup-YYYY-MM-DD_HH-MM-SS.sql.gz dumps in the same
+# folder belong to the scheduled DB backup and have their own retention.
+UPDATE_BACKUPS=()
+while IFS= read -r -d '' dir; do
+    UPDATE_BACKUPS+=("$dir")
+done < <(find "$PRODUCTION_DIR/backups" -mindepth 1 -maxdepth 1 -type d \
+    -name 'backup-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]' \
+    -print0 2>/dev/null | sort -z)
+BACKUP_COUNT=${#UPDATE_BACKUPS[@]}
 if [ "$BACKUP_COUNT" -gt 5 ]; then
-    OLD_BACKUPS=$(ls -1td "$PRODUCTION_DIR/backups/backup-"* | tail -n +6)
-    for old_backup in $OLD_BACKUPS; do
-        rm -rf "$old_backup"
-        print_info "Removed old backup: $(basename "$old_backup")"
+    for ((i = 0; i < BACKUP_COUNT - 5; i++)); do
+        rm -rf "${UPDATE_BACKUPS[$i]}"
+        print_info "Removed old backup: $(basename "${UPDATE_BACKUPS[$i]}")"
     done
 fi
 print_success "General backup rotation completed (kept 5 most recent)"
