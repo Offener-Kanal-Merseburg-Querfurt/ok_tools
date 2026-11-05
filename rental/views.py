@@ -5742,8 +5742,10 @@ def api_get_user_inventory_simple(request, user_id):
         return JsonResponse({'error': 'Access denied'}, status=403)
 
     user = get_object_or_404(OKUser, id=user_id)
+    # Staff accounts (e.g. created via the admin) may have no profile; their
+    # inventory access does not depend on it.
     profile = getattr(user, 'profile', None)
-    if not profile:
+    if not profile and not user.is_staff:
         return JsonResponse({'error': _('User profile not found')}, status=400)
 
     # Get filter parameters
