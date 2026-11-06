@@ -3,6 +3,8 @@ from .forms import ImportJSONForm
 from .forms import RangeIntegerForm
 from .forms import RangeNumericForm
 from .generate_file import generate_license_file
+from .models import ArchiveMedium
+from .models import ArchiveMediumType
 from .models import Category
 from .models import License
 from .models import LicensesConfig
@@ -14,6 +16,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib import messages
 from django.db.models import Count
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -858,6 +861,36 @@ class AuthorAgeRangeFilter(admin.FieldListFilter):
         }, )
 
 
+class ArchiveMediumInline(admin.TabularInline):
+    """DVDs, cassettes and other carriers holding a copy of the license."""
+
+    model = ArchiveMedium
+    extra = 0
+    fields = ('medium_type', 'number', 'note')
+    verbose_name = _('Archive medium')
+    verbose_name_plural = _('Archive media (DVD, VHS, tapes)')
+
+
+class ArchiveMediumTypeFilter(admin.SimpleListFilter):
+    """Filter licenses by the kind of archive carrier they are stored on."""
+
+    title = _('Archive medium')
+    parameter_name = 'archive_medium'
+
+    def lookups(self, request, model_admin):
+        """Offer every carrier type plus 'none'."""
+        return [*ArchiveMediumType.choices, ('none', _('No archive medium'))]
+
+    def queryset(self, request, queryset):
+        """Restrict to licenses on the chosen carrier type."""
+        value = self.value()
+        if not value:
+            return queryset
+        if value == 'none':
+            return queryset.filter(archive_media__isnull=True)
+        return queryset.filter(archive_media__medium_type=value).distinct()
+
+
 class LicenseAdmin(ExportMixin, admin.ModelAdmin):
     """How should the Licenses be shown on the admin site."""
 
@@ -906,9 +939,15 @@ class LicenseAdmin(ExportMixin, admin.ModelAdmin):
         'number',
         'description',
         'further_persons',
+        'legacy_number',
+        '=archive_media__number',
+        'internal_note',
     ]
     search_help_text = _(
-        'title, subtitle, number, description, further persons')
+        'title, subtitle, number, description, further persons, '
+        'legacy number, DVD/tape number, internal note')
+
+    inlines = [ArchiveMediumInline]
     
     fieldsets = (
         (_('Basic Information'), {
@@ -930,6 +969,10 @@ class LicenseAdmin(ExportMixin, admin.ModelAdmin):
         }),
         (_('Media Library & Special Formats'), {
             'fields': ('store_in_ok_media_library', 'is_screen_board', 'infoblock'),
+        }),
+        (_('Archive'), {
+            'fields': ('external_production', 'legacy_number', 'internal_note'),
+            'classes': ('collapse',),
         }),
         (_('Status & Metadata'), {
             'fields': (
@@ -1291,8 +1334,14 @@ class LicenseAdmin(ExportMixin, admin.ModelAdmin):
         # If creating new object, remove 'number' from Status & Metadata fieldset
         if obj is None:
             fieldsets = list(fieldsets)
-            status_metadata_idx = 5  # Index of 'Status & Metadata' fieldset
-            
+            status_metadata_idx = next(
+                (i for i, fs in enumerate(fieldsets)
+                 if 'number' in fs[1].get('fields', ())),
+                None,
+            )
+            if status_metadata_idx is None:
+                return tuple(fieldsets)
+
             # Make a mutable copy of the fieldset
             status_metadata = list(fieldsets[status_metadata_idx])
             status_metadata_fields = dict(status_metadata[1])
@@ -1395,6 +1444,8 @@ class LicenseAdmin(ExportMixin, admin.ModelAdmin):
         AutocompleteFilterFactory(_('Category'), 'category'),
         'is_live',
         'store_in_ok_media_library',
+        'external_production',
+        ArchiveMediumTypeFilter,
         GlobalProducerFilter,
         HasVideoFilter,
         HasMediathekUrlFilter,
@@ -2475,6 +2526,41 @@ class LicenseAdmin(ExportMixin, admin.ModelAdmin):
 
 
 admin.site.register(License, LicenseAdmin)
+
+
+@admin.register(ArchiveMedium)
+class ArchiveMediumAdmin(admin.ModelAdmin):
+    """Shelf view: which licenses are on DVD/tape no. X."""
+
+    list_display = ('medium_type', 'number', 'license_number', 'license', 'note')
+    list_display_links = ('number',)
+    list_filter = ('medium_type',)
+    search_fields = ('=number', 'license__title', 'license__number',
+                     'license__legacy_number')
+    search_help_text = _('medium number, license title or number')
+    autocomplete_fields = ('license',)
+    list_select_related = ('license',)
+    ordering = ('medium_type', 'number', 'license__number')
+
+    def get_search_results(self, request, queryset, search_term):
+        """
+        A bare number means "what is on carrier no. X".
+
+        Exact match on carrier, license or legacy number only - otherwise
+        "15" would also hit every title containing a date like 15.03.2012.
+        """
+        term = search_term.strip()
+        if term.isdigit():
+            number = int(term)
+            return queryset.filter(
+                Q(number=term) | Q(license__number=number)
+                | Q(license__legacy_number=number)), False
+        return super().get_search_results(request, queryset, search_term)
+
+    @admin.display(description=_('Number'), ordering='license__number')
+    def license_number(self, obj):
+        """Show the license number next to the carrier."""
+        return obj.license.number
 
 
 class CategoryAdmin(admin.ModelAdmin):

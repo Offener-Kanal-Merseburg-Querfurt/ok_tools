@@ -386,6 +386,31 @@ class License(ExportModelOperationsMixin('license'), models.Model):
         default=False,
     )
 
+    # --- Archive / legacy data -------------------------------------------
+    external_production = models.BooleanField(
+        _('External production'),
+        default=False,
+        help_text=_('Fremdbeitrag: produced outside the OK (e.g. by another '
+                    'channel or an external producer).'),
+    )
+
+    internal_note = models.TextField(
+        _('Internal note'),
+        blank=True,
+        default='',
+        help_text=_('Staff-only note. Not shown to users, not exported to '
+                    'the media library or the exchange.'),
+    )
+
+    legacy_number = models.PositiveIntegerField(
+        _('Legacy number'),
+        blank=True,
+        null=True,
+        db_index=True,
+        help_text=_('Contribution number in the previous archive system '
+                    '(as written on DVDs and tapes).'),
+    )
+
     def __str__(self) -> str:
         """Licenses are represented by its titles."""
         if self.subtitle:
@@ -508,6 +533,75 @@ class License(ExportModelOperationsMixin('license'), models.Model):
 
         verbose_name = _('License')
         verbose_name_plural = _('Licenses')
+
+
+class ArchiveMediumType(models.TextChoices):
+    """Kind of physical (or legacy storage) carrier of a contribution."""
+
+    DVD = 'dvd', _('DVD')
+    MASTER_DVD = 'master_dvd', _('Master DVD')
+    VHS = 'vhs', _('VHS cassette')
+    MASTER_VHS = 'master_vhs', _('Master VHS cassette')
+    TAPE = 'tape', _('Broadcast tape (Sendeband)')
+    RAID = 'raid', _('Hard disk / RAID')
+    OTHER = 'other', _('Other')
+
+
+class ArchiveMedium(models.Model):
+    """
+    A carrier in the physical archive that holds a copy of a license.
+
+    One license can be on several carriers (e.g. DVD + master tape) and one
+    carrier (e.g. DVD no. 15) holds many licenses.
+    """
+
+    license = models.ForeignKey(
+        License,
+        on_delete=models.CASCADE,
+        related_name='archive_media',
+        verbose_name=_('License'),
+    )
+
+    medium_type = models.CharField(
+        _('Medium type'),
+        max_length=20,
+        choices=ArchiveMediumType.choices,
+        default=ArchiveMediumType.DVD,
+    )
+
+    # CharField: legacy labels are not always numeric ("140/84", "Raid 2").
+    number = models.CharField(
+        _('Medium number'),
+        max_length=50,
+        help_text=_('Number or label written on the carrier.'),
+    )
+
+    note = models.CharField(
+        _('Note'),
+        max_length=255,
+        blank=True,
+        default='',
+    )
+
+    def __str__(self) -> str:
+        """Represent the carrier like it is labelled on the shelf."""
+        return f'{self.get_medium_type_display()} {self.number}'
+
+    class Meta:
+        """Defines the message IDs."""
+
+        verbose_name = _('Archive medium')
+        verbose_name_plural = _('Archive media')
+        ordering = ['medium_type', 'number']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['license', 'medium_type', 'number'],
+                name='licenses_archive_medium_unique_per_license',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=['medium_type', 'number']),
+        ]
 
 
 class NextcloudVideoFile(models.Model):

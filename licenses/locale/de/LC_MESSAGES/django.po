@@ -2951,3 +2951,75 @@ msgstr "Sendezeitfenster"
 
 msgid "Updated at"
 msgstr "Geändert am"
+
+msgid "External production"
+msgstr "Fremdbeitrag"
+
+msgid "Fremdbeitrag: produced outside the OK (e.g. by another channel or an external producer)."
+msgstr "Fremdbeitrag: außerhalb des OK produziert (z. B. von einem anderen Kanal oder einer externen Produktion)."
+
+msgid "Internal note"
+msgstr "Interne Notiz"
+
+msgid "Staff-only note. Not shown to users, not exported to the media library or the exchange."
+msgstr "Nur für Mitarbeitende. Wird Nutzenden nicht angezeigt und nicht an Mediathek oder Austausch übertragen."
+
+msgid "Legacy number"
+msgstr "Alte Beitragsnummer"
+
+msgid "Contribution number in the previous archive system (as written on DVDs and tapes)."
+msgstr "Beitragsnummer im alten Archivsystem (wie auf DVDs und Bändern notiert)."
+
+msgid "DVD"
+msgstr "DVD"
+
+msgid "Master DVD"
+msgstr "Master-DVD"
+
+msgid "VHS cassette"
+msgstr "VHS-Kassette"
+
+msgid "Master VHS cassette"
+msgstr "Master-VHS-Kassette"
+
+msgid "Broadcast tape (Sendeband)"
+msgstr "Sendeband"
+
+msgid "Hard disk / RAID"
+msgstr "Festplatte / RAID"
+
+msgid "Other"
+msgstr "Sonstiges"
+
+msgid "Medium type"
+msgstr "Trägerart"
+
+msgid "Medium number"
+msgstr "Trägernummer"
+
+msgid "Number or label written on the carrier."
+msgstr "Nummer oder Beschriftung auf dem Träger."
+
+msgid "Note"
+msgstr "Notiz"
+
+msgid "Archive medium"
+msgstr "Archivträger"
+
+msgid "Archive media"
+msgstr "Archivträger"
+
+msgid "Archive media (DVD, VHS, tapes)"
+msgstr "Archivträger (DVD, VHS, Bänder)"
+
+msgid "No archive medium"
+msgstr "Kein Archivträger"
+
+msgid "Archive"
+msgstr "Archiv"
+
+msgid "title, subtitle, number, description, further persons, legacy number, DVD/tape number, internal note"
+msgstr "Titel, Untertitel, Nummer, Beschreibung, weitere Personen, alte Beitragsnummer, DVD-/Bandnummer, interne Notiz"
+
+msgid "medium number, license title or number"
+msgstr "Trägernummer, Titel oder Nummer der Lizenz"
