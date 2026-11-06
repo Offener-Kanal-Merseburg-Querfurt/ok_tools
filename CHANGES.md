@@ -1,6 +1,27 @@
 CHANGELOG
 =========
 
+2026-11-06 (Version 4.64.0)
+==========================
+
+* **licenses: Archive media (DVD, VHS, tapes) and legacy archive fields**
+  * New model ``ArchiveMedium`` (migration ``licenses.0033``): a physical or legacy carrier that holds a copy of a license. Fields: ``medium_type`` (DVD, Master DVD, VHS cassette, Master VHS cassette, broadcast tape / Sendeband, hard disk / RAID, other), ``number`` (text, since old labels look like ``140/84`` or ``Raid 2``) and ``note``. One license can be on several carriers and one carrier holds many licenses; the same carrier is stored once per license (unique ``license`` + ``medium_type`` + ``number``).
+  * ``License`` gained three fields: ``legacy_number`` (contribution number in the old archive system, as written on DVDs and tapes; indexed), ``internal_note`` (staff-only, not shown to users, not exported to the Mediathek or the exchange) and ``external_production`` (Fremdbeitrag, produced outside the OK).
+  * License admin: the carriers are edited inline ("Archivträger (DVD, VHS, Bänder)"), the new fields sit in a collapsed "Archiv" fieldset, the list filters by "Fremdbeitrag" and by carrier type (or "no archive medium"), and the search also finds the legacy number, the exact DVD/tape number and the internal note.
+  * New admin page "Archivträger" (shelf view): which licenses are on DVD/tape no. X. A bare number matches the carrier, license or legacy number exactly, so "15" does not hit every title with a date like 15.03.2012.
+  * The license add form finds the "Status & Metadata" fieldset by its ``number`` field instead of a fixed index, so the new fieldset does not shift it.
+  * All new strings are translated into German.
+* **licenses: Import of legacy archives**
+  * ``manage.py import_okdb_stendal <dump.json>`` imports the old OK Stendal database into a fresh installation: people (Profile, plus an OKUser for every unique valid e-mail unless ``--no-users``), contributions (License, number = old archive number), categories, DVD/VHS/master carriers (ArchiveMedium) and broadcasts (Contribution; dates without a time get ``--default-time``). ``--with-tagesplan`` / ``--tagesplan-from`` also create draft day plans from the old schedule. Everything runs in one transaction; ``--dry-run`` rolls it back, so its numbers are the real ones. ``--report`` writes a CSV of every data fix and problem. Placeholder birthdays and impossible dates (before 1984) are dropped.
+  * ``deployment/scripts/okdb_dump.py`` writes that JSON from the old MyISAM files via a throw-away MariaDB container, so the ok_tools server needs no MySQL access.
+  * ``manage.py import_sendearchiv <Sendearchiv.html>`` attaches DVD and Sendeband numbers from the old OK Merseburg Sendearchiv to existing licenses and sets ``legacy_number`` from the old "Beitrag-Nr." when empty. Nothing else is created or changed. Rows are matched by legacy number, number + title, title + date (±1 day) + user, and narrower fallbacks; ambiguous or unmatched rows are left alone and listed in the ``--report`` CSV. ``--dry-run`` is supported.
+* **rental: Dashboard inventory for staff without a profile**
+  * ``api_user_inventory_simple`` answered 400 "User profile not found" for staff accounts without a Profile, so the rental dashboard showed "No available inventory" for every period. Only non-staff accounts without a profile are rejected now.
+* **deployment: ``update.sh`` rotates only stale backups**
+  * The ``.env`` backup rotation deleted the newest backups and kept the oldest. The general rotation also matched the nightly ``backup-YYYY-MM-DD_*.sql.gz`` dumps; it now only rotates the ``backup-YYYYMMDD-HHMMSS`` directories ``update.sh`` creates.
+* **deployment: Failed fstab mounts are retried before start**
+  * A CIFS mount from ``/etc/fstab`` without ``x-systemd.automount`` that failed at boot (NAS not reachable yet) was never retried, so ``ok-tools.service`` waited forever. ``ok-tools-wait-mounts.sh`` restarts the ``.mount`` unit of each missing path every 30 s (``WAIT_MOUNTS_RETRY``) until it appears.
+
 2026-11-03 (Version 4.63.2)
 ==========================
 

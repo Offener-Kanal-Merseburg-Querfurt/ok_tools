@@ -3022,4 +3022,4 @@ msgid "title, subtitle, number, description, further persons, legacy number, DVD
 msgstr "Titel, Untertitel, Nummer, Beschreibung, weitere Personen, alte Beitragsnummer, DVD-/Bandnummer, interne Notiz"
 
 msgid "medium number, license title or number"
-msgstr "Trägernummer, Titel oder Nummer der Lizenz"
+msgstr "Trägernummer, Titel oder Nummer der Freistellung"

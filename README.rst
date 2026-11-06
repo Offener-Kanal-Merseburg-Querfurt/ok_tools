@@ -4,8 +4,8 @@ ok_tools
 
 A universal set of tools to support administrative tasks for community media organizations. Originally developed for the Offener Kanal system of Medienanstalt Sachsen-Anhalt, now configurable for any organization.
 
-**Current Version**: 4.63.2
-**Last Updated**: 3 November 2026
+**Current Version**: 4.64.0
+**Last Updated**: 6 November 2026
 
 Features
 ========
@@ -23,6 +23,9 @@ Features
 - **License Management** - Manage broadcasting licenses with tags and metadata export
   - License creation and confirmation workflow
   - Admin filtering by inclusive license creation-date and current-author-age ranges
+  - Archive media (``ArchiveMedium``): DVD, master DVD, VHS, master VHS, Sendeband, RAID carriers with number and note, edited inline on the license; shelf view "which licenses are on DVD/tape no. X"
+  - Legacy archive fields on licenses: old contribution number (``legacy_number``), staff-only internal note, external production (Fremdbeitrag) flag, all searchable and filterable in the admin
+  - Import of legacy archives (old OK Stendal database, OK Merseburg Sendearchiv DVD/tape numbers)
   - Multi-method digital signatures (draw on page or sign via phone QR)
   - Signature payload v2 support (SVG, biometric points, metadata)
   - Nextcloud video file integration
@@ -551,6 +554,8 @@ Licenses::
     - import_licenses_from_wp - Import licenses from WordPress SQL dump or CSV
     - delete_imported_licenses - Delete licenses imported from WordPress
     - cleanup_deleted_nextcloud_videos - Cleanup deleted Nextcloud videos
+    - import_okdb_stendal - Import the legacy OK Stendal database from a JSON dump made by deployment/scripts/okdb_dump.py (--dry-run/--no-users/--default-time/--with-tagesplan/--tagesplan-from/--report)
+    - import_sendearchiv - Attach DVD/Sendeband numbers and legacy numbers from the OK Merseburg Sendearchiv HTML to existing licenses (--dry-run/--report)
 
 Contributions::
     - export_mediathek_report - Export mediathek import report
