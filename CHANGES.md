@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+2026-11-06 (Version 4.65.1)
+==========================
+
+* **licenses: "Freistellungen" comes first in the admin menu**
+  * The licenses section listed "Archivträger" above "Freistellungen" because the admin sorts by name. ``ADMIN_MODEL_ORDER`` now puts Freistellungen first and Archivträger right below; the other entries keep their alphabetical order.
+
 2026-11-06 (Version 4.65.0)
 ==========================
 

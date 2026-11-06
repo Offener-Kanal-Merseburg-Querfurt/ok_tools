@@ -25,6 +25,12 @@ ADMIN_MODEL_ORDER: Dict[str, List[str]] = {
         "Organization",
         "AuditLog",
     ],
+    # Licenses first; the archive carriers belong to them. The other models
+    # keep their alphabetical order after these two.
+    "licenses": [
+        "License",
+        "ArchiveMedium",
+    ],
     "rental": [
         "RentalProcessProxy",  # This will be the first item - our custom rental process link
         "Room",
