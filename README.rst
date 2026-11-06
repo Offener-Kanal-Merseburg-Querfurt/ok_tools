@@ -4,7 +4,7 @@ ok_tools
 
 A universal set of tools to support administrative tasks for community media organizations. Originally developed for the Offener Kanal system of Medienanstalt Sachsen-Anhalt, now configurable for any organization.
 
-**Current Version**: 4.64.0
+**Current Version**: 4.65.0
 **Last Updated**: 6 November 2026
 
 Features
@@ -106,6 +106,7 @@ Features
   - Configurable sync schedule via Celery Beat
   - Support for multiple exchange folders and channels
   - Export to server (``/austausch/feed/``): upload video, PDF, JSON and optional thumbnail to Nextcloud WebDAV via a step-by-step wizard and Celery task
+  - Per-license PeerTube publication time (or "Sofort") when exporting by license number; prefilled from broadcasts/Planung and taking priority over them
   - Auto-generates a cover thumbnail into the export hand-off directory during export when cover generation is enabled, so exchanged content always ships with a thumbnail
   - Falls back to synchronized JSON metadata when a channel's remote OK-Tools API is unavailable, with retry actions for failed imports
   - Optional module (enabled via AUSTAUSCH_ENABLED setting)

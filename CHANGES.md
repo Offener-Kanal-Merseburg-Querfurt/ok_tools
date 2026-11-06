@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+2026-11-06 (Version 4.65.0)
+==========================
+
+* **austausch: Publication time per license when exporting by license number**
+  * Step 2 of "Export to server" in the "Freistellung" mode (numbers entered by hand) has a "Veröffentlichung" column: a date/time field and a "Sofort" box per license. The time set there is written to ``originallyPublishedAt`` in the exported ``.meta.json`` and takes priority over the first broadcast (Contribution) and Planung, which were the only sources before.
+  * The field is prefilled with the time the export would have used anyway (first broadcast, else the earliest planned, non-draft Planung entry) and names its source; "übernehmen" puts the suggestion back. Without a known time the row starts on "Sofort", which writes the moment the item is uploaded (for a scheduled export: when it runs). An emptied field without "Sofort" keeps the old automatic time.
+  * Buttons below the table set all rows to "Sofort", to the suggested times or to one date/time. An unreadable value stops the upload and shows the page again with the entries kept.
+  * The Mediathek URL lookup after the export is scheduled from the chosen time. The run details store the written times as ``publish_times``.
+  * The Contributions and Planung modes are unchanged. The suggestion is computed for the whole page in one query plus one pass over the plans (``compute_publish_times_for_licenses``); ``compute_publish_time_for_license`` uses the same code.
+
 2026-11-06 (Version 4.64.0)
 ==========================
 

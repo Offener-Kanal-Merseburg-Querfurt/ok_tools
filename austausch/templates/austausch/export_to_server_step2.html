@@ -164,6 +164,64 @@
   .export-step2-table tr.row-running .title-cell {
     font-style: italic;
   }
+  .publish-cell {
+    white-space: nowrap;
+    min-width: 210px;
+  }
+  .publish-cell .publish-now {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-weight: normal;
+  }
+  .publish-cell input[type="datetime-local"] {
+    padding: 4px 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .publish-cell input[type="datetime-local"]:disabled {
+    background: #f1f1f1;
+    color: #999;
+  }
+  .publish-cell .publish-hint {
+    font-size: 11px;
+    color: #666;
+    margin-top: 3px;
+  }
+  .publish-cell .publish-hint button {
+    border: none;
+    background: none;
+    color: #447e9b;
+    padding: 0;
+    cursor: pointer;
+    font-size: 11px;
+    text-decoration: underline;
+  }
+  .publish-cell .publish-error {
+    font-size: 11px;
+    color: #b02a37;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+  .publish-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 0;
+    font-size: 13px;
+  }
+  .publish-bulk button {
+    padding: 4px 10px;
+    border: 1px solid #447e9b;
+    border-radius: 4px;
+    background: #fff;
+    color: #447e9b;
+    cursor: pointer;
+    font-size: 12px;
+  }
   .running-tag {
     display: inline-block;
     margin-left: 6px;
@@ -196,6 +254,11 @@
     <p class="export-description">
       {% translate "Greyed-out rows are already being uploaded by another export task and cannot be selected." %}
     </p>
+    {% if manual_publish %}
+    <p class="export-description">
+      {% translate "Publication: the time set here is sent as the PeerTube publication time and takes priority over broadcasts and Planung. A known time is suggested. 'Now' publishes the video as soon as it is uploaded. An empty field keeps the time from broadcasts/Planung." %}
+    </p>
+    {% endif %}
 
     <form method="post" action="" class="export-form">
       {% csrf_token %}
@@ -207,7 +270,7 @@
                 <tr>
                   <th><input type="checkbox" id="select_all" checked></th>
                   <th>{% translate "License" %}</th>
-                  <th>{% translate "Broadcast" %}</th>
+                  {% if manual_publish %}<th>{% translate "Publication" %}</th>{% else %}<th>{% translate "Broadcast" %}</th>{% endif %}
                   <th>{% translate "Title" %}</th>
                   <th>{% translate "Profile" %}</th>
                   <th>{% translate "Duration" %}</th>
@@ -233,7 +296,26 @@
                     {{ item.license_number }}
                     {% if item.running_task_id %}<span class="running-tag" title="{{ item.running_task_id }}">{% translate "exporting…" %}</span>{% endif %}
                   </td>
+                  {% if manual_publish %}
+                  <td class="publish-cell">
+                    <label class="publish-now">
+                      <input type="checkbox" name="publish_now_{{ item.license_number }}" value="1" class="publish-now-cb"{% if item.publish_now %} checked{% endif %}>
+                      {% translate "Now" %}
+                    </label>
+                    <input type="datetime-local" name="publish_at_{{ item.license_number }}" value="{{ item.publish_value }}" step="60" class="publish-at-input" aria-label="{% translate 'Publication time' %} {{ item.license_number }}"{% if item.publish_now %} disabled{% endif %}>
+                    {% if item.publish_suggestion_display %}
+                      <div class="publish-hint">
+                        {% blocktranslate with when=item.publish_suggestion_display source=item.publish_suggestion_source %}Suggested: {{ when }} ({{ source }}){% endblocktranslate %}
+                        <button type="button" class="publish-use-suggestion" data-value="{{ item.publish_suggestion_value }}">{% translate "use" %}</button>
+                      </div>
+                    {% else %}
+                      <div class="publish-hint">{% translate "No time in broadcasts or Planung" %}</div>
+                    {% endif %}
+                    {% if item.publish_error %}<div class="publish-error">{{ item.publish_error }}</div>{% endif %}
+                  </td>
+                  {% else %}
                   <td>{{ item.broadcast_date_display|default:"—" }}</td>
+                  {% endif %}
                   <td class="title-cell" title="{{ item.title }}">{{ item.title }}</td>
                   <td>{{ item.profile_display }}</td>
                   <td>{{ item.duration_display }}</td>
@@ -250,6 +332,15 @@
               </tbody>
             </table>
           </div>
+          {% if manual_publish %}
+          <div class="publish-bulk">
+            <span>{% translate "Publication for all rows" %}:</span>
+            <button type="button" id="publish_all_now">{% translate "Now" %}</button>
+            <button type="button" id="publish_all_suggested">{% translate "Suggested times" %}</button>
+            <input type="datetime-local" id="publish_all_at" step="60" aria-label="{% translate 'Publication time for all rows' %}">
+            <button type="button" id="publish_all_apply">{% translate "Set for all" %}</button>
+          </div>
+          {% endif %}
         </div>
         <div class="schedule-row">
           <label for="id_schedule_at">{% translate "Schedule for (optional)" %}:</label>
@@ -271,6 +362,44 @@
   if (selectAll && checkboxes.length) {
     selectAll.addEventListener('change', function() {
       checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+    });
+  }
+
+  // Publication time per row: "Now" disables the date field.
+  function cellOf(el) { return el.closest('.publish-cell'); }
+  function setRow(cell, now, value) {
+    const cb = cell.querySelector('.publish-now-cb');
+    const input = cell.querySelector('.publish-at-input');
+    cb.checked = now;
+    input.disabled = now;
+    if (value !== undefined) { input.value = value; }
+  }
+  document.querySelectorAll('.publish-now-cb').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      cellOf(cb).querySelector('.publish-at-input').disabled = cb.checked;
+    });
+  });
+  document.querySelectorAll('.publish-use-suggestion').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setRow(cellOf(btn), false, btn.dataset.value);
+    });
+  });
+  const allNow = document.getElementById('publish_all_now');
+  if (allNow) {
+    allNow.addEventListener('click', function() {
+      document.querySelectorAll('.publish-cell').forEach(function(cell) { setRow(cell, true); });
+    });
+    document.getElementById('publish_all_suggested').addEventListener('click', function() {
+      document.querySelectorAll('.publish-cell').forEach(function(cell) {
+        const btn = cell.querySelector('.publish-use-suggestion');
+        // No suggestion: "now", the same default the page starts with.
+        if (btn) { setRow(cell, false, btn.dataset.value); } else { setRow(cell, true); }
+      });
+    });
+    document.getElementById('publish_all_apply').addEventListener('click', function() {
+      const value = document.getElementById('publish_all_at').value;
+      if (!value) { return; }
+      document.querySelectorAll('.publish-cell').forEach(function(cell) { setRow(cell, false, value); });
     });
   }
 })();

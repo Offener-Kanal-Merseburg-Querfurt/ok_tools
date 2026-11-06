@@ -150,34 +150,65 @@ def peertube_watch_url(base_url: str, video: dict) -> str:
     return f'{base_url}/w/{video_id}'
 
 
+PUBLISH_SOURCE_CONTRIBUTION = 'contribution'
+PUBLISH_SOURCE_PLANUNG = 'planung'
+
+
 def compute_publish_time_for_license(license_obj) -> datetime | None:
     """Resolve publish time using Contribution first, then planned TagesPlan entry."""
+    found = compute_publish_times_for_licenses([license_obj.number])
+    return found[license_obj.number][0] if license_obj.number in found else None
+
+
+def compute_publish_times_for_licenses(
+        license_numbers) -> dict[int, tuple[datetime, str]]:
+    """Resolve publish times for many licenses at once.
+
+    Same rules as :func:`compute_publish_time_for_license`: the first
+    Contribution wins, otherwise the earliest planned (not draft) TagesPlan
+    entry with a start time. One query for the contributions and one pass over
+    the plans, however many licenses are asked for.
+
+    Returns ``{number: (aware datetime, source)}`` with source
+    ``'contribution'`` or ``'planung'``; licenses without any time are left out.
+    """
+    wanted = {int(n) for n in license_numbers if n is not None}
+    result: dict[int, tuple[datetime, str]] = {}
+    if not wanted:
+        return result
+
     try:
         from contributions.models import Contribution
+        from django.db.models import Min
 
-        contribution = (
+        rows = (
             Contribution.objects
-            .filter(license=license_obj)
-            .only('broadcast_date')
-            .order_by('broadcast_date')
-            .first()
+            .filter(license__number__in=wanted, broadcast_date__isnull=False)
+            .values('license__number')
+            .annotate(first_broadcast=Min('broadcast_date'))
         )
-        if contribution and contribution.broadcast_date:
-            return contribution.broadcast_date
+        for row in rows:
+            result[row['license__number']] = (
+                row['first_broadcast'], PUBLISH_SOURCE_CONTRIBUTION)
     except (ImportError, RuntimeError, ModuleNotFoundError):
         pass
+
+    missing = wanted - result.keys()
+    if not missing:
+        return result
 
     try:
         from planung.models import TagesPlan
 
         plans = TagesPlan.objects.filter(datum__isnull=False).order_by('datum')
-        for plan in plans:
+        for plan in plans.iterator():
             plan_json = plan.json_plan or {}
             if plan_json.get('draft') is True or plan_json.get('planned') is False:
                 continue
 
             for item in plan_json.get('items', []):
-                if item.get('number') != license_obj.number:
+                number = item.get('number')
+                if number not in missing:
                     continue
 
                 start_raw = (item.get('start') or '').strip()
@@ -193,13 +224,16 @@ def compute_publish_time_for_license(license_obj) -> datetime | None:
                         plan.datum,
                         datetime.min.time().replace(hour=hour, minute=minute, second=second),
                     )
-                    return timezone.make_aware(naive_dt)
                 except (ValueError, TypeError, IndexError):
                     continue
+                result[number] = (timezone.make_aware(naive_dt), PUBLISH_SOURCE_PLANUNG)
+                missing.discard(number)
+            if not missing:
+                break
     except (ImportError, RuntimeError, ModuleNotFoundError):
         pass
 
-    return None
+    return result
 
 
 def compute_lookup_eta(publish_time: datetime | None) -> datetime:

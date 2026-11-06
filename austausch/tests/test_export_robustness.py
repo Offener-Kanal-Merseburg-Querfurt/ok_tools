@@ -492,7 +492,7 @@ class TestExportTaskLocking(TestCase):
         acquire('licenses', 18901, 'first-task')
         seen = {}
 
-        def fake_run(selected_ids, mode, progress_callback=None):
+        def fake_run(selected_ids, mode, progress_callback=None, publish_at=None):
             seen['ids'] = list(selected_ids)
             return {
                 'success_count': len(selected_ids),
@@ -520,7 +520,7 @@ class TestExportTaskLocking(TestCase):
     def test_locks_are_freed_when_the_task_finishes(self):
         from austausch.tasks import export_to_server_task
 
-        def fake_run(selected_ids, mode, progress_callback=None):
+        def fake_run(selected_ids, mode, progress_callback=None, publish_at=None):
             assert cache.get(lock_key('licenses', 18901)) is not None
             return {
                 'success_count': 0, 'failure_count': 0, 'skipped_no_pdf_count': 0,

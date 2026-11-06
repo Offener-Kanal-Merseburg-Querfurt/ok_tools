@@ -342,6 +342,83 @@ def _get_already_exported_license_numbers() -> set[int]:
     )
 
 
+def _read_publish_times(post, license_numbers, selected_numbers):
+    """Read the per-license publish time fields of step 2.
+
+    Returns ``(publish_at, posted, errors)``:
+
+    * ``publish_at`` - ``{str(number): 'now' | ISO datetime}`` for the selected
+      licenses; a license with an empty field and "now" unticked is left out
+      and keeps the time from contributions/Planung.
+    * ``posted`` - ``{number: {'now': bool, 'value': str}}`` for every row, to
+      show the form again with what was entered.
+    * ``errors`` - ``{number: message}`` for unreadable values.
+    """
+    from datetime import datetime
+    from django.utils import timezone
+    from .services.export_to_server_service import PUBLISH_NOW
+
+    selected = set(selected_numbers)
+    publish_at, posted, errors = {}, {}, {}
+    for number in license_numbers:
+        now = bool(post.get(f'publish_now_{number}'))
+        value = (post.get(f'publish_at_{number}') or '').strip()
+        posted[number] = {'now': now, 'value': value}
+        if number not in selected:
+            continue
+        if now:
+            publish_at[str(number)] = PUBLISH_NOW
+            continue
+        if not value:
+            continue
+        try:
+            moment = datetime.fromisoformat(value)
+        except ValueError:
+            errors[number] = _('Invalid date/time')
+            continue
+        if timezone.is_naive(moment):
+            moment = timezone.make_aware(moment)
+        publish_at[str(number)] = moment.replace(microsecond=0).isoformat()
+    return publish_at, posted, errors
+
+
+def _publish_field_context(number, suggestion, posted, error, contribution_source):
+    """Values for the publish-time cell of one license row in step 2.
+
+    Prefilled with the time from contributions/Planung when there is one, and
+    with "now" otherwise; what the user entered wins when the form is shown
+    again after an error.
+    """
+    from django.utils import timezone
+
+    suggestion_value = ''
+    suggestion_display = ''
+    suggestion_source = ''
+    if suggestion:
+        moment, source = suggestion
+        local = timezone.localtime(moment)
+        suggestion_value = local.strftime('%Y-%m-%dT%H:%M')
+        suggestion_display = local.strftime('%d.%m.%Y %H:%M')
+        suggestion_source = (
+            _('broadcast') if source == contribution_source else _('Planung'))
+
+    if posted is not None:
+        publish_now = posted['now']
+        publish_value = posted['value']
+    else:
+        publish_now = not suggestion
+        publish_value = suggestion_value
+
+    return {
+        'publish_now': publish_now,
+        'publish_value': publish_value,
+        'publish_suggestion_value': suggestion_value,
+        'publish_suggestion_display': suggestion_display,
+        'publish_suggestion_source': suggestion_source,
+        'publish_error': error,
+    }
+
+
 def _export_step1_context(config):
     """Build context for step1 template: media authority from settings only."""
     default_media_authority_name = ''
@@ -391,7 +468,10 @@ def export_to_server_step1(request):
             if not ids:
                 ctx['error'] = _('All entered license numbers were already successfully exported.')
                 return render(request, 'austausch/export_to_server_step1.html', ctx)
-            request.session['export_to_server'] = {'mode': 'licenses', 'ids': ids}
+            # 'source' lets step 2 offer a publish time per license, which
+            # only the manual license-number mode has.
+            request.session['export_to_server'] = {
+                'mode': 'licenses', 'ids': ids, 'source': 'license'}
             return redirect(reverse('austausch:export_to_server_step2'))
         if mode == 'planung':
             date_from = request.POST.get('planung_date_from')
@@ -500,14 +580,30 @@ def export_to_server_step2(request):
             del request.session['export_to_server']
         return redirect(reverse('austausch:export_to_server_step1'))
 
+    # Licenses entered by number get a publish time per row; it wins over the
+    # time from contributions/Planung.
+    manual_publish = mode == 'licenses' and data.get('source') == 'license'
+    posted_publish = {}
+    publish_errors = {}
+
     if request.method == 'POST':
         selected = request.POST.getlist('selected_ids')
         try:
             selected_ids = [int(x) for x in selected if x and str(x).strip().isdigit()]
         except (ValueError, AttributeError):
             selected_ids = []
+        publish_at = None
+        if manual_publish:
+            publish_at, posted_publish, publish_errors = _read_publish_times(
+                request.POST, ids, selected_ids)
         if not selected_ids:
             messages.warning(request, _('Select at least one item to export.'))
+        elif publish_errors:
+            messages.error(
+                request,
+                _('Check the publication time of: %(numbers)s')
+                % {'numbers': _format_license_number_list(sorted(publish_errors))},
+            )
         else:
             schedule_at = request.POST.get('schedule_at')
             if schedule_at:
@@ -525,13 +621,14 @@ def export_to_server_step2(request):
             if dt:
                 result = export_to_server_task.apply_async(
                     args=[selected_ids, mode],
-                    kwargs={'user_id': request.user.pk},
+                    kwargs={'user_id': request.user.pk, 'publish_at': publish_at},
                     eta=dt,
                 )
                 request.session['export_task_id'] = result.id
                 messages.success(request, _('Export to server has been scheduled.'))
             else:
-                result = export_to_server_task.delay(selected_ids, mode, request.user.pk)
+                result = export_to_server_task.delay(
+                    selected_ids, mode, request.user.pk, publish_at=publish_at)
                 request.session['export_task_id'] = result.id
             if 'export_to_server' in request.session:
                 del request.session['export_to_server']
@@ -602,6 +699,11 @@ def export_to_server_step2(request):
             })
     else:
         qs = License.objects.filter(number__in=ids).select_related('profile').order_by('number')
+        suggestions = {}
+        if manual_publish:
+            from licenses.services.peertube_service import PUBLISH_SOURCE_CONTRIBUTION
+            from licenses.services.peertube_service import compute_publish_times_for_licenses
+            suggestions = compute_publish_times_for_licenses(ids)
         for lic in qs:
             if lic.number in already_exported:
                 continue  # Skip already successfully exported
@@ -628,6 +730,12 @@ def export_to_server_step2(request):
                 'video_url': video_url,
                 'running_task_id': running_items.get(str(item_id)),
             })
+            if manual_publish:
+                items[-1].update(_publish_field_context(
+                    lic.number, suggestions.get(lic.number),
+                    posted_publish.get(lic.number), publish_errors.get(lic.number),
+                    PUBLISH_SOURCE_CONTRIBUTION,
+                ))
 
     if not items:
         if 'export_to_server' in request.session:
@@ -643,6 +751,7 @@ def export_to_server_step2(request):
         'items': items,
         'all_ids': ids,
         'cover_enabled': cover_enabled,
+        'manual_publish': manual_publish,
     })
 
 

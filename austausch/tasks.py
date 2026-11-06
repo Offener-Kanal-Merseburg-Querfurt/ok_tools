@@ -7,6 +7,7 @@ from .services.export_to_server_service import ExportToServerService
 from .services.import_service import ImportService
 from .services.nextcloud_exchange_service import NextcloudExchangeService
 from celery import shared_task
+from datetime import datetime
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -505,7 +506,7 @@ def import_exchange_item_task(self, item_id, user_id):
 
 
 @shared_task(name='austausch.tasks.export_to_server', bind=True)
-def export_to_server_task(self, selected_ids, mode, user_id=None):
+def export_to_server_task(self, selected_ids, mode, user_id=None, publish_at=None):
     """
     Export selected contributions or licenses to Nextcloud (video, PDF, JSON, optional thumbnail).
     Saves result to ExportToServerRun for user-visible report.
@@ -518,6 +519,8 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
         selected_ids: List of contribution IDs (mode='contributions') or license numbers (mode='licenses').
         mode: 'contributions' or 'licenses'.
         user_id: Optional user ID for logging and report.
+        publish_at: Optional {str(license number): 'now' | ISO datetime} set on
+            the export page (mode='licenses'); overrides originallyPublishedAt.
 
     Returns:
         dict: success_count, failure_count, skipped_no_pdf_count, details, run_id.
@@ -579,6 +582,7 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
                 selected_ids=locks.acquired_ids,
                 mode=mode,
                 progress_callback=progress_callback,
+                publish_at=publish_at,
             )
         run.success_count = report['success_count']
         run.failure_count = report['failure_count']
@@ -592,6 +596,7 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
             'skipped_no_pdf': report['skipped_no_pdf'],
             'covers_generated': report.get('covers_generated', []),
             'source_fallbacks': report.get('source_fallbacks', {}),
+            'publish_times': report.get('publish_times', {}),
             'already_running': locks.busy,
         }
         run.completed_at = timezone.now()
@@ -600,7 +605,11 @@ def export_to_server_task(self, selected_ids, mode, user_id=None):
         for license_number in report.get('success_license_numbers', []):
             license_obj = License.objects.filter(number=int(license_number)).first()
             eta = timezone.now()
-            if license_obj:
+            manual_time = report.get('publish_times', {}).get(str(license_number))
+            if manual_time:
+                # The time set on the export page is the one PeerTube gets.
+                eta = compute_lookup_eta(datetime.fromisoformat(manual_time))
+            elif license_obj:
                 publish_time = compute_publish_time_for_license(license_obj)
                 eta = compute_lookup_eta(publish_time)
             refresh_license_mediathek_url.apply_async(

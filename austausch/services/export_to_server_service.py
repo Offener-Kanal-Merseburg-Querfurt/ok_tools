@@ -23,6 +23,23 @@ logger = logging.getLogger('django')
 # Image extensions for thumbnail matching
 THUMBNAIL_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.webp')
 
+# Value of a per-license publish time meaning "publish as soon as it is
+# uploaded"; resolved to the moment the item is exported.
+PUBLISH_NOW = 'now'
+
+
+def resolve_publish_time(value: Optional[str]) -> Optional[str]:
+    """Turn a publish-time choice from step 2 into the ISO string for the JSON.
+
+    ``'now'`` becomes the current local time (seconds precision), an ISO
+    datetime is passed through, anything else gives ``None``.
+    """
+    if not value:
+        return None
+    if value == PUBLISH_NOW:
+        return timezone.localtime(timezone.now()).replace(microsecond=0).isoformat()
+    return value
+
 
 def _safe_channel_name(name: str) -> str:
     """Normalize channel/media authority name for use in path (letters, digits, underscore)."""
@@ -451,6 +468,7 @@ class ExportToServerService:
         selected_ids: List[int],
         mode: str,
         progress_callback=None,
+        publish_at: Optional[Dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """
         Export items to server.
@@ -459,6 +477,9 @@ class ExportToServerService:
             selected_ids: List of contribution IDs (mode=contributions) or license numbers (mode=licenses).
             mode: 'contributions' or 'licenses'.
             progress_callback: Optional callback function(current, total, status, item_id) for progress updates.
+            publish_at: Optional ``{str(license number): 'now' | ISO datetime}``
+                chosen on the export page (mode=licenses). It replaces the time
+                from contributions/Planung in ``originallyPublishedAt``.
 
         Returns:
             Dict with: success_count, failure_count, skipped_no_pdf_count,
@@ -477,7 +498,11 @@ class ExportToServerService:
             # Per-item note on where the video was read from, when it was not
             # the primary version (keyed by item id).
             'source_fallbacks': {},
+            # Publish time written for licenses whose time was set on the
+            # export page: {str(license number): ISO datetime}.
+            'publish_times': {},
         }
+        publish_at = publish_at or {}
         self._cover_status_by_number = {}
         self._source_note_by_item = {}
         if not self._validate_destination(selected_ids, report):
@@ -492,7 +517,11 @@ class ExportToServerService:
                 progress_callback(idx, total, 'processing', item_id)
 
             try:
-                status, out_id, reason = self._export_one(item_id, mode)
+                manual_time = None
+                if mode == 'licenses':
+                    manual_time = resolve_publish_time(publish_at.get(str(item_id)))
+                status, out_id, reason = self._export_one(
+                    item_id, mode, publish_time=manual_time)
                 source_note = self._source_note_by_item.pop(item_id, None)
                 if source_note:
                     report['source_fallbacks'][str(item_id)] = source_note
@@ -514,6 +543,8 @@ class ExportToServerService:
                         license_number = out_id
                         report['success_license_numbers'].append(out_id)
                         self._record_exported_license(out_id)
+                        if manual_time:
+                            report['publish_times'][str(out_id)] = manual_time
                     # Flag items whose cover had to be auto-generated (none existed).
                     if self._cover_status_by_number.get(license_number) == 'generated':
                         report['covers_generated'].append(license_number)
@@ -534,15 +565,23 @@ class ExportToServerService:
 
         return report
 
-    def _export_one(self, item_id: int, mode: str) -> Tuple[str, int, Optional[str]]:
-        """Export one item. Returns (status, item_id, reason): status is 'success'|'skipped_no_pdf'|'failure'."""
+    def _export_one(
+        self,
+        item_id: int,
+        mode: str,
+        publish_time: Optional[str] = None,
+    ) -> Tuple[str, int, Optional[str]]:
+        """Export one item. Returns (status, item_id, reason): status is 'success'|'skipped_no_pdf'|'failure'.
+
+        ``publish_time`` (ISO datetime) overrides ``originallyPublishedAt`` in
+        the JSON; without it the serializer takes it from contributions/Planung.
+        """
         from contributions.models import Contribution
         from licenses.models import License
         from licenses.serializers import LicenseMetadataSerializer
         from licenses.generate_file import generate_license_pdf_bytes, normalize_filename
 
         license_obj = None
-        broadcast_date = None
 
         if mode == 'contributions':
             contribution = (
@@ -555,7 +594,6 @@ class ExportToServerService:
                 logger.warning('Contribution id=%s not found', item_id)
                 return ('failure', item_id, 'Contribution not found')
             license_obj = contribution.license
-            broadcast_date = contribution.broadcast_date
         else:
             license_obj = (
                 License.objects
@@ -566,7 +604,6 @@ class ExportToServerService:
             if not license_obj:
                 logger.warning('License number=%s not found', item_id)
                 return ('failure', item_id, 'License not found')
-            broadcast_date = timezone.now()
 
         video_file = license_obj.get_video_file()
         if not video_file:
@@ -641,7 +678,9 @@ class ExportToServerService:
             return ('failure', item_id, reason)
 
         # JSON metadata
-        meta_data = LicenseMetadataSerializer(license_obj).data
+        meta_data = dict(LicenseMetadataSerializer(license_obj).data)
+        if publish_time:
+            meta_data['originallyPublishedAt'] = publish_time
         base_video_name = Path(video_file.filename).stem
         json_remote_name = f'{_safe_filename(base_video_name)}.meta.json'
         if not self._write_json_to_destination(meta_data, remote_base_path, json_remote_name):

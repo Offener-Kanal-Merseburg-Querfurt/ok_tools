@@ -1607,3 +1607,45 @@ msgstr "Vollständige Synchronisierung aller Datumsordner wurde eingeplant."
 
 msgid "Full sync (all date folders)"
 msgstr "Vollständige Synchronisierung (alle Datumsordner)"
+
+msgid "Invalid date/time"
+msgstr "Ungültiges Datum/Uhrzeit"
+
+msgid "Check the publication time of: %(numbers)s"
+msgstr "Bitte die Veröffentlichungszeit prüfen bei: %(numbers)s"
+
+msgid "broadcast"
+msgstr "Sendung"
+
+msgid "Publication"
+msgstr "Veröffentlichung"
+
+msgid "Now"
+msgstr "Sofort"
+
+msgid "Publication time"
+msgstr "Veröffentlichungszeit"
+
+msgid "Suggested: %(when)s (%(source)s)"
+msgstr "Vorschlag: %(when)s (%(source)s)"
+
+msgid "use"
+msgstr "übernehmen"
+
+msgid "No time in broadcasts or Planung"
+msgstr "Keine Zeit in Sendungen oder Planung"
+
+msgid "Publication for all rows"
+msgstr "Veröffentlichung für alle Zeilen"
+
+msgid "Suggested times"
+msgstr "Vorgeschlagene Zeiten"
+
+msgid "Publication time for all rows"
+msgstr "Veröffentlichungszeit für alle Zeilen"
+
+msgid "Set for all"
+msgstr "Für alle setzen"
+
+msgid "Publication: the time set here is sent as the PeerTube publication time and takes priority over broadcasts and Planung. A known time is suggested. 'Now' publishes the video as soon as it is uploaded. An empty field keeps the time from broadcasts/Planung."
+msgstr "Veröffentlichung: Die hier gesetzte Zeit wird als Veröffentlichungszeit an PeerTube übergeben und hat Vorrang vor Sendungen und Planung. Eine bekannte Zeit wird vorgeschlagen. „Sofort“ veröffentlicht das Video, sobald es hochgeladen ist. Ein leeres Feld übernimmt die Zeit aus Sendungen/Planung."
